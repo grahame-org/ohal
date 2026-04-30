@@ -6,18 +6,18 @@ Registers, and a fundamentally different GPIO register layout from the STM32U0.
 
 ## Why PIC18F4550 Demonstrates the Architecture's Power
 
-| Property | STM32U083 (ARM Cortex-M0+) | PIC18F4550 (Microchip PIC18) |
-|---|---|---|
-| Architecture | 32-bit ARM Cortex-M0+ | 8-bit Harvard RISC (non-ARM) |
-| Toolchain (target) | `arm-none-eabi-g++` | Microchip XC8 |
-| Register width | 32-bit (`uint32_t`) | 8-bit (`uint8_t`) |
-| GPIO direction | `MODER` (2 bits/pin) | `TRIS` (1 bit/pin, **inverted**: 1=input, 0=output) |
-| GPIO output | `BSRR` (atomic set/reset, WO) | `LAT` (output latch, read-write) |
-| GPIO input | `IDR` (RO) | `PORT` (reads actual pin state, RO) |
-| Output type | `OTYPER` (push-pull / open-drain) | Not supported — compile error |
-| Output speed | `OSPEEDR` | Not supported — compile error |
-| Pull resistors | `PUPDR` | Not supported in GPIO peripheral — compile error |
-| Alternate function | `AFRL`/`AFRH` | Not supported in GPIO peripheral — compile error |
+| Property           | STM32U083 (ARM Cortex-M0+)        | PIC18F4550 (Microchip PIC18)                        |
+| ------------------ | --------------------------------- | --------------------------------------------------- |
+| Architecture       | 32-bit ARM Cortex-M0+             | 8-bit Harvard RISC (non-ARM)                        |
+| Toolchain (target) | `arm-none-eabi-g++`               | Microchip XC8                                       |
+| Register width     | 32-bit (`uint32_t`)               | 8-bit (`uint8_t`)                                   |
+| GPIO direction     | `MODER` (2 bits/pin)              | `TRIS` (1 bit/pin, **inverted**: 1=input, 0=output) |
+| GPIO output        | `BSRR` (atomic set/reset, WO)     | `LAT` (output latch, read-write)                    |
+| GPIO input         | `IDR` (RO)                        | `PORT` (reads actual pin state, RO)                 |
+| Output type        | `OTYPER` (push-pull / open-drain) | Not supported — compile error                       |
+| Output speed       | `OSPEEDR`                         | Not supported — compile error                       |
+| Pull resistors     | `PUPDR`                           | Not supported in GPIO peripheral — compile error    |
+| Alternate function | `AFRL`/`AFRH`                     | Not supported in GPIO peripheral — compile error    |
 
 The same application-level API (`set()`, `clear()`, `toggle()`, `read_input()`, `set_mode()`)
 works unchanged. Calls to unsupported features (`set_speed()`, `set_output_type()`, `set_pull()`)
@@ -33,23 +33,23 @@ produce a `static_assert` compile error with a helpful message.
 - MCU peripheral features: GPIO with PORT (input), LAT (output), TRIS (direction); 1 bit per pin
 - MCU peripheral register memory map (PIC18F4550 datasheet DS39632E):
 
-| Register | Address | Access | Description |
-|---|---|---|---|
-| PORTA | `0xF80` | RO | Pin input state — port A |
-| PORTB | `0xF81` | RO | Pin input state — port B |
-| PORTC | `0xF82` | RO | Pin input state — port C |
-| PORTD | `0xF83` | RO | Pin input state — port D |
-| PORTE | `0xF84` | RO | Pin input state — port E |
-| LATA  | `0xF89` | RW | Output latch — port A |
-| LATB  | `0xF8A` | RW | Output latch — port B |
-| LATC  | `0xF8B` | RW | Output latch — port C |
-| LATD  | `0xF8C` | RW | Output latch — port D |
-| LATE  | `0xF8D` | RW | Output latch — port E |
-| TRISA | `0xF92` | RW | Direction — port A (1=input, 0=output) |
-| TRISB | `0xF93` | RW | Direction — port B |
-| TRISC | `0xF94` | RW | Direction — port C |
-| TRISD | `0xF95` | RW | Direction — port D |
-| TRISE | `0xF96` | RW | Direction — port E |
+| Register | Address | Access | Description                            |
+| -------- | ------- | ------ | -------------------------------------- |
+| PORTA    | `0xF80` | RO     | Pin input state — port A               |
+| PORTB    | `0xF81` | RO     | Pin input state — port B               |
+| PORTC    | `0xF82` | RO     | Pin input state — port C               |
+| PORTD    | `0xF83` | RO     | Pin input state — port D               |
+| PORTE    | `0xF84` | RO     | Pin input state — port E               |
+| LATA     | `0xF89` | RW     | Output latch — port A                  |
+| LATB     | `0xF8A` | RW     | Output latch — port B                  |
+| LATC     | `0xF8B` | RW     | Output latch — port C                  |
+| LATD     | `0xF8C` | RW     | Output latch — port D                  |
+| LATE     | `0xF8D` | RW     | Output latch — port E                  |
+| TRISA    | `0xF92` | RW     | Direction — port A (1=input, 0=output) |
+| TRISB    | `0xF93` | RW     | Direction — port B                     |
+| TRISC    | `0xF94` | RW     | Direction — port C                     |
+| TRISD    | `0xF95` | RW     | Direction — port D                     |
+| TRISE    | `0xF96` | RW     | Direction — port E                     |
 
 ## Sequence — "set GPIO pin high" on PIC18F4550
 
@@ -87,6 +87,7 @@ sequenceDiagram
 ## Implementation Skeleton (`pic18f4550/gpio.hpp`)
 
 Note the key differences from the STM32U083 specialisation:
+
 - All registers are `uint8_t` wide.
 - Direction is via the `TRIS` register: writing `0` makes the pin an output, `1` makes it an
   input. This is the **opposite** polarity from `PinMode::Output = 1`. The specialisation

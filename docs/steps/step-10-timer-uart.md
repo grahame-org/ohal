@@ -8,17 +8,17 @@
 - MCU model: STM32U083
 - TIM2 base address: `0x40000000`
 - Relevant registers and offsets (from RM0503):
-  - `CR1`   `0x00` — control register 1
-  - `CR2`   `0x04` — control register 2
-  - `DIER`  `0x0C` — DMA/interrupt enable register
-  - `SR`    `0x10` — status register
-  - `EGR`   `0x14` — event generation register (WO)
+  - `CR1` `0x00` — control register 1
+  - `CR2` `0x04` — control register 2
+  - `DIER` `0x0C` — DMA/interrupt enable register
+  - `SR` `0x10` — status register
+  - `EGR` `0x14` — event generation register (WO)
   - `CCMR1` `0x18` — capture/compare mode register 1
   - `CCMR2` `0x1C` — capture/compare mode register 2
-  - `CCER`  `0x20` — capture/compare enable register
-  - `CNT`   `0x24` — counter register
-  - `PSC`   `0x28` — prescaler register
-  - `ARR`   `0x2C` — auto-reload register
+  - `CCER` `0x20` — capture/compare enable register
+  - `CNT` `0x24` — counter register
+  - `PSC` `0x28` — prescaler register
+  - `ARR` `0x2C` — auto-reload register
   - `CCR1`–`CCR4` `0x34`–`0x40` — capture/compare registers
 
 ## Inputs Required for STM32U083 UART (USART2)

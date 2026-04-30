@@ -20,20 +20,20 @@
 
 ## 1. Design Goals
 
-| # | Goal | Notes |
-|---|------|-------|
-| G1 | **Zero RAM at runtime** | All peripheral configuration is encoded in types and template parameters; no global or heap-allocated state is needed for the HAL itself. |
-| G2 | **Register-write efficiency** | Every HAL operation must compile to the same instruction sequence as a hand-written `volatile` register access. Verified by inspecting generated assembly and zero-cost abstraction guarantees. |
-| G3 | **Consistent API across MCU families** | The same `ohal::gpio` API works on STM32, TI MSP-M0, Microchip PIC18, and any future platform with no changes to application code. |
-| G4 | **Noisy compile-time failures** | If an application targets a peripheral feature that is not supported by the selected MCU, compilation fails with a human-readable `static_assert` message. |
-| G5 | **Strongly typed** | Registers, bit fields, peripheral instances, pin modes, and all configuration values are distinct types — no `uint32_t` magic numbers in application code. |
-| G6 | **Correct-by-construction** | Writing to a read-only register/field is a compile error. Reading from a write-only register/field is a compile error. |
-| G7 | **No memory-map assumptions** | The HAL core layer makes no assumptions about register addresses. Every address is provided by the platform-specific layer. If a step requires register details, those details are listed explicitly (family, model, peripheral, register map). |
-| G8 | **Unit testable on host and target** | The register abstraction layer is injectable; tests can run the same test cases on a development host (with simulated registers) and on the real target. |
-| G9 | **C++17 strict** | No compiler extensions, no C++20 features. |
-| G10 | **Consistent namespace** | All public symbols live inside `ohal::`. Peripheral types are in sub-namespaces: `ohal::gpio`, `ohal::timer`, `ohal::uart`. |
-| G11 | **Minimal consumer imports** | Consumers write `using namespace ohal::gpio;` and nothing more (beyond including the single top-level header). |
-| G12 | **MCU selection via compiler defines** | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083`. Invalid or missing define combinations fail at compile time. |
+| #   | Goal                                   | Notes                                                                                                                                                                                                                                           |
+| --- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| G1  | **Zero RAM at runtime**                | All peripheral configuration is encoded in types and template parameters; no global or heap-allocated state is needed for the HAL itself.                                                                                                       |
+| G2  | **Register-write efficiency**          | Every HAL operation must compile to the same instruction sequence as a hand-written `volatile` register access. Verified by inspecting generated assembly and zero-cost abstraction guarantees.                                                 |
+| G3  | **Consistent API across MCU families** | The same `ohal::gpio` API works on STM32, TI MSP-M0, Microchip PIC18, and any future platform with no changes to application code.                                                                                                              |
+| G4  | **Noisy compile-time failures**        | If an application targets a peripheral feature that is not supported by the selected MCU, compilation fails with a human-readable `static_assert` message.                                                                                      |
+| G5  | **Strongly typed**                     | Registers, bit fields, peripheral instances, pin modes, and all configuration values are distinct types — no `uint32_t` magic numbers in application code.                                                                                      |
+| G6  | **Correct-by-construction**            | Writing to a read-only register/field is a compile error. Reading from a write-only register/field is a compile error.                                                                                                                          |
+| G7  | **No memory-map assumptions**          | The HAL core layer makes no assumptions about register addresses. Every address is provided by the platform-specific layer. If a step requires register details, those details are listed explicitly (family, model, peripheral, register map). |
+| G8  | **Unit testable on host and target**   | The register abstraction layer is injectable; tests can run the same test cases on a development host (with simulated registers) and on the real target.                                                                                        |
+| G9  | **C++17 strict**                       | No compiler extensions, no C++20 features.                                                                                                                                                                                                      |
+| G10 | **Consistent namespace**               | All public symbols live inside `ohal::`. Peripheral types are in sub-namespaces: `ohal::gpio`, `ohal::timer`, `ohal::uart`.                                                                                                                     |
+| G11 | **Minimal consumer imports**           | Consumers write `using namespace ohal::gpio;` and nothing more (beyond including the single top-level header).                                                                                                                                  |
+| G12 | **MCU selection via compiler defines** | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083`. Invalid or missing define combinations fail at compile time.                                                                                                                              |
 
 ---
 
@@ -221,7 +221,7 @@ flowchart TD
 
 ## 4. Repository Layout
 
-```
+```text
 ohal/
 ├── .github/
 │   └── workflows/
@@ -376,11 +376,11 @@ entries without needing to re-examine or amend earlier history.
 
 Steps 8 and 9 can be worked in parallel (both depend on Step 7, not on each other), but Step 8
 is numbered first to reflect the principle of proving cross-platform portability at the GPIO
-level *before* expanding the peripheral count on a single platform. If PIC18 GPIO reveals
+level _before_ expanding the peripheral count on a single platform. If PIC18 GPIO reveals
 issues with the generic interface design, they can be corrected before Timer/UART is built,
 avoiding rework.
 
-Steps 13 and 14 (release automation and packaging) are deliberately placed *before* the
+Steps 13 and 14 (release automation and packaging) are deliberately placed _before_ the
 expansion steps (15 and 16) so that:
 
 - `release-please` is already configured to bump `vcpkg.json` versions before anyone starts
@@ -388,24 +388,24 @@ expansion steps (15 and 16) so that:
 - Contributors adding new families (Step 15) or new peripherals (Step 16) can immediately open
   PRs that flow through the full release pipeline.
 
-| Step | File | Phase | Key Prerequisite |
-|------|------|-------|------------------|
-| 1 | [Build Infrastructure](steps/step-01-build-infrastructure.md) | Core | None |
-| 2 | [Linting and Formatting](steps/step-02-linting-formatting.md) | Core | Step 1 |
-| 3 | [Conventional Commits and Merge Queue](steps/step-03-conventional-commits-merge-queue.md) | Core | Step 2 |
-| 4 | [Core Register Abstraction](steps/step-04-register-abstraction.md) | Core | Step 3 |
-| 5 | [BitField and Access Control](steps/step-05-bitfield-access-control.md) | Core | Step 4 |
-| 6 | [MCU Family/Model Selection](steps/step-06-mcu-selection.md) | First platform | Step 5 |
-| 7 | [GPIO Peripheral Interface](steps/step-07-gpio-interface.md) | First platform | Step 6 |
-| 8 | [STM32U0 GPIO Implementation](steps/step-08-stm32u0-gpio.md) | First platform | Step 7 |
-| 9 | [PIC18F4550 GPIO (non-ARM)](steps/step-09-pic18f4550-gpio.md) | Second platform | Step 7 |
-| 10 | [Timer and UART Peripherals](steps/step-10-timer-uart.md) | First platform | Step 8 |
-| 11 | [Host and Target Unit Testing](steps/step-11-unit-testing.md) | Validation | Steps 8–10 |
-| 12 | [CI / Continuous Integration](steps/step-12-ci.md) | Validation | Step 11 |
-| 13 | [Release Automation](steps/step-13-release-automation.md) | Release pipeline | Steps 3, 12 |
-| 14 | [vcpkg Package](steps/step-14-vcpkg-package.md) | Release pipeline | Step 13 |
-| 15 | [Additional MCU Families and Models](steps/step-15-additional-mcu-families.md) | Expansion | Steps 13–14 |
-| 16 | [Additional Peripherals](steps/step-16-additional-peripherals.md) | Expansion | Steps 13–15 |
+| Step | File                                                                                      | Phase            | Key Prerequisite |
+| ---- | ----------------------------------------------------------------------------------------- | ---------------- | ---------------- |
+| 1    | [Build Infrastructure](steps/step-01-build-infrastructure.md)                             | Core             | None             |
+| 2    | [Linting and Formatting](steps/step-02-linting-formatting.md)                             | Core             | Step 1           |
+| 3    | [Conventional Commits and Merge Queue](steps/step-03-conventional-commits-merge-queue.md) | Core             | Step 2           |
+| 4    | [Core Register Abstraction](steps/step-04-register-abstraction.md)                        | Core             | Step 3           |
+| 5    | [BitField and Access Control](steps/step-05-bitfield-access-control.md)                   | Core             | Step 4           |
+| 6    | [MCU Family/Model Selection](steps/step-06-mcu-selection.md)                              | First platform   | Step 5           |
+| 7    | [GPIO Peripheral Interface](steps/step-07-gpio-interface.md)                              | First platform   | Step 6           |
+| 8    | [STM32U0 GPIO Implementation](steps/step-08-stm32u0-gpio.md)                              | First platform   | Step 7           |
+| 9    | [PIC18F4550 GPIO (non-ARM)](steps/step-09-pic18f4550-gpio.md)                             | Second platform  | Step 7           |
+| 10   | [Timer and UART Peripherals](steps/step-10-timer-uart.md)                                 | First platform   | Step 8           |
+| 11   | [Host and Target Unit Testing](steps/step-11-unit-testing.md)                             | Validation       | Steps 8–10       |
+| 12   | [CI / Continuous Integration](steps/step-12-ci.md)                                        | Validation       | Step 11          |
+| 13   | [Release Automation](steps/step-13-release-automation.md)                                 | Release pipeline | Steps 3, 12      |
+| 14   | [vcpkg Package](steps/step-14-vcpkg-package.md)                                           | Release pipeline | Step 13          |
+| 15   | [Additional MCU Families and Models](steps/step-15-additional-mcu-families.md)            | Expansion        | Steps 13–14      |
+| 16   | [Additional Peripherals](steps/step-16-additional-peripherals.md)                         | Expansion        | Steps 13–15      |
 
 ---
 
@@ -489,16 +489,16 @@ graph LR
 
 ### 7.1 Define Combinations
 
-| `OHAL_FAMILY_*` | `OHAL_MODEL_*` | Result |
-|---|---|---|
-| (none) | (any) | Compile error: "No MCU family defined" |
-| `STM32U0` | (none) | Compile error: "No STM32U0 model defined" |
-| `STM32U0` | `STM32U083` | OK |
-| `STM32U0` | `PIC18F4550` | Compile error: "Model PIC18F4550 is not in family STM32U0" |
-| `PIC` | `PIC18F4550` | OK |
-| `PIC` | (none) | Compile error: "No PIC model defined" |
-| `TI_MSPM0` | `MSPM0G3507` | OK (once implemented) |
-| `TI_MSPM0` | (none) | Compile error: "No TI_MSPM0 model defined" |
+| `OHAL_FAMILY_*` | `OHAL_MODEL_*` | Result                                                     |
+| --------------- | -------------- | ---------------------------------------------------------- |
+| (none)          | (any)          | Compile error: "No MCU family defined"                     |
+| `STM32U0`       | (none)         | Compile error: "No STM32U0 model defined"                  |
+| `STM32U0`       | `STM32U083`    | OK                                                         |
+| `STM32U0`       | `PIC18F4550`   | Compile error: "Model PIC18F4550 is not in family STM32U0" |
+| `PIC`           | `PIC18F4550`   | OK                                                         |
+| `PIC`           | (none)         | Compile error: "No PIC model defined"                      |
+| `TI_MSPM0`      | `MSPM0G3507`   | OK (once implemented)                                      |
+| `TI_MSPM0`      | (none)         | Compile error: "No TI_MSPM0 model defined"                 |
 
 ### 7.2 How to Add a New MCU Family
 
@@ -612,16 +612,16 @@ approach, negative-compile test helper, and coverage targets.
 
 ### 10.1 Classes of Error
 
-| Class | Mechanism | Example message |
-|---|---|---|
-| No MCU defined | `#error` preprocessor directive | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.` |
-| Wrong model for family | `#error` preprocessor directive | `ohal: Model PIC18F4550 is not part of family STM32U0. Check -DOHAL_MODEL_*.` |
-| Unimplemented peripheral | `static_assert` in primary template | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.` |
-| Write to read-only field | `static_assert` in `BitField::write` | `ohal: cannot write to a read-only field` |
-| Read from write-only field | `static_assert` in `BitField::read` | `ohal: cannot read from a write-only field` |
-| BitField overflow | `static_assert` in `BitField` body | `ohal: BitField (Offset + Width) exceeds register width` |
-| Out-of-range pin number | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.` |
-| Unsupported feature | `static_assert` in platform specialisation | `ohal: PIC18F4550 GPIO does not support configurable output speed.` |
+| Class                      | Mechanism                                  | Example message                                                                                                         |
+| -------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| No MCU defined             | `#error` preprocessor directive            | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.`                          |
+| Wrong model for family     | `#error` preprocessor directive            | `ohal: Model PIC18F4550 is not part of family STM32U0. Check -DOHAL_MODEL_*.`                                           |
+| Unimplemented peripheral   | `static_assert` in primary template        | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.` |
+| Write to read-only field   | `static_assert` in `BitField::write`       | `ohal: cannot write to a read-only field`                                                                               |
+| Read from write-only field | `static_assert` in `BitField::read`        | `ohal: cannot read from a write-only field`                                                                             |
+| BitField overflow          | `static_assert` in `BitField` body         | `ohal: BitField (Offset + Width) exceeds register width`                                                                |
+| Out-of-range pin number    | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.`                                                                             |
+| Unsupported feature        | `static_assert` in platform specialisation | `ohal: PIC18F4550 GPIO does not support configurable output speed.`                                                     |
 
 ### 10.2 Error Design Principles
 
@@ -635,7 +635,7 @@ approach, negative-compile test helper, and coverage targets.
 
 ## 11. Namespace Convention
 
-```
+```text
 ohal::               ← top-level namespace; platform selection lives here
 ohal::core::         ← Register<>, BitField<>, Access enum — not for direct use by consumers
 ohal::gpio::         ← GPIO peripheral types and enumerations
@@ -653,6 +653,7 @@ ohal::test::         ← Mock infrastructure; only compiled in test builds
 ```
 
 Consumers use:
+
 ```cpp
 #include <ohal/ohal.hpp>    // single include
 using namespace ohal::gpio;
@@ -760,14 +761,14 @@ int main() {
 
 ## 13. Open Questions and Future Work
 
-| Topic | Question / Action |
-|---|---|
-| Clock enabling enforcement | `clock::Enable<>` is designed in [Step 16](steps/step-16-additional-peripherals.md) and enables peripheral bus clocks. The open question is whether OHAL should enforce at compile time that `clock::Enable<P>::enable()` has been called before any register in peripheral `P` is accessed — e.g. via a wrapper type or tag parameter. |
-| Alternate Function mapping | Setting AF mode requires knowing which AF number maps to which peripheral on each pin. Needs a per-model AF map table (constexpr array or template traits). |
-| Interrupt / EXTI | GPIO interrupt configuration involves EXTI registers outside the GPIO block. Needs a separate `ohal::exti` abstraction. |
-| Atomic register access | On multi-core MCUs (e.g., STM32H7 dual-core) register access may need memory barriers or hardware semaphores. The `Register<>` template could be extended with an `Ordering` template parameter. |
-| C++20 concepts | Once C++20 is permitted, `requires` clauses can replace `static_assert` chains for cleaner error messages. |
-| PIC18 PORTB weak pull-ups | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction. |
-| DMA runtime memory addresses | DMA is the one deliberate exception to the zero-runtime-data principle (see [Step 16](steps/step-16-additional-peripherals.md)). The design decision (NTTP peripheral address, runtime buffer pointer) should be reviewed once DMA is implemented. |
-| TI MSP-M0 | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (see [Step 15](steps/step-15-additional-mcu-families.md)). |
-| Code size tracking | A CI job should build a minimal blink example for each supported target and check that the resulting binary size does not regress. This guards the zero-overhead guarantee. |
+| Topic                        | Question / Action                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Clock enabling enforcement   | `clock::Enable<>` is designed in [Step 16](steps/step-16-additional-peripherals.md) and enables peripheral bus clocks. The open question is whether OHAL should enforce at compile time that `clock::Enable<P>::enable()` has been called before any register in peripheral `P` is accessed — e.g. via a wrapper type or tag parameter. |
+| Alternate Function mapping   | Setting AF mode requires knowing which AF number maps to which peripheral on each pin. Needs a per-model AF map table (constexpr array or template traits).                                                                                                                                                                             |
+| Interrupt / EXTI             | GPIO interrupt configuration involves EXTI registers outside the GPIO block. Needs a separate `ohal::exti` abstraction.                                                                                                                                                                                                                 |
+| Atomic register access       | On multi-core MCUs (e.g., STM32H7 dual-core) register access may need memory barriers or hardware semaphores. The `Register<>` template could be extended with an `Ordering` template parameter.                                                                                                                                        |
+| C++20 concepts               | Once C++20 is permitted, `requires` clauses can replace `static_assert` chains for cleaner error messages.                                                                                                                                                                                                                              |
+| PIC18 PORTB weak pull-ups    | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction.                                                                                                                                                                       |
+| DMA runtime memory addresses | DMA is the one deliberate exception to the zero-runtime-data principle (see [Step 16](steps/step-16-additional-peripherals.md)). The design decision (NTTP peripheral address, runtime buffer pointer) should be reviewed once DMA is implemented.                                                                                      |
+| TI MSP-M0                    | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (see [Step 15](steps/step-15-additional-mcu-families.md)).                                                                              |
+| Code size tracking           | A CI job should build a minimal blink example for each supported target and check that the resulting binary size does not regress. This guards the zero-overhead guarantee.                                                                                                                                                             |

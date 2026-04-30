@@ -18,14 +18,14 @@ target_include_directories(ohal INTERFACE
 )
 
 if(NOT OHAL_MCU_FAMILY STREQUAL "")
-    target_compile_definitions(ohal INTERFACE OHAL_FAMILY_${OHAL_MCU_FAMILY})
+  target_compile_definitions(ohal INTERFACE OHAL_FAMILY_${OHAL_MCU_FAMILY})
 endif()
 
 if(NOT OHAL_MCU_MODEL STREQUAL "")
-    target_compile_definitions(ohal INTERFACE OHAL_MODEL_${OHAL_MCU_MODEL})
+  target_compile_definitions(ohal INTERFACE OHAL_MODEL_${OHAL_MCU_MODEL})
 endif()
 
 if(OHAL_BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests/host)
+  enable_testing()
+  add_subdirectory(tests/host)
 endif()

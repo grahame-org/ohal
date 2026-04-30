@@ -1,11 +1,12 @@
 include(FetchContent)
 
 FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest
-    GIT_TAG        v1.15.2
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest
+  GIT_TAG v1.15.2
 )
 # Prevent googletest from overriding our compiler/linker settings on Windows
+# cmake-lint: disable=C0103
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 

@@ -14,33 +14,33 @@ the **PR title**, which becomes the squash-merge commit message.
 
 ### Required Types
 
-| Type | When to use |
-|---|---|
-| `feat` | New peripheral, new MCU family/model, new public API |
-| `fix` | Bug fix in an existing abstraction or platform file |
-| `docs` | Documentation-only changes (plan, README, step files) |
-| `test` | Adding or updating tests without changing production code |
-| `ci` | Changes to GitHub Actions workflows or CI configuration |
-| `build` | Changes to CMakeLists, toolchain files, or vcpkg manifests |
-| `refactor` | Code restructuring with no observable behaviour change |
-| `chore` | Maintenance (dependency bumps, generated file updates) |
+| Type       | When to use                                                |
+| ---------- | ---------------------------------------------------------- |
+| `feat`     | New peripheral, new MCU family/model, new public API       |
+| `fix`      | Bug fix in an existing abstraction or platform file        |
+| `docs`     | Documentation-only changes (plan, README, step files)      |
+| `test`     | Adding or updating tests without changing production code  |
+| `ci`       | Changes to GitHub Actions workflows or CI configuration    |
+| `build`    | Changes to CMakeLists, toolchain files, or vcpkg manifests |
+| `refactor` | Code restructuring with no observable behaviour change     |
+| `chore`    | Maintenance (dependency bumps, generated file updates)     |
 
 ### Scopes
 
 Use scopes to identify the affected area:
 
-| Scope | Meaning |
-|---|---|
-| `core` | `Register<>`, `BitField<>`, `Access` enum |
-| `gpio` | GPIO peripheral interface or any platform's GPIO implementation |
-| `spi`, `i2c`, `uart`, `timer`, `adc`, `dac`, `dma`, `power`, `clock`, `mpu` | Named peripheral |
-| `stm32u0`, `pic`, `ti_mspm0`, `nrf5`, `rp2040`, `avr`, `samd` | MCU family |
-| `ci` | Workflow files |
-| `vcpkg` | Package manifest or port files |
+| Scope                                                                       | Meaning                                                         |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `core`                                                                      | `Register<>`, `BitField<>`, `Access` enum                       |
+| `gpio`                                                                      | GPIO peripheral interface or any platform's GPIO implementation |
+| `spi`, `i2c`, `uart`, `timer`, `adc`, `dac`, `dma`, `power`, `clock`, `mpu` | Named peripheral                                                |
+| `stm32u0`, `pic`, `ti_mspm0`, `nrf5`, `rp2040`, `avr`, `samd`               | MCU family                                                      |
+| `ci`                                                                        | Workflow files                                                  |
+| `vcpkg`                                                                     | Package manifest or port files                                  |
 
 Example well-formed PR titles:
 
-```
+```text
 feat(gpio): add STM32U073 partial specialisation
 
 feat(stm32u0): add SPI1 register map and BitField specialisations
@@ -93,17 +93,20 @@ the required checks against the current `main` tip before completing the merge.
 ### Repository Settings (manual, one-time)
 
 In **Settings → General → Pull Requests**:
+
 - Enable **Require merge queue**.
 - Set **Merge method**: Squash and merge (so the PR title becomes the single commit message).
 
 ### Branch Protection Rule for `main`
 
 In **Settings → Branches → main**:
+
 - Require status checks to pass before merging.
 - Require merge queue.
 - Do not allow bypassing the above settings.
 
 The required status checks will be populated incrementally:
+
 - After Step 2: add `lint` and `zizmor`.
 - After Step 12: add all CI build/test job names.
 
@@ -115,10 +118,10 @@ as a required status check must respond to this event:
 ```yaml
 on:
   pull_request:
-  merge_group:        # ← required on every workflow registered as a status check
+  merge_group: # ← required on every workflow registered as a status check
 ```
 
-Workflows that are *not* required status checks (e.g. `release-please.yml`, which only runs
+Workflows that are _not_ required status checks (e.g. `release-please.yml`, which only runs
 on push to `main`) do not need this trigger.
 
 ## 3.3 Dependency on Later Steps
