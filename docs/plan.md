@@ -385,7 +385,7 @@ expansion steps (15 and 16) so that:
 
 - `release-please` is already configured to bump `vcpkg.json` versions before anyone starts
   consuming the package from new releases.
-- Contributors adding new families (Step 16) or new peripherals (Step 16) can immediately open
+- Contributors adding new families (Step 15) or new peripherals (Step 16) can immediately open
   PRs that flow through the full release pipeline.
 
 | Step | File | Phase | Key Prerequisite |

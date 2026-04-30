@@ -2,7 +2,8 @@
 
 **Goal:** Configure `release-please` to automatically track the conventional commit history
 accumulated since [Step 3](step-03-conventional-commits-merge-queue.md) and produce versioned
-GitHub Releases, changelog entries, and version bumps in `vcpkg.json` and `CMakeLists.txt`.
+GitHub Releases, changelog entries, and version bumps in `vcpkg.json` and
+`ports/ohal/vcpkg.json`.
 
 **Prerequisites:** [Step 3 (Conventional Commits and Merge Queue)](step-03-conventional-commits-merge-queue.md)
 must be in place so that the commit history `release-please` reads is well-formed.
@@ -14,10 +15,10 @@ before completing each release PR merge.
 [release-please](https://github.com/googleapis/release-please) reads the conventional commit
 history and automatically:
 
-1. Opens a "Release PR" that bumps the version in `vcpkg.json`, `ports/ohal/vcpkg.json`,
-   and updates `CHANGELOG.md`.
-2. Merges the Release PR (after CI passes through the merge queue).
-3. Creates a GitHub Release with a tag (e.g. `v0.2.0`) and auto-generated release notes.
+1. Opens or updates a "Release PR" that bumps the version in `vcpkg.json`,
+   `ports/ohal/vcpkg.json`, and updates `CHANGELOG.md`.
+2. After the Release PR is merged (via the merge queue), creates a GitHub Release with a
+   tag (e.g. `v0.2.0`) and auto-generated release notes.
 
 ### Configuration
 
@@ -37,7 +38,8 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      # Pin GitHub Actions to a full commit SHA; update this SHA intentionally when upgrading.
+      - uses: googleapis/release-please-action@<FULL_40_CHARACTER_COMMIT_SHA>
         with:
           release-type: simple
           token: ${{ secrets.GITHUB_TOKEN }}

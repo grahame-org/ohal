@@ -5,10 +5,12 @@ models within existing families, following the same pattern established in Steps
 Each new family or model requires gathering hardware register information before any code is
 written.
 
-**Prerequisites:** [Step 13 (Release Automation)](step-13-release-automation.md) and
-[Step 14 (vcpkg)](step-14-vcpkg-package.md) must be in place so that each new family or model
-contribution is delivered via a conventional commit PR, passes the merge queue, and is included
-in the correct release.
+**Prerequisites:** [Step 3 (Conventional Commits / Merge Queue)](step-03-conventional-commits-merge-queue.md)
+and [Step 12 (CI)](step-12-ci.md) must be in place so that each new family or model contribution
+is delivered via a conventional commit PR and passes the required merge checks.
+[Step 13 (Release Automation)](step-13-release-automation.md) and
+[Step 14 (vcpkg)](step-14-vcpkg-package.md) must be in place so that each contribution is
+included in the correct release and packaging flow.
 
 ## 15.1 New MCU Families
 

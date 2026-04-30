@@ -10,7 +10,7 @@ flowchart LR
     A --> C[ARM cross-compile check<br/>arm-none-eabi-g++<br/>STM32U083 target]
     A --> D[PIC cross-compile check<br/>Microchip XC8<br/>PIC18F4550 target]
     A --> E[Clang-tidy static analysis]
-    A --> F[Negative-compile tests<br/>expect_compile_failure]
+    A --> F[Negative-compile tests<br/>ohal_expect_compile_failure]
     B --> G{All pass?}
     C --> G
     D --> G

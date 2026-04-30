@@ -4,8 +4,10 @@
 Power/sleep modes, Clocks, and MPU peripherals, following the same pattern established in
 Steps 7–9.
 
-**Prerequisites:** [Step 13 (Release Automation)](step-13-release-automation.md) must be in
-place so that each new peripheral lands via a conventional commit. [Step 15 (Additional MCU
+**Prerequisites:** [Step 3](step-03-conventional-commits-merge-queue.md) must be in place so
+that each new peripheral lands via a conventional commit. [Step 13 (Release
+Automation)](step-13-release-automation.md) should be in place so that release-please and
+changelog generation cover those commits. [Step 15 (Additional MCU
 Families)](step-15-additional-mcu-families.md) should be progressed in parallel: the more MCU
 families are supported, the more value each new peripheral provides (since each new peripheral
 must be implemented — or explicitly marked unsupported — for every existing family).
@@ -82,7 +84,7 @@ struct Enable {
 ### Recommended Usage Pattern
 
 ```cpp
-clock::Enable<GpioA>::enable();          // enable GPIOA peripheral clock
+clock::Enable<PortA>::enable();          // enable GPIOA peripheral clock
 Pin<PortA, 5>::set_mode(PinMode::Output);
 ```
 
@@ -326,9 +328,11 @@ struct Controller {
 
 ### Namespace: `ohal::mpu`
 
-The Cortex-M Memory Protection Unit is present on Cortex-M0+, M3, M4, M7 cores. Its registers
-are at fixed core-level addresses defined by the ARM architecture (`0xE000ED90`), not in the
-normal peripheral bus address space. PIC18 and AVR MCUs do not have an MPU.
+The Cortex-M Memory Protection Unit is implementation-dependent: it is common on Cortex-M3,
+M4, and M7 devices, and optional on some baseline cores such as Cortex-M0+. Its registers are
+at fixed core-level addresses defined by the ARM architecture (`0xE000ED90`), not in the
+normal peripheral bus address space. PIC18 and AVR MCUs do not have an MPU; use
+`has_mpu<Family>` to model support for each MCU family.
 
 ### Register Map (ARM architecture — common to all Cortex-M cores with MPU)
 
