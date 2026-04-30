@@ -10,6 +10,12 @@ Families)](step-13-additional-mcu-families.md) should be progressed in parallel:
 families are supported, the more value each new peripheral provides (since each new peripheral
 must be implemented — or explicitly marked unsupported — for every existing family).
 
+**Within this step, implement Clocks first** (section 14.2). Clock enabling is a prerequisite
+for all other peripherals to function correctly on real hardware: on STM32 and similar families,
+the peripheral bus clock must be enabled before any peripheral register can be accessed. Every
+subsequent peripheral implementation in this step references the clock-enable pattern established
+in section 14.2.
+
 Each peripheral follows the same three-layer pattern:
 
 1. **Generic interface** (`include/ohal/<peripheral>.hpp`) — enumerations, tag types, primary
@@ -341,7 +347,7 @@ normal peripheral bus address space. PIC18 and AVR MCUs do not have an MPU.
 namespace ohal::mpu {
 
 enum class RegionSize : uint8_t {
-    Bytes32 = 0x04, Bytes64 = 0x05, /* ... */ KiB256 = 0x11, MiB512 = 0x1C, GiB4 = 0x1F
+    Bytes32 = 0x04, Bytes64 = 0x05, /* ... */ KB256 = 0x11, MB512 = 0x1C, GB4 = 0x1F
 };
 
 enum class AccessPermission : uint8_t {

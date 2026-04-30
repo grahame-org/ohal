@@ -732,7 +732,7 @@ int main() {
 
 | Topic | Question / Action |
 |---|---|
-| Clock enabling enforcement | Should OHAL enforce at compile time that a peripheral's clock is enabled before its registers are accessed (e.g. via a wrapper that requires `clock::Enable<GpioA>::enable()` to be called)? Or leave clock management to the application/BSP? |
+| Clock enabling enforcement | `clock::Enable<>` is designed in [Step 14](steps/step-14-additional-peripherals.md) and enables peripheral bus clocks. The open question is whether OHAL should enforce at compile time that `clock::Enable<P>::enable()` has been called before any register in peripheral `P` is accessed — e.g. via a wrapper type or tag parameter. |
 | Alternate Function mapping | Setting AF mode requires knowing which AF number maps to which peripheral on each pin. Needs a per-model AF map table (constexpr array or template traits). |
 | Interrupt / EXTI | GPIO interrupt configuration involves EXTI registers outside the GPIO block. Needs a separate `ohal::exti` abstraction. |
 | Atomic register access | On multi-core MCUs (e.g., STM32H7 dual-core) register access may need memory barriers or hardware semaphores. The `Register<>` template could be extended with an `Ordering` template parameter. |
