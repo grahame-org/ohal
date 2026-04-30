@@ -1,13 +1,16 @@
 include(FetchContent)
 
 FetchContent_Declare(
-    doctest
-    GIT_REPOSITORY https://github.com/doctest/doctest
-    GIT_TAG        v2.4.11
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest
+    GIT_TAG        v1.15.2
 )
-FetchContent_MakeAvailable(doctest)
+# Prevent googletest from overriding our compiler/linker settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 add_executable(ohal_host_tests main.cpp)
-target_link_libraries(ohal_host_tests PRIVATE ohal doctest::doctest)
+target_link_libraries(ohal_host_tests PRIVATE ohal GTest::gtest_main GTest::gmock)
 
-add_test(NAME ohal_host_tests COMMAND ohal_host_tests)
+include(GoogleTest)
+gtest_discover_tests(ohal_host_tests)
