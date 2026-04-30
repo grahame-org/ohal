@@ -31,7 +31,7 @@ Implement peripherals in this order to maximise reuse and minimise surprise:
 | Order | Peripheral | Reason |
 |---|---|---|
 | 1 | **Clocks** | Prerequisite knowledge: GPIO clocks must be enabled before registers are accessible. Documenting the clock-enable pattern once means all subsequent peripheral steps can reference it. |
-| 2 | **SPI** | Natural extension of the UART pattern already in Step 7; register layout is similar. |
+| 2 | **SPI** | Natural extension of the UART pattern already in Step 8; register layout is similar. |
 | 3 | **I2C** | Independent and widely used; distinct enough register layout to exercise the abstraction further. |
 | 4 | **ADC** | Read-only `DR` register exercises `ReadOnly` `BitField` constraints; introduces conversion trigger concept. |
 | 5 | **DAC** | Write-only data registers pair naturally with ADC; exercises `WriteOnly` constraints. |

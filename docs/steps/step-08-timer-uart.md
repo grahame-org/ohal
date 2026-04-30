@@ -1,4 +1,4 @@
-# Step 7 – Additional Peripherals (Timer, UART)
+# Step 8 – Additional Peripherals (Timer, UART)
 
 **Goal:** Replicate the pattern from Steps 5–6 for Timer and UART peripherals on STM32U083.
 

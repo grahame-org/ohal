@@ -239,8 +239,8 @@ ohal/
 │       ├── step-04-mcu-selection.md
 │       ├── step-05-gpio-interface.md
 │       ├── step-06-stm32u0-gpio.md
-│       ├── step-07-timer-uart.md
-│       ├── step-08-pic18f4550-gpio.md   ← non-ARM concrete implementation
+│       ├── step-07-pic18f4550-gpio.md   ← non-ARM concrete implementation
+│       ├── step-08-timer-uart.md
 │       ├── step-09-unit-testing.md
 │       ├── step-10-ci.md
 │       ├── step-11-release-automation.md ← conventional commits, merge queue, release-please
@@ -292,7 +292,7 @@ ohal/
 │   └── pic/
 │       ├── family.hpp
 │       └── models/
-│           └── pic18f4550/              ← non-ARM concrete implementation (Step 8)
+│           └── pic18f4550/              ← non-ARM concrete implementation (Step 7)
 │               ├── gpio.hpp
 │               └── capabilities.hpp
 ├── ports/
@@ -339,9 +339,10 @@ graph LR
     S3 --> S4[4. MCU Selection]
     S4 --> S5[5. GPIO Interface]
     S5 --> S6[6. STM32U0 GPIO]
-    S6 --> S7[7. Timer / UART]
-    S7 --> S8[8. PIC18 GPIO]
-    S8 --> S9[9. Unit Tests]
+    S5 --> S7[7. PIC18 GPIO]
+    S6 --> S8[8. Timer / UART]
+    S6 --> S9[9. Unit Tests]
+    S7 --> S9
     S9 --> S10[10. CI]
     S10 --> S11[11. Release Automation]
     S11 --> S12[12. vcpkg]
@@ -350,6 +351,12 @@ graph LR
     S13 --> S14[14. More Peripherals]
     S12 --> S14
 ```
+
+Steps 7 and 8 can be worked in parallel (both depend on Step 5/6 respectively, not on each
+other), but Step 7 is numbered first to reflect the principle of proving cross-platform
+portability at the GPIO level *before* expanding the peripheral count on a single platform.
+If PIC18 GPIO reveals issues with the generic interface design, they can be corrected before
+Timer/UART is built, avoiding rework.
 
 Steps 11 and 12 (release automation and packaging) are deliberately placed *before* the
 expansion steps (13 and 14) so that:
@@ -368,8 +375,8 @@ expansion steps (13 and 14) so that:
 | 4 | [MCU Family/Model Selection](steps/step-04-mcu-selection.md) | First platform | Step 3 |
 | 5 | [GPIO Peripheral Interface](steps/step-05-gpio-interface.md) | First platform | Step 4 |
 | 6 | [STM32U0 GPIO Implementation](steps/step-06-stm32u0-gpio.md) | First platform | Step 5 |
-| 7 | [Timer and UART Peripherals](steps/step-07-timer-uart.md) | First platform | Step 6 |
-| 8 | [PIC18F4550 GPIO (non-ARM)](steps/step-08-pic18f4550-gpio.md) | Second platform | Step 5 |
+| 7 | [PIC18F4550 GPIO (non-ARM)](steps/step-07-pic18f4550-gpio.md) | Second platform | Step 5 |
+| 8 | [Timer and UART Peripherals](steps/step-08-timer-uart.md) | First platform | Step 6 |
 | 9 | [Host and Target Unit Testing](steps/step-09-unit-testing.md) | Validation | Steps 6–8 |
 | 10 | [CI / Continuous Integration](steps/step-10-ci.md) | Validation | Step 9 |
 | 11 | [Release Automation](steps/step-11-release-automation.md) | Release pipeline | Step 10 |
