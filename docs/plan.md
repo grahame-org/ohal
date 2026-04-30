@@ -74,7 +74,7 @@ Every abstraction layer in Steps 2–5 has a corresponding host-side test writte
 ```mermaid
 graph TD
     subgraph "Application Layer"
-        APP["main.cpp / middleware<br/>#lt;uses ohal::gpio etc.#gt;"]
+        APP["main.cpp / middleware<br/>&lt;uses ohal::gpio etc.&gt;"]
     end
 
     subgraph "Peripheral Interface Layer (ohal/include/ohal/)"
@@ -768,8 +768,12 @@ inline std::array<uint32_t, 64> mock_memory{};
 // Helper: reset mock memory between tests
 inline void reset_mock() { mock_memory.fill(0); }
 
-// Returns the uintptr_t address of slot N in mock_memory
-constexpr uintptr_t mock_addr(std::size_t slot) {
+// Returns the uintptr_t address of slot N in mock_memory.
+// Note: reinterpret_cast<uintptr_t> from a data pointer is implementation-defined
+// in C++17. This is acceptable for host-side test code where the goal is to redirect
+// register accesses into a plain memory array on a hosted implementation. When C++20
+// becomes available, std::bit_cast<uintptr_t> is the portable replacement.
+inline uintptr_t mock_addr(std::size_t slot) {
     return reinterpret_cast<uintptr_t>(mock_memory.data()) + slot * sizeof(uint32_t);
 }
 
