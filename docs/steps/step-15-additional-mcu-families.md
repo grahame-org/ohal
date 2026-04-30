@@ -1,16 +1,16 @@
-# Step 14 – Additional MCU Families and Models
+# Step 15 – Additional MCU Families and Models
 
 **Goal:** Systematically expand platform coverage by adding new MCU families and additional
-models within existing families, following the same pattern established in Steps 5, 7, and 9.
+models within existing families, following the same pattern established in Steps 6, 8, and 10.
 Each new family or model requires gathering hardware register information before any code is
 written.
 
-**Prerequisites:** [Step 12 (Release Automation)](step-12-release-automation.md) and
-[Step 13 (vcpkg)](step-13-vcpkg-package.md) must be in place so that each new family or model
+**Prerequisites:** [Step 13 (Release Automation)](step-13-release-automation.md) and
+[Step 14 (vcpkg)](step-14-vcpkg-package.md) must be in place so that each new family or model
 contribution is delivered via a conventional commit PR, passes the merge queue, and is included
 in the correct release.
 
-## 14.1 New MCU Families
+## 15.1 New MCU Families
 
 The table below lists candidate families, their architectures, and the GPIO register style.
 Families are listed in suggested implementation order: start with 32-bit families that use a
@@ -48,11 +48,11 @@ For each family, gather from the official datasheet or technical reference manua
 4. Add the family to `platform.hpp`'s `#if … #elif` chain.
 5. Update `platform.hpp`'s top-level `#error` message to list the new family flag.
 6. Add host unit tests with mock registers (`tests/host/test_gpio_<model>.cpp`).
-7. Add cross-compile CI job (see [Step 11](step-11-ci.md)).
+7. Add cross-compile CI job (see [Step 12](step-12-ci.md)).
 
 No changes to any file under `include/ohal/` are required.
 
-## 14.2 Additional Models Within Existing Families
+## 15.2 Additional Models Within Existing Families
 
 When adding a new model to an already-supported family (e.g. STM32U073 alongside STM32U083):
 
@@ -73,7 +73,7 @@ When adding a new model to an already-supported family (e.g. STM32U073 alongside
 | PIC | PIC18F4520, PIC18F2550 | Subset of PIC18F4550 port count; same PORT/LAT/TRIS layout |
 | TI_MSPM0 | MSPM0L1306 | Fewer GPIO ports than MSPM0G3507; same register layout |
 
-## 14.3 Cross-Platform Consistency Validation
+## 15.3 Cross-Platform Consistency Validation
 
 After each new family or model is added:
 
@@ -81,9 +81,9 @@ After each new family or model is added:
   build configuration to verify the generic API contract is unchanged.
 - Verify that calling an unsupported feature on the new model produces a `static_assert` with
   the correct error message prefix (`ohal:`).
-- Confirm the new cross-compile CI job passes (see [Step 11](step-11-ci.md)).
+- Confirm the new cross-compile CI job passes (see [Step 12](step-12-ci.md)).
 - The contribution PR title must follow the conventional commit convention
-  (see [Step 12](step-12-release-automation.md)), e.g.:
+  (see [Step 3](step-03-conventional-commits-merge-queue.md)), e.g.:
   ```
   feat(nrf5): add nRF52840 GPIO partial specialisations
   feat(stm32u0): add STM32U073 model support

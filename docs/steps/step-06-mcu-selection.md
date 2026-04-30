@@ -1,4 +1,4 @@
-# Step 5 – MCU Family and Model Selection Mechanism
+# Step 6 – MCU Family and Model Selection Mechanism
 
 **Goal:** A `platform.hpp` that validates the MCU defines and includes the correct platform header,
 and a skeleton for the first platform (STM32U0 / STM32U083).
@@ -77,7 +77,7 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
 #endif // OHAL_PLATFORMS_STM32U0_FAMILY_HPP
 ```
 
-## Tests to Write (Step 10)
+## Tests to Write (Step 11)
 
 - Compiling with no defines produces the "No MCU family defined" error.
 - Compiling with `OHAL_FAMILY_STM32U0` but no model produces the "No STM32U0 model defined"

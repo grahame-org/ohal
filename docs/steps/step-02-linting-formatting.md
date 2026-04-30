@@ -255,12 +255,12 @@ included in `lint.sh`. This separation exists because:
 ## 2.7 Dependency on Later Steps
 
 `lint.sh` and all configuration files (`.clang-format`, `.clang-tidy`, etc.) are established
-in this step so that every implementation step from Step 3 onward produces lint-compliant code
+in this step so that every implementation step from Step 4 onward produces lint-compliant code
 from the first commit. The CI workflows (`lint.yml`, `zizmor.yml`) are also created here; they
 become active as soon as the repository has workflows to run.
 
-- [Step 11 (CI)](step-11-ci.md): registers `lint` and `zizmor` as required status checks in
+- [Step 12 (CI)](step-12-ci.md): registers `lint` and `zizmor` as required status checks in
   the branch protection rule alongside the build and test jobs.
-- [Step 12 (Release Automation)](step-12-release-automation.md): adds `lint` and `zizmor` to
+- [Step 13 (Release Automation)](step-13-release-automation.md): adds `lint` and `zizmor` to
   the merge queue configuration so that formatting and security findings block merges with the
   same authority as build failures.
