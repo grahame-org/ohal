@@ -89,6 +89,7 @@ on-target test runner:
 
 The test CMake target `ohal_target_tests` links the test sources plus the real platform headers
 and the BSP startup files. It is built only when cross-compiling for a supported target:
+
 - ARM targets: `arm-none-eabi-g++` (STM32U083)
 - PIC18 targets: Microchip XC8 (PIC18F4550)
 
@@ -112,24 +113,24 @@ endfunction()
 
 Example negative-compile tests:
 
-| Test name | Source fragment | Expected error string |
-|---|---|---|
-| `write_to_readonly_field` | `IDR_field::write(Level::High)` | `cannot write to a read-only field` |
-| `read_from_writeonly_field` | `BSRR_SET_field::read()` | `cannot read from a write-only field` |
-| `overflow_bitfield` | `BitField<Reg, 30, 4, RW>` | `BitField (Offset + Width) exceeds register width` |
-| `no_family_defined` | compile with no defines | `No MCU family defined` |
-| `wrong_model_for_family` | `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_PIC18F4550` | `not in family STM32U0` |
-| `pic_unsupported_speed` | `Pin<PortA,2>::set_speed(Speed::High)` with PIC target | `does not support configurable output speed` |
-| `pic_unsupported_output_type` | `Pin<PortA,2>::set_output_type(OutputType::OpenDrain)` | `does not support configurable output type` |
+| Test name                     | Source fragment                                        | Expected error string                              |
+| ----------------------------- | ------------------------------------------------------ | -------------------------------------------------- |
+| `write_to_readonly_field`     | `IDR_field::write(Level::High)`                        | `cannot write to a read-only field`                |
+| `read_from_writeonly_field`   | `BSRR_SET_field::read()`                               | `cannot read from a write-only field`              |
+| `overflow_bitfield`           | `BitField<Reg, 30, 4, RW>`                             | `BitField (Offset + Width) exceeds register width` |
+| `no_family_defined`           | compile with no defines                                | `No MCU family defined`                            |
+| `wrong_model_for_family`      | `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_PIC18F4550`        | `not in family STM32U0`                            |
+| `pic_unsupported_speed`       | `Pin<PortA,2>::set_speed(Speed::High)` with PIC target | `does not support configurable output speed`       |
+| `pic_unsupported_output_type` | `Pin<PortA,2>::set_output_type(OutputType::OpenDrain)` | `does not support configurable output type`        |
 
 ## 11.4 Test Coverage Targets
 
-| Component | Test type | Coverage target |
-|---|---|---|
-| `Register<uint32_t>` | Host unit tests | 100% of all methods |
-| `Register<uint8_t>` | Host unit tests | 100% of all methods (for 8-bit platform coverage) |
-| `BitField<>` | Host unit tests | 100% of all methods + negative-compile tests for access violations |
-| `platform.hpp` | Negative-compile tests | All invalid define combinations |
-| `stm32u083/gpio.hpp` | Host unit tests with mock | All GPIO methods for at least pins 0 and 15 of at least PortA and PortB |
+| Component             | Test type                       | Coverage target                                                                                      |
+| --------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `Register<uint32_t>`  | Host unit tests                 | 100% of all methods                                                                                  |
+| `Register<uint8_t>`   | Host unit tests                 | 100% of all methods (for 8-bit platform coverage)                                                    |
+| `BitField<>`          | Host unit tests                 | 100% of all methods + negative-compile tests for access violations                                   |
+| `platform.hpp`        | Negative-compile tests          | All invalid define combinations                                                                      |
+| `stm32u083/gpio.hpp`  | Host unit tests with mock       | All GPIO methods for at least pins 0 and 15 of at least PortA and PortB                              |
 | `pic18f4550/gpio.hpp` | Host unit tests with 8-bit mock | All GPIO methods for at least pins 0 and 5 of PortA; unsupported features via negative-compile tests |
-| Consumer API | Host integration test | Typical GPIO init + toggle sequence |
+| Consumer API          | Host integration test           | Typical GPIO init + toggle sequence                                                                  |

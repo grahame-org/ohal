@@ -1,0 +1,39 @@
+---
+# .github/workflows/zizmor.yml
+name: zizmor
+
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # required to upload SARIF to Code Scanning
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install zizmor
+        run: pip3 install zizmor
+
+      - name: Run zizmor (pedantic)
+        run: zizmor --pedantic --format sarif . > zizmor-results.sarif
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a # v3
+        if: always()
+        with:
+          sarif_file: zizmor-results.sarif
+          category: zizmor

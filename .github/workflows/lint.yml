@@ -1,0 +1,33 @@
+---
+# .github/workflows/lint.yml
+name: Lint
+
+on:
+  pull_request:
+  merge_group:
+
+permissions: {}
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y clang-format clang-tidy cmake shellcheck
+          pip3 install cmakelang yamllint
+          npm install -g markdownlint-cli2 prettier
+
+      - name: Run lint.sh
+        run: bash lint.sh

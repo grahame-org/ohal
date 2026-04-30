@@ -31,6 +31,7 @@ version pinning, patch management, and IDE integration.
 ```
 
 Notes:
+
 - `dependencies` is empty because OHAL itself has no runtime dependencies.
 - `supports` can be relaxed once host-only builds on Windows/macOS are validated.
 - The `version` field is automatically bumped by `release-please` together with
@@ -161,9 +162,7 @@ target_compile_features(blink_pic18 PRIVATE cxx_std_17)
 
 ```json
 {
-  "dependencies": [
-    { "name": "ohal", "version>=": "0.1.0" }
-  ]
+  "dependencies": [{ "name": "ohal", "version>=": "0.1.0" }]
 }
 ```
 

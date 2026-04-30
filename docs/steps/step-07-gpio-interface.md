@@ -16,7 +16,7 @@ reference to register addresses.
   platform-specific header. If no specialisation exists, the primary template fires a
   `static_assert`:
 
-  ```
+  ```text
   ohal: gpio::Pin is not implemented for the selected MCU.
   ```
 

@@ -30,16 +30,16 @@ Each peripheral follows the same three-layer pattern:
 
 Implement peripherals in this order to maximise reuse and minimise surprise:
 
-| Order | Peripheral | Reason |
-|---|---|---|
-| 1 | **Clocks** | Prerequisite knowledge: GPIO clocks must be enabled before registers are accessible. Documenting the clock-enable pattern once means all subsequent peripheral steps can reference it. |
-| 2 | **SPI** | Natural extension of the UART pattern already in Step 10; register layout is similar. |
-| 3 | **I2C** | Independent and widely used; distinct enough register layout to exercise the abstraction further. |
-| 4 | **ADC** | Read-only `DR` register exercises `ReadOnly` `BitField` constraints; introduces conversion trigger concept. |
-| 5 | **DAC** | Write-only data registers pair naturally with ADC; exercises `WriteOnly` constraints. |
-| 6 | **DMA** | Cross-cutting; implement after source peripherals (SPI, UART, ADC, DAC) are in place so DMA request mappings can be described in context. |
-| 7 | **Power / Sleep** | Naturally last functional peripheral: putting the MCU to sleep is only safe once all other peripherals are tested. |
-| 8 | **MPU** | Security-adjacent; implement after all other peripherals are stable. Architecture-level registers (fixed Cortex-M address) rather than bus-mapped peripheral. |
+| Order | Peripheral        | Reason                                                                                                                                                                                 |
+| ----- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | **Clocks**        | Prerequisite knowledge: GPIO clocks must be enabled before registers are accessible. Documenting the clock-enable pattern once means all subsequent peripheral steps can reference it. |
+| 2     | **SPI**           | Natural extension of the UART pattern already in Step 10; register layout is similar.                                                                                                  |
+| 3     | **I2C**           | Independent and widely used; distinct enough register layout to exercise the abstraction further.                                                                                      |
+| 4     | **ADC**           | Read-only `DR` register exercises `ReadOnly` `BitField` constraints; introduces conversion trigger concept.                                                                            |
+| 5     | **DAC**           | Write-only data registers pair naturally with ADC; exercises `WriteOnly` constraints.                                                                                                  |
+| 6     | **DMA**           | Cross-cutting; implement after source peripherals (SPI, UART, ADC, DAC) are in place so DMA request mappings can be described in context.                                              |
+| 7     | **Power / Sleep** | Naturally last functional peripheral: putting the MCU to sleep is only safe once all other peripherals are tested.                                                                     |
+| 8     | **MPU**           | Security-adjacent; implement after all other peripherals are stable. Architecture-level registers (fixed Cortex-M address) rather than bus-mapped peripheral.                          |
 
 ---
 
@@ -55,12 +55,12 @@ without runtime overhead.
 
 - RCC base address: `0x40021000`
 - Relevant registers (from RM0503):
-  - `CR`       `0x00` — clock control register (HSION, HSEON, PLLON, etc.)
-  - `CFGR1`    `0x1C` — clock configuration register 1 (SW, SWS, HPRE, PPRE)
-  - `AHBENR`   `0x48` — AHB peripheral clock enable register
-  - `APBENR1`  `0x4C` — APB1 peripheral clock enable register
-  - `APBENR2`  `0x50` — APB2 peripheral clock enable register
-  - `AHBRSTR`  `0x58` — AHB peripheral reset register
+  - `CR` `0x00` — clock control register (HSION, HSEON, PLLON, etc.)
+  - `CFGR1` `0x1C` — clock configuration register 1 (SW, SWS, HPRE, PPRE)
+  - `AHBENR` `0x48` — AHB peripheral clock enable register
+  - `APBENR1` `0x4C` — APB1 peripheral clock enable register
+  - `APBENR2` `0x50` — APB2 peripheral clock enable register
+  - `AHBRSTR` `0x58` — AHB peripheral reset register
   - `APBRSTR1` `0x5C` — APB1 peripheral reset register
   - `APBRSTR2` `0x60` — APB2 peripheral reset register
 
@@ -100,11 +100,11 @@ Pin<PortA, 5>::set_mode(PinMode::Output);
 
 - SPI1 base address: `0x40013000`
 - Relevant registers (from RM0503):
-  - `CR1`    `0x00` — control register 1 (mode, baud rate, CPOL, CPHA)
-  - `CR2`    `0x04` — control register 2 (data size, frame format, DMA enable)
-  - `SR`     `0x08` — status register (RO: TXE, RXNE, BSY, OVR)
-  - `DR`     `0x0C` — data register (RW: write = transmit, read = receive)
-  - `CRCPR`  `0x10` — CRC polynomial register
+  - `CR1` `0x00` — control register 1 (mode, baud rate, CPOL, CPHA)
+  - `CR2` `0x04` — control register 2 (data size, frame format, DMA enable)
+  - `SR` `0x08` — status register (RO: TXE, RXNE, BSY, OVR)
+  - `DR` `0x0C` — data register (RW: write = transmit, read = receive)
+  - `CRCPR` `0x10` — CRC polynomial register
   - `RXCRCR` `0x14` — RX CRC register (RO)
   - `TXCRCR` `0x18` — TX CRC register (RO)
 
@@ -143,13 +143,13 @@ struct Port {
 
 - I2C1 base address: `0x40005400`
 - Relevant registers (from RM0503):
-  - `CR1`     `0x00` — control register 1 (PE, NOSTRETCH, ANFOFF, DNF)
-  - `CR2`     `0x04` — control register 2 (address, direction, byte count, START/STOP)
+  - `CR1` `0x00` — control register 1 (PE, NOSTRETCH, ANFOFF, DNF)
+  - `CR2` `0x04` — control register 2 (address, direction, byte count, START/STOP)
   - `TIMINGR` `0x10` — timing register
-  - `ISR`     `0x18` — interrupt and status register (RO)
-  - `ICR`     `0x1C` — interrupt clear register (WO)
-  - `RXDR`    `0x24` — receive data register (RO)
-  - `TXDR`    `0x28` — transmit data register (WO)
+  - `ISR` `0x18` — interrupt and status register (RO)
+  - `ICR` `0x1C` — interrupt clear register (WO)
+  - `RXDR` `0x24` — receive data register (RO)
+  - `TXDR` `0x28` — transmit data register (WO)
 
 ### Generic Interface Sketch
 
@@ -178,12 +178,12 @@ struct Controller {
 
 - ADC1 base address: `0x42028000`
 - Relevant registers (from RM0503):
-  - `ISR`    `0x00` — interrupt and status register
-  - `CR`     `0x08` — control register (ADSTART, ADSTP, ADCAL, ADEN, ADDIS)
-  - `CFGR1`  `0x0C` — configuration register 1 (resolution, alignment, scan direction)
-  - `SMPR`   `0x14` — sampling time register
+  - `ISR` `0x00` — interrupt and status register
+  - `CR` `0x08` — control register (ADSTART, ADSTP, ADCAL, ADEN, ADDIS)
+  - `CFGR1` `0x0C` — configuration register 1 (resolution, alignment, scan direction)
+  - `SMPR` `0x14` — sampling time register
   - `CHSELR` `0x28` — channel selection register
-  - `DR`     `0x40` — data register (RO)
+  - `DR` `0x40` — data register (RO)
 
 ### Generic Interface Sketch
 
@@ -213,12 +213,12 @@ struct Converter {
 
 - DAC1 base address: `0x40007400`
 - Relevant registers (from RM0503):
-  - `CR`      `0x00` — control register (EN1/EN2, TEN, TSEL, WAVE, MAMP, DMAEN)
+  - `CR` `0x00` — control register (EN1/EN2, TEN, TSEL, WAVE, MAMP, DMAEN)
   - `SWTRIGR` `0x04` — software trigger register (WO)
   - `DHR12R1` `0x08` — channel 1 12-bit right-aligned data register
   - `DHR12L1` `0x0C` — channel 1 12-bit left-aligned data register
-  - `DHR8R1`  `0x10` — channel 1 8-bit data register
-  - `DOR1`    `0x2C` — channel 1 output data register (RO)
+  - `DHR8R1` `0x10` — channel 1 8-bit data register
+  - `DOR1` `0x2C` — channel 1 output data register (RO)
 
 ### Generic Interface Sketch
 
@@ -256,13 +256,13 @@ allocation.
   `DMAMUX_CxCR`) so the intended peripheral request (such as SPI1_TX/SPI1_RX, I2C, ADC, UART)
   is connected to that DMA channel.
 - Per-channel registers (channel N at `base + 0x08 + (N-1)*0x14`):
-  - `CCR`   `0x00` — channel configuration register (EN, DIR, CIRC, MINC, MSIZE, PSIZE, PL)
+  - `CCR` `0x00` — channel configuration register (EN, DIR, CIRC, MINC, MSIZE, PSIZE, PL)
   - `CNDTR` `0x04` — number of data to transfer register
-  - `CPAR`  `0x08` — peripheral address register
-  - `CMAR`  `0x0C` — memory address register
+  - `CPAR` `0x08` — peripheral address register
+  - `CMAR` `0x0C` — memory address register
 - Status registers at DMA1 base:
-  - `ISR`   `0x00` — interrupt status register (RO)
-  - `IFCR`  `0x04` — interrupt flag clear register (WO)
+  - `ISR` `0x00` — interrupt status register (RO)
+  - `IFCR` `0x04` — interrupt flag clear register (WO)
 
 ### Generic Interface Sketch
 
@@ -342,13 +342,13 @@ normal peripheral bus address space. PIC18 and AVR MCUs do not have an MPU; use
 
 ### Register Map (ARM architecture — common to all Cortex-M cores with MPU)
 
-| Register | Address | Description |
-|---|---|---|
-| `TYPE`  | `0xE000ED90` | MPU Type Register (RO: number of regions) |
-| `CTRL`  | `0xE000ED94` | MPU Control Register (ENABLE, HFNMIENA, PRIVDEFENA) |
-| `RNR`   | `0xE000ED98` | MPU Region Number Register |
-| `RBAR`  | `0xE000ED9C` | MPU Region Base Address Register |
-| `RASR`  | `0xE000EDA0` | MPU Region Attribute and Size Register |
+| Register | Address      | Description                                         |
+| -------- | ------------ | --------------------------------------------------- |
+| `TYPE`   | `0xE000ED90` | MPU Type Register (RO: number of regions)           |
+| `CTRL`   | `0xE000ED94` | MPU Control Register (ENABLE, HFNMIENA, PRIVDEFENA) |
+| `RNR`    | `0xE000ED98` | MPU Region Number Register                          |
+| `RBAR`   | `0xE000ED9C` | MPU Region Base Address Register                    |
+| `RASR`   | `0xE000EDA0` | MPU Region Attribute and Size Register              |
 
 ### Generic Interface Sketch
 
