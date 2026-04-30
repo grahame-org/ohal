@@ -1,8 +1,8 @@
-# Step 2 – Core Register Abstraction Layer
+# Step 3 – Core Register Abstraction Layer
 
 **Goal:** A header-only `Register<Addr, T>` type that models a single hardware register.
 
-**Inputs required:** None — addresses are supplied by the platform layer (Step 4 onward).
+**Inputs required:** None — addresses are supplied by the platform layer (Step 5 onward).
 
 ## Key Design Decisions
 
@@ -53,7 +53,7 @@ struct Register {
 #endif // OHAL_CORE_REGISTER_HPP
 ```
 
-## Tests to Write (host, Step 9)
+## Tests to Write (host, Step 10)
 
 - `Register::write` stores the value at the correct address (use mock memory array as the
   "register").

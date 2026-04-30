@@ -1,4 +1,4 @@
-# Step 7 – First Non-ARM Platform: Microchip PIC18F4550 GPIO
+# Step 8 – First Non-ARM Platform: Microchip PIC18F4550 GPIO
 
 **Goal:** Implement GPIO for a non-ARM MCU to prove the architecture delivers true cross-platform
 consistency. The PIC18F4550 uses an 8-bit non-ARM Harvard RISC core, 8-bit Special Function

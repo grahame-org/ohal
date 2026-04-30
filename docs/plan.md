@@ -225,28 +225,31 @@ flowchart TD
 ohal/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml                       ← host build, cross-compile, static analysis
-│       ├── conventional-commits.yml     ← PR title validation (Step 11)
-│       └── release-please.yml           ← automated versioning and changelog (Step 11)
+│       ├── ci.yml                       ← host build, cross-compile, static analysis (Step 11)
+│       ├── lint.yml                     ← single lint job that calls lint.sh (Step 2)
+│       ├── zizmor.yml                   ← GitHub Actions security audit, pedantic mode (Step 2)
+│       ├── conventional-commits.yml     ← PR title validation (Step 12)
+│       └── release-please.yml           ← automated versioning and changelog (Step 12)
 ├── cmake/
-│   └── ohal-config.cmake.in             ← CMake package config template (Step 12)
+│   └── ohal-config.cmake.in             ← CMake package config template (Step 13)
 ├── docs/
 │   ├── plan.md                          ← this index document
 │   └── steps/
 │       ├── step-01-build-infrastructure.md
-│       ├── step-02-register-abstraction.md
-│       ├── step-03-bitfield-access-control.md
-│       ├── step-04-mcu-selection.md
-│       ├── step-05-gpio-interface.md
-│       ├── step-06-stm32u0-gpio.md
-│       ├── step-07-pic18f4550-gpio.md   ← non-ARM concrete implementation
-│       ├── step-08-timer-uart.md
-│       ├── step-09-unit-testing.md
-│       ├── step-10-ci.md
-│       ├── step-11-release-automation.md ← conventional commits, merge queue, release-please
-│       ├── step-12-vcpkg-package.md
-│       ├── step-13-additional-mcu-families.md
-│       └── step-14-additional-peripherals.md
+│       ├── step-02-linting-formatting.md ← lint.sh, .clang-format, .clang-tidy, lint.yml, zizmor.yml
+│       ├── step-03-register-abstraction.md
+│       ├── step-04-bitfield-access-control.md
+│       ├── step-05-mcu-selection.md
+│       ├── step-06-gpio-interface.md
+│       ├── step-07-stm32u0-gpio.md
+│       ├── step-08-pic18f4550-gpio.md   ← non-ARM concrete implementation
+│       ├── step-09-timer-uart.md
+│       ├── step-10-unit-testing.md
+│       ├── step-11-ci.md
+│       ├── step-12-release-automation.md ← conventional commits, merge queue, release-please
+│       ├── step-13-vcpkg-package.md
+│       ├── step-14-additional-mcu-families.md
+│       └── step-15-additional-peripherals.md
 ├── include/
 │   └── ohal/
 │       ├── ohal.hpp                     ← single top-level include for consumers
@@ -259,14 +262,14 @@ ohal/
 │       ├── gpio.hpp                     ← ohal::gpio peripheral interface
 │       ├── timer.hpp                    ← ohal::timer peripheral interface
 │       ├── uart.hpp                     ← ohal::uart peripheral interface
-│       ├── spi.hpp                      ← ohal::spi peripheral interface (Step 14)
-│       ├── i2c.hpp                      ← ohal::i2c peripheral interface (Step 14)
-│       ├── adc.hpp                      ← ohal::adc peripheral interface (Step 14)
-│       ├── dac.hpp                      ← ohal::dac peripheral interface (Step 14)
-│       ├── dma.hpp                      ← ohal::dma peripheral interface (Step 14)
-│       ├── clock.hpp                    ← ohal::clock peripheral interface (Step 14)
-│       ├── power.hpp                    ← ohal::power peripheral interface (Step 14)
-│       └── mpu.hpp                      ← ohal::mpu peripheral interface (Step 14)
+│       ├── spi.hpp                      ← ohal::spi peripheral interface (Step 15)
+│       ├── i2c.hpp                      ← ohal::i2c peripheral interface (Step 15)
+│       ├── adc.hpp                      ← ohal::adc peripheral interface (Step 15)
+│       ├── dac.hpp                      ← ohal::dac peripheral interface (Step 15)
+│       ├── dma.hpp                      ← ohal::dma peripheral interface (Step 15)
+│       ├── clock.hpp                    ← ohal::clock peripheral interface (Step 15)
+│       ├── power.hpp                    ← ohal::power peripheral interface (Step 15)
+│       └── mpu.hpp                      ← ohal::mpu peripheral interface (Step 15)
 ├── platforms/
 │   ├── stm32u0/
 │   │   ├── family.hpp                   ← STM32U0 family header (validates model)
@@ -275,15 +278,15 @@ ohal/
 │   │           ├── gpio.hpp             ← STM32U083 GPIO register map
 │   │           ├── timer.hpp            ← STM32U083 Timer register map
 │   │           ├── uart.hpp             ← STM32U083 UART/USART register map
-│   │           ├── spi.hpp              ← STM32U083 SPI register map (Step 14)
-│   │           ├── i2c.hpp              ← STM32U083 I2C register map (Step 14)
-│   │           ├── adc.hpp              ← STM32U083 ADC register map (Step 14)
-│   │           ├── dac.hpp              ← STM32U083 DAC register map (Step 14)
-│   │           ├── dma.hpp              ← STM32U083 DMA register map (Step 14)
-│   │           ├── clock.hpp            ← STM32U083 RCC register map (Step 14)
-│   │           ├── power.hpp            ← STM32U083 PWR register map (Step 14)
+│   │           ├── spi.hpp              ← STM32U083 SPI register map (Step 15)
+│   │           ├── i2c.hpp              ← STM32U083 I2C register map (Step 15)
+│   │           ├── adc.hpp              ← STM32U083 ADC register map (Step 15)
+│   │           ├── dac.hpp              ← STM32U083 DAC register map (Step 15)
+│   │           ├── dma.hpp              ← STM32U083 DMA register map (Step 15)
+│   │           ├── clock.hpp            ← STM32U083 RCC register map (Step 15)
+│   │           ├── power.hpp            ← STM32U083 PWR register map (Step 15)
 │   │           └── capabilities.hpp     ← STM32U083 peripheral capability traits
-│   ├── ti_mspm0/                        ← added in Step 13
+│   ├── ti_mspm0/                        ← added in Step 14
 │   │   ├── family.hpp
 │   │   └── models/
 │   │       └── mspm0g3507/
@@ -292,11 +295,11 @@ ohal/
 │   └── pic/
 │       ├── family.hpp
 │       └── models/
-│           └── pic18f4550/              ← non-ARM concrete implementation (Step 7)
+│           └── pic18f4550/              ← non-ARM concrete implementation (Step 8)
 │               ├── gpio.hpp
 │               └── capabilities.hpp
 ├── ports/
-│   └── ohal/                            ← vcpkg overlay port (Step 12)
+│   └── ohal/                            ← vcpkg overlay port (Step 13)
 │       ├── portfile.cmake
 │       └── vcpkg.json
 ├── tests/
@@ -307,7 +310,7 @@ ohal/
 │   │   ├── test_gpio_pic18f4550.cpp     ← PIC18F4550 GPIO tests with 8-bit mock registers
 │   │   └── mock/
 │   │       └── mock_register.hpp        ← in-memory mock of volatile register access
-│   ├── integration/                     ← vcpkg find_package integration test (Step 12)
+│   ├── integration/                     ← vcpkg find_package integration test (Step 13)
 │   │   ├── CMakeLists.txt
 │   │   ├── vcpkg.json
 │   │   ├── blink_stm32.cpp
@@ -318,10 +321,15 @@ ohal/
 │       └── pic18f4550/
 │           └── test_gpio_pic18f4550.cpp
 ├── CMakeLists.txt
-├── release-please-config.json           ← release-please configuration (Step 11)
-├── .release-please-manifest.json        ← current version tracking (Step 11)
-├── vcpkg.json                           ← vcpkg manifest for consumers (Step 12)
-├── CHANGELOG.md                         ← generated by release-please (Step 11)
+├── lint.sh                              ← single entry-point for all linting (Step 2)
+├── .clang-format                        ← C++ formatting rules (Step 2)
+├── .clang-tidy                          ← C++ static-analysis checks (Step 2)
+├── .yamllint.yml                        ← YAML linting rules (Step 2)
+├── .markdownlint.json                   ← Markdown linting rules (Step 2)
+├── release-please-config.json           ← release-please configuration (Step 12)
+├── .release-please-manifest.json        ← current version tracking (Step 12)
+├── vcpkg.json                           ← vcpkg manifest for consumers (Step 13)
+├── CHANGELOG.md                         ← generated by release-please (Step 12)
 └── README.md
 ```
 
@@ -334,55 +342,62 @@ prerequisites are completed before it begins.
 
 ```mermaid
 graph LR
-    S1[1. Build Infra] --> S2[2. Register]
-    S2 --> S3[3. BitField]
-    S3 --> S4[4. MCU Selection]
-    S4 --> S5[5. GPIO Interface]
-    S5 --> S6[6. STM32U0 GPIO]
-    S5 --> S7[7. PIC18 GPIO]
-    S6 --> S8[8. Timer / UART]
-    S6 --> S9[9. Unit Tests]
-    S7 --> S9
-    S9 --> S10[10. CI]
-    S10 --> S11[11. Release Automation]
-    S11 --> S12[12. vcpkg]
-    S11 --> S13[13. More MCUs]
-    S12 --> S13
-    S13 --> S14[14. More Peripherals]
-    S12 --> S14
+    S1[1. Build Infra] --> S2[2. Lint/Format]
+    S2 --> S3[3. Register]
+    S3 --> S4[4. BitField]
+    S4 --> S5[5. MCU Selection]
+    S5 --> S6[6. GPIO Interface]
+    S6 --> S7[7. STM32U0 GPIO]
+    S6 --> S8[8. PIC18 GPIO]
+    S7 --> S9[9. Timer / UART]
+    S7 --> S10[10. Unit Tests]
+    S8 --> S10
+    S10 --> S11[11. CI]
+    S11 --> S12[12. Release Automation]
+    S12 --> S13[13. vcpkg]
+    S12 --> S14[14. More MCUs]
+    S13 --> S14
+    S14 --> S15[15. More Peripherals]
+    S13 --> S15
 ```
 
-Steps 7 and 8 can be worked in parallel (both depend on Step 5/6 respectively, not on each
-other), but Step 7 is numbered first to reflect the principle of proving cross-platform
-portability at the GPIO level *before* expanding the peripheral count on a single platform.
-If PIC18 GPIO reveals issues with the generic interface design, they can be corrected before
-Timer/UART is built, avoiding rework.
+Step 2 (Linting and Formatting) is placed immediately after Build Infrastructure so that every
+line of code written from Step 3 onward is lint-compliant on the first attempt. This eliminates
+the need to retroactively reformat or fix static-analysis warnings across multiple
+implementation steps.
 
-Steps 11 and 12 (release automation and packaging) are deliberately placed *before* the
-expansion steps (13 and 14) so that:
+Steps 7 and 8 can be worked in parallel (both depend on Step 6, not on each other), but Step 7
+is numbered first to reflect the principle of proving cross-platform portability at the GPIO
+level *before* expanding the peripheral count on a single platform. If PIC18 GPIO reveals
+issues with the generic interface design, they can be corrected before Timer/UART is built,
+avoiding rework.
+
+Steps 12 and 13 (release automation and packaging) are deliberately placed *before* the
+expansion steps (14 and 15) so that:
 
 - Conventional commits and the merge queue are enforced on every new MCU / peripheral PR.
 - `release-please` is already configured to bump `vcpkg.json` versions before anyone starts
   consuming the package from new releases.
-- Contributors adding new families (Step 13) or new peripherals (Step 14) can immediately open
+- Contributors adding new families (Step 14) or new peripherals (Step 15) can immediately open
   PRs that flow through the full release pipeline.
 
 | Step | File | Phase | Key Prerequisite |
 |------|------|-------|------------------|
 | 1 | [Build Infrastructure](steps/step-01-build-infrastructure.md) | Core | None |
-| 2 | [Core Register Abstraction](steps/step-02-register-abstraction.md) | Core | Step 1 |
-| 3 | [BitField and Access Control](steps/step-03-bitfield-access-control.md) | Core | Step 2 |
-| 4 | [MCU Family/Model Selection](steps/step-04-mcu-selection.md) | First platform | Step 3 |
-| 5 | [GPIO Peripheral Interface](steps/step-05-gpio-interface.md) | First platform | Step 4 |
-| 6 | [STM32U0 GPIO Implementation](steps/step-06-stm32u0-gpio.md) | First platform | Step 5 |
-| 7 | [PIC18F4550 GPIO (non-ARM)](steps/step-07-pic18f4550-gpio.md) | Second platform | Step 5 |
-| 8 | [Timer and UART Peripherals](steps/step-08-timer-uart.md) | First platform | Step 6 |
-| 9 | [Host and Target Unit Testing](steps/step-09-unit-testing.md) | Validation | Steps 6–8 |
-| 10 | [CI / Continuous Integration](steps/step-10-ci.md) | Validation | Step 9 |
-| 11 | [Release Automation](steps/step-11-release-automation.md) | Release pipeline | Step 10 |
-| 12 | [vcpkg Package](steps/step-12-vcpkg-package.md) | Release pipeline | Step 11 |
-| 13 | [Additional MCU Families and Models](steps/step-13-additional-mcu-families.md) | Expansion | Steps 11–12 |
-| 14 | [Additional Peripherals](steps/step-14-additional-peripherals.md) | Expansion | Steps 11–13 |
+| 2 | [Linting and Formatting](steps/step-02-linting-formatting.md) | Core | Step 1 |
+| 3 | [Core Register Abstraction](steps/step-03-register-abstraction.md) | Core | Step 2 |
+| 4 | [BitField and Access Control](steps/step-04-bitfield-access-control.md) | Core | Step 3 |
+| 5 | [MCU Family/Model Selection](steps/step-05-mcu-selection.md) | First platform | Step 4 |
+| 6 | [GPIO Peripheral Interface](steps/step-06-gpio-interface.md) | First platform | Step 5 |
+| 7 | [STM32U0 GPIO Implementation](steps/step-07-stm32u0-gpio.md) | First platform | Step 6 |
+| 8 | [PIC18F4550 GPIO (non-ARM)](steps/step-08-pic18f4550-gpio.md) | Second platform | Step 6 |
+| 9 | [Timer and UART Peripherals](steps/step-09-timer-uart.md) | First platform | Step 7 |
+| 10 | [Host and Target Unit Testing](steps/step-10-unit-testing.md) | Validation | Steps 7–9 |
+| 11 | [CI / Continuous Integration](steps/step-11-ci.md) | Validation | Step 10 |
+| 12 | [Release Automation](steps/step-12-release-automation.md) | Release pipeline | Step 11 |
+| 13 | [vcpkg Package](steps/step-13-vcpkg-package.md) | Release pipeline | Step 12 |
+| 14 | [Additional MCU Families and Models](steps/step-14-additional-mcu-families.md) | Expansion | Steps 12–13 |
+| 15 | [Additional Peripherals](steps/step-15-additional-peripherals.md) | Expansion | Steps 12–14 |
 
 ---
 
@@ -580,7 +595,7 @@ graph TD
     PLAT2 --> MOCK2
 ```
 
-See [Step 9](steps/step-09-unit-testing.md) for the full mock infrastructure, target testing
+See [Step 10](steps/step-10-unit-testing.md) for the full mock infrastructure, target testing
 approach, negative-compile test helper, and coverage targets.
 
 ---
@@ -739,12 +754,12 @@ int main() {
 
 | Topic | Question / Action |
 |---|---|
-| Clock enabling enforcement | `clock::Enable<>` is designed in [Step 14](steps/step-14-additional-peripherals.md) and enables peripheral bus clocks. The open question is whether OHAL should enforce at compile time that `clock::Enable<P>::enable()` has been called before any register in peripheral `P` is accessed — e.g. via a wrapper type or tag parameter. |
+| Clock enabling enforcement | `clock::Enable<>` is designed in [Step 15](steps/step-15-additional-peripherals.md) and enables peripheral bus clocks. The open question is whether OHAL should enforce at compile time that `clock::Enable<P>::enable()` has been called before any register in peripheral `P` is accessed — e.g. via a wrapper type or tag parameter. |
 | Alternate Function mapping | Setting AF mode requires knowing which AF number maps to which peripheral on each pin. Needs a per-model AF map table (constexpr array or template traits). |
 | Interrupt / EXTI | GPIO interrupt configuration involves EXTI registers outside the GPIO block. Needs a separate `ohal::exti` abstraction. |
 | Atomic register access | On multi-core MCUs (e.g., STM32H7 dual-core) register access may need memory barriers or hardware semaphores. The `Register<>` template could be extended with an `Ordering` template parameter. |
 | C++20 concepts | Once C++20 is permitted, `requires` clauses can replace `static_assert` chains for cleaner error messages. |
 | PIC18 PORTB weak pull-ups | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction. |
-| DMA runtime memory addresses | DMA is the one deliberate exception to the zero-runtime-data principle (see [Step 14](steps/step-14-additional-peripherals.md)). The design decision (NTTP peripheral address, runtime buffer pointer) should be reviewed once DMA is implemented. |
-| TI MSP-M0 | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (Step 13). |
+| DMA runtime memory addresses | DMA is the one deliberate exception to the zero-runtime-data principle (see [Step 15](steps/step-15-additional-peripherals.md)). The design decision (NTTP peripheral address, runtime buffer pointer) should be reviewed once DMA is implemented. |
+| TI MSP-M0 | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (Step 14). |
 | Code size tracking | A CI job should build a minimal blink example for each supported target and check that the resulting binary size does not regress. This guards the zero-overhead guarantee. |

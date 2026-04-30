@@ -1,4 +1,4 @@
-# Step 3 – Bit Field and Access-Control Abstractions
+# Step 4 – Bit Field and Access-Control Abstractions
 
 **Goal:** `BitField<Reg, Offset, Width, Access>` — a compile-time descriptor for a field within a
 register, with enforced read/write access control.
@@ -88,7 +88,7 @@ enum class Access : uint8_t {
 #endif // OHAL_CORE_ACCESS_HPP
 ```
 
-## Tests to Write (host, Step 9)
+## Tests to Write (host, Step 10)
 
 - Writing to a `ReadWrite` field updates only the correct bits.
 - Reading from a `ReadWrite` field returns the correct extracted value.

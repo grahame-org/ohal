@@ -1,7 +1,7 @@
-# Step 11 – Release Automation
+# Step 12 – Release Automation
 
 **Goal:** Establish the release management, commit message, and merge workflow processes
-*before* the platform and peripheral expansion work begins (Steps 13 and 14). Having these
+*before* the platform and peripheral expansion work begins (Steps 14 and 15). Having these
 processes in place ensures that every contributor — whether adding a new MCU family or a new
 peripheral — automatically produces a well-structured history, correct changelogs, and correctly
 versioned releases.
@@ -47,7 +47,7 @@ feat(stm32u0): add SPI1 register map and BitField specialisations
 
 fix(core): correct mask calculation for Width=1 BitField at Offset=31
 
-docs(plan): add step-14 additional peripherals
+docs(plan): add step-15 additional peripherals
 
 ci: add nRF5 cross-compile job
 ```
@@ -99,7 +99,7 @@ In **Settings → General → Pull Requests**:
 ### Branch Protection Rule for `main`
 
 In **Settings → Branches → main**:
-- Require status checks to pass before merging (select all CI jobs from Step 10).
+- Require status checks to pass before merging (select all CI jobs from Step 11).
 - Require merge queue.
 - Do not allow bypassing the above settings.
 
@@ -185,10 +185,10 @@ jobs:
 
 ## 11.4 Logical Dependency on Later Steps
 
-- [Step 12 (vcpkg)](step-12-vcpkg-package.md) depends on this step: `release-please` must be
+- [Step 13 (vcpkg)](step-13-vcpkg-package.md) depends on this step: `release-please` must be
   configured before `vcpkg.json` is published, because the version field is bumped by
   `release-please` automatically.
-- [Step 13 (Additional MCU Families)](step-13-additional-mcu-families.md) and
-  [Step 14 (Additional Peripherals)](step-14-additional-peripherals.md) both generate
+- [Step 14 (Additional MCU Families)](step-14-additional-mcu-families.md) and
+  [Step 15 (Additional Peripherals)](step-15-additional-peripherals.md) both generate
   `feat(...)` commits; having conventional commit enforcement in place before those PRs are
   raised ensures the changelog and release notes are meaningful from the start.

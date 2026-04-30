@@ -1,4 +1,4 @@
-# Step 5 – Peripheral Abstraction Interface (GPIO first)
+# Step 6 – Peripheral Abstraction Interface (GPIO first)
 
 **Goal:** A generic `ohal::gpio::Pin<Port, PinNum>` that provides the full GPIO API without any
 reference to register addresses.

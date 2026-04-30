@@ -1,4 +1,4 @@
-# Step 9 – Host and Target Unit Testing
+# Step 10 – Host and Target Unit Testing
 
 **Goal:** A complete, runnable test suite on the development host, and a framework for on-target
 testing.

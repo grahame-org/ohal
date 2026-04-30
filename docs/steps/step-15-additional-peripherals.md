@@ -1,12 +1,12 @@
-# Step 14 – Additional Peripherals
+# Step 15 – Additional Peripherals
 
 **Goal:** Extend OHAL beyond GPIO, Timer, and UART by implementing SPI, I2C, ADC, DAC, DMA,
 Power/sleep modes, Clocks, and MPU peripherals, following the same pattern established in
-Steps 5–7.
+Steps 6–8.
 
-**Prerequisites:** [Step 11 (Release Automation)](step-11-release-automation.md) must be in
-place so that each new peripheral lands via a conventional commit. [Step 13 (Additional MCU
-Families)](step-13-additional-mcu-families.md) should be progressed in parallel: the more MCU
+**Prerequisites:** [Step 12 (Release Automation)](step-12-release-automation.md) must be in
+place so that each new peripheral lands via a conventional commit. [Step 14 (Additional MCU
+Families)](step-14-additional-mcu-families.md) should be progressed in parallel: the more MCU
 families are supported, the more value each new peripheral provides (since each new peripheral
 must be implemented — or explicitly marked unsupported — for every existing family).
 
@@ -24,14 +24,14 @@ Each peripheral follows the same three-layer pattern:
    specialisations using `Register<>` and `BitField<>`.
 3. **Host unit tests** — mock register addresses, positive and negative-compile tests.
 
-## 14.1 Implementation Order
+## 15.1 Implementation Order
 
 Implement peripherals in this order to maximise reuse and minimise surprise:
 
 | Order | Peripheral | Reason |
 |---|---|---|
 | 1 | **Clocks** | Prerequisite knowledge: GPIO clocks must be enabled before registers are accessible. Documenting the clock-enable pattern once means all subsequent peripheral steps can reference it. |
-| 2 | **SPI** | Natural extension of the UART pattern already in Step 8; register layout is similar. |
+| 2 | **SPI** | Natural extension of the UART pattern already in Step 9; register layout is similar. |
 | 3 | **I2C** | Independent and widely used; distinct enough register layout to exercise the abstraction further. |
 | 4 | **ADC** | Read-only `DR` register exercises `ReadOnly` `BitField` constraints; introduces conversion trigger concept. |
 | 5 | **DAC** | Write-only data registers pair naturally with ADC; exercises `WriteOnly` constraints. |
@@ -41,7 +41,7 @@ Implement peripherals in this order to maximise reuse and minimise surprise:
 
 ---
 
-## 14.2 Clocks (`ohal::clock`)
+## 15.2 Clocks (`ohal::clock`)
 
 ### Namespace: `ohal::clock`
 
@@ -88,7 +88,7 @@ Pin<PortA, 5>::set_mode(PinMode::Output);
 
 ---
 
-## 14.3 SPI (`ohal::spi`)
+## 15.3 SPI (`ohal::spi`)
 
 ### Namespace: `ohal::spi`
 
@@ -131,7 +131,7 @@ struct Port {
 
 ---
 
-## 14.4 I2C (`ohal::i2c`)
+## 15.4 I2C (`ohal::i2c`)
 
 ### Namespace: `ohal::i2c`
 
@@ -166,7 +166,7 @@ struct Controller {
 
 ---
 
-## 14.5 ADC (`ohal::adc`)
+## 15.5 ADC (`ohal::adc`)
 
 ### Namespace: `ohal::adc`
 
@@ -201,7 +201,7 @@ struct Converter {
 
 ---
 
-## 14.6 DAC (`ohal::dac`)
+## 15.6 DAC (`ohal::dac`)
 
 ### Namespace: `ohal::dac`
 
@@ -235,7 +235,7 @@ struct Output {
 
 ---
 
-## 14.7 DMA (`ohal::dma`)
+## 15.7 DMA (`ohal::dma`)
 
 ### Namespace: `ohal::dma`
 
@@ -287,7 +287,7 @@ inherently operates on runtime memory buffers.
 
 ---
 
-## 14.8 Power and Sleep Modes (`ohal::power`)
+## 15.8 Power and Sleep Modes (`ohal::power`)
 
 ### Namespace: `ohal::power`
 
@@ -322,7 +322,7 @@ struct Controller {
 
 ---
 
-## 14.9 MPU (`ohal::mpu`)
+## 15.9 MPU (`ohal::mpu`)
 
 ### Namespace: `ohal::mpu`
 

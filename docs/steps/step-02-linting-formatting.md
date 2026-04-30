@@ -1,4 +1,4 @@
-# Step 11 – Linting and Formatting Enforcement
+# Step 2 – Linting and Formatting Enforcement
 
 **Goal:** Introduce a single `lint.sh` entry-point that runs every linter and formatter check.
 A single CI job calls this script, so future additions to linting never require updating the
@@ -7,7 +7,7 @@ required status checks list in the branch protection rule.
 A separate `zizmor` workflow audits the GitHub Actions workflow files themselves for security
 issues on every pull request, merge queue entry, and push to `main`.
 
-## 11.1 Design Principle: One Script, One Required Check
+## 2.1 Design Principle: One Script, One Required Check
 
 The branch protection rule lists exactly **one** lint-related required status check: `lint`.
 That CI job simply runs `./lint.sh`. When a new tool is added (for example `lizard` for
@@ -23,7 +23,7 @@ lint.sh ──► clang-format   (C++ style)
         ──► markdownlint   (documentation)
 ```
 
-## 11.2 `lint.sh`
+## 2.2 `lint.sh`
 
 Place `lint.sh` at the repository root. The script is the single source of truth for what
 "passing lint" means. CI and local developer runs both invoke this file.
@@ -67,7 +67,7 @@ markdownlint-cli2 \
 echo "All lint checks passed."
 ```
 
-## 11.3 Tool Configuration Files
+## 2.3 Tool Configuration Files
 
 | File | Tool | Purpose |
 |---|---|---|
@@ -121,7 +121,7 @@ rules:
 }
 ```
 
-## 11.4 CI Workflow: `lint.yml`
+## 2.4 CI Workflow: `lint.yml`
 
 ```yaml
 # .github/workflows/lint.yml
@@ -163,7 +163,7 @@ without a corresponding branch protection update.
 `push` to `main` is intentionally omitted: the merge queue ensures that nothing reaches `main`
 without passing lint first.
 
-## 11.5 Zizmor Workflow: `zizmor.yml`
+## 2.5 Zizmor Workflow: `zizmor.yml`
 
 [zizmor](https://github.com/woodruffw/zizmor) audits GitHub Actions workflow files for
 security vulnerabilities (script injection, excessive permissions, unpinned actions,
@@ -244,7 +244,7 @@ included in `lint.sh`. This separation exists because:
 - Suppression of a zizmor finding (`# zizmor-ignore`) is a security decision that benefits
   from a distinct review trail.
 
-## 11.6 Adding Future Linting or Formatting Tools
+## 2.6 Adding Future Linting or Formatting Tools
 
 1. Add the tool's installation command to the `Install tools` step in `lint.yml`
    (or pre-install it in a shared runner image / dev container).
@@ -252,9 +252,15 @@ included in `lint.sh`. This separation exists because:
 3. **No changes to branch protection required checks are needed**: the single `lint` job
    already covers the new tool by calling `lint.sh`.
 
-## 11.7 Dependency on Later Steps
+## 2.7 Dependency on Later Steps
 
-- [Step 12 (Release Automation)](step-12-release-automation.md): the `lint` and `zizmor`
-  required status checks must be added to the merge queue configuration (alongside the existing
-  CI checks from Step 10) so that formatting and security findings block merges with the same
-  authority as build failures.
+`lint.sh` and all configuration files (`.clang-format`, `.clang-tidy`, etc.) are established
+in this step so that every implementation step from Step 3 onward produces lint-compliant code
+from the first commit. The CI workflows (`lint.yml`, `zizmor.yml`) are also created here; they
+become active as soon as the repository has workflows to run.
+
+- [Step 11 (CI)](step-11-ci.md): registers `lint` and `zizmor` as required status checks in
+  the branch protection rule alongside the build and test jobs.
+- [Step 12 (Release Automation)](step-12-release-automation.md): adds `lint` and `zizmor` to
+  the merge queue configuration so that formatting and security findings block merges with the
+  same authority as build failures.

@@ -1,4 +1,4 @@
-# Step 6 – First Concrete Platform: STM32U0 GPIO
+# Step 7 – First Concrete Platform: STM32U0 GPIO
 
 **Goal:** A full STM32U083 partial specialisation of `ohal::gpio::Pin<Port, PinNum>`.
 
@@ -7,7 +7,7 @@
 - MCU family: STM32U0
 - MCU model: STM32U083
 - GPIO register base addresses and offsets: listed in
-  [Step 4](step-04-mcu-selection.md)
+  [Step 5](step-05-mcu-selection.md)
 - Peripheral capability facts:
   - All STM32U083 GPIO pins support: Input, Output Push-Pull, Output Open-Drain, Alternate
     Function, Analog

@@ -1,4 +1,4 @@
-# Step 10 – CI / Continuous Integration
+# Step 11 – CI / Continuous Integration
 
 **Goal:** Automated build and test on every pull request.
 
@@ -40,3 +40,6 @@ flowchart LR
 - A minimal blink example (`tests/target/stm32u083/blink.cpp` and
   `tests/target/pic18f4550/blink.cpp`) is built as part of the cross-compile job. The resulting
   binary size is checked against a per-target budget to guard the zero-overhead guarantee.
+- The `lint` and `zizmor` workflow files were created in [Step 2](step-02-linting-formatting.md).
+  Register both job names as required status checks in the branch protection rule for `main`
+  alongside the build and test jobs defined in this step.

@@ -1,20 +1,20 @@
-# Step 12 – vcpkg Package
+# Step 13 – vcpkg Package
 
 **Goal:** Publish OHAL as a `vcpkg` package so that consumers can add it as a dependency with a
 single manifest entry, and wire the same vcpkg package into the OHAL test project itself to
 validate the integration end-to-end.
 
-**Prerequisite:** [Step 11 (Release Automation)](step-11-release-automation.md) must be in
+**Prerequisite:** [Step 12 (Release Automation)](step-12-release-automation.md) must be in
 place first — `release-please` is responsible for automatically bumping the `version` field in
 `vcpkg.json` and `ports/ohal/vcpkg.json` on each release.
 
-## 12.1 Why vcpkg
+## 13.1 Why vcpkg
 
 `vcpkg` is the standard C++ package manager supported natively by CMake and Visual Studio.
 Making OHAL a vcpkg package means consumers avoid manual `FetchContent` wiring and get automatic
 version pinning, patch management, and IDE integration.
 
-## 12.2 Files to Create
+## 13.2 Files to Create
 
 ### `vcpkg.json` (manifest at repo root)
 
@@ -34,7 +34,7 @@ Notes:
 - `dependencies` is empty because OHAL itself has no runtime dependencies.
 - `supports` can be relaxed once host-only builds on Windows/macOS are validated.
 - The `version` field is kept in sync with `CMakeLists.txt` by `release-please`
-  (see [Step 11](step-11-release-automation.md)).
+  (see [Step 12](step-12-release-automation.md)).
 
 ### `cmake/ohal-config.cmake.in`
 
@@ -130,7 +130,7 @@ vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
 }
 ```
 
-## 12.3 Using the Package from the Test Project
+## 13.3 Using the Package from the Test Project
 
 The OHAL repository uses vcpkg to consume its own installed package in an integration test
 build. This validates the install target and the `find_package` path end-to-end.
@@ -168,7 +168,7 @@ target_compile_features(blink_pic18 PRIVATE cxx_std_17)
 
 ### Integration Test CI Job
 
-Add a job to the CI workflow (see [Step 10](step-10-ci.md)):
+Add a job to the CI workflow (see [Step 11](step-11-ci.md)):
 
 1. Install the current HEAD as a vcpkg overlay port (`--overlay-ports=ports/`).
 2. Configure and build `tests/integration/` using `CMAKE_TOOLCHAIN_FILE` pointing to vcpkg's
@@ -178,10 +178,10 @@ Add a job to the CI workflow (see [Step 10](step-10-ci.md)):
 This job runs on the host with `g++` (cross-compile flags are not needed for the
 `find_package` validation). It validates the full `find_package(ohal CONFIG REQUIRED)` path.
 
-## 12.4 Version Synchronisation
+## 13.4 Version Synchronisation
 
-`release-please` (Step 11) automatically bumps the `version` field in `vcpkg.json` and
+`release-please` (Step 12) automatically bumps the `version` field in `vcpkg.json` and
 `ports/ohal/vcpkg.json` as part of each release PR. Both files are listed in
-`release-please-config.json` under `extra-files` (see [Step 11](step-11-release-automation.md)).
+`release-please-config.json` under `extra-files` (see [Step 12](step-12-release-automation.md)).
 The `SHA512` in `portfile.cmake` must be updated manually when the release tarball changes;
 this can be scripted as part of the release workflow.

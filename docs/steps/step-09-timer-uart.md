@@ -1,6 +1,6 @@
-# Step 8 – Additional Peripherals (Timer, UART)
+# Step 9 – Additional Peripherals (Timer, UART)
 
-**Goal:** Replicate the pattern from Steps 5–6 for Timer and UART peripherals on STM32U083.
+**Goal:** Replicate the pattern from Steps 6–7 for Timer and UART peripherals on STM32U083.
 
 ## Inputs Required for STM32U083 Timer (TIM2)
 
@@ -38,7 +38,7 @@
 
 ## Approach
 
-Follow the identical pattern as GPIO (Steps 5–6):
+Follow the identical pattern as GPIO (Steps 6–7):
 
 1. Define generic enumerations and primary (unimplemented) template in `include/ohal/timer.hpp`
    and `include/ohal/uart.hpp`.
