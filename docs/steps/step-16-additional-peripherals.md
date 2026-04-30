@@ -358,7 +358,7 @@ namespace ohal::mpu {
 
 // Raw MPU RASR.SIZE field encoding (not literal byte counts):
 //   encoded = log2(region_size_bytes) - 1
-//   region_size_bytes = 2^(encoded + 1)
+//   region_size_bytes = 1u << (encoded + 1)
 enum class RegionSize : uint8_t {
     Bytes32 = 0x04, Bytes64 = 0x05, /* ... encoded values ... */ KB256 = 0x11, MB512 = 0x1C, GB4 = 0x1F
 };
