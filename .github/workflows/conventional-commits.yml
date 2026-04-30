@@ -13,7 +13,10 @@ jobs:
     name: check-title
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      pull-requests: read # required to read the PR title for validation
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: amannn/action-semantic-pull-request@0723387bb0c33c634bf86b2f0dfadb3dbaef9beb # v5
         env:
