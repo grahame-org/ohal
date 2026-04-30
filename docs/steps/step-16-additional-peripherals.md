@@ -251,6 +251,10 @@ allocation.
 
 - DMA1 base address: `0x40020000`
 - DMAMUX1 base address: `0x40020800`
+- DMAMUX role: DMAMUX routes peripheral DMA requests to DMA channels. Before enabling a DMA
+  channel, configure the corresponding DMAMUX channel request selection register (for example,
+  `DMAMUX_CxCR`) so the intended peripheral request (such as SPI1_TX/SPI1_RX, I2C, ADC, UART)
+  is connected to that DMA channel.
 - Per-channel registers (channel N at `base + 0x08 + (N-1)*0x14`):
   - `CCR`   `0x00` — channel configuration register (EN, DIR, CIRC, MINC, MSIZE, PSIZE, PL)
   - `CNDTR` `0x04` — number of data to transfer register
@@ -352,8 +356,11 @@ normal peripheral bus address space. PIC18 and AVR MCUs do not have an MPU; use
 // include/ohal/mpu.hpp  (excerpt)
 namespace ohal::mpu {
 
+// Raw MPU RASR.SIZE field encoding (not literal byte counts):
+//   encoded = log2(region_size_bytes) - 1
+//   region_size_bytes = 2^(encoded + 1)
 enum class RegionSize : uint8_t {
-    Bytes32 = 0x04, Bytes64 = 0x05, /* ... */ KB256 = 0x11, MB512 = 0x1C, GB4 = 0x1F
+    Bytes32 = 0x04, Bytes64 = 0x05, /* ... encoded values ... */ KB256 = 0x11, MB512 = 0x1C, GB4 = 0x1F
 };
 
 enum class AccessPermission : uint8_t {
