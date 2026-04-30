@@ -50,7 +50,8 @@ For each family, gather from the official datasheet or technical reference manua
 6. Add host unit tests with mock registers (`tests/host/test_gpio_<model>.cpp`).
 7. Add cross-compile CI job (see [Step 12](step-12-ci.md)).
 
-No changes to any file under `include/ohal/` are required.
+No changes to peripheral interface headers under `include/ohal/` are required beyond
+updating `include/ohal/platform.hpp`.
 
 ## 15.2 Additional Models Within Existing Families
 

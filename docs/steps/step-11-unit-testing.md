@@ -3,7 +3,7 @@
 **Goal:** A complete, runnable test suite on the development host, and a framework for on-target
 testing.
 
-## 9.1 Host Testing with Mock Registers
+## 11.1 Host Testing with Mock Registers
 
 The mock infrastructure replaces the `volatile` memory-mapped I/O with plain in-memory arrays.
 This is achieved by **not** using the real platform headers during host tests. Instead, the test
@@ -78,7 +78,7 @@ addresses. In host test builds the CMake target passes
 redirecting all register accesses into the mock array. The same mechanism is used for PIC18F4550
 using `mock_addr8()` for 8-bit slots.
 
-## 9.2 Target Testing
+## 11.2 Target Testing
 
 On-target tests use the same test source files but compiled for the real MCU. A minimal
 on-target test runner:
@@ -92,7 +92,7 @@ and the BSP startup files. It is built only when cross-compiling for a supported
 - ARM targets: `arm-none-eabi-g++` (STM32U083)
 - PIC18 targets: Microchip XC8 (PIC18F4550)
 
-## 9.3 Negative-Compile Tests
+## 11.3 Negative-Compile Tests
 
 For tests that must confirm a compile error occurs, add a CMake helper
 `ohal_expect_compile_failure`:
@@ -122,7 +122,7 @@ Example negative-compile tests:
 | `pic_unsupported_speed` | `Pin<PortA,2>::set_speed(Speed::High)` with PIC target | `does not support configurable output speed` |
 | `pic_unsupported_output_type` | `Pin<PortA,2>::set_output_type(OutputType::OpenDrain)` | `does not support configurable output type` |
 
-## 9.4 Test Coverage Targets
+## 11.4 Test Coverage Targets
 
 | Component | Test type | Coverage target |
 |---|---|---|

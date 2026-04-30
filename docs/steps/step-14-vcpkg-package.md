@@ -33,8 +33,9 @@ version pinning, patch management, and IDE integration.
 Notes:
 - `dependencies` is empty because OHAL itself has no runtime dependencies.
 - `supports` can be relaxed once host-only builds on Windows/macOS are validated.
-- The `version` field is kept in sync with `CMakeLists.txt` by `release-please`
-  (see [Step 13](step-13-release-automation.md)).
+- The `version` field is automatically bumped by `release-please` together with
+  `ports/ohal/vcpkg.json` as part of the release flow described in
+  [Step 13](step-13-release-automation.md).
 
 ### `cmake/ohal-config.cmake.in`
 

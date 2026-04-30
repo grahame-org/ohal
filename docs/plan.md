@@ -231,7 +231,7 @@ ohal/
 │       ├── zizmor.yml                   ← GitHub Actions security audit, pedantic mode (Step 2)
 │       └── release-please.yml           ← automated versioning and changelog (Step 13)
 ├── cmake/
-│   └── ohal-config.cmake.in             ← CMake package config template (Step 13)
+│   └── ohal-config.cmake.in             ← CMake package config template (Step 14)
 ├── docs/
 │   ├── plan.md                          ← this index document
 │   └── steps/
@@ -769,5 +769,5 @@ int main() {
 | C++20 concepts | Once C++20 is permitted, `requires` clauses can replace `static_assert` chains for cleaner error messages. |
 | PIC18 PORTB weak pull-ups | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction. |
 | DMA runtime memory addresses | DMA is the one deliberate exception to the zero-runtime-data principle (see [Step 16](steps/step-16-additional-peripherals.md)). The design decision (NTTP peripheral address, runtime buffer pointer) should be reviewed once DMA is implemented. |
-| TI MSP-M0 | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (Step 16). |
+| TI MSP-M0 | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (see [Step 15](steps/step-15-additional-mcu-families.md)). |
 | Code size tracking | A CI job should build a minimal blink example for each supported target and check that the resulting binary size does not regress. This guards the zero-overhead guarantee. |

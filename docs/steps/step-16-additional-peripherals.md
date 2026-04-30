@@ -10,11 +10,11 @@ Families)](step-15-additional-mcu-families.md) should be progressed in parallel:
 families are supported, the more value each new peripheral provides (since each new peripheral
 must be implemented — or explicitly marked unsupported — for every existing family).
 
-**Within this step, implement Clocks first** (section 14.2). Clock enabling is a prerequisite
+**Within this step, implement Clocks first** (section 16.2). Clock enabling is a prerequisite
 for all other peripherals to function correctly on real hardware: on STM32 and similar families,
 the peripheral bus clock must be enabled before any peripheral register can be accessed. Every
 subsequent peripheral implementation in this step references the clock-enable pattern established
-in section 14.2.
+in section 16.2.
 
 Each peripheral follows the same three-layer pattern:
 
@@ -279,11 +279,11 @@ struct Stream {
 
 ### Design Note
 
-Peripheral register addresses are compile-time constants (from `Register<>::address`). Memory
-addresses are runtime values (pointer to buffer). The `Stream` template therefore accepts the
-peripheral address as an NTTP but takes the memory address and count as runtime parameters to
-`start()`. This is the one deliberate exception to the "no runtime data" principle: DMA
-inherently operates on runtime memory buffers.
+Peripheral register addresses are still compile-time constants (for example via the selected
+controller/channel implementation and `Register<>::address`). Memory addresses are runtime values
+(pointer to buffer), so `start()` takes the memory address and count as runtime parameters. This
+is the one deliberate exception to the "no runtime data" principle: DMA inherently operates on
+runtime memory buffers.
 
 ---
 

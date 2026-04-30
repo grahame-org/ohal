@@ -15,7 +15,7 @@ before completing each release PR merge.
 history and automatically:
 
 1. Opens a "Release PR" that bumps the version in `vcpkg.json`, `ports/ohal/vcpkg.json`,
-   `CMakeLists.txt` (`project(ohal VERSION ...)`), and updates `CHANGELOG.md`.
+   and updates `CHANGELOG.md`.
 2. Merges the Release PR (after CI passes through the merge queue).
 3. Creates a GitHub Release with a tag (e.g. `v0.2.0`) and auto-generated release notes.
 
