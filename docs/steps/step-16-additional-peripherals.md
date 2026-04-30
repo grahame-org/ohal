@@ -74,8 +74,10 @@ namespace ohal::clock {
 // for enabling the clock of a given peripheral.
 template <typename Peripheral>
 struct Enable {
-    static_assert(sizeof(Peripheral) == 0,
-        "ohal: clock::Enable is not implemented for the selected peripheral.");
+    static void enable() {
+        static_assert(sizeof(Peripheral) == 0,
+            "ohal: clock::Enable is not implemented for the selected peripheral.");
+    }
 };
 
 } // namespace ohal::clock

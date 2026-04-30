@@ -26,10 +26,10 @@ inline std::array<uint32_t, 64> mock_memory{};
 inline void reset_mock() { mock_memory.fill(0); }
 
 // Returns the uintptr_t address of 32-bit slot N in mock_memory.
-// Note: reinterpret_cast<uintptr_t> from a data pointer is implementation-defined
-// in C++17. This is acceptable for host-side test code where the goal is to redirect
-// register accesses into a plain memory array on a hosted implementation. When C++20
-// becomes available, std::bit_cast<uintptr_t> is the portable replacement.
+// Note: converting a data pointer to uintptr_t is implementation-defined.
+// This is acceptable for host-side test code where the goal is to redirect
+// register accesses into a plain memory array on a hosted implementation;
+// newer standards do not make this pointer-to-integer mapping portable.
 inline uintptr_t mock_addr(std::size_t slot) {
     return reinterpret_cast<uintptr_t>(mock_memory.data()) + slot * sizeof(uint32_t);
 }

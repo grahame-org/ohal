@@ -41,7 +41,9 @@ jobs:
       # Pin GitHub Actions to a full commit SHA; update this SHA intentionally when upgrading.
       - uses: googleapis/release-please-action@<FULL_40_CHARACTER_COMMIT_SHA>
         with:
-          release-type: simple
+          command: manifest
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
