@@ -17,6 +17,9 @@ jobs:
     permissions:
       contents: read
       security-events: write # required to upload SARIF to Code Scanning
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
