@@ -16,16 +16,16 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
   - GPIOE base: `0x42021000`
   - GPIOF base: `0x42021400`
 - Register offsets within each GPIO block (identical across all STM32U0 GPIO ports):
-  - `MODER`    offset `0x00` — pin mode (Input / Output / AF / Analog)
-  - `OTYPER`   offset `0x04` — output type (Push-Pull / Open-Drain)
-  - `OSPEEDR`  offset `0x08` — output speed
-  - `PUPDR`    offset `0x0C` — pull-up / pull-down
-  - `IDR`      offset `0x10` — input data register (RO)
-  - `ODR`      offset `0x14` — output data register
-  - `BSRR`     offset `0x18` — bit set/reset register (WO)
-  - `LCKR`     offset `0x1C` — configuration lock register
-  - `AFRL`     offset `0x20` — alternate function low (pins 0–7)
-  - `AFRH`     offset `0x24` — alternate function high (pins 8–15)
+  - `MODER` offset `0x00` — pin mode (Input / Output / AF / Analog)
+  - `OTYPER` offset `0x04` — output type (Push-Pull / Open-Drain)
+  - `OSPEEDR` offset `0x08` — output speed
+  - `PUPDR` offset `0x0C` — pull-up / pull-down
+  - `IDR` offset `0x10` — input data register (RO)
+  - `ODR` offset `0x14` — output data register
+  - `BSRR` offset `0x18` — bit set/reset register (WO)
+  - `LCKR` offset `0x1C` — configuration lock register
+  - `AFRL` offset `0x20` — alternate function low (pins 0–7)
+  - `AFRH` offset `0x24` — alternate function high (pins 8–15)
 
 ## `platform.hpp` Logic
 

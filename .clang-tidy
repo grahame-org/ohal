@@ -1,0 +1,10 @@
+---
+Checks: >
+  cppcoreguidelines-*,
+  modernize-*,
+  readability-*,
+  bugprone-*,
+  performance-*,
+  -modernize-use-trailing-return-type
+HeaderFilterRegex: '^include/ohal/'
+WarningsAsErrors: '*'

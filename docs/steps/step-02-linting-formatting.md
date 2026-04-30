@@ -14,7 +14,7 @@ That CI job simply runs `./lint.sh`. When a new tool is added (for example `liza
 cyclomatic-complexity analysis), only `lint.sh` and its tool-installation step are updated.
 The branch protection required-checks list stays unchanged.
 
-```
+```text
 lint.sh ──► clang-format   (C++ style)
         ──► clang-tidy     (C++ static analysis)
         ──► cmake-lint     (CMake style)
@@ -69,12 +69,12 @@ echo "All lint checks passed."
 
 ## 2.3 Tool Configuration Files
 
-| File | Tool | Purpose |
-|---|---|---|
-| `.clang-format` | clang-format | C++ style: LLVM base, column limit 100, pointer alignment Left |
-| `.clang-tidy` | clang-tidy | Enabled checks: `cppcoreguidelines-*`, `modernize-*`, `readability-*`, `bugprone-*`, `performance-*`; header filter `^include/ohal/` |
-| `.yamllint.yml` | yamllint | 2-space indent, max line length 120, require document start marker |
-| `.markdownlint.json` | markdownlint-cli2 | MD013 line length 120, MD033 inline HTML off |
+| File                 | Tool              | Purpose                                                                                                                              |
+| -------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `.clang-format`      | clang-format      | C++ style: LLVM base, column limit 100, pointer alignment Left                                                                       |
+| `.clang-tidy`        | clang-tidy        | Enabled checks: `cppcoreguidelines-*`, `modernize-*`, `readability-*`, `bugprone-*`, `performance-*`; header filter `^include/ohal/` |
+| `.yamllint.yml`      | yamllint          | 2-space indent, max line length 120, require document start marker                                                                   |
+| `.markdownlint.json` | markdownlint-cli2 | MD013 line length 120, MD033 inline HTML off                                                                                         |
 
 ### `.clang-format` (sketch)
 
@@ -96,8 +96,8 @@ Checks: >
   bugprone-*,
   performance-*,
   -modernize-use-trailing-return-type
-HeaderFilterRegex: '^include/ohal/'
-WarningsAsErrors: '*'
+HeaderFilterRegex: "^include/ohal/"
+WarningsAsErrors: "*"
 ```
 
 ### `.yamllint.yml` (sketch)
@@ -155,10 +155,10 @@ without a corresponding branch protection update.
 
 ### Triggers
 
-| Event | Reason |
-|---|---|
-| `pull_request` | Enforce style on every proposed change before review. |
-| `merge_group` | Re-enforce when the PR is batched with the current `main` tip before merging. |
+| Event          | Reason                                                                        |
+| -------------- | ----------------------------------------------------------------------------- |
+| `pull_request` | Enforce style on every proposed change before review.                         |
+| `merge_group`  | Re-enforce when the PR is batched with the current `main` tip before merging. |
 
 `push` to `main` is intentionally omitted: the merge queue ensures that nothing reaches `main`
 without passing lint first.
@@ -184,7 +184,7 @@ on:
 
 permissions:
   contents: read
-  security-events: write    # required to upload SARIF to Code Scanning
+  security-events: write # required to upload SARIF to Code Scanning
 
 jobs:
   zizmor:
@@ -213,24 +213,24 @@ jobs:
 
 The `--pedantic` flag activates every available audit, including:
 
-| Check | What it finds |
-|---|---|
-| `artipacked` | Credentials that could be captured by a workflow artifact upload |
-| `ref-confusion` | Ambiguous `ref:` values in `actions/checkout` steps |
-| `excessive-permissions` | `permissions:` grants that are broader than the job requires |
-| `unpinned-uses` | `uses:` references with tag or branch names instead of full commit-SHA pins |
-| `pull-request-target` | Unsafe use of `pull_request_target` with code from the fork |
-| `template-injection` | GitHub expression values used directly in `run:` without sanitisation |
+| Check                   | What it finds                                                               |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `artipacked`            | Credentials that could be captured by a workflow artifact upload            |
+| `ref-confusion`         | Ambiguous `ref:` values in `actions/checkout` steps                         |
+| `excessive-permissions` | `permissions:` grants that are broader than the job requires                |
+| `unpinned-uses`         | `uses:` references with tag or branch names instead of full commit-SHA pins |
+| `pull-request-target`   | Unsafe use of `pull_request_target` with code from the fork                 |
+| `template-injection`    | GitHub expression values used directly in `run:` without sanitisation       |
 
 All findings must be resolved — or explicitly suppressed with a `# zizmor-ignore[<rule>]`
 comment accompanied by a written justification — before the PR can merge.
 
 ### Triggers
 
-| Event | Reason |
-|---|---|
-| `pull_request` | Catch newly introduced workflow-security issues in proposed changes. |
-| `merge_group` | Re-audit as the PR is batched against the current `main` tip. |
+| Event            | Reason                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| `pull_request`   | Catch newly introduced workflow-security issues in proposed changes.                |
+| `merge_group`    | Re-audit as the PR is batched against the current `main` tip.                       |
 | `push` to `main` | Baseline scan of the full workflow set on every merge, feeds Code Scanning history. |
 
 ### Separate Required Status Check
