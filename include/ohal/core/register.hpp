@@ -24,12 +24,16 @@ struct Register {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   static void write(T value) noexcept { *reinterpret_cast<volatile T*>(address) = value; }
 
-  static void set_bits(T mask) noexcept { write(read() | mask); }
+  static void set_bits(T mask) noexcept {
+    write(read() | mask); // Non-atomic RMW: caller is responsible for interrupt masking if needed.
+  }
 
-  static void clear_bits(T mask) noexcept { write(read() & static_cast<T>(~mask)); }
+  static void clear_bits(T mask) noexcept {
+    write(read() & static_cast<T>(~mask)); // Non-atomic RMW: see set_bits note.
+  }
 
   static void modify(T clear_mask, T set_mask) noexcept {
-    write((read() & static_cast<T>(~clear_mask)) | set_mask);
+    write((read() & static_cast<T>(~clear_mask)) | set_mask); // Non-atomic RMW: see set_bits note.
   }
 };
 
