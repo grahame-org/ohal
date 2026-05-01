@@ -7,7 +7,7 @@
 
 namespace ohal::platforms::stm32u0::stm32u083 {
 
-// GPIO register offsets within each port block (RM0503 Rev 4).
+// GPIO register offsets within each port block (RM0503 Rev 4, Table 41).
 // All offsets are identical across every STM32U0 GPIO port.
 inline constexpr uintptr_t kModerOffset = 0x00U;   ///< Pin-mode register
 inline constexpr uintptr_t kOtyperOffset = 0x04U;  ///< Output-type register
