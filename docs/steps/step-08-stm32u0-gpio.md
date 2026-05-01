@@ -20,7 +20,7 @@
 ```mermaid
 sequenceDiagram
     participant App as Application
-    participant Pin as gpio::Pin&lt;PortA,5&gt;
+    participant Pin as "gpio::Pin#lt;PortA,5#gt;"
     participant BSRR as GPIOA_BSRR (WO register)
 
     App->>Pin: Pin::set()

@@ -542,7 +542,7 @@ stateDiagram-v2
 ```mermaid
 sequenceDiagram
     participant App
-    participant Pin as Pin&lt;PortA, 5&gt;
+    participant Pin as "Pin#lt;PortA, 5#gt;"
     participant MODER as GPIOA MODER reg
     participant OTYPER as GPIOA OTYPER reg
     participant BSRR as GPIOA BSRR reg
@@ -559,7 +559,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant App
-    participant Pin as Pin&lt;PortA, 2&gt;
+    participant Pin as "Pin#lt;PortA, 2#gt;"
     participant TRISA as TRISA reg (uint8_t)
     participant LATA as LATA reg (uint8_t)
 

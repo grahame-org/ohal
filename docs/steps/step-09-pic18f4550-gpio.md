@@ -56,7 +56,7 @@ produce a `static_assert` compile error with a helpful message.
 ```mermaid
 sequenceDiagram
     participant App as Application
-    participant Pin as gpio::Pin&lt;PortA,5&gt;
+    participant Pin as "gpio::Pin#lt;PortA,5#gt;"
     participant LAT as LATA (port A latch)
 
     App->>Pin: Pin::set()
