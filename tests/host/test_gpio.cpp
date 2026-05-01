@@ -1,9 +1,6 @@
 #include <ohal/core/capabilities.hpp>
 #include <ohal/gpio.hpp>
 
-#include <cstdint>
-#include <type_traits>
-
 #include <gtest/gtest.h>
 
 // ---------------------------------------------------------------------------
@@ -11,33 +8,33 @@
 // ---------------------------------------------------------------------------
 
 TEST(GpioPinModeTest, EnumValues) {
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::PinMode::Input), 0U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::PinMode::Output), 1U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::PinMode::AlternateFunction), 2U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::PinMode::Analog), 3U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::PinMode::Input), 0U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::PinMode::Output), 1U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::PinMode::AlternateFunction), 2U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::PinMode::Analog), 3U);
 }
 
 TEST(GpioOutputTypeTest, EnumValues) {
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::OutputType::PushPull), 0U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::OutputType::OpenDrain), 1U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::OutputType::PushPull), 0U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::OutputType::OpenDrain), 1U);
 }
 
 TEST(GpioSpeedTest, EnumValues) {
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Speed::Low), 0U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Speed::Medium), 1U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Speed::High), 2U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Speed::VeryHigh), 3U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Speed::Low), 0U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Speed::Medium), 1U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Speed::High), 2U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Speed::VeryHigh), 3U);
 }
 
 TEST(GpioPullTest, EnumValues) {
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Pull::None), 0U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Pull::Up), 1U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Pull::Down), 2U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Pull::None), 0U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Pull::Up), 1U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Pull::Down), 2U);
 }
 
 TEST(GpioLevelTest, EnumValues) {
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Level::Low), 0U);
-  EXPECT_EQ(static_cast<uint8_t>(ohal::gpio::Level::High), 1U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Level::Low), 0U);
+  EXPECT_EQ(static_cast<unsigned>(ohal::gpio::Level::High), 1U);
 }
 
 // ---------------------------------------------------------------------------
