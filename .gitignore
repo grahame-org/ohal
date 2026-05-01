@@ -64,6 +64,6 @@ vcpkg_installed/
 # debug information files
 *.dwo
 
-# test output & cache
-Testing/
-.cache/
+# Node.js (commitlint)
+node_modules/
+package-lock.json
