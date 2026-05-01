@@ -450,7 +450,7 @@ classDiagram
 ```mermaid
 graph LR
     subgraph "Platform layer"
-        GPIOA_MODER["Register&lt;0x42020000&gt;"]
+        GPIOA_MODER["Register&lt;0x50000000&gt;"]
         MODER_PIN5["BitField&lt;GPIOA_MODER, 10, 2, RW, PinMode&gt;"]
     end
     subgraph "Peripheral layer"
