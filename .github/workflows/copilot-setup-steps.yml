@@ -15,8 +15,12 @@ permissions: {}
 
 jobs:
   copilot-setup-steps:
+    name: copilot-setup-steps
     runs-on: ubuntu-latest
     permissions: {}
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Install apt tools
         run: |
