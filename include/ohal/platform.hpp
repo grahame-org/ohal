@@ -2,9 +2,9 @@
 #define OHAL_PLATFORM_HPP
 
 #if !defined(OHAL_FAMILY_STM32U0) && !defined(OHAL_FAMILY_TI_MSPM0) && !defined(OHAL_FAMILY_PIC)
-#error "ohal: No MCU family defined. "                                                                \
-    "Pass one of -DOHAL_FAMILY_STM32U0, -DOHAL_FAMILY_TI_MSPM0, "                                 \
-    "-DOHAL_FAMILY_PIC to the compiler."
+// clang-format off
+#error "ohal: No MCU family defined. Pass one of -DOHAL_FAMILY_STM32U0, -DOHAL_FAMILY_TI_MSPM0, -DOHAL_FAMILY_PIC to the compiler."
+// clang-format on
 #endif
 
 #if defined(OHAL_FAMILY_STM32U0)

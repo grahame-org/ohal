@@ -2,8 +2,9 @@
 #define OHAL_PLATFORMS_STM32U0_FAMILY_HPP
 
 #if !defined(OHAL_MODEL_STM32U083)
-#error "ohal: No STM32U0 model defined. "                                                             \
-    "Pass -DOHAL_MODEL_STM32U083 (or another U0 model) to the compiler."
+// clang-format off
+#error "ohal: No STM32U0 model defined. Pass -DOHAL_MODEL_STM32U083 (or another U0 model) to the compiler."
+// clang-format on
 #endif
 
 #if defined(OHAL_MODEL_STM32U083)
