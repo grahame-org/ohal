@@ -20,7 +20,10 @@ echo "=== clang-tidy ==="
 find "${REPO_ROOT}/include" -name '*.hpp' \
     -print0 | xargs -0 -I{} clang-tidy \
     --extra-arg="-std=c++17" \
-    --extra-arg="-I${REPO_ROOT}/include" {} --
+    --extra-arg="-I${REPO_ROOT}/include" \
+    --extra-arg="-DOHAL_FAMILY_STM32U0" \
+    --extra-arg="-DOHAL_MODEL_STM32U083" \
+    {} --
 
 echo "=== cmake-lint ==="
 find "${REPO_ROOT}" \
