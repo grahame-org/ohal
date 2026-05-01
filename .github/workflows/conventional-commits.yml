@@ -13,22 +13,19 @@ jobs:
     name: check-title
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read # required to read the PR title for validation
+      contents: read # required to check out the commitlint config
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
-      - uses: amannn/action-semantic-pull-request@0723387bb0c33c634bf86b2f0dfadb3dbaef9beb # v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          types: |
-            feat
-            fix
-            docs
-            test
-            ci
-            build
-            refactor
-            chore
-          requireScope: false
+          persist-credentials: false
+
+      - name: Install commitlint
+        run: npm install --no-save @commitlint/cli @commitlint/config-conventional
+
+      - name: Validate PR title
+        run: echo "$PR_TITLE" | npx --no -- commitlint
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
