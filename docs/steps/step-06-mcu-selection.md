@@ -26,7 +26,7 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
   - `LCKR` offset `0x1C` — configuration lock register
   - `AFRL` offset `0x20` — alternate function low (pins 0–7)
   - `AFRH` offset `0x24` — alternate function high (pins 8–15)
-  - `BRR` offset `0x28` - bit reset register (WO)
+  - `BRR` offset `0x28` — bit reset register (WO)
 
 ## `platform.hpp` Logic
 

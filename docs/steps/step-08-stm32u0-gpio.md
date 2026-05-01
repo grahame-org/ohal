@@ -47,28 +47,28 @@ struct Pin<PortA, PinNum> {
     static_assert(PinNum < 16u, "ohal: STM32U083 GPIOA has pins 0-15 only.");
 
     using MODER  = core::BitField<
-        core::Register<0x42020000u>, PinNum * 2u, 2u,
+        core::Register<0x50000000u>, PinNum * 2u, 2u,
         core::Access::ReadWrite, PinMode>;
     using OTYPER = core::BitField<
-        core::Register<0x42020004u>, PinNum, 1u,
+        core::Register<0x50000004u>, PinNum, 1u,
         core::Access::ReadWrite, OutputType>;
     using OSPEEDR = core::BitField<
-        core::Register<0x42020008u>, PinNum * 2u, 2u,
+        core::Register<0x50000008u>, PinNum * 2u, 2u,
         core::Access::ReadWrite, Speed>;
     using PUPDR  = core::BitField<
-        core::Register<0x4202000Cu>, PinNum * 2u, 2u,
+        core::Register<0x5000000Cu>, PinNum * 2u, 2u,
         core::Access::ReadWrite, Pull>;
     using IDR    = core::BitField<
-        core::Register<0x42020010u>, PinNum, 1u,
+        core::Register<0x50000010u>, PinNum, 1u,
         core::Access::ReadOnly, Level>;
     using ODR    = core::BitField<
-        core::Register<0x42020014u>, PinNum, 1u,
+        core::Register<0x50000014u>, PinNum, 1u,
         core::Access::ReadWrite, Level>;
     // BSRR: bits 0-15 = set high, bits 16-31 = set low; modelled as two write-only fields
     using BSRR_SET   = core::BitField<
-        core::Register<0x42020018u>, PinNum,       1u, core::Access::WriteOnly>;
+        core::Register<0x50000018u>, PinNum,       1u, core::Access::WriteOnly>;
     using BSRR_RESET = core::BitField<
-        core::Register<0x42020018u>, PinNum + 16u, 1u, core::Access::WriteOnly>;
+        core::Register<0x50000018u>, PinNum + 16u, 1u, core::Access::WriteOnly>;
 
     static void set_mode(PinMode mode) noexcept        { MODER::write(mode); }
     static void set_output_type(OutputType t) noexcept { OTYPER::write(t); }
@@ -85,8 +85,8 @@ struct Pin<PortA, PinNum> {
 };
 
 // Repeat for PortB ... PortF (identical structure, different base address)
-// PortB base: 0x42020400, PortC: 0x42020800, PortD: 0x42020C00,
-// PortE: 0x42021000, PortF: 0x42021400
+// PortB base: 0x50000400, PortC: 0x50000800, PortD: 0x50000C00,
+// PortE: 0x50001000, PortF: 0x50001400
 
 } // namespace ohal::gpio
 
