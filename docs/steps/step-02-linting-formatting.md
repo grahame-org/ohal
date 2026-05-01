@@ -43,9 +43,9 @@ find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" \
 
 echo "=== clang-tidy ==="
 find "${REPO_ROOT}/include" -name '*.hpp' \
-    -print0 | xargs -0 clang-tidy \
+    -print0 | xargs -0 -I{} clang-tidy \
     --extra-arg="-std=c++17" \
-    --extra-arg="-I${REPO_ROOT}/include"
+    --extra-arg="-I${REPO_ROOT}/include" {} --
 
 echo "=== cmake-lint ==="
 find "${REPO_ROOT}" \
