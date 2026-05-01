@@ -8,13 +8,13 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
 - MCU family: STM32U0
 - MCU model: STM32U083
 - Peripheral: GPIO
-- Register base addresses (STM32U083 Reference Manual RM0503):
-  - GPIOA base: `0x42020000`
-  - GPIOB base: `0x42020400`
-  - GPIOC base: `0x42020800`
-  - GPIOD base: `0x42020C00`
-  - GPIOE base: `0x42021000`
-  - GPIOF base: `0x42021400`
+- Register base addresses (STM32U083 Reference Manual RM0503 Rev 4 - Table 4):
+  - GPIOA base: `0x50000000`
+  - GPIOB base: `0x50000400`
+  - GPIOC base: `0x50000800`
+  - GPIOD base: `0x50000C00`
+  - GPIOE base: `0x50001000`
+  - GPIOF base: `0x50001400`
 - Register offsets within each GPIO block (identical across all STM32U0 GPIO ports):
   - `MODER` offset `0x00` — pin mode (Input / Output / AF / Analog)
   - `OTYPER` offset `0x04` — output type (Push-Pull / Open-Drain)
@@ -26,6 +26,7 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
   - `LCKR` offset `0x1C` — configuration lock register
   - `AFRL` offset `0x20` — alternate function low (pins 0–7)
   - `AFRH` offset `0x24` — alternate function high (pins 8–15)
+  - `BRR` offset `0x28` — bit reset register (WO)
 
 ## `platform.hpp` Logic
 
