@@ -93,6 +93,16 @@ TEST_F(BitField32Test, WriteOnlyField_WriteUpdatesCorrectBits) {
   EXPECT_EQ(field32_storage & 0x00FF'0000U, 0x00AB'0000U);
 }
 
+TEST_F(BitField32Test, WriteOnlyField_WriteDoesNotReadRegister) {
+  // Pre-load other bits. A WriteOnly write must NOT read-modify-write;
+  // only the field bits should appear in the result.
+  field32_storage = 0xFFFF'FFFFU;
+  WoField::write(static_cast<uint32_t>(0x12U));
+  // Only bits [23:16] should reflect the written value; all other bits are
+  // cleared because a WriteOnly write skips the read step.
+  EXPECT_EQ(field32_storage, 0x0012'0000U);
+}
+
 // ---------------------------------------------------------------------------
 // 8-bit register field tests
 // ---------------------------------------------------------------------------

@@ -52,14 +52,20 @@ struct BitField {
   /// Write @p value into the field, preserving all other bits in the register.
   ///
   /// @note Triggers a compile error if @p Acc is ReadOnly.
-  /// @note This is a non-atomic read-modify-write sequence. Callers that require
-  ///       atomicity must arrange interrupt masking or use hardware-provided atomic
-  ///       mechanisms (e.g. ARM BSRR) at the call site.
+  /// @note For ReadWrite fields this is a non-atomic read-modify-write sequence. Callers
+  ///       that require atomicity must arrange interrupt masking or use hardware-provided
+  ///       atomic mechanisms (e.g. ARM BSRR) at the call site.
+  /// @note For WriteOnly fields the register is not read before writing to avoid triggering
+  ///       hardware side effects that a read of a write-only register may cause.
   static void write(ValueType value) noexcept {
     static_assert(Acc != Access::ReadOnly, "ohal: cannot write to a read-only field");
-    raw_type const current = Reg::read();
-    Reg::write(static_cast<raw_type>((current & ~mask) |
-                                     ((static_cast<raw_type>(value) << Offset) & mask)));
+    if constexpr (Acc == Access::WriteOnly) {
+      Reg::write(static_cast<raw_type>((static_cast<raw_type>(value) << Offset) & mask));
+    } else {
+      raw_type const current = Reg::read();
+      Reg::write(static_cast<raw_type>((current & ~mask) |
+                                       ((static_cast<raw_type>(value) << Offset) & mask)));
+    }
   }
 };
 
