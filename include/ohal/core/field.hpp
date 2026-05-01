@@ -30,16 +30,24 @@ struct BitField {
   static constexpr uint8_t width = Width;
   static constexpr Access access = Acc;
 
-  // Compute the bit mask using uintmax_t arithmetic to avoid shift-count overflow
-  // for any supported register width (8, 16, 32-bit). The static_assert below
-  // guarantees Width <= sizeof(raw_type)*8 <= 32 in practice.
-  static constexpr raw_type mask =
-      static_cast<raw_type>(((uintmax_t{1} << Width) - uintmax_t{1}) << Offset);
-
+  // Validate parameters before computing mask so that out-of-range values produce the
+  // descriptive static_assert messages below rather than an obscure shift-overflow error.
   static_assert(Width > 0, "ohal: BitField width must be at least 1");
   static_assert(static_cast<unsigned>(Offset) + static_cast<unsigned>(Width) <=
                     sizeof(raw_type) * static_cast<unsigned>(CHAR_BIT),
                 "ohal: BitField (Offset + Width) exceeds register width");
+
+  // Safe mask computation: uses uintmax_t arithmetic to accommodate any supported register
+  // width. When Width or Offset are invalid the helper returns 0 so that no UB occurs even
+  // if a compiler evaluates mask before raising the static_assert diagnostics above.
+  static constexpr raw_type mask = [] {
+    constexpr unsigned total = static_cast<unsigned>(Offset) + static_cast<unsigned>(Width);
+    constexpr unsigned bits = sizeof(raw_type) * static_cast<unsigned>(CHAR_BIT);
+    if (Width == 0 || total > bits) {
+      return raw_type{0}; // unreachable in valid code; static_asserts above will fire
+    }
+    return static_cast<raw_type>(((uintmax_t{1} << Width) - uintmax_t{1}) << Offset);
+  }();
 
   /// Read the field from the register and return it as @p ValueType.
   ///

@@ -93,14 +93,29 @@ TEST_F(BitField32Test, WriteOnlyField_WriteUpdatesCorrectBits) {
   EXPECT_EQ(field32_storage & 0x00FF'0000U, 0x00AB'0000U);
 }
 
-TEST_F(BitField32Test, WriteOnlyField_WriteDoesNotReadRegister) {
-  // Pre-load other bits. A WriteOnly write must NOT read-modify-write;
-  // only the field bits should appear in the result.
+TEST_F(BitField32Test, WriteOnlyField_WriteDoesNotPreserveOtherBits) {
+  // A WriteOnly write must NOT read-modify-write; bits outside the field are
+  // clobbered (set to zero) because only the field bits are written.
   field32_storage = 0xFFFF'FFFFU;
   WoField::write(static_cast<uint32_t>(0x12U));
-  // Only bits [23:16] should reflect the written value; all other bits are
-  // cleared because a WriteOnly write skips the read step.
   EXPECT_EQ(field32_storage, 0x0012'0000U);
+}
+
+// Verify that a WriteOnly write never calls read() on the backing register.
+// Uses ReadCountingMockRegister so we can observe the call count directly.
+
+static uint32_t wo_counting_storage{0U};
+using WoCountingReg = ohal::test::ReadCountingMockRegister<uint32_t, &wo_counting_storage>;
+using WoCountingField = ohal::core::BitField<WoCountingReg, 16, 8, ohal::core::Access::WriteOnly>;
+
+class WriteOnlyReadCountTest : public ::testing::Test {
+protected:
+  void SetUp() override { WoCountingReg::reset(); }
+};
+
+TEST_F(WriteOnlyReadCountTest, WriteOnlyField_WriteNeverCallsRead) {
+  WoCountingField::write(static_cast<uint32_t>(0xABU));
+  EXPECT_EQ(WoCountingReg::read_count, 0U);
 }
 
 // ---------------------------------------------------------------------------

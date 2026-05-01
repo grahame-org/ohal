@@ -54,6 +54,35 @@ struct MockRegister {
   static void write(T value) noexcept { *Storage = value; }
 };
 
+/// Variant of MockRegister that counts the number of times read() is called.
+///
+/// Use this when a test needs to assert that a code path did (or did not) call
+/// read() on the underlying register — for example, verifying that a WriteOnly
+/// BitField write skips the read step entirely.
+///
+/// @tparam T        Register width type.
+/// @tparam Storage  Pointer to a variable with static storage duration that acts as the
+///                  register's backing store.
+template <typename T, T* Storage>
+struct ReadCountingMockRegister {
+  using value_type = T;
+
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+  static inline unsigned read_count{0U};
+
+  static void reset() noexcept {
+    *Storage = T{};
+    read_count = 0U;
+  }
+
+  [[nodiscard]] static T read() noexcept {
+    ++read_count;
+    return *Storage;
+  }
+
+  static void write(T value) noexcept { *Storage = value; }
+};
+
 } // namespace ohal::test
 
 #endif // OHAL_TESTS_HOST_MOCK_MOCK_REGISTER_HPP
