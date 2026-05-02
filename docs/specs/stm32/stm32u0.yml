@@ -472,6 +472,58 @@ memory:
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xE0000000
       end: 0xE00FFFFF
+definitions:
+  settings:
+    gpio-mode: &gpio-mode
+      "00": input mode
+      "01": general purpose output mode
+      "10": alternate function mode
+      "11": analogue mode
+    output-type: &output-type
+      "0": Output push-pull
+      "1": Output open-drain
+    ospeed: &ospeed
+      "00": Low speed
+      "01": Medium speed
+      "10": High speed
+      "11": Very high speed
+    pupdr: &pupdr
+      "00": No pull-up, pull-down
+      "01": Pull-up
+      "10": Pull-down
+      "11": Reserved
+    bit-value: &bit-value
+      "0": reset
+      "1": set
+    bsrr-br: &bsrr-br
+      "0": No action on the corresponding ODx bit
+      "1": Resets the corresponding ODx bit
+    bsrr-bs: &bsrr-bs
+      "0": No action on the corresponding ODx bit
+      "1": Sets the corresponding ODx bit
+    port-lock: &port-lock
+      "0": Port configuration not locked
+      "1": Port configuration locked
+    afsel: &afsel
+      "0000": AF0
+      "0001": AF1
+      "0010": AF2
+      "0011": AF3
+      "0100": AF4
+      "0101": AF5
+      "0110": AF6
+      "0111": AF7
+      "1000": AF8
+      "1001": AF9
+      "1010": AF10
+      "1011": AF11
+      "1100": AF12
+      "1101": AF13
+      "1110": AF14
+      "1111": AF15
+    brr: &brr
+      "0": No action on the corresponding ODx bit
+      "1": Reset the corresponding ODx bit
 peripherals:
   - gpio:
       reference:
@@ -488,161 +540,97 @@ peripherals:
                 lsb: 30
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE14
                 msb: 29
                 lsb: 28
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE13
                 msb: 27
                 lsb: 26
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE12
                 msb: 25
                 lsb: 24
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE11
                 msb: 23
                 lsb: 22
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE10
                 msb: 21
                 lsb: 20
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE9
                 msb: 19
                 lsb: 18
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE8
                 msb: 17
                 lsb: 16
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE7
                 msb: 15
                 lsb: 14
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE6
                 msb: 13
                 lsb: 12
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE5
                 msb: 11
                 lsb: 10
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE4
                 msb: 9
                 lsb: 8
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE3
                 msb: 7
                 lsb: 6
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE2
                 msb: 5
                 lsb: 4
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE1
                 msb: 3
                 lsb: 2
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
               - name: MODE0
                 msb: 1
                 lsb: 0
                 width: 2
                 access: rw
-                settings:
-                  - "00": input mode
-                    "01": general purpose output mode
-                    "10": alternate function mode
-                    "11": analogue mode
+                settings: *gpio-mode
         - OTYPER:
             reference:
               section: 7.4.2
@@ -653,135 +641,103 @@ peripherals:
                 lsb: 16
                 width: 16
                 access: ro
-                settings: []
+                settings: ~
               - name: OT15
                 msb: 15
                 lsb: 15
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT14
                 msb: 14
                 lsb: 14
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT13
                 msb: 13
                 lsb: 13
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT12
                 msb: 12
                 lsb: 12
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT11
                 msb: 11
                 lsb: 11
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT10
                 msb: 10
                 lsb: 10
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT9
                 msb: 9
                 lsb: 9
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT8
                 msb: 8
                 lsb: 8
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT7
                 msb: 7
                 lsb: 7
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT6
                 msb: 6
                 lsb: 6
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT5
                 msb: 5
                 lsb: 5
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT4
                 msb: 4
                 lsb: 4
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT3
                 msb: 3
                 lsb: 3
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT2
                 msb: 2
                 lsb: 2
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT1
                 msb: 1
                 lsb: 1
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
               - name: OT0
                 msb: 0
                 lsb: 0
                 width: 1
                 access: rw
-                settings:
-                  - "0": Output push-pull
-                    "1": Output open-drain
+                settings: *output-type
         - OSPEEDR:
             reference:
               section: 7.4.3
@@ -792,161 +748,97 @@ peripherals:
                 lsb: 30
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED14
                 msb: 29
                 lsb: 28
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED13
                 msb: 27
                 lsb: 26
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED12
                 msb: 25
                 lsb: 24
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED11
                 msb: 23
                 lsb: 22
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED10
                 msb: 21
                 lsb: 20
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED9
                 msb: 19
                 lsb: 18
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED8
                 msb: 17
                 lsb: 16
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED7
                 msb: 15
                 lsb: 14
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED6
                 msb: 13
                 lsb: 12
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED5
                 msb: 11
                 lsb: 10
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED4
                 msb: 9
                 lsb: 8
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED3
                 msb: 7
                 lsb: 6
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED2
                 msb: 5
                 lsb: 4
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED1
                 msb: 3
                 lsb: 2
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
               - name: OSPEED0
                 msb: 1
                 lsb: 0
                 width: 2
                 access: rw
-                settings:
-                  - "00": Low speed
-                    "01": Medium speed
-                    "10": High speed
-                    "11": Very high speed
+                settings: *ospeed
         - PUPDR:
             reference:
               section: 7.4.4
@@ -957,161 +849,97 @@ peripherals:
                 lsb: 30
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR14
                 msb: 29
                 lsb: 28
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR13
                 msb: 27
                 lsb: 26
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR12
                 msb: 25
                 lsb: 24
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR11
                 msb: 23
                 lsb: 22
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR10
                 msb: 21
                 lsb: 20
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR9
                 msb: 19
                 lsb: 18
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR8
                 msb: 17
                 lsb: 16
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR7
                 msb: 15
                 lsb: 14
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR6
                 msb: 13
                 lsb: 12
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR5
                 msb: 11
                 lsb: 10
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR4
                 msb: 9
                 lsb: 8
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR3
                 msb: 7
                 lsb: 6
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR2
                 msb: 5
                 lsb: 4
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR1
                 msb: 3
                 lsb: 2
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
               - name: PUPDR0
                 msb: 1
                 lsb: 0
                 width: 2
                 access: rw
-                settings:
-                  - "00": No pull-up, pull-down
-                    "01": Pull-up
-                    "10": Pull-down
-                    "11": Reserved
+                settings: *pupdr
         - IDR:
             reference:
               section: 7.4.5
@@ -1122,135 +950,103 @@ peripherals:
                 lsb: 16
                 width: 16
                 access: ro
-                settings: []
+                settings: ~
               - name: ID15
                 msb: 15
                 lsb: 15
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID14
                 msb: 14
                 lsb: 14
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID13
                 msb: 13
                 lsb: 13
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID12
                 msb: 12
                 lsb: 12
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID11
                 msb: 11
                 lsb: 11
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID10
                 msb: 10
                 lsb: 10
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID9
                 msb: 9
                 lsb: 9
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID8
                 msb: 8
                 lsb: 8
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID7
                 msb: 7
                 lsb: 7
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID6
                 msb: 6
                 lsb: 6
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID5
                 msb: 5
                 lsb: 5
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID4
                 msb: 4
                 lsb: 4
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID3
                 msb: 3
                 lsb: 3
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID2
                 msb: 2
                 lsb: 2
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID1
                 msb: 1
                 lsb: 1
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: ID0
                 msb: 0
                 lsb: 0
                 width: 1
                 access: ro
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
         - ODR:
             reference:
               section: 7.4.6
@@ -1261,135 +1057,103 @@ peripherals:
                 lsb: 16
                 width: 16
                 access: ro
-                settings: []
+                settings: ~
               - name: OD15
                 msb: 15
                 lsb: 15
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD14
                 msb: 14
                 lsb: 14
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD13
                 msb: 13
                 lsb: 13
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD12
                 msb: 12
                 lsb: 12
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD11
                 msb: 11
                 lsb: 11
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD10
                 msb: 10
                 lsb: 10
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD9
                 msb: 9
                 lsb: 9
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD8
                 msb: 8
                 lsb: 8
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD7
                 msb: 7
                 lsb: 7
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD6
                 msb: 6
                 lsb: 6
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD5
                 msb: 5
                 lsb: 5
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD4
                 msb: 4
                 lsb: 4
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD3
                 msb: 3
                 lsb: 3
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD2
                 msb: 2
                 lsb: 2
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD1
                 msb: 1
                 lsb: 1
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
               - name: OD0
                 msb: 0
                 lsb: 0
                 width: 1
                 access: rw
-                settings:
-                  - "0": reset
-                    "1": set
+                settings: *bit-value
         - BSRR:
             reference:
               section: 7.4.7
@@ -1400,289 +1164,225 @@ peripherals:
                 lsb: 31
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR14
                 msb: 30
                 lsb: 30
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR13
                 msb: 29
                 lsb: 29
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR12
                 msb: 28
                 lsb: 28
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR11
                 msb: 27
                 lsb: 27
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR10
                 msb: 26
                 lsb: 26
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR9
                 msb: 25
                 lsb: 25
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR8
                 msb: 24
                 lsb: 24
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR7
                 msb: 23
                 lsb: 23
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR6
                 msb: 22
                 lsb: 22
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR5
                 msb: 21
                 lsb: 21
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR4
                 msb: 20
                 lsb: 20
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR3
                 msb: 19
                 lsb: 19
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR2
                 msb: 18
                 lsb: 18
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR1
                 msb: 17
                 lsb: 17
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BR0
                 msb: 16
                 lsb: 16
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Resets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-br
               - name: BS15
                 msb: 15
                 lsb: 15
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS14
                 msb: 14
                 lsb: 14
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS13
                 msb: 13
                 lsb: 13
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS12
                 msb: 12
                 lsb: 12
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS11
                 msb: 11
                 lsb: 11
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS10
                 msb: 10
                 lsb: 10
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS9
                 msb: 9
                 lsb: 9
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS8
                 msb: 8
                 lsb: 8
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS7
                 msb: 7
                 lsb: 7
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS6
                 msb: 6
                 lsb: 6
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS5
                 msb: 5
                 lsb: 5
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS4
                 msb: 4
                 lsb: 4
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS3
                 msb: 3
                 lsb: 3
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS2
                 msb: 2
                 lsb: 2
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS1
                 msb: 1
                 lsb: 1
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
               - name: BS0
                 msb: 0
                 lsb: 0
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Sets the corresponding ODx bit
-                    note: If both BSx and BRx are set, BSx has priority.
+                note: If both BSx and BRx are set, BSx has priority.
+                settings: *bsrr-bs
         - LCKR:
             reference:
               section: 7.4.8
@@ -1705,148 +1405,116 @@ peripherals:
             fields:
               - name: RESERVED
                 msb: 31
-                lsb: 15
+                lsb: 17
                 width: 15
                 access: ro
-                settings: []
+                settings: ~
               - name: LCKK
                 msb: 16
                 lsb: 16
                 width: 1
                 access: rw
                 settings:
-                  - "0": Port configuration lock key not active
-                    "1": >-
-                      Port configuration lock key active. The GPIOx_LCKR register is locked until the next MCU reset or
-                      peripheral reset.
+                  "0": Port configuration lock key not active
+                  "1": >-
+                    Port configuration lock key active. The GPIOx_LCKR register is locked until the next MCU reset or
+                    peripheral reset.
               - name: LCK15
                 msb: 15
                 lsb: 15
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK14
                 msb: 14
                 lsb: 14
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK13
                 msb: 13
                 lsb: 13
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK12
                 msb: 12
                 lsb: 12
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK11
                 msb: 11
                 lsb: 11
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK10
                 msb: 10
                 lsb: 10
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK9
                 msb: 9
                 lsb: 9
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK8
                 msb: 8
                 lsb: 8
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK7
                 msb: 7
                 lsb: 7
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK6
                 msb: 6
                 lsb: 6
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK5
                 msb: 5
                 lsb: 5
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK4
                 msb: 4
                 lsb: 4
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK3
                 msb: 3
                 lsb: 3
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK2
                 msb: 2
                 lsb: 2
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK1
                 msb: 1
                 lsb: 1
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
               - name: LCK0
                 msb: 0
                 lsb: 0
                 width: 1
                 access: rw
-                settings:
-                  - "0": Port configuration not locked
-                    "1": Port configuration locked
+                settings: *port-lock
         - AFRL:
             reference:
               section: 7.4.9
@@ -1857,177 +1525,49 @@ peripherals:
                 lsb: 28
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL6
                 msb: 27
                 lsb: 24
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL5
                 msb: 23
                 lsb: 20
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL4
                 msb: 19
                 lsb: 16
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL3
                 msb: 15
                 lsb: 12
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL2
                 msb: 11
                 lsb: 8
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL1
                 msb: 7
                 lsb: 4
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL0
                 msb: 3
                 lsb: 0
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
         - AFRH:
             reference:
               section: 7.4.10
@@ -2038,177 +1578,49 @@ peripherals:
                 lsb: 28
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL14
                 msb: 27
                 lsb: 24
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL13
                 msb: 23
                 lsb: 20
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL12
                 msb: 19
                 lsb: 16
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL11
                 msb: 15
                 lsb: 12
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL10
                 msb: 11
                 lsb: 8
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL9
                 msb: 7
                 lsb: 4
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
               - name: AFSEL8
                 msb: 3
                 lsb: 0
                 width: 4
                 access: rw
-                settings:
-                  - "0000": AF0
-                    "0001": AF1
-                    "0010": AF2
-                    "0011": AF3
-                    "0100": AF4
-                    "0101": AF5
-                    "0110": AF6
-                    "0111": AF7
-                    "1000": AF8
-                    "1001": AF9
-                    "1010": AF10
-                    "1011": AF11
-                    "1100": AF12
-                    "1101": AF13
-                    "1110": AF14
-                    "1111": AF15
+                settings: *afsel
         - BRR:
             reference:
               section: 7.4.11
@@ -2219,132 +1631,100 @@ peripherals:
                 lsb: 16
                 width: 16
                 access: ro
-                settings: []
+                settings: ~
               - name: BR15
                 msb: 15
                 lsb: 15
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR14
                 msb: 14
                 lsb: 14
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR13
                 msb: 13
                 lsb: 13
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR12
                 msb: 12
                 lsb: 12
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR11
                 msb: 11
                 lsb: 11
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR10
                 msb: 10
                 lsb: 10
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR9
                 msb: 9
                 lsb: 9
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR8
                 msb: 8
                 lsb: 8
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR7
                 msb: 7
                 lsb: 7
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR6
                 msb: 6
                 lsb: 6
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR5
                 msb: 5
                 lsb: 5
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR4
                 msb: 4
                 lsb: 4
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR3
                 msb: 3
                 lsb: 3
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR2
                 msb: 2
                 lsb: 2
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR1
                 msb: 1
                 lsb: 1
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
               - name: BR0
                 msb: 0
                 lsb: 0
                 width: 1
                 access: wo
-                settings:
-                  - "0": No action on the corresponding ODx bit
-                    "1": Reset the corresponding ODx bit
+                settings: *brr
