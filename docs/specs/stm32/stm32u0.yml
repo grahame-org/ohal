@@ -7,6 +7,7 @@ family:
 architecture:
   name: ARM Cortex-M0+
   word-size: 32
+arch-ref: cortex-m0plus
 reference:
   source: RM0503
   revision: 4
@@ -470,12 +471,12 @@ memory:
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xE0000000
       end: 0xFFFFFFFF
-    - name: Cortex-M0+ internal peripherals
-      sub-families: [stm32u031, stm32u073, stm32u083]
-      start: 0xE0000000
-      end: 0xE00FFFFF
+      # Cortex-M0+ internal peripherals (0xE0000000–0xE00FFFFF) are defined in
+      # docs/specs/common/arch/cortex-m0plus.yml and are not repeated here.
 definitions:
   settings:
+    # Architecture-generic: canonical definition lives in docs/specs/common/arch/cortex-m0plus.yml.
+    # Repeated here because YAML anchors cannot span files.
     gpio-mode: &gpio-mode
       "00": input mode
       "01": general purpose output mode
@@ -494,6 +495,8 @@ definitions:
       "01": Pull-up
       "10": Pull-down
       "11": Reserved
+    # Architecture-generic: canonical definition lives in docs/specs/common/arch/cortex-m0plus.yml.
+    # Repeated here because YAML anchors cannot span files.
     bit-value: &bit-value
       "0": reset
       "1": set

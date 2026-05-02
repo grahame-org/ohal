@@ -9,8 +9,11 @@ vendor reference manual.
 ```text
 docs/specs/
 ├── README.md                  ← this file
-├── schema.json                ← common JSON Schema for all spec files
+├── schema.json                ← common JSON Schema for family spec files
 ├── future_improvements.md     ← options for cross-family/cross-vendor settings sharing
+├── common/
+│   └── arch/
+│       └── {arch}.yml         ← one architecture-level spec per processor architecture
 └── {vendor}/                  ← one subdirectory per vendor (e.g. stm32, nxp, nordic)
     └── {family}.yml           ← one spec file per device family
 ```
@@ -28,7 +31,8 @@ are:
 | `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                 |
 | `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                      |
 | `family`       | ✓        | Family name and sub-family list                                   |
-| `architecture` | ✓        | Processor architecture and word size                              |
+| `architecture` | ✓        | Processor architecture and word size (inline summary)             |
+| `arch-ref`     |          | Reference to an architecture-level spec (see below)               |
 | `reference`    | ✓        | Reference manual document identifier and revision                 |
 | `memory`       |          | Memory map with address ranges and sub-family applicability       |
 | `definitions`  |          | Reusable settings blocks (referenced by YAML anchors in the spec) |
@@ -57,6 +61,28 @@ directory location:
 ```yaml
 vendor: STMicroelectronics
 ```
+
+### Architecture reference
+
+Family specs that belong to a well-known processor architecture can declare an `arch-ref` key
+pointing to an architecture-level spec file in `docs/specs/common/arch/`:
+
+```yaml
+arch-ref: cortex-m0plus
+```
+
+The corresponding file (`docs/specs/common/arch/cortex-m0plus.yml`) is the canonical source of
+truth for:
+
+- Architecture metadata: word size, endianness, ISA name
+- Private Peripheral Bus (PPB) memory regions (e.g. NVIC, SysTick, SCB address ranges)
+- Settings encodings that are identical on every device implementing this architecture (e.g.
+  the standard ARM Cortex-M GPIO mode encoding `gpio-mode`)
+
+Because YAML anchors cannot span files, architecture-generic settings that are used as YAML
+aliases within a family spec (e.g. `*gpio-mode`) must also be defined in `definitions.settings` of
+that family spec. Those local copies are annotated with a comment noting that the canonical
+definition lives in the architecture spec.
 
 ### Sub-family applicability
 

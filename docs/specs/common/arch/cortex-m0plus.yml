@@ -1,0 +1,26 @@
+---
+spec-version: "1.0.0"
+architecture:
+  name: ARM Cortex-M0+
+  word-size: 32
+  endianness: little
+memory:
+  note: >-
+    Private Peripheral Bus (PPB) address regions defined by the ARM Cortex-M0+ architecture. These
+    regions are identical on every Cortex-M0+ implementation regardless of vendor or device family.
+  map:
+    - name: Cortex-M0+ internal peripherals
+      start: 0xE0000000
+      end: 0xE00FFFFF
+definitions:
+  settings:
+    # Standard GPIO mode encoding shared by all ARM Cortex-M GPIO controllers.
+    gpio-mode:
+      "00": input mode
+      "01": general purpose output mode
+      "10": alternate function mode
+      "11": analogue mode
+    # Universal single-bit encoding for any field that simply sets or clears a signal.
+    bit-value:
+      "0": reset
+      "1": set

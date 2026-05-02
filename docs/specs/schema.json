@@ -34,6 +34,10 @@
         }
       }
     },
+    "arch-ref": {
+      "description": "Identifier of the architecture-level spec file (without the .yml extension) in docs/specs/common/arch/, e.g. 'cortex-m0plus'. Tooling can merge the referenced architecture spec with this family spec when generating code or documentation.",
+      "type": "string"
+    },
     "architecture": {
       "description": "Processor architecture metadata.",
       "type": "object",
