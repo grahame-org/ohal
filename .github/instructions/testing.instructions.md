@@ -6,18 +6,21 @@ applyTo: "tests/**"
 
 ## One test, one assert
 
-Every test function must contain **exactly one** `EXPECT_*` or `ASSERT_*` call.
+Every test function should contain **exactly one** `EXPECT_*` or `ASSERT_*` call.
 
 **Rationale:** A test with a single assertion has one clear reason to fail. Multiple
-assertions in a single test obscure which expectation is violated and can mask
-subsequent failures once the first assertion fires.
+assertions in a single test obscure which expectation is violated. When using
+`ASSERT_*` (fatal assertions), a failure stops the test immediately, silently
+skipping all subsequent assertions. Even with `EXPECT_*` (non-fatal), reporting
+multiple unrelated failures from one test body makes it harder to pinpoint the
+root cause.
 
 ### ✅ Correct
 
 ```cpp
 TEST_F(Register32Test, WriteStoresValue) {
-  Reg32::write(0xDEAD'BEEFu);
-  EXPECT_EQ(reg32_storage, 0xDEAD'BEEFu);
+  Reg32::write(0xFEED'FACEu);
+  EXPECT_EQ(reg32_storage, 0xFEED'FACEu);
 }
 ```
 
@@ -54,8 +57,8 @@ Choose the right mechanism for each situation:
 struct Config32 {
   inline static uint32_t storage{0U};
   using Reg = ohal::test::MockRegister<uint32_t, &storage>;
-  static constexpr uint32_t write_val = 0xDEAD'BEEFu;
-  static constexpr uint32_t read_val  = 0xCAFE'BABEu;
+  static constexpr uint32_t write_val = 0xFEED'FACEu;
+  static constexpr uint32_t read_val  = 0xFADE'CAFEu;
   static void reset() noexcept { storage = 0U; }
 };
 
