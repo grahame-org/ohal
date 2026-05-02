@@ -77,12 +77,7 @@ using GpioF = GpioPortRegs<kGpioFBase>;
 ///                 ohal::core::Register or MockRegister interface (read() / write()).
 template <uint8_t PinNum, typename Regs>
 struct GpioPortPinImpl {
-  /// STM32U083 GPIO ports have 16 pins (0–15).
-  static constexpr uint8_t kPinCount = 16U;
-  /// BSRR bits 16–31 clear the corresponding output pin.
-  static constexpr uint8_t kBsrrResetOffset = 16U;
-
-  static_assert(PinNum < kPinCount, "ohal: STM32U083 GPIO has pins 0-15 only.");
+  static_assert(PinNum < kStm32u083PinCount, "ohal: STM32U083 GPIO has pins 0-15 only.");
 
   // Bit-field descriptors — one per relevant GPIO register.
   // MODER: 2 bits per pin, RW, encodes the pin direction/function.
@@ -108,8 +103,8 @@ struct GpioPortPinImpl {
       ohal::core::BitField<typename Regs::Bsrr, PinNum, 1U, ohal::core::Access::WriteOnly>;
   // BSRR bits 16-31: write 1 to atomically drive the pin low (write-only).
   using BsrrReset =
-      ohal::core::BitField<typename Regs::Bsrr, static_cast<uint8_t>(PinNum + kBsrrResetOffset), 1U,
-                           ohal::core::Access::WriteOnly>;
+      ohal::core::BitField<typename Regs::Bsrr, static_cast<uint8_t>(PinNum + kBsrrResetBitStart),
+                           1U, ohal::core::Access::WriteOnly>;
 
   static void set_mode(ohal::gpio::PinMode mode) noexcept { Moder::write(mode); }
   static void set_output_type(ohal::gpio::OutputType output_type) noexcept {

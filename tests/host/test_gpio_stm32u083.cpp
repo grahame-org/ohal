@@ -97,22 +97,28 @@ TEST_F(GpioStm32u083Test, Set_DoesNotModifyModer) {
 }
 
 // ---------------------------------------------------------------------------
-// clear() — writes 1u << (PinNum + 16) to BSRR
+// clear() — writes 1u << (PinNum + 16) to BSRR; parametrised over boundary pins
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, Clear_WritesBsrrResetBit) {
-  MockPin5::clear();
-  EXPECT_EQ(mock_bsrr, 1U << 21U);
-}
+template <uint8_t PinNum>
+struct PinClearConfig {
+  using PinType = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<PinNum, MockGpioRegs>;
+  static constexpr uint32_t expected_bsrr = 1U << (PinNum + 16U);
+};
 
-TEST_F(GpioStm32u083Test, ClearPin0_WritesBsrrResetBit) {
-  MockPin0::clear();
-  EXPECT_EQ(mock_bsrr, 1U << 16U);
-}
+template <typename Config>
+class GpioStm32u083ClearBoundaryTest : public ::testing::Test {
+protected:
+  void SetUp() override { mock_bsrr = 0U; }
+};
 
-TEST_F(GpioStm32u083Test, ClearPin15_WritesBsrrResetBit) {
-  MockPin15::clear();
-  EXPECT_EQ(mock_bsrr, 1U << 31U);
+using ClearBoundaryConfigs =
+    ::testing::Types<PinClearConfig<0U>, PinClearConfig<5U>, PinClearConfig<15U>>;
+TYPED_TEST_SUITE(GpioStm32u083ClearBoundaryTest, ClearBoundaryConfigs);
+
+TYPED_TEST(GpioStm32u083ClearBoundaryTest, WritesBsrrResetBit) {
+  TypeParam::PinType::clear();
+  EXPECT_EQ(mock_bsrr, TypeParam::expected_bsrr);
 }
 
 // ---------------------------------------------------------------------------
@@ -181,32 +187,40 @@ TEST_F(GpioStm32u083Test, PortWrite_DoesNotModifyModer) {
 // set_mode() — writes 2-bit PinMode value to MODER at offset PinNum*2
 // ---------------------------------------------------------------------------
 
-// Pin 5: MODER bits [11:10].  Output = 0b01.
-TEST_F(GpioStm32u083Test, SetMode_Output_WritesModer) {
-  MockPin5::set_mode(ohal::gpio::PinMode::Output);
-  EXPECT_EQ(mock_moder & (0b11U << 10U), 0b01U << 10U);
+struct SetModeCase {
+  ohal::gpio::PinMode mode;
+  uint32_t moder_preload;  ///< initial MODER bits [11:10] before set_mode()
+  uint32_t expected_field; ///< expected MODER bits [11:10] after set_mode()
+  const char* name;
+};
+
+class GpioStm32u083SetModeTest : public ::testing::TestWithParam<SetModeCase> {
+protected:
+  // SetUp is called after the test parameter is bound, so GetParam() is valid here.
+  void SetUp() override { mock_moder = GetParam().moder_preload; }
+};
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    PinModes, GpioStm32u083SetModeTest,
+    ::testing::Values(
+        SetModeCase{ohal::gpio::PinMode::Output,            0U,           0b01U << 10U, "Output"},
+        SetModeCase{ohal::gpio::PinMode::Input,             0b11U << 10U, 0U,           "Input"},
+        SetModeCase{ohal::gpio::PinMode::AlternateFunction, 0U,           0b10U << 10U, "AlternateFunction"},
+        SetModeCase{ohal::gpio::PinMode::Analog,            0U,           0b11U << 10U, "Analog"}),
+    [](const ::testing::TestParamInfo<SetModeCase>& info) { return info.param.name; });
+// clang-format on
+
+TEST_P(GpioStm32u083SetModeTest, WritesCorrectModerBits) {
+  MockPin5::set_mode(GetParam().mode);
+  EXPECT_EQ(mock_moder & (0b11U << 10U), GetParam().expected_field);
 }
 
+// Pin 5: MODER bits [11:10] — verify that writing any mode preserves the other bits.
 TEST_F(GpioStm32u083Test, SetMode_Output_OtherModerBitsPreserved) {
   mock_moder = ~(0b11U << 10U); // all ones except bits [11:10]
   MockPin5::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & ~(0b11U << 10U), ~(0b11U << 10U));
-}
-
-TEST_F(GpioStm32u083Test, SetMode_Input_WritesModer) {
-  mock_moder = 0b11U << 10U; // pre-load Analog (0b11 = PinMode::Analog)
-  MockPin5::set_mode(ohal::gpio::PinMode::Input);
-  EXPECT_EQ(mock_moder & (0b11U << 10U), 0U);
-}
-
-TEST_F(GpioStm32u083Test, SetMode_AlternateFunction_WritesModer) {
-  MockPin5::set_mode(ohal::gpio::PinMode::AlternateFunction);
-  EXPECT_EQ(mock_moder & (0b11U << 10U), 0b10U << 10U);
-}
-
-TEST_F(GpioStm32u083Test, SetMode_Analog_WritesModer) {
-  MockPin5::set_mode(ohal::gpio::PinMode::Analog);
-  EXPECT_EQ(mock_moder & (0b11U << 10U), 0b11U << 10U);
 }
 
 // ---------------------------------------------------------------------------

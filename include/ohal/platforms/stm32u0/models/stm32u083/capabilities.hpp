@@ -12,6 +12,12 @@ namespace detail {
 /// STM32U083 GPIO ports have 16 pins (0–15).  Used as the upper bound in the
 /// capability specialisations below to ensure out-of-range pin numbers return false.
 inline constexpr uint8_t kStm32u083PinCount = 16U;
+
+/// Base for every STM32U083 GPIO capability trait specialisation.
+/// Evaluates to `std::true_type` for valid pin numbers (0–15) and
+/// `std::false_type` for any pin number outside that range.
+template <uint8_t PinNum>
+using Stm32u083PortCapability = std::bool_constant<(PinNum < kStm32u083PinCount)>;
 } // namespace detail
 
 // All STM32U083 GPIO pins (on every port) support output-type configuration,
@@ -25,94 +31,76 @@ inline constexpr uint8_t kStm32u083PinCount = 16U;
 
 // NOLINTBEGIN(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 template <uint8_t PinNum>
-struct supports_output_type<PortA, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_type<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortB, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_type<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortC, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_type<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortD, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_type<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortE, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_type<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortF, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_type<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortA, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_speed<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortB, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_speed<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortC, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_speed<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortD, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_speed<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortE, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_speed<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortF, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_output_speed<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_pull<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_pull<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_pull<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortD, PinNum> : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_pull<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_pull<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_pull<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_alternate_function<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_alternate_function<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_alternate_function<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortD, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_alternate_function<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_alternate_function<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum>
-    : std::bool_constant<(PinNum < detail::kStm32u083PinCount)> {};
+struct supports_alternate_function<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 
 } // namespace ohal::gpio::capabilities
