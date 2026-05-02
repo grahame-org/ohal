@@ -653,14 +653,6 @@ peripherals:
             settings:
               - 0: Output push-pull
                 1: Output open-drain
-          - name: OT15
-            msb: 15
-            lsb: 15
-            width: 1
-            access: rw
-            settings:
-              - 0: Output push-pull
-                1: Output open-drain
           - name: OT14
             msb: 14
             lsb: 14
