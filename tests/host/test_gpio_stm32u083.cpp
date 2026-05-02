@@ -56,6 +56,11 @@ using MockPin5 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<5U, MockGp
 using MockPin0 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<0U, MockGpioRegs>;
 using MockPin15 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<15U, MockGpioRegs>;
 
+// Convenience alias: port backed by MockGpioRegs.
+// Tests exercise GpioPortImpl directly; the real Port<PortA> delegates to the
+// same code path.
+using MockPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegs>;
+
 // ---------------------------------------------------------------------------
 // Test fixture: resets every mock register before each test.
 // ---------------------------------------------------------------------------
@@ -108,6 +113,68 @@ TEST_F(GpioStm32u083Test, ClearPin0_WritesBsrrResetBit) {
 TEST_F(GpioStm32u083Test, ClearPin15_WritesBsrrResetBit) {
   MockPin15::clear();
   EXPECT_EQ(mock_bsrr, 1U << 31U);
+}
+
+// ---------------------------------------------------------------------------
+// Port::set() — writes uint16_t mask to BSRR bits 0-15
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083Test, PortSet_WritesMaskToBsrrLow16) {
+  MockPort::set(0x00FFU);
+  EXPECT_EQ(mock_bsrr, 0x00FFU);
+}
+
+TEST_F(GpioStm32u083Test, PortSet_AllPins_WritesMaskToBsrr) {
+  MockPort::set(0xFFFFU);
+  EXPECT_EQ(mock_bsrr, 0xFFFFU);
+}
+
+TEST_F(GpioStm32u083Test, PortSet_DoesNotModifyModer) {
+  MockPort::set(0xFFFFU);
+  EXPECT_EQ(mock_moder, 0U);
+}
+
+// ---------------------------------------------------------------------------
+// Port::clear() — writes uint16_t mask to BSRR bits 16-31
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083Test, PortClear_WritesMaskToBsrrHigh16) {
+  MockPort::clear(0x00FFU);
+  EXPECT_EQ(mock_bsrr, 0x00FF0000U);
+}
+
+TEST_F(GpioStm32u083Test, PortClear_AllPins_WritesMaskToBsrr) {
+  MockPort::clear(0xFFFFU);
+  EXPECT_EQ(mock_bsrr, 0xFFFF0000U);
+}
+
+TEST_F(GpioStm32u083Test, PortClear_DoesNotModifyModer) {
+  MockPort::clear(0xFFFFU);
+  EXPECT_EQ(mock_moder, 0U);
+}
+
+// ---------------------------------------------------------------------------
+// Port::write() — writes combined set/clear mask to BSRR in a single store
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083Test, PortWrite_WritesCombinedMaskToBsrr) {
+  MockPort::write(0x000FU, 0x00F0U);
+  EXPECT_EQ(mock_bsrr, 0x00F0000FU);
+}
+
+TEST_F(GpioStm32u083Test, PortWrite_OnlySetMask_WritesMaskToBsrrLow16) {
+  MockPort::write(0xABCDU, 0x0000U);
+  EXPECT_EQ(mock_bsrr, 0x0000ABCDU);
+}
+
+TEST_F(GpioStm32u083Test, PortWrite_OnlyClearMask_WritesMaskToBsrrHigh16) {
+  MockPort::write(0x0000U, 0xABCDU);
+  EXPECT_EQ(mock_bsrr, 0xABCD0000U);
+}
+
+TEST_F(GpioStm32u083Test, PortWrite_DoesNotModifyModer) {
+  MockPort::write(0xFFFFU, 0xFFFFU);
+  EXPECT_EQ(mock_moder, 0U);
 }
 
 // ---------------------------------------------------------------------------
@@ -354,6 +421,8 @@ struct MockGpioRegsCountingBsrr {
 using CountingPin5 =
     ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<5U, MockGpioRegsCountingBsrr>;
 
+using CountingPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegsCountingBsrr>;
+
 class GpioStm32u083BsrrReadCountTest : public ::testing::Test {
 protected:
   void SetUp() override { BsrrCountingReg::reset(); }
@@ -366,6 +435,21 @@ TEST_F(GpioStm32u083BsrrReadCountTest, Set_NeverCallsReadOnBsrr) {
 
 TEST_F(GpioStm32u083BsrrReadCountTest, Clear_NeverCallsReadOnBsrr) {
   CountingPin5::clear();
+  EXPECT_EQ(BsrrCountingReg::read_count, 0U);
+}
+
+TEST_F(GpioStm32u083BsrrReadCountTest, PortSet_NeverCallsReadOnBsrr) {
+  CountingPort::set(0xFFFFU);
+  EXPECT_EQ(BsrrCountingReg::read_count, 0U);
+}
+
+TEST_F(GpioStm32u083BsrrReadCountTest, PortClear_NeverCallsReadOnBsrr) {
+  CountingPort::clear(0xFFFFU);
+  EXPECT_EQ(BsrrCountingReg::read_count, 0U);
+}
+
+TEST_F(GpioStm32u083BsrrReadCountTest, PortWrite_NeverCallsReadOnBsrr) {
+  CountingPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(BsrrCountingReg::read_count, 0U);
 }
 
@@ -477,6 +561,61 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 
 TEST_P(GpioStm32u083WiringTest, BsrrAddressMatchesHardwareBase) {
+  EXPECT_EQ(GetParam().actual, GetParam().expected);
+}
+
+// ---------------------------------------------------------------------------
+// Port<PortX> wiring tests: verify each Port<> specialisation resolves to the
+// correct hardware BSRR address.
+//
+// Port<PortX> inherits from GpioPortImpl<GpioX> which exposes BsrrReg = Bsrr.
+// Checking Port<PortX>::BsrrReg::address exercises the full PortTag →
+// GpioPortImpl<Regs> → Register<Address> chain.
+// ---------------------------------------------------------------------------
+
+static_assert(ohal::gpio::Port<ohal::gpio::PortA>::BsrrReg::address ==
+                  wiring::kGpioABase + wiring::kBsrrOffset,
+              "Port<PortA> must use GPIOA BSRR address");
+
+static_assert(ohal::gpio::Port<ohal::gpio::PortB>::BsrrReg::address ==
+                  wiring::kGpioBBase + wiring::kBsrrOffset,
+              "Port<PortB> must use GPIOB BSRR address");
+
+static_assert(ohal::gpio::Port<ohal::gpio::PortC>::BsrrReg::address ==
+                  wiring::kGpioCBase + wiring::kBsrrOffset,
+              "Port<PortC> must use GPIOC BSRR address");
+
+static_assert(ohal::gpio::Port<ohal::gpio::PortD>::BsrrReg::address ==
+                  wiring::kGpioDBase + wiring::kBsrrOffset,
+              "Port<PortD> must use GPIOD BSRR address");
+
+static_assert(ohal::gpio::Port<ohal::gpio::PortE>::BsrrReg::address ==
+                  wiring::kGpioEBase + wiring::kBsrrOffset,
+              "Port<PortE> must use GPIOE BSRR address");
+
+static_assert(ohal::gpio::Port<ohal::gpio::PortF>::BsrrReg::address ==
+                  wiring::kGpioFBase + wiring::kBsrrOffset,
+              "Port<PortF> must use GPIOF BSRR address");
+
+class GpioStm32u083PortWiringTest : public ::testing::TestWithParam<WiringCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    PortBsrrAddresses, GpioStm32u083PortWiringTest,
+    ::testing::Values(WiringCase{ohal::gpio::Port<ohal::gpio::PortA>::BsrrReg::address,
+                                 wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
+                      WiringCase{ohal::gpio::Port<ohal::gpio::PortB>::BsrrReg::address,
+                                 wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
+                      WiringCase{ohal::gpio::Port<ohal::gpio::PortC>::BsrrReg::address,
+                                 wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
+                      WiringCase{ohal::gpio::Port<ohal::gpio::PortD>::BsrrReg::address,
+                                 wiring::kGpioDBase + wiring::kBsrrOffset, "PortD"},
+                      WiringCase{ohal::gpio::Port<ohal::gpio::PortE>::BsrrReg::address,
+                                 wiring::kGpioEBase + wiring::kBsrrOffset, "PortE"},
+                      WiringCase{ohal::gpio::Port<ohal::gpio::PortF>::BsrrReg::address,
+                                 wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
+    [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
+
+TEST_P(GpioStm32u083PortWiringTest, BsrrAddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 

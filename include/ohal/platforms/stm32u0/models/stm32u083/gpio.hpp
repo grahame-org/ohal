@@ -32,6 +32,11 @@ inline constexpr uintptr_t kGpioDBase = 0x5000'0C00U;
 inline constexpr uintptr_t kGpioEBase = 0x5000'1000U;
 inline constexpr uintptr_t kGpioFBase = 0x5000'1400U;
 
+/// Number of pins per STM32U083 GPIO port (0–15).
+inline constexpr uint8_t kStm32u083PinCount = 16U;
+/// BSRR bit offset of the reset half: writing a 1 to bit (16 + n) clears pin n.
+inline constexpr uint8_t kBsrrResetBitStart = 16U;
+
 /// Register map for one STM32U083 GPIO port.
 ///
 /// Instantiate with the port base address from the STM32U083 Reference Manual
@@ -135,6 +140,44 @@ struct GpioPortPinImpl {
   }
 };
 
+/// Implements the ohal::gpio::Port<PortTag> API for one STM32U083 GPIO port.
+///
+/// All three operations write directly to the BSRR register — no read before
+/// write.  BSRR bits 0–15 atomically set the corresponding output pins; bits
+/// 16–31 atomically reset them.  Writing both halves in a single 32-bit store
+/// (as @c write() does) is therefore a single atomic bus transaction with no
+/// intermediate hardware state visible to interrupts or DMA.
+///
+/// Parametrised on @p Regs so that host-side tests can inject a mock register
+/// set (using ohal::test::MockRegister types) without modifying the real
+/// hardware header.  Production code uses GpioA…GpioF (GpioPortRegs<Base>)
+/// as the @p Regs argument.
+///
+/// @tparam Regs  A type whose Bsrr nested type alias satisfies the Register
+///               or MockRegister interface (write()).
+template <typename Regs>
+struct GpioPortImpl {
+  /// Exposed so host-test wiring checks can inspect the BSRR register address.
+  using BsrrReg = typename Regs::Bsrr;
+
+  /// Drives every pin whose bit is set in @p mask high — a single BSRR write,
+  /// no read.
+  static void set(uint16_t mask) noexcept { Regs::Bsrr::write(static_cast<uint32_t>(mask)); }
+
+  /// Drives every pin whose bit is set in @p mask low — a single BSRR write,
+  /// no read.
+  static void clear(uint16_t mask) noexcept {
+    Regs::Bsrr::write(static_cast<uint32_t>(mask) << kBsrrResetBitStart);
+  }
+
+  /// Drives the pins in @p set_mask high and the pins in @p clear_mask low in
+  /// a single BSRR write — no intermediate hardware state is visible.
+  static void write(uint16_t set_mask, uint16_t clear_mask) noexcept {
+    Regs::Bsrr::write(static_cast<uint32_t>(set_mask) |
+                      (static_cast<uint32_t>(clear_mask) << kBsrrResetBitStart));
+  }
+};
+
 } // namespace ohal::platforms::stm32u0::stm32u083
 
 // ---------------------------------------------------------------------------
@@ -142,6 +185,10 @@ struct GpioPortPinImpl {
 // Each port delegates to GpioPortPinImpl with its corresponding physical
 // register set.  All six ports share identical register layouts; only the
 // base address differs.
+// ---------------------------------------------------------------------------
+// ohal::gpio::Port<> full specialisations for every STM32U083 GPIO port.
+// Each port delegates to GpioPortImpl with its corresponding physical
+// register set.
 // ---------------------------------------------------------------------------
 
 namespace ohal::gpio {
@@ -169,6 +216,30 @@ struct Pin<PortE, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl
 template <uint8_t PinNum>
 struct Pin<PortF, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
                                 PinNum, ohal::platforms::stm32u0::stm32u083::GpioF> {};
+
+template <>
+struct Port<PortA> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioA> {};
+
+template <>
+struct Port<PortB> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioB> {};
+
+template <>
+struct Port<PortC> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioC> {};
+
+template <>
+struct Port<PortD> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioD> {};
+
+template <>
+struct Port<PortE> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioE> {};
+
+template <>
+struct Port<PortF> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioF> {};
 
 } // namespace ohal::gpio
 
