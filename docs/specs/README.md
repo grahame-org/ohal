@@ -121,6 +121,15 @@ memory:
       end: 0x1FFFD7FF
 ```
 
+Optional per-entry keys:
+
+| Key            | Description                                                                                                                                                                                   |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `sub-families` | Sub-family identifiers for which this region exists. Omit if the region is present in all sub-families.                                                                                       |
+| `base`         | Peripheral base address for register offset calculations, when it differs from the region's `start` address. Consumers must use this address (not `start`) when computing register addresses. |
+| `verified`     | Set to `false` to flag a region that is provisional or still needs checking against the reference manual. Defaults to `true` (verified).                                                      |
+| `note`         | Free-text annotation for cases not covered by the structured keys above.                                                                                                                      |
+
 ### Peripherals
 
 Peripherals are listed under `peripherals`. Each item is a single-key mapping whose key is the
@@ -159,21 +168,42 @@ present in all sub-families.
 
 Each field has:
 
-| Key        | Type                 | Description                                         |
-| ---------- | -------------------- | --------------------------------------------------- |
-| `name`     | string               | Field name from the reference manual                |
-| `msb`      | integer              | Most-significant bit position (inclusive, 0-based)  |
-| `lsb`      | integer              | Least-significant bit position (inclusive, 0-based) |
-| `width`    | integer              | Field width in bits (must equal `msb - lsb + 1`)    |
-| `access`   | `rw` \| `ro` \| `wo` | Read/write, read-only, or write-only                |
-| `note`     | string (optional)    | Free-text annotation                                |
-| `settings` | mapping or `~`       | Enumerated bit-pattern values (see below)           |
+| Key             | Type                 | Description                                                                                        |
+| --------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
+| `name`          | string               | Field name from the reference manual                                                               |
+| `msb`           | integer              | Most-significant bit position (inclusive, 0-based)                                                 |
+| `lsb`           | integer              | Least-significant bit position (inclusive, 0-based)                                                |
+| `width`         | integer              | Field width in bits (must equal `msb - lsb + 1`)                                                   |
+| `access`        | `rw` \| `ro` \| `wo` | Read/write, read-only, or write-only                                                               |
+| `note`          | string (optional)    | Free-text annotation for cases not covered by the structured keys                                  |
+| `priority-over` | list (optional)      | Names of fields in the same register that this field overrides in a simultaneous write (see below) |
+| `settings`      | mapping or `~`       | Enumerated bit-pattern values (see below)                                                          |
 
 The `access` values are:
 
 - `rw` — read/write
 - `ro` — read-only
 - `wo` — write-only (hardware ignores the read value)
+
+### Field write-conflict priority
+
+Some registers contain pairs of fields that represent conflicting operations on the same bit (e.g.
+BSRR's BSx / BRx set/reset pairs). When both fields are written with a non-zero value in the same
+register write, the hardware applies only one of them. Document this with `priority-over`:
+
+```yaml
+- name: BS0
+  msb: 0
+  lsb: 0
+  width: 1
+  access: wo
+  priority-over: [BR0]  # if both BS0=1 and BR0=1 are written, BS0's effect wins
+  settings: *bsrr-bs
+```
+
+`priority-over` is a list of field names in the **same register** that this field's effect overrides
+when both are written simultaneously. The listed fields' writes are silently discarded by the
+hardware. Consumers implementing a write to such a register should warn or document this behaviour.
 
 ### Settings
 

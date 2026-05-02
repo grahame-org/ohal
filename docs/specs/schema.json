@@ -144,6 +144,14 @@
         },
         "start": { "$ref": "#/$defs/hex-address" },
         "end": { "$ref": "#/$defs/hex-address" },
+        "base": {
+          "description": "Peripheral base address for register offset calculations, when it differs from the region's start address. Consumers should use this address (not start) when computing register addresses from offsets.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "verified": {
+          "description": "Whether this entry has been verified against the reference manual. Defaults to true. Set to false to flag data that is provisional or still needs checking.",
+          "type": "boolean"
+        },
         "note": {
           "description": "Optional free-text annotation.",
           "type": "string"
@@ -196,6 +204,12 @@
         "note": {
           "description": "Optional free-text annotation for this field.",
           "type": "string"
+        },
+        "priority-over": {
+          "description": "Names of fields in the same register that this field overrides when both are written in the same register access. If this field and any listed field are both written with a non-zero value simultaneously, the effect of this field takes precedence and the listed fields' writes are ignored by the hardware.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
         },
         "settings": { "$ref": "#/$defs/settings" }
       }
