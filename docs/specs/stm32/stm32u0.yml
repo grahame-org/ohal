@@ -1,7 +1,9 @@
 ---
-family: stm32u0
+family:
+  name: stm32u0
   sub-families: [stm32u031, stm32u073, stm32u083]
-architecture: ARM cortex M0+
+architecture:
+  name: ARM cortex M0+
   word-size: 32
 reference:
   source: RM0503
@@ -15,7 +17,7 @@ memory:
     - name: block 0
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x00000000
-      end:   0x1FFFFFFF
+      end: 0x1FFFFFFF
     - name: Main flash memory,  System memory or SRAM. Depends on boot configuration
       sub-families: [stm32u031]
       start: 0x00000000
@@ -71,7 +73,7 @@ memory:
     - name: block 1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x20000000
-      end:   0x3FFFFFFF
+      end: 0x3FFFFFFF
     - name: SRAM
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x20000000
@@ -83,384 +85,384 @@ memory:
     - name: block 2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40000000
-      end:   0x5FFFFFFF
+      end: 0x5FFFFFFF
     - name: APB
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40000000
-      end:   0x4000A7FF
+      end: 0x4000A7FF
     - name: TIM2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40000000
-      end:   0x400003FF
+      end: 0x400003FF
     - name: TIM3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40000400
-      end:   0x400007FF
+      end: 0x400007FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40000800
-      end:   0x40000FFF
+      end: 0x40000FFF
     - name: TIM6
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40001000
-      end:   0x400013FF
+      end: 0x400013FF
     - name: TIM7
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40001400
-      end:   0x400017FF
+      end: 0x400017FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40001800
-      end:   0x400023FF
+      end: 0x400023FF
     - name: LCD
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40002400
-      end:   0x400027FF
+      end: 0x400027FF
     - name: RTC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40002800
-      end:   0x40002BFF
+      end: 0x40002BFF
     - name: WWDG
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40002C00
-      end:   0x40002FFF
+      end: 0x40002FFF
     - name: IWDG
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40003000
-      end:   0x400033FF
+      end: 0x400033FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40003400
-      end:   0x400037FF
+      end: 0x400037FF
     - name: SPI2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40003800
-      end:   0x40003BFF
+      end: 0x40003BFF
     - name: SPI3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40003C00
-      end:   0x40003FFF
+      end: 0x40003FFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40004000
-      end:   0x400043FF
+      end: 0x400043FF
     - name: USART2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40004400
-      end:   0x400047FF
+      end: 0x400047FF
     - name: USART3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40004800
-      end:   0x40004BFF
+      end: 0x40004BFF
     - name: USART4
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40004C00
-      end:   0x40004FFF
+      end: 0x40004FFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40005000
-      end:   0x400053FF
+      end: 0x400053FF
     - name: I2C1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40005400
-      end:   0x400057FF
+      end: 0x400057FF
     - name: I2C2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40005800
-      end:   0x40005BFF
+      end: 0x40005BFF
     - name: USB
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40005C00
-      end:   0x40005FFF
+      end: 0x40005FFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40006000
-      end:   0x40006BFF
+      end: 0x40006BFF
     - name: CRS
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40006C00
-      end:   0x40006FFF
+      end: 0x40006FFF
     - name: PWR
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40007000
-      end:   0x400073FF
+      end: 0x400073FF
     - name: DAC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40007400
-      end:   0x400077FF
+      end: 0x400077FF
     - name: OPAMP
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40007800
-      end:   0x40007BFF
+      end: 0x40007BFF
     - name: LPTIM1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40007C00
-      end:   0x40007FFF
+      end: 0x40007FFF
     - name: LPUART1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40008000
-      end:   0x400083FF
+      end: 0x400083FF
     - name: LPUART2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40008400
-      end:   0x400087FF
+      end: 0x400087FF
     - name: I2C3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40008800
-      end:   0x40008BFF
+      end: 0x40008BFF
     - name: LPUART3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40008C00
-      end:   0x40008FFF
+      end: 0x40008FFF
     - name: LPTIM3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40009000
-      end:   0x400093FF
+      end: 0x400093FF
     - name: LPTIM2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40009400
-      end:   0x400097FF
+      end: 0x400097FF
     - name: USB RAM1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40009800
-      end:   0x40009BFF
+      end: 0x40009BFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40009C00
-      end:   0x40009FFF
+      end: 0x40009FFF
     - name: I2C4
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x4000A000
-      end:   0x4000A3FF
+      end: 0x4000A3FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x4000A400
-      end:   0x4000AFFF
+      end: 0x4000AFFF
     - name: TAMP (+BKP registers)
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x4000B000
-      end:   0x4000B3FF
+      end: 0x4000B3FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x4000B400
-      end:   0x4000FFFF
+      end: 0x4000FFFF
     - name: APB
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010000
-      end:   0x40015BFF
+      end: 0x40015BFF
     - name: SYSCFG
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010000
-      end:   0x4001002F
+      end: 0x4001002F
     - name: VREFBUF
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010030
-      end:   0x4001007F
+      end: 0x4001007F
     - name: SYSCFG(ITLINE)
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010080
-      end:   0x400101FF
+      end: 0x400101FF
       note: uses 0x40010000 as base address
     - name: COMP
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010200
-      end:   0x400103FF
+      end: 0x400103FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010400
-      end:   0x400123FF
+      end: 0x400123FF
     - name: ADC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40012400
-      end:   0x400127FF
+      end: 0x400127FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40012800
-      end:   0x40012BFF
+      end: 0x40012BFF
     - name: TIM1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40012C00
-      end:   0x40012FFF
+      end: 0x40012FFF
     - name: SPI1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40013000
-      end:   0x400133FF
+      end: 0x400133FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40013400
-      end:   0x400137FF
+      end: 0x400137FF
     - name: USART1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40013800
-      end:   0x40013BFF
+      end: 0x40013BFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40013C00
-      end:   0x40013FFF
+      end: 0x40013FFF
     - name: TIM15
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40014000
-      end:   0x400143FF
+      end: 0x400143FF
     - name: TIM16
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40014400
-      end:   0x400147FF
+      end: 0x400147FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40014800
-      end:   0x400157FF
+      end: 0x400157FF
     - name: DBG
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40015800
-      end:   0x40015BFF
+      end: 0x40015BFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40015C00
-      end:   0x4001FFFF
+      end: 0x4001FFFF
     - name: AHB
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40020000
-      end:   0x400263FF
+      end: 0x400263FF
     - name: DMA1
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40020000
-      end:   0x400203FF
+      end: 0x400203FF
     - name: DMA2
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40020400
-      end:   0x400207FF
+      end: 0x400207FF
     - name: DMAMUX
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40020800
-      end:   0x40020BFF
+      end: 0x40020BFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40020C00
-      end:   0x40020FFF
+      end: 0x40020FFF
     - name: RCC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40021000
-      end:   0x400213FF
+      end: 0x400213FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40021400
-      end:   0x400217FF
+      end: 0x400217FF
     - name: EXTI
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40021800
-      end:   0x40021BFF
+      end: 0x40021BFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40021C00
-      end:   0x40021FFF
+      end: 0x40021FFF
     - name: FLASH
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40022000
-      end:   0x400223FF
+      end: 0x400223FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40022400
-      end:   0x40022FFF
+      end: 0x40022FFF
     - name: CRC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40023000
-      end:   0x400233FF
+      end: 0x400233FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40023400
-      end:   0x40023FFF
+      end: 0x40023FFF
     - name: TSC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40024000
-      end:   0x400243FF
+      end: 0x400243FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40024400
-      end:   0x40024FFF
+      end: 0x40024FFF
     - name: RNG
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40025000
-      end:   0x400253FF
+      end: 0x400253FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40025400
-      end:   0x40025FFF
+      end: 0x40025FFF
     - name: AES
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40026000
-      end:   0x400263FF
+      end: 0x400263FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40026400
-      end:   0x4FFFFFFF
+      end: 0x4FFFFFFF
     - name: GPIOA
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50000000
-      end:   0x500003FF
+      end: 0x500003FF
     - name: GPIOB
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50000400
-      end:   0x500007FF
+      end: 0x500007FF
     - name: GPIOC
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50000800
-      end:   0x50000BFF
+      end: 0x50000BFF
     - name: GPIOD
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50000C00
-      end:   0x50000FFF
+      end: 0x50000FFF
     - name: GPIOE
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50001000
-      end:   0x500013FF
+      end: 0x500013FF
     - name: GPIOF
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50001400
-      end:   0x500017FF
+      end: 0x500017FF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x50001800
-      end:   0x5FFFFFFF
+      end: 0x5FFFFFFF
     - name: block 3
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x60000000
-      end:   0x7FFFFFFF
+      end: 0x7FFFFFFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x60000000
-      end:   0x7FFFFFFF
+      end: 0x7FFFFFFF
     - name: block 4
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x80000000
-      end:   0x9FFFFFFF
+      end: 0x9FFFFFFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x80000000
-      end:   0x9FFFFFFF
+      end: 0x9FFFFFFF
     - name: block 5
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xA0000000
-      end:   0xBFFFFFFF
+      end: 0xBFFFFFFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xA0000000
-      end:   0xBFFFFFFF
+      end: 0xBFFFFFFF
     - name: block 6
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xC0000000
-      end:   0xDFFFFFFF
+      end: 0xDFFFFFFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xC0000000
-      end:   0xDFFFFFFF
+      end: 0xDFFFFFFF
     - name: block 7
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xE0000000
-      end:   0xFFFFFFFF
+      end: 0xFFFFFFFF
     - name: Cortex-M0+ internal peripherals
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0xE0000000
-      end:   0xE00FFFFF
+      end: 0xE00FFFFF
 peripherals:
   - gpio:
     reference:
@@ -1686,19 +1688,19 @@ peripherals:
         offset: 0x1C
         sequence:
           - write:
-            - LCKK: 1
-              LCKR: bits 15:0
+              - LCKK: 1
+                LCKR: bits 15:0
           - write:
-            - LCKK: 0
-              LCKR: bits 15:0
+              - LCKK: 0
+                LCKR: bits 15:0
           - write:
-            - LCKK: 1
-              LCKR: bits 15:0
+              - LCKK: 1
+                LCKR: bits 15:0
           - read:
-            - LCKR: bits 31:0
+              - LCKR: bits 31:0
           - read:
-            - LCKK: 1
-              note: optional step, but confirms lock is active
+              - LCKK: 1
+                note: optional step, but confirms lock is active
         fields:
           - name: RESERVED
             msb: 31
@@ -1713,7 +1715,9 @@ peripherals:
             access: rw
             settings:
               - 0: Port configuration lock key not active
-                1: Port configuration lock key active. The GPIOx_LCKR register is locked until the next MCU reset or peripheral reset.
+                1: >-
+                  Port configuration lock key active. The GPIOx_LCKR register is locked until the next MCU reset or
+                  peripheral reset.
           - name: LCK15
             msb: 15
             lsb: 15
