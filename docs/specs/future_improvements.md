@@ -130,10 +130,10 @@ the common `docs/specs/schema.json` when none exists.
 ### Option D: Spec format versioning ✅ (implemented)
 
 A `spec-version` field has been added to every spec file. The field is required by the schema and
-uses `MAJOR.MINOR` semantics:
+uses [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 
 ```yaml
-spec-version: "1.0"
+spec-version: "1.0.0"
 vendor: STMicroelectronics
 # ...
 ```
@@ -156,7 +156,7 @@ chosen.
 ## Recommendation
 
 1. **Near-term:** ~~Adopt **Option D** (spec-version field) immediately so that format evolution is
-   tracked from the start.~~ ✅ Implemented — `spec-version: "1.0"` is now required by the schema.
+   tracked from the start.~~ ✅ Implemented — `spec-version: "1.0.0"` (semver) is now required by the schema.
 
 2. **Medium-term:** Implement **Option A** (common definitions library) once more than one vendor's
    specs exist and duplication is observed. Keep the merge step simple: a small Python script that

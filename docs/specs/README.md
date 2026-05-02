@@ -25,7 +25,7 @@ are:
 
 | Key            | Required | Description                                                       |
 | -------------- | -------- | ----------------------------------------------------------------- |
-| `spec-version` | ✓        | Spec format version (e.g. `"1.0"`)                                |
+| `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                 |
 | `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                      |
 | `family`       | ✓        | Family name and sub-family list                                   |
 | `architecture` | ✓        | Processor architecture and word size                              |
@@ -41,12 +41,13 @@ are:
 Every spec must declare the format version as the first key:
 
 ```yaml
-spec-version: "1.0"
+spec-version: "1.0.0"
 ```
 
-The version uses `MAJOR.MINOR` semantics: increment the minor version for backward-compatible
-additions, the major version for breaking changes. Tooling can use this field to warn about or
-reject stale spec files.
+The version uses [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`): increment the
+patch version for corrections, the minor version for backward-compatible additions, and the major
+version for breaking changes. Pre-release and build-metadata suffixes (e.g. `1.0.0-alpha.1`) are
+also permitted. Tooling can use this field to warn about or reject stale spec files.
 
 ### Vendor
 
