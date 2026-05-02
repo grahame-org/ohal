@@ -1,0 +1,66 @@
+---
+spec-version: "1.0.0"
+vendor: STMicroelectronics
+family-ref: stm32u0
+model: stm32u031c4
+package: UFQFPN32
+flash-kb: 256
+sram-kb: 12
+pin-count: 32
+peripheral-availability:
+  - peripheral: gpio
+    instances: [GPIOA, GPIOB, GPIOC, GPIOD, GPIOF]
+    # Note: GPIOE is not bonded out on the 32-pin UFQFPN package.
+alternate-functions:
+  # Excerpt: PA0–PA3 with their AF0–AF7 assignments.
+  # A complete table covers all GPIOs; see RM0503 Table 17.
+  - pin: PA0
+    functions:
+      AF0: ~
+      AF1: TIM2_CH1
+      AF2: TIM2_ETR
+      AF3: ~
+      AF4: USART2_CTS
+      AF5: ~
+      AF6: LPUART1_RX
+      AF7: COMP1_OUT
+  - pin: PA1
+    functions:
+      AF0: ~
+      AF1: TIM2_CH2
+      AF2: ~
+      AF3: ~
+      AF4: USART2_RTS_DE
+      AF5: ~
+      AF6: LPUART1_TX
+      AF7: ~
+  - pin: PA2
+    functions:
+      AF0: ~
+      AF1: TIM2_CH3
+      AF2: ~
+      AF3: ~
+      AF4: USART2_TX
+      AF5: ~
+      AF6: LPUART2_TX
+      AF7: COMP2_OUT
+  - pin: PA3
+    functions:
+      AF0: ~
+      AF1: TIM2_CH4
+      AF2: TIM15_CH2
+      AF3: ~
+      AF4: USART2_RX
+      AF5: ~
+      AF6: LPUART2_RX
+      AF7: ~
+errata:
+  # This section is intentionally sparse; a production spec would list all applicable
+  # errata from the STM32U031 errata sheet (ES0561).
+  - id: ES0561-2.1.1
+    title: HSI16 clock drift at low supply voltage
+    description: >-
+      Under certain supply voltage and temperature conditions the HSI16 oscillator frequency may
+      deviate beyond the specified accuracy. Workaround: use an external crystal oscillator (HSE)
+      when high frequency accuracy is required at low supply voltage.
+    silicon-revisions: [A]
