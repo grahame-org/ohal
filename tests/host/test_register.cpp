@@ -18,8 +18,8 @@ static uint8_t reg8_storage{0U};
 struct Config32 {
   using StorageType = uint32_t;
   using Reg = ohal::test::MockRegister<uint32_t, &reg32_storage>;
-  static constexpr uint32_t write_val = 0xDEAD'BEEFu;
-  static constexpr uint32_t read_val = 0xCAFE'BABEu;
+  static constexpr uint32_t write_val = 0x1234'5678u;
+  static constexpr uint32_t read_val = 0x8765'4321u;
   static void reset() noexcept { reg32_storage = 0U; }
   static StorageType& storage() noexcept { return reg32_storage; }
 };
