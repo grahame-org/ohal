@@ -86,6 +86,10 @@ memory:
       start: 0x20003000
       end: 0x20009FFF
       verified: false
+      note: >-
+        Inferred gap: stm32u031 SRAM ends at 0x20002FFF and the next documented region starts
+        at 0x2000A000. This reserved entry fills the intervening address space but has not yet
+        been confirmed against the reference manual (RM0503). Mark verified: true once checked.
     - name: SRAM
       sub-families: [stm32u073, stm32u083]
       start: 0x20000000
@@ -275,6 +279,11 @@ memory:
       start: 0x40010080
       end: 0x400101FF
       base: 0x40010000
+      note: >-
+        The SYSCFG_ITLINEx registers occupy a sub-region of the SYSCFG address space starting
+        at 0x40010080. The peripheral's base address is 0x40010000 (the start of the overall
+        SYSCFG block), so register offsets from the reference manual must be computed from that
+        base, not from the sub-region start address.
     - name: COMP
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x40010200
