@@ -1,5 +1,0 @@
-if(EXISTS "/home/runner/work/ohal/ohal/build_test/tests/host/ohal_host_tests[1]_tests.cmake")
-  include("/home/runner/work/ohal/ohal/build_test/tests/host/ohal_host_tests[1]_tests.cmake")
-else()
-  add_test(ohal_host_tests_NOT_BUILT ohal_host_tests_NOT_BUILT)
-endif()
