@@ -1,0 +1,2345 @@
+---
+family: stm32u0
+  sub-families: [stm32u031, stm32u073, stm32u083]
+architecture: ARM cortex M0+
+  word-size: 32
+reference:
+  source: RM0503
+  revision: 4
+memory:
+  references:
+    sections: [2.2.2]
+    figures: [2]
+    tables: [2, 3, 4]
+  map:
+    - name: block 0
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x00000000
+      end:   0x1FFFFFFF
+    - name: Main flash memory,  System memory or SRAM. Depends on boot configuration
+      sub-families: [stm32u031]
+      start: 0x00000000
+      end: 0x0001FFFF
+    - name: Main flash memory,  System memory or SRAM. Depends on boot configuration
+      sub-families: [stm32u073, stm32u083]
+      start: 0x00000000
+      end: 0x0003FFFF
+    - name: reserved
+      sub-families: [stm32u031]
+      start: 0x00020000
+      end: 0x07FFFFFF
+    - name: reserved
+      sub-families: [stm32u073, stm32u083]
+      start: 0x00080000
+      end: 0x07FFFFFF
+    - name: Main flash memory
+      sub-families: [stm32u031]
+      start: 0x08000000
+      end: 0x0801FFFF
+    - name: Main flash memory
+      sub-families: [stm32u073, stm32u083]
+      start: 0x08000000
+      end: 0x0803FFFF
+    - name: reserved
+      sub-families: [stm32u031]
+      start: 0x08020000
+      end: 0x1FFFD7FF
+    - name: reserved
+      sub-families: [stm32u073, stm32u083]
+      start: 0x08080000
+      end: 0x1FFFD7FF
+    - name: System memory
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x1FFF0000
+      end: 0x1FFF67FF
+    - name: OTP
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x1FFF6800
+      end: 0x1FFF6BFF
+    - name: Engineering bytes
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x1FFF6C00
+      end: 0x1FFF6FFF
+    - name: Option bytes
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x1FFF7000
+      end: 0x1FFF7FFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x1FFF8000
+      end: 0x1FFFFFFF
+    - name: block 1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x20000000
+      end:   0x3FFFFFFF
+    - name: SRAM
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x20000000
+      end: 0x20002FFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x2000A000
+      end: 0x3FFFFFFF
+    - name: block 2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40000000
+      end:   0x5FFFFFFF
+    - name: APB
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40000000
+      end:   0x4000A7FF
+    - name: TIM2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40000000
+      end:   0x400003FF
+    - name: TIM3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40000400
+      end:   0x400007FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40000800
+      end:   0x40000FFF
+    - name: TIM6
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40001000
+      end:   0x400013FF
+    - name: TIM7
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40001400
+      end:   0x400017FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40001800
+      end:   0x400023FF
+    - name: LCD
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40002400
+      end:   0x400027FF
+    - name: RTC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40002800
+      end:   0x40002BFF
+    - name: WWDG
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40002C00
+      end:   0x40002FFF
+    - name: IWDG
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40003000
+      end:   0x400033FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40003400
+      end:   0x400037FF
+    - name: SPI2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40003800
+      end:   0x40003BFF
+    - name: SPI3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40003C00
+      end:   0x40003FFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40004000
+      end:   0x400043FF
+    - name: USART2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40004400
+      end:   0x400047FF
+    - name: USART3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40004800
+      end:   0x40004BFF
+    - name: USART4
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40004C00
+      end:   0x40004FFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40005000
+      end:   0x400053FF
+    - name: I2C1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40005400
+      end:   0x400057FF
+    - name: I2C2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40005800
+      end:   0x40005BFF
+    - name: USB
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40005C00
+      end:   0x40005FFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40006000
+      end:   0x40006BFF
+    - name: CRS
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40006C00
+      end:   0x40006FFF
+    - name: PWR
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40007000
+      end:   0x400073FF
+    - name: DAC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40007400
+      end:   0x400077FF
+    - name: OPAMP
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40007800
+      end:   0x40007BFF
+    - name: LPTIM1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40007C00
+      end:   0x40007FFF
+    - name: LPUART1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40008000
+      end:   0x400083FF
+    - name: LPUART2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40008400
+      end:   0x400087FF
+    - name: I2C3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40008800
+      end:   0x40008BFF
+    - name: LPUART3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40008C00
+      end:   0x40008FFF
+    - name: LPTIM3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40009000
+      end:   0x400093FF
+    - name: LPTIM2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40009400
+      end:   0x400097FF
+    - name: USB RAM1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40009800
+      end:   0x40009BFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40009C00
+      end:   0x40009FFF
+    - name: I2C4
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x4000A000
+      end:   0x4000A3FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x4000A400
+      end:   0x4000AFFF
+    - name: TAMP (+BKP registers)
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x4000B000
+      end:   0x4000B3FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x4000B400
+      end:   0x4000FFFF
+    - name: APB
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40010000
+      end:   0x40015BFF
+    - name: SYSCFG
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40010000
+      end:   0x4001002F
+    - name: VREFBUF
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40010030
+      end:   0x4001007F
+    - name: SYSCFG(ITLINE)
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40010080
+      end:   0x400101FF
+      note: uses 0x40010000 as base address
+    - name: COMP
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40010200
+      end:   0x400103FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40010400
+      end:   0x400123FF
+    - name: ADC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40012400
+      end:   0x400127FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40012800
+      end:   0x40012BFF
+    - name: TIM1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40012C00
+      end:   0x40012FFF
+    - name: SPI1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40013000
+      end:   0x400133FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40013400
+      end:   0x400137FF
+    - name: USART1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40013800
+      end:   0x40013BFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40013C00
+      end:   0x40013FFF
+    - name: TIM15
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40014000
+      end:   0x400143FF
+    - name: TIM16
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40014400
+      end:   0x400147FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40014800
+      end:   0x400157FF
+    - name: DBG
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40015800
+      end:   0x40015BFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40015C00
+      end:   0x4001FFFF
+    - name: AHB
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40020000
+      end:   0x400263FF
+    - name: DMA1
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40020000
+      end:   0x400203FF
+    - name: DMA2
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40020400
+      end:   0x400207FF
+    - name: DMAMUX
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40020800
+      end:   0x40020BFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40020C00
+      end:   0x40020FFF
+    - name: RCC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40021000
+      end:   0x400213FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40021400
+      end:   0x400217FF
+    - name: EXTI
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40021800
+      end:   0x40021BFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40021C00
+      end:   0x40021FFF
+    - name: FLASH
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40022000
+      end:   0x400223FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40022400
+      end:   0x40022FFF
+    - name: CRC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40023000
+      end:   0x400233FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40023400
+      end:   0x40023FFF
+    - name: TSC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40024000
+      end:   0x400243FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40024400
+      end:   0x40024FFF
+    - name: RNG
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40025000
+      end:   0x400253FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40025400
+      end:   0x40025FFF
+    - name: AES
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40026000
+      end:   0x400263FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x40026400
+      end:   0x4FFFFFFF
+    - name: GPIOA
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50000000
+      end:   0x500003FF
+    - name: GPIOB
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50000400
+      end:   0x500007FF
+    - name: GPIOC
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50000800
+      end:   0x50000BFF
+    - name: GPIOD
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50000C00
+      end:   0x50000FFF
+    - name: GPIOE
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50001000
+      end:   0x500013FF
+    - name: GPIOF
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50001400
+      end:   0x500017FF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x50001800
+      end:   0x5FFFFFFF
+    - name: block 3
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x60000000
+      end:   0x7FFFFFFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x60000000
+      end:   0x7FFFFFFF
+    - name: block 4
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x80000000
+      end:   0x9FFFFFFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0x80000000
+      end:   0x9FFFFFFF
+    - name: block 5
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0xA0000000
+      end:   0xBFFFFFFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0xA0000000
+      end:   0xBFFFFFFF
+    - name: block 6
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0xC0000000
+      end:   0xDFFFFFFF
+    - name: reserved
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0xC0000000
+      end:   0xDFFFFFFF
+    - name: block 7
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0xE0000000
+      end:   0xFFFFFFFF
+    - name: Cortex-M0+ internal peripherals
+      sub-families: [stm32u031, stm32u073, stm32u083]
+      start: 0xE0000000
+      end:   0xE00FFFFF
+peripherals:
+  - gpio:
+    reference:
+      sections: [2.2, 7.4, 7.4.12]
+      tables: [4, 41]
+    registers:
+      - MODER:
+        reference:
+          section: 7.4.1
+        offset: 0x00
+        fields:
+          - name: MODE15
+            msb: 31
+            lsb: 30
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE14
+            msb: 29
+            lsb: 28
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE13
+            msb: 27
+            lsb: 26
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE12
+            msb: 25
+            lsb: 24
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE11
+            msb: 23
+            lsb: 22
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE10
+            msb: 21
+            lsb: 20
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE9
+            msb: 19
+            lsb: 18
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE8
+            msb: 17
+            lsb: 16
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE7
+            msb: 15
+            lsb: 14
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE6
+            msb: 13
+            lsb: 12
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE5
+            msb: 11
+            lsb: 10
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE4
+            msb: 9
+            lsb: 8
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE3
+            msb: 7
+            lsb: 6
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE2
+            msb: 5
+            lsb: 4
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE1
+            msb: 3
+            lsb: 2
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+          - name: MODE0
+            msb: 1
+            lsb: 0
+            width: 2
+            access: rw
+            settings:
+              - 00: input mode
+                01: general purpose output mode
+                10: alternate function mode
+                11: analogue mode
+      - OTYPER:
+        reference:
+          section: 7.4.2
+        offset: 0x04
+        fields:
+          - name: RESERVED
+            msb: 31
+            lsb: 16
+            width: 16
+            access: ro
+            settings: []
+          - name: OT15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT14
+            msb: 14
+            lsb: 14
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT13
+            msb: 13
+            lsb: 13
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT12
+            msb: 12
+            lsb: 12
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT11
+            msb: 11
+            lsb: 11
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT10
+            msb: 10
+            lsb: 10
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT9
+            msb: 9
+            lsb: 9
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT8
+            msb: 8
+            lsb: 8
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT7
+            msb: 7
+            lsb: 7
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT6
+            msb: 6
+            lsb: 6
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT5
+            msb: 5
+            lsb: 5
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT4
+            msb: 4
+            lsb: 4
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT3
+            msb: 3
+            lsb: 3
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT2
+            msb: 2
+            lsb: 2
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT1
+            msb: 1
+            lsb: 1
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+          - name: OT0
+            msb: 0
+            lsb: 0
+            width: 1
+            access: rw
+            settings:
+              - 0: Output push-pull
+                1: Output open-drain
+      - OSPEEDR:
+        reference:
+          section: 7.4.3
+        offset: 0x08
+        fields:
+          - name: OSPEED15
+            msb: 31
+            lsb: 30
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED14
+            msb: 29
+            lsb: 28
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED13
+            msb: 27
+            lsb: 26
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED12
+            msb: 25
+            lsb: 24
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED11
+            msb: 23
+            lsb: 22
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED10
+            msb: 21
+            lsb: 20
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED9
+            msb: 19
+            lsb: 18
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED8
+            msb: 17
+            lsb: 16
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED7
+            msb: 15
+            lsb: 14
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED6
+            msb: 13
+            lsb: 12
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED5
+            msb: 11
+            lsb: 10
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED4
+            msb: 9
+            lsb: 8
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED3
+            msb: 7
+            lsb: 6
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED2
+            msb: 5
+            lsb: 4
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED1
+            msb: 3
+            lsb: 2
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+          - name: OSPEED0
+            msb: 1
+            lsb: 0
+            width: 2
+            access: rw
+            settings:
+              - 00: Low speed
+                01: Medium speed
+                10: High speed
+                11: Very high speed
+      - PUPDR:
+        reference:
+          section: 7.4.4
+        offset: 0x0C
+        fields:
+          - name: PUPDR15
+            msb: 31
+            lsb: 30
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR14
+            msb: 29
+            lsb: 28
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR13
+            msb: 27
+            lsb: 26
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR12
+            msb: 25
+            lsb: 24
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR11
+            msb: 23
+            lsb: 22
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR10
+            msb: 21
+            lsb: 20
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR9
+            msb: 19
+            lsb: 18
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR8
+            msb: 17
+            lsb: 16
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR7
+            msb: 15
+            lsb: 14
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR6
+            msb: 13
+            lsb: 12
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR5
+            msb: 11
+            lsb: 10
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR4
+            msb: 9
+            lsb: 8
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR3
+            msb: 7
+            lsb: 6
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR2
+            msb: 5
+            lsb: 4
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR1
+            msb: 3
+            lsb: 2
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+          - name: PUPDR0
+            msb: 1
+            lsb: 0
+            width: 2
+            access: rw
+            settings:
+              - 00: No pull-up, pull-down
+                01: Pull-up
+                10: Pull-down
+                11: Reserved
+      - IDR:
+        reference:
+          section: 7.4.5
+        offset: 0x10
+        fields:
+          - name: RESERVED
+            msb: 31
+            lsb: 16
+            width: 16
+            access: ro
+            settings: []
+          - name: ID15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID14
+            msb: 14
+            lsb: 14
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID13
+            msb: 13
+            lsb: 13
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID12
+            msb: 12
+            lsb: 12
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID11
+            msb: 11
+            lsb: 11
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID10
+            msb: 10
+            lsb: 10
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID9
+            msb: 9
+            lsb: 9
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID8
+            msb: 8
+            lsb: 8
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID7
+            msb: 7
+            lsb: 7
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID6
+            msb: 6
+            lsb: 6
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID5
+            msb: 5
+            lsb: 5
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID4
+            msb: 4
+            lsb: 4
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID3
+            msb: 3
+            lsb: 3
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID2
+            msb: 2
+            lsb: 2
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID1
+            msb: 1
+            lsb: 1
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+          - name: ID0
+            msb: 0
+            lsb: 0
+            width: 1
+            access: ro
+            settings:
+              - 0: reset
+                1: set
+      - ODR:
+        reference:
+          section: 7.4.6
+        offset: 0x14
+        fields:
+          - name: RESERVED
+            msb: 31
+            lsb: 16
+            width: 16
+            access: ro
+            settings: []
+          - name: OD15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD14
+            msb: 14
+            lsb: 14
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD13
+            msb: 13
+            lsb: 13
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD12
+            msb: 12
+            lsb: 12
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD11
+            msb: 11
+            lsb: 11
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD10
+            msb: 10
+            lsb: 10
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD9
+            msb: 9
+            lsb: 9
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD8
+            msb: 8
+            lsb: 8
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD7
+            msb: 7
+            lsb: 7
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD6
+            msb: 6
+            lsb: 6
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD5
+            msb: 5
+            lsb: 5
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD4
+            msb: 4
+            lsb: 4
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD3
+            msb: 3
+            lsb: 3
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD2
+            msb: 2
+            lsb: 2
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD1
+            msb: 1
+            lsb: 1
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+          - name: OD0
+            msb: 0
+            lsb: 0
+            width: 1
+            access: rw
+            settings:
+              - 0: reset
+                1: set
+      - BSRR:
+        reference:
+          section: 7.4.7
+        offset: 0x18
+        fields:
+          - name: BR15
+            msb: 31
+            lsb: 31
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR14
+            msb: 30
+            lsb: 30
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR13
+            msb: 29
+            lsb: 29
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR12
+            msb: 28
+            lsb: 28
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR11
+            msb: 27
+            lsb: 27
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR10
+            msb: 26
+            lsb: 26
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR9
+            msb: 25
+            lsb: 25
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR8
+            msb: 24
+            lsb: 24
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR7
+            msb: 23
+            lsb: 23
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR6
+            msb: 22
+            lsb: 22
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR5
+            msb: 21
+            lsb: 21
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR4
+            msb: 20
+            lsb: 20
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR3
+            msb: 19
+            lsb: 19
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR2
+            msb: 18
+            lsb: 18
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR1
+            msb: 17
+            lsb: 17
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BR0
+            msb: 16
+            lsb: 16
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Resets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS14
+            msb: 14
+            lsb: 14
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS13
+            msb: 13
+            lsb: 13
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS12
+            msb: 12
+            lsb: 12
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS11
+            msb: 11
+            lsb: 11
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS10
+            msb: 10
+            lsb: 10
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS9
+            msb: 9
+            lsb: 9
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS8
+            msb: 8
+            lsb: 8
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS7
+            msb: 7
+            lsb: 7
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS6
+            msb: 6
+            lsb: 6
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS5
+            msb: 5
+            lsb: 5
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS4
+            msb: 4
+            lsb: 4
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS3
+            msb: 3
+            lsb: 3
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS2
+            msb: 2
+            lsb: 2
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS1
+            msb: 1
+            lsb: 1
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+          - name: BS0
+            msb: 0
+            lsb: 0
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Sets the corresponding ODx bit
+                note: If both BSx and BRx are set, BSx has priority.
+      - LCKR:
+        reference:
+          section: 7.4.8
+        offset: 0x1C
+        sequence:
+          - write:
+            - LCKK: 1
+              LCKR: bits 15:0
+          - write:
+            - LCKK: 0
+              LCKR: bits 15:0
+          - write:
+            - LCKK: 1
+              LCKR: bits 15:0
+          - read:
+            - LCKR: bits 31:0
+          - read:
+            - LCKK: 1
+              note: optional step, but confirms lock is active
+        fields:
+          - name: RESERVED
+            msb: 31
+            lsb: 15
+            width: 15
+            access: ro
+            settings: []
+          - name: LCKK
+            msb: 16
+            lsb: 16
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration lock key not active
+                1: Port configuration lock key active. The GPIOx_LCKR register is locked until the next MCU reset or peripheral reset.
+          - name: LCK15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK14
+            msb: 14
+            lsb: 14
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK13
+            msb: 13
+            lsb: 13
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK12
+            msb: 12
+            lsb: 12
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK11
+            msb: 11
+            lsb: 11
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK10
+            msb: 10
+            lsb: 10
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK9
+            msb: 9
+            lsb: 9
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK8
+            msb: 8
+            lsb: 8
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK7
+            msb: 7
+            lsb: 7
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK6
+            msb: 6
+            lsb: 6
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK5
+            msb: 5
+            lsb: 5
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK4
+            msb: 4
+            lsb: 4
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK3
+            msb: 3
+            lsb: 3
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK2
+            msb: 2
+            lsb: 2
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK1
+            msb: 1
+            lsb: 1
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+          - name: LCK0
+            msb: 0
+            lsb: 0
+            width: 1
+            access: rw
+            settings:
+              - 0: Port configuration not locked
+                1: Port configuration locked
+      - AFRL:
+        reference:
+          section: 7.4.9
+        offset: 0x20
+        fields:
+          - name: AFSEL7
+            msb: 31
+            lsb: 28
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL6
+            msb: 27
+            lsb: 24
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL5
+            msb: 23
+            lsb: 20
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL4
+            msb: 19
+            lsb: 16
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL3
+            msb: 15
+            lsb: 12
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL2
+            msb: 11
+            lsb: 8
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL1
+            msb: 7
+            lsb: 4
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL0
+            msb: 3
+            lsb: 0
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+      - AFRH:
+        reference:
+          section: 7.4.10
+        offset: 0x24
+        fields:
+          - name: AFSEL15
+            msb: 31
+            lsb: 28
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL14
+            msb: 27
+            lsb: 24
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL13
+            msb: 23
+            lsb: 20
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL12
+            msb: 19
+            lsb: 16
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL11
+            msb: 15
+            lsb: 12
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL10
+            msb: 11
+            lsb: 8
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL9
+            msb: 7
+            lsb: 4
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+          - name: AFSEL8
+            msb: 3
+            lsb: 0
+            width: 4
+            access: rw
+            settings:
+              - 0000: AF0
+                0001: AF1
+                0010: AF2
+                0011: AF3
+                0100: AF4
+                0101: AF5
+                0110: AF6
+                0111: AF7
+                1000: AF8
+                1001: AF9
+                1010: AF10
+                1011: AF11
+                1100: AF12
+                1101: AF13
+                1110: AF14
+                1111: AF15
+      - BRR:
+        reference:
+          section: 7.4.11
+        offset: 0x28
+        fields:
+          - name: RESERVED
+            msb: 31
+            lsb: 16
+            width: 16
+            access: ro
+            settings: []
+          - name: BR15
+            msb: 15
+            lsb: 15
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR14
+            msb: 14
+            lsb: 14
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR13
+            msb: 13
+            lsb: 13
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR12
+            msb: 12
+            lsb: 12
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR11
+            msb: 11
+            lsb: 11
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR10
+            msb: 10
+            lsb: 10
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR9
+            msb: 9
+            lsb: 9
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR8
+            msb: 8
+            lsb: 8
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR7
+            msb: 7
+            lsb: 7
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR6
+            msb: 6
+            lsb: 6
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR5
+            msb: 5
+            lsb: 5
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR4
+            msb: 4
+            lsb: 4
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR3
+            msb: 3
+            lsb: 3
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR2
+            msb: 2
+            lsb: 2
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR1
+            msb: 1
+            lsb: 1
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
+          - name: BR0
+            msb: 0
+            lsb: 0
+            width: 1
+            access: wo
+            settings:
+              - 0: No action on the corresponding ODx bit
+                1: Reset the corresponding ODx bit
