@@ -19,38 +19,18 @@ how the layers fit together before adding new MCU support or new peripherals.
 
 ## Layer diagram
 
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│  Application layer                                                      │
-│  main.cpp / middleware — uses ohal::gpio, ohal::timer, ohal::uart      │
-└────────────────────────────────────┬───────────────────────────────────┘
-                                     │ #include <ohal/ohal.hpp>
-┌────────────────────────────────────▼───────────────────────────────────┐
-│  Peripheral interface layer  (include/ohal/)                            │
-│  gpio.hpp · timer.hpp · uart.hpp                                        │
-│  Primary Pin<>/Channel<>/Port<> templates — fire static_assert if       │
-│  unspecialised                                                          │
-└────────────────────────────────────┬───────────────────────────────────┘
-                                     │ uses
-┌────────────────────────────────────▼───────────────────────────────────┐
-│  Core abstraction layer  (include/ohal/core/)                           │
-│  register.hpp — Register<Addr, T>                                       │
-│  field.hpp    — BitField<Reg, Offset, Width, Access, ValueType>         │
-│  access.hpp   — enum class Access { ReadOnly, WriteOnly, ReadWrite }    │
-│  capabilities.hpp — primary capability trait templates (default false)  │
-└────────────────────────────────────┬───────────────────────────────────┘
-                                     │ injected by
-┌────────────────────────────────────▼───────────────────────────────────┐
-│  Platform selection layer  (include/ohal/platform.hpp)                  │
-│  Validates OHAL_FAMILY_* + OHAL_MODEL_* and includes the correct        │
-│  platform header                                                        │
-└────────────────────────────────────┬───────────────────────────────────┘
-                                     │ includes
-┌────────────────────────────────────▼───────────────────────────────────┐
-│  Platform-specific layer  (include/ohal/platforms/)                     │
-│  stm32u0/family.hpp  →  models/stm32u083/gpio.hpp + capabilities.hpp   │
-│  pic/family.hpp      →  models/pic18f4550/gpio.hpp + capabilities.hpp  │
-└────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    APP["Application layer\nmain.cpp / middleware\nuses ohal::gpio · ohal::timer · ohal::uart"]
+    PIL["Peripheral interface layer — include/ohal/\ngpio.hpp · timer.hpp · uart.hpp\nPrimary Pin/Channel templates — static_assert if unspecialised"]
+    CAL["Core abstraction layer — include/ohal/core/\nregister.hpp · field.hpp · access.hpp · capabilities.hpp"]
+    PSL["Platform selection layer — include/ohal/platform.hpp\nValidates OHAL_FAMILY_* + OHAL_MODEL_*\nand includes the correct platform header"]
+    PPL["Platform-specific layer — include/ohal/platforms/\nstm32u0/family.hpp → models/stm32u083/gpio.hpp + capabilities.hpp\npic/family.hpp → models/pic18f4550/gpio.hpp + capabilities.hpp"]
+
+    APP -->|"#include ohal/ohal.hpp"| PIL
+    PIL -->|uses| CAL
+    CAL -->|injected by| PSL
+    PSL -->|includes| PPL
 ```
 
 ## Core abstractions
@@ -148,14 +128,26 @@ Each `family.hpp`:
 
 ## Namespace conventions
 
-```text
-ohal::          Top-level namespace. platform.hpp and ohal.hpp live here.
-ohal::core::    Register<>, BitField<>, Access — internal; not for direct use in application code.
-ohal::gpio::    GPIO peripheral types and enumerations.
-ohal::timer::   Timer peripheral types and enumerations. (planned)
-ohal::uart::    UART peripheral types and enumerations. (planned)
-ohal::test::    Mock infrastructure — only compiled in test builds.
-ohal::platforms::stm32u0::stm32u083::   Platform-specific register map types.
+```mermaid
+graph LR
+    ohal["ohal::"]
+    core["ohal::core::\nRegister · BitField · Access\ninternal — not for application code"]
+    gpio["ohal::gpio::\nGPIO peripheral types and enumerations"]
+    timer["ohal::timer::\nTimer types and enumerations (planned)"]
+    uart["ohal::uart::\nUART types and enumerations (planned)"]
+    test["ohal::test::\nMock infrastructure — test builds only"]
+    platforms["ohal::platforms::"]
+    stm32u0["ohal::platforms::stm32u0::"]
+    stm32u083["ohal::platforms::stm32u0::stm32u083::\nPlatform-specific register map types"]
+
+    ohal --> core
+    ohal --> gpio
+    ohal --> timer
+    ohal --> uart
+    ohal --> test
+    ohal --> platforms
+    platforms --> stm32u0
+    stm32u0 --> stm32u083
 ```
 
 ## Error strategy

@@ -48,6 +48,7 @@ int main() {
 | **End users** — GPIO API reference         | [GPIO API](docs/user/gpio-api.md)                            |
 | **End users** — supported MCUs             | [Supported MCUs](docs/user/supported-mcus.md)                |
 | **Contributors** — architecture overview   | [Architecture](docs/contributor/architecture.md)             |
+| **Contributors** — register specifications | [Specifications](docs/contributor/specs.md)                  |
 | **Contributors** — adding a new MCU        | [Adding an MCU](docs/contributor/adding-mcu.md)              |
 | **Contributors** — adding a new peripheral | [Adding a peripheral](docs/contributor/adding-peripheral.md) |
 
