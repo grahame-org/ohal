@@ -75,9 +75,18 @@ memory:
       start: 0x20000000
       end: 0x3FFFFFFF
     - name: SRAM
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u031]
       start: 0x20000000
       end: 0x20002FFF
+    - name: reserved
+      sub-families: [stm32u031]
+      start: 0x20003000
+      end: 0x20009FFF
+      note: This fills in a gap left by Table 3 - needs validating
+    - name: SRAM
+      sub-families: [stm32u073, stm32u083]
+      start: 0x20000000
+      end: 0x20009FFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x2000A000
@@ -465,9 +474,9 @@ memory:
       end: 0xE00FFFFF
 peripherals:
   - gpio:
-    reference:
-      sections: [2.2, 7.4, 7.4.12]
-      tables: [4, 41]
+      reference:
+        sections: [2.2, 7.4, 7.4.12]
+        tables: [4, 41]
     registers:
       - MODER:
         reference:
