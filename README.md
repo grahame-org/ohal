@@ -47,6 +47,7 @@ int main() {
 | **End users** — using ohal in a project    | [Getting started](docs/user/getting-started.md)              |
 | **End users** — GPIO API reference         | [GPIO API](docs/user/gpio-api.md)                            |
 | **End users** — supported MCUs             | [Supported MCUs](docs/user/supported-mcus.md)                |
+| **End users** — safe multi-pin switching   | [H-bridge guide](docs/user/h-bridge.md)                      |
 | **Contributors** — architecture overview   | [Architecture](docs/contributor/architecture.md)             |
 | **Contributors** — register specifications | [Specifications](docs/contributor/specs.md)                  |
 | **Contributors** — adding a new MCU        | [Adding an MCU](docs/contributor/adding-mcu.md)              |
