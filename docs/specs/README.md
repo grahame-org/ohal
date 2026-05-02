@@ -11,6 +11,7 @@ docs/specs/
 ├── README.md                  ← this file
 ├── schema.json                ← JSON Schema for family spec files
 ├── schema-model.json          ← JSON Schema for device-model spec files
+├── schema-arch.json           ← JSON Schema for architecture spec files
 ├── future_improvements.md     ← options for cross-family/cross-vendor settings sharing
 ├── common/
 │   └── arch/
@@ -24,10 +25,24 @@ docs/specs/
 **Vendor directory naming:** use the vendor's product-line prefix in lowercase (e.g. `stm32` for
 STMicroelectronics STM32, `nrf` for Nordic nRF, `lpc` for NXP LPC).
 
+## Spec Types and Schemas
+
+There are three distinct spec file types, each with its own JSON Schema:
+
+| Spec type    | Location                                | Schema              | Description                                                |
+| ------------ | --------------------------------------- | ------------------- | ---------------------------------------------------------- |
+| Architecture | `docs/specs/common/arch/{arch}.yml`     | `schema-arch.json`  | Architecture-level metadata shared by all devices of that  |
+|              |                                         |                     | architecture (word size, endianness, PPB regions, common   |
+|              |                                         |                     | settings encodings)                                        |
+| Family       | `docs/specs/{vendor}/{family}.yml`      | `schema.json`       | Device-family register map and peripheral metadata         |
+| Model        | `docs/specs/{vendor}/models/{part}.yml` | `schema-model.json` | Per-part-number details (package, flash/SRAM sizes, pin AF |
+|              |                                         |                     | table, errata)                                             |
+
 ## Format Overview
 
-Every spec file is a YAML document validated against `docs/specs/schema.json`. The top-level keys
-are:
+### Family spec top-level keys
+
+Family specs (`docs/specs/{vendor}/{family}.yml`) are validated against `schema.json`:
 
 | Key            | Required | Description                                                       |
 | -------------- | -------- | ----------------------------------------------------------------- |
@@ -40,6 +55,22 @@ are:
 | `memory`       |          | Memory map with address ranges and sub-family applicability       |
 | `definitions`  |          | Reusable settings blocks (referenced by YAML anchors in the spec) |
 | `peripherals`  |          | Peripheral blocks with register and bit-field descriptions        |
+
+### Architecture spec top-level keys
+
+Architecture specs (`docs/specs/common/arch/{arch}.yml`) are validated against `schema-arch.json`:
+
+| Key            | Required | Description                                                               |
+| -------------- | -------- | ------------------------------------------------------------------------- |
+| `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                         |
+| `architecture` | ✓        | Architecture name, word size, and endianness                              |
+| `memory`       |          | Architecture-defined memory regions (e.g. PPB) common to all devices      |
+| `definitions`  |          | Architecturally-defined settings encodings (e.g. standard GPIO mode bits) |
+
+### Model spec top-level keys
+
+Device-model specs (`docs/specs/{vendor}/models/{part}.yml`) are validated against
+`schema-model.json`. See the `schema-model.json` file for the full key reference.
 
 ## Key Concepts
 
