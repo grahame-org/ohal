@@ -87,9 +87,9 @@ memory:
       end: 0x20009FFF
       verified: false
       note: >-
-        Inferred gap: stm32u031 SRAM ends at 0x20002FFF and the next documented region starts
-        at 0x2000A000. This reserved entry fills the intervening address space but has not yet
-        been confirmed against the reference manual (RM0503). Mark verified: true once checked.
+        Table 2 of RM0503 does not document this address range: stm32u031 SRAM ends at
+        0x20002FFF and the next listed region starts at 0x2000A000, leaving this gap unlabelled.
+        Assumed reserved until a citable reference is located.
     - name: SRAM
       sub-families: [stm32u073, stm32u083]
       start: 0x20000000
