@@ -119,7 +119,7 @@ TEST_F(GpioStm32u083Test, ClearPin15_WritesBsrrResetBit) {
 // Port::set() — writes uint16_t mask to BSRR bits 0-15
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, PortSet_WritesMaskToBsrrLow16) {
+TEST_F(GpioStm32u083Test, PortSet_WritesMaskToBsrrLow16Bits) {
   MockPort::set(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FFU);
 }
@@ -138,7 +138,7 @@ TEST_F(GpioStm32u083Test, PortSet_DoesNotModifyModer) {
 // Port::clear() — writes uint16_t mask to BSRR bits 16-31
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, PortClear_WritesMaskToBsrrHigh16) {
+TEST_F(GpioStm32u083Test, PortClear_WritesMaskToBsrrHigh16Bits) {
   MockPort::clear(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FF0000U);
 }
@@ -157,17 +157,17 @@ TEST_F(GpioStm32u083Test, PortClear_DoesNotModifyModer) {
 // Port::write() — writes combined set/clear mask to BSRR in a single store
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, PortWrite_WritesCombinedMaskToBsrr) {
+TEST_F(GpioStm32u083Test, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
   MockPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(mock_bsrr, 0x00F0000FU);
 }
 
-TEST_F(GpioStm32u083Test, PortWrite_OnlySetMask_WritesMaskToBsrrLow16) {
+TEST_F(GpioStm32u083Test, PortWrite_OnlySetMask_WritesMaskToBsrrLow16Bits) {
   MockPort::write(0xABCDU, 0x0000U);
   EXPECT_EQ(mock_bsrr, 0x0000ABCDU);
 }
 
-TEST_F(GpioStm32u083Test, PortWrite_OnlyClearMask_WritesMaskToBsrrHigh16) {
+TEST_F(GpioStm32u083Test, PortWrite_OnlyClearMask_WritesMaskToBsrrHigh16Bits) {
   MockPort::write(0x0000U, 0xABCDU);
   EXPECT_EQ(mock_bsrr, 0xABCD0000U);
 }
