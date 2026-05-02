@@ -196,25 +196,68 @@
         "settings": { "$ref": "#/$defs/settings" }
       }
     },
-    "sequence-step": {
-      "description": "A single read or write step in a register access sequence.",
+    "sequence": {
+      "description": "Required access sequence (e.g. lock/unlock procedure).",
       "type": "object",
+      "required": ["description", "steps"],
       "additionalProperties": false,
       "properties": {
-        "write": {
+        "description": {
+          "description": "Human-readable explanation of when/why this sequence is required, and any caller arguments it accepts (e.g. 'write-arg' values).",
+          "type": "string"
+        },
+        "steps": {
+          "description": "Ordered list of steps. Steps must be executed in the order listed.",
           "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": { "type": ["string", "integer"] }
+          "items": { "$ref": "#/$defs/sequence-step" },
+          "minItems": 2
+        }
+      }
+    },
+    "sequence-step": {
+      "description": "A single step in a register access sequence.",
+      "type": "object",
+      "required": ["op"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "description": "Operation type: 'write' writes field values to the register; 'read' reads the register.",
+          "type": "string",
+          "enum": ["read", "write"]
+        },
+        "note": {
+          "description": "Human-readable explanation of this step's purpose, including any timing or ordering constraints.",
+          "type": "string"
+        },
+        "optional": {
+          "description": "Whether this step may be omitted. Defaults to false. Optional steps should still be executed when possible.",
+          "type": "boolean"
+        },
+        "fields": {
+          "description": "Field values to write. Keys are field names (or logical field groups). Values are either a non-negative integer literal (fixed value) or the string 'write-arg' (caller-supplied value). Only valid when op is 'write'.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "integer", "minimum": 0 },
+              { "type": "string", "const": "write-arg" }
+            ]
           }
         },
-        "read": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": { "type": ["string", "integer"] }
-          }
+        "expect": {
+          "description": "Expected field values to verify after reading. Keys are field names; values are the expected non-negative integers representing the field's bit pattern. A consumer should check these values and treat a mismatch as a sequence failure. Omit on read steps where the result is intentionally discarded. Only valid when op is 'read'.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "integer", "minimum": 0 }
         }
+      },
+      "if": { "properties": { "op": { "const": "write" } }, "required": ["op"] },
+      "then": {
+        "required": ["fields"],
+        "not": { "required": ["expect"] }
+      },
+      "else": {
+        "not": { "required": ["fields"] }
       }
     },
     "register": {
@@ -228,11 +271,7 @@
           "description": "Register byte offset from the peripheral base address.",
           "$ref": "#/$defs/hex-address"
         },
-        "sequence": {
-          "description": "Required access sequence (e.g. lock/unlock procedure).",
-          "type": "array",
-          "items": { "$ref": "#/$defs/sequence-step" }
-        },
+        "sequence": { "$ref": "#/$defs/sequence" },
         "fields": {
           "description": "Ordered list of bit-fields from MSB to LSB.",
           "type": "array",

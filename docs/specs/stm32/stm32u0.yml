@@ -1390,20 +1390,34 @@ peripherals:
               section: 7.4.8
             offset: 0x1C
             sequence:
-              - write:
-                  - LCKK: 1
-                    LCKR: bits 15:0
-              - write:
-                  - LCKK: 0
-                    LCKR: bits 15:0
-              - write:
-                  - LCKK: 1
-                    LCKR: bits 15:0
-              - read:
-                  - LCKR: bits 31:0
-              - read:
-                  - LCKK: 1
-                    note: optional step, but confirms lock is active
+              description: >-
+                Lock sequence that must be followed exactly to freeze the port configuration.
+                Accepts one caller argument: lock-bits, a 16-bit mask (LCK0–LCK15) indicating
+                which port pins to lock. Any violation of the sequence leaves the port
+                configuration unchanged.
+              steps:
+                - op: write
+                  note: Write LCKK=1 with the desired lock-bits
+                  fields:
+                    LCKK: 1
+                    LCK: write-arg
+                - op: write
+                  note: Write LCKK=0 with the same lock-bits
+                  fields:
+                    LCKK: 0
+                    LCK: write-arg
+                - op: write
+                  note: Write LCKK=1 with the same lock-bits again
+                  fields:
+                    LCKK: 1
+                    LCK: write-arg
+                - op: read
+                  note: Read the register to complete the lock sequence (result discarded)
+                - op: read
+                  optional: true
+                  note: Optional — LCKK reads back as 1 when the lock is active
+                  expect:
+                    LCKK: 1
             fields:
               - name: RESERVED
                 msb: 31

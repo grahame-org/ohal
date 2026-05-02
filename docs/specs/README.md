@@ -186,25 +186,56 @@ peripherals:
 ### Register access sequences
 
 Some registers require a specific access sequence (e.g. the GPIO lock register). Document these
-under `sequence`:
+under `sequence`, which is an object with a required `description` and an ordered `steps` list:
 
 ```yaml
 - LCKR:
     sequence:
-      - write:
-          - LCKK: 1
-            LCKR: bits 15:0
-      - write:
-          - LCKK: 0
-            LCKR: bits 15:0
-      - write:
-          - LCKK: 1
-            LCKR: bits 15:0
-      - read:
-          - LCKR: bits 31:0
+      description: >-
+        Lock sequence that must be followed exactly to freeze the port configuration.
+        Accepts one caller argument: lock-bits, a 16-bit mask (LCK0–LCK15) indicating
+        which port pins to lock.
+      steps:
+        - op: write
+          note: Write LCKK=1 with the desired lock-bits
+          fields:
+            LCKK: 1
+            LCK: write-arg
+        - op: write
+          note: Write LCKK=0 with the same lock-bits
+          fields:
+            LCKK: 0
+            LCK: write-arg
+        - op: write
+          note: Write LCKK=1 with the same lock-bits again
+          fields:
+            LCKK: 1
+            LCK: write-arg
+        - op: read
+          note: Read the register to complete the lock sequence (result discarded)
+        - op: read
+          optional: true
+          note: Optional — LCKK reads back as 1 when the lock is active
+          expect:
+            LCKK: 1
     fields:
       # ...
 ```
+
+#### Step fields
+
+Each step has a required `op` key (`read` or `write`) and the following optional keys:
+
+| Key        | Applies to | Description                                                                                                                                     |
+| ---------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `note`     | any        | Human-readable explanation of the step, including timing or ordering constraints                                                                |
+| `optional` | any        | If `true` the step may be omitted. Defaults to `false`                                                                                          |
+| `fields`   | `write`    | Field-name → value mapping. Values are non-negative integers (bit pattern for that field, within its bit width) or `"write-arg"` (caller value) |
+| `expect`   | `read`     | Field-name → expected-value mapping. Consumers should treat a mismatch as a sequence failure. Omit on read steps where the result is discarded  |
+
+`write-arg` indicates that the caller supplies the value for that field. The sequence `description`
+must document what each `write-arg` represents so that consumers can implement the sequence
+correctly. `fields` must not appear on `read` steps; `expect` must not appear on `write` steps.
 
 ## Validation
 
