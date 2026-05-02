@@ -20,20 +20,21 @@
 
 ## 1. Design Goals
 
-| #   | Goal                                   | Notes                                                                                                                                                                                                                                           |
-| --- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| G1  | **Zero RAM at runtime**                | All peripheral configuration is encoded in types and template parameters; no global or heap-allocated state is needed for the HAL itself.                                                                                                       |
-| G2  | **Register-write efficiency**          | Every HAL operation must compile to the same instruction sequence as a hand-written `volatile` register access. Verified by inspecting generated assembly and zero-cost abstraction guarantees.                                                 |
-| G3  | **Consistent API across MCU families** | The same `ohal::gpio` API works on STM32, TI MSP-M0, Microchip PIC18, and any future platform with no changes to application code.                                                                                                              |
-| G4  | **Noisy compile-time failures**        | If an application targets a peripheral feature that is not supported by the selected MCU, compilation fails with a human-readable `static_assert` message.                                                                                      |
-| G5  | **Strongly typed**                     | Registers, bit fields, peripheral instances, pin modes, and all configuration values are distinct types — no `uint32_t` magic numbers in application code.                                                                                      |
-| G6  | **Correct-by-construction**            | Writing to a read-only register/field is a compile error. Reading from a write-only register/field is a compile error.                                                                                                                          |
-| G7  | **No memory-map assumptions**          | The HAL core layer makes no assumptions about register addresses. Every address is provided by the platform-specific layer. If a step requires register details, those details are listed explicitly (family, model, peripheral, register map). |
-| G8  | **Unit testable on host and target**   | The register abstraction layer is injectable; tests can run the same test cases on a development host (with simulated registers) and on the real target.                                                                                        |
-| G9  | **C++17 strict**                       | No compiler extensions, no C++20 features.                                                                                                                                                                                                      |
-| G10 | **Consistent namespace**               | All public symbols live inside `ohal::`. Peripheral types are in sub-namespaces: `ohal::gpio`, `ohal::timer`, `ohal::uart`.                                                                                                                     |
-| G11 | **Minimal consumer imports**           | Consumers write `using namespace ohal::gpio;` and nothing more (beyond including the single top-level header).                                                                                                                                  |
-| G12 | **MCU selection via compiler defines** | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083`. Invalid or missing define combinations fail at compile time.                                                                                                                              |
+| #   | Goal                                             | Notes                                                                                                                                                                                                                                                                          |
+| --- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| G1  | **Zero RAM at runtime**                          | All peripheral configuration is encoded in types and template parameters; no global or heap-allocated state is needed for the HAL itself.                                                                                                                                      |
+| G2  | **Register-write efficiency**                    | Every HAL operation must compile to the same instruction sequence as a hand-written `volatile` register access. Verified by inspecting generated assembly and zero-cost abstraction guarantees.                                                                                |
+| G3  | **Consistent API across MCU families**           | The same `ohal::gpio` API works on STM32, TI MSP-M0, Microchip PIC18, and any future platform with no changes to application code.                                                                                                                                             |
+| G4  | **Noisy compile-time failures**                  | If an application targets a peripheral feature that is not supported by the selected MCU, compilation fails with a human-readable `static_assert` message.                                                                                                                     |
+| G5  | **Strongly typed**                               | Registers, bit fields, peripheral instances, pin modes, and all configuration values are distinct types — no `uint32_t` magic numbers in application code.                                                                                                                     |
+| G6  | **Correct-by-construction**                      | Writing to a read-only register/field is a compile error. Reading from a write-only register/field is a compile error.                                                                                                                                                         |
+| G7  | **No memory-map assumptions**                    | The HAL core layer makes no assumptions about register addresses. Every address is provided by the platform-specific layer. If a step requires register details, those details are listed explicitly (family, model, peripheral, register map).                                |
+| G8  | **Unit testable on host and target**             | The register abstraction layer is injectable; tests can run the same test cases on a development host (with simulated registers) and on the real target.                                                                                                                       |
+| G9  | **C++17 strict**                                 | No compiler extensions, no C++20 features.                                                                                                                                                                                                                                     |
+| G10 | **Consistent namespace**                         | All public symbols live inside `ohal::`. Peripheral types are in sub-namespaces: `ohal::gpio`, `ohal::timer`, `ohal::uart`.                                                                                                                                                    |
+| G11 | **Minimal consumer imports**                     | Consumers write `using namespace ohal::gpio;` and nothing more (beyond including the single top-level header).                                                                                                                                                                 |
+| G12 | **MCU selection via compiler defines**           | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083`. Invalid or missing define combinations fail at compile time.                                                                                                                                                             |
+| G13 | **Multi-pin atomic operations at the HAL level** | `Port<PortTag>` provides `set()`, `clear()`, and `write()` across multiple pins on the same port. Where the hardware supports it (e.g. STM32 BSRR), `write()` compiles to a single store instruction. Application code never reaches into platform namespaces to achieve this. |
 
 ---
 
@@ -51,6 +52,11 @@ branching.
 Application code (`main.cpp`, middleware) only ever sees the generic `ohal` interface headers.
 Platform-specific register maps and capability tables live entirely inside `ohal/platforms/`. The
 build system injects the correct platform directory into the include path via the MCU defines.
+
+This isolation covers both single-pin and multi-pin use cases. `Pin<Port, PinNum>` handles
+individual pin operations; `Port<PortTag>` handles atomic operations across multiple pins on the
+same port. Neither type requires application code to name or touch any platform-layer symbol
+directly — the platform specialisation is wired in automatically by the MCU defines.
 
 ### 2.3 Capabilities are Modelled, Not Guarded at Runtime
 
@@ -79,7 +85,7 @@ graph TD
     end
 
     subgraph "Peripheral Interface Layer (include/ohal/)"
-        GPIO_IF["gpio.hpp<br/>ohal::gpio::Pin&lt;Port,Num&gt;"]
+        GPIO_IF["gpio.hpp<br/>ohal::gpio::Pin&lt;Port,Num&gt;<br/>ohal::gpio::Port&lt;Port&gt;"]
         TIMER_IF["timer.hpp<br/>ohal::timer::Channel&lt;Instance,Ch&gt;"]
         UART_IF["uart.hpp<br/>ohal::uart::Port&lt;Instance&gt;"]
     end
@@ -177,6 +183,12 @@ classDiagram
         +static void toggle()
     }
 
+    class GpioPort~Port~ {
+        +static void set(uint16_t mask)
+        +static void clear(uint16_t mask)
+        +static void write(uint16_t set_mask, uint16_t clear_mask)
+    }
+
     class PinMode {
         <<enumeration>>
         Input
@@ -196,6 +208,7 @@ classDiagram
     GpioPin --> BitField : composed of
     GpioPin --> PinMode : uses
     GpioPin --> OutputType : uses
+    GpioPort --> BitField : composed of
 ```
 
 ### 3.3 MCU Selection Flow
@@ -756,6 +769,44 @@ int main() {
 // → #error: "ohal: No MCU family defined.
 //            Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler."
 ```
+
+### 12.6 Atomic multi-pin write — H-bridge (STM32U083, Port A)
+
+```cpp
+// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 -std=c++17
+#include <ohal/ohal.hpp>
+
+using namespace ohal::gpio;
+
+// H-bridge pins — all on Port A so a single Port<PortA>::write() covers all four.
+using AHi = Pin<PortA, 4>;
+using ALo = Pin<PortA, 5>;
+using BHi = Pin<PortA, 6>;
+using BLo = Pin<PortA, 7>;
+
+// Encode each H-bridge state as a pair of (set_mask, clear_mask) computed at
+// compile time.  Port<PortA>::write() translates to a single BSRR store on
+// STM32 — no intermediate hardware state is ever visible.
+
+static constexpr uint16_t kForwardSet   = (1U << 4) | (1U << 7); // AHi=1, BLo=1
+static constexpr uint16_t kForwardClear = (1U << 5) | (1U << 6); // ALo=0, BHi=0
+
+static constexpr uint16_t kReverseSet   = (1U << 5) | (1U << 6); // ALo=1, BHi=1
+static constexpr uint16_t kReverseClear = (1U << 4) | (1U << 7); // AHi=0, BLo=0
+
+static constexpr uint16_t kCoastClear   = (1U << 4) | (1U << 5) | (1U << 6) | (1U << 7);
+static constexpr uint16_t kBrakeSet     = (1U << 5) | (1U << 7); // ALo=1, BLo=1
+static constexpr uint16_t kBrakeClear   = (1U << 4) | (1U << 6); // AHi=0, BHi=0
+
+void drive_forward() { Port<PortA>::write(kForwardSet,  kForwardClear); }
+void drive_reverse() { Port<PortA>::write(kReverseSet,  kReverseClear); }
+void coast()         { Port<PortA>::write(0,            kCoastClear);   }
+void brake()         { Port<PortA>::write(kBrakeSet,    kBrakeClear);   }
+```
+
+No platform namespace is named in application code. The platform specialisation of
+`Port<PortA>` (provided by the STM32U083 platform header, included automatically) implements
+`write()` as a single BSRR store.
 
 ---
 
