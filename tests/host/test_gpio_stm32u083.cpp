@@ -86,7 +86,7 @@ TEST_F(GpioStm32u083Test, Set_WritesBitToBsrr) {
   EXPECT_EQ(mock_bsrr, 1U << 5U);
 }
 
-TEST_F(GpioStm32u083Test, Set_DoesNotModifyOtherRegisters) {
+TEST_F(GpioStm32u083Test, Set_DoesNotModifyModer) {
   MockPin5::set();
   EXPECT_EQ(mock_moder, 0U);
 }
@@ -120,7 +120,7 @@ TEST_F(GpioStm32u083Test, SetMode_Output_WritesModer) {
   EXPECT_EQ(mock_moder & (0b11U << 10U), 0b01U << 10U);
 }
 
-TEST_F(GpioStm32u083Test, SetMode_Output_PreservesOtherModerBits) {
+TEST_F(GpioStm32u083Test, SetMode_Output_OtherModerBitsPreserved) {
   mock_moder = ~(0b11U << 10U); // all ones except bits [11:10]
   MockPin5::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & ~(0b11U << 10U), ~(0b11U << 10U));
