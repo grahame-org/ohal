@@ -9,49 +9,57 @@
 namespace {
 
 // ---------------------------------------------------------------------------
-// 32-bit register tests
+// Per-width test configurations
 // ---------------------------------------------------------------------------
 
 static uint32_t reg32_storage{0U};
-using Reg32 = ohal::test::MockRegister<uint32_t, &reg32_storage>;
-
-class Register32Test : public ::testing::Test {
-protected:
-  void SetUp() override { reg32_storage = 0U; }
-};
-
-TEST_F(Register32Test, WriteStoresValue) {
-  Reg32::write(0xDEAD'BEEFu);
-  EXPECT_EQ(reg32_storage, 0xDEAD'BEEFu);
-}
-
-TEST_F(Register32Test, ReadReturnsStoredValue) {
-  reg32_storage = 0xCAFE'BABEu;
-  EXPECT_EQ(Reg32::read(), 0xCAFE'BABEu);
-}
-
-// ---------------------------------------------------------------------------
-// 8-bit register tests (covers 8-bit MCU platforms such as PIC18)
-// ---------------------------------------------------------------------------
-
 static uint8_t reg8_storage{0U};
-using Reg8 = ohal::test::MockRegister<uint8_t, &reg8_storage>;
 
-class Register8Test : public ::testing::Test {
-protected:
-  void SetUp() override { reg8_storage = 0U; }
+struct Config32 {
+  using StorageType = uint32_t;
+  using Reg = ohal::test::MockRegister<uint32_t, &reg32_storage>;
+  static constexpr uint32_t write_val = 0xFEED'FACEu;
+  static constexpr uint32_t read_val = 0xFADE'CAFEu;
+  static void reset() noexcept { reg32_storage = 0U; }
+  static StorageType& storage() noexcept { return reg32_storage; }
 };
 
-TEST_F(Register8Test, WriteStoresValue) {
-  Reg8::write(0xABu);
-  // Cast to unsigned so GTest prints a decimal integer rather than a character on failure.
-  EXPECT_EQ(static_cast<unsigned>(reg8_storage), 0xABu);
+// Config for 8-bit MCU platforms such as PIC18.
+struct Config8 {
+  using StorageType = uint8_t;
+  using Reg = ohal::test::MockRegister<uint8_t, &reg8_storage>;
+  static constexpr uint8_t write_val = 0xABu;
+  static constexpr uint8_t read_val = 0xCDu;
+  static void reset() noexcept { reg8_storage = 0U; }
+  static StorageType& storage() noexcept { return reg8_storage; }
+};
+
+// ---------------------------------------------------------------------------
+// Typed test suite (one test body exercised for every register-width config)
+// ---------------------------------------------------------------------------
+
+template <typename Config>
+class RegisterTest : public ::testing::Test {
+protected:
+  void SetUp() override { Config::reset(); }
+};
+
+using RegisterConfigs = ::testing::Types<Config32, Config8>;
+TYPED_TEST_SUITE(RegisterTest, RegisterConfigs);
+
+TYPED_TEST(RegisterTest, WriteStoresValue) {
+  using Reg = typename TypeParam::Reg;
+  Reg::write(TypeParam::write_val);
+  // Cast to uint32_t so GTest prints a decimal integer rather than a character on failure.
+  EXPECT_EQ(static_cast<uint32_t>(TypeParam::storage()),
+            static_cast<uint32_t>(TypeParam::write_val));
 }
 
-TEST_F(Register8Test, ReadReturnsStoredValue) {
-  reg8_storage = 0xCDu;
-  // Cast to unsigned so GTest prints a decimal integer rather than a character on failure.
-  EXPECT_EQ(static_cast<unsigned>(Reg8::read()), 0xCDu);
+TYPED_TEST(RegisterTest, ReadReturnsStoredValue) {
+  TypeParam::storage() = TypeParam::read_val;
+  using Reg = typename TypeParam::Reg;
+  // Cast to uint32_t so GTest prints a decimal integer rather than a character on failure.
+  EXPECT_EQ(static_cast<uint32_t>(Reg::read()), static_cast<uint32_t>(TypeParam::read_val));
 }
 
 } // namespace

@@ -57,17 +57,25 @@ TEST_F(BitField32Test, ReadWriteField_WritePreservesOtherBits) {
   // Pre-load the register with all-ones outside the field.
   field32_storage = ~0b0111'0000U;
   RwField::write(static_cast<uint32_t>(0b101U));
-  // Other bits must still be 1.
   EXPECT_EQ(field32_storage & ~0b0111'0000U, ~0b0111'0000U);
-  // Field bits must reflect the new value.
+}
+
+TEST_F(BitField32Test, ReadWriteField_WriteUpdatesFieldBitsWithPreload) {
+  // Pre-load the register with all-ones outside the field.
+  field32_storage = ~0b0111'0000U;
+  RwField::write(static_cast<uint32_t>(0b101U));
   EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0101'0000U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits) {
+TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_FieldBitsAreSet) {
   // Writing a value with bits set outside the field width should be silently masked.
   RwField::write(static_cast<uint32_t>(0xFFU)); // only 3 bits wide → 0b111
   EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0111'0000U);
-  // No bits outside the field should be set.
+}
+
+TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_NoBitsOutsideField) {
+  // Writing a value with bits set outside the field width should be silently masked.
+  RwField::write(static_cast<uint32_t>(0xFFU)); // only 3 bits wide → 0b111
   EXPECT_EQ(field32_storage & ~0b0111'0000U, 0U);
 }
 
@@ -155,14 +163,29 @@ TEST_F(BitField32Test, EnumValueType_WriteAcceptsEnum) {
 }
 
 // ---------------------------------------------------------------------------
-// Compile-time mask computation check
+// Compile-time mask computation check (value-parameterised)
 // ---------------------------------------------------------------------------
 
-TEST(BitFieldMaskTest, MaskIsCorrect) {
-  EXPECT_EQ(RwField::mask, 0b0111'0000U);
-  EXPECT_EQ(RoField::mask, 0x0F00U);
-  EXPECT_EQ(WoField::mask, 0x00FF'0000U);
-  EXPECT_EQ(NibbleHigh::mask, 0xF0U);
+struct MaskCase {
+  uint32_t actual_mask;
+  uint32_t expected_mask;
+  const char* name;
+};
+
+class BitFieldMaskTest : public ::testing::TestWithParam<MaskCase> {};
+
+INSTANTIATE_TEST_SUITE_P(FieldMasks, BitFieldMaskTest,
+                         ::testing::Values(MaskCase{RwField::mask, 0b0111'0000U, "RwField"},
+                                           MaskCase{RoField::mask, 0x0F00U, "RoField"},
+                                           MaskCase{WoField::mask, 0x00FF'0000U, "WoField"},
+                                           MaskCase{NibbleHigh::mask, 0xF0U, "NibbleHigh"}),
+                         [](const ::testing::TestParamInfo<MaskCase>& info) {
+                           return info.param.name;
+                         });
+
+TEST_P(BitFieldMaskTest, MaskIsCorrect) {
+  const auto& p = GetParam();
+  EXPECT_EQ(p.actual_mask, p.expected_mask);
 }
 
 // ---------------------------------------------------------------------------
