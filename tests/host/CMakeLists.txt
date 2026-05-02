@@ -10,7 +10,8 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(ohal_host_tests main.cpp test_register.cpp test_bitfield.cpp test_gpio.cpp)
+add_executable(ohal_host_tests main.cpp test_register.cpp test_bitfield.cpp test_gpio.cpp
+                               test_gpio_stm32u083.cpp)
 target_link_libraries(ohal_host_tests PRIVATE ohal GTest::gtest_main GTest::gmock)
 
 include(GoogleTest)
