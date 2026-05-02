@@ -127,7 +127,7 @@ TEST_F(GpioStm32u083Test, SetMode_Output_OtherModerBitsPreserved) {
 }
 
 TEST_F(GpioStm32u083Test, SetMode_Input_WritesModer) {
-  mock_moder = 0b11U << 10U; // pre-load Output
+  mock_moder = 0b11U << 10U; // pre-load Analog (0b11 = PinMode::Analog)
   MockPin5::set_mode(ohal::gpio::PinMode::Input);
   EXPECT_EQ(mock_moder & (0b11U << 10U), 0U);
 }
@@ -187,7 +187,7 @@ TEST_F(GpioStm32u083Test, SetPull_Down_WritesPupdr) {
 }
 
 TEST_F(GpioStm32u083Test, SetPull_None_WritesPupdr) {
-  mock_pupdr = 0b11U << 10U; // pre-load Down
+  mock_pupdr = 0b11U << 10U; // pre-load with non-zero bits (0b11 is reserved; Down = 0b10)
   MockPin5::set_pull(ohal::gpio::Pull::None);
   EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0U);
 }
@@ -326,5 +326,158 @@ TEST_P(GpioStm32u083CapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().v
 //
 //   MockPin5::Idr::write(ohal::gpio::Level::High);
 //   // expected: "ohal: cannot write to a read-only field"
+
+// ---------------------------------------------------------------------------
+// set() and clear() must never call read() on BSRR (write-only register)
+//
+// Uses ReadCountingMockRegister for the BSRR slot so that any accidental
+// read-modify-write regression is caught on the host without needing real hardware.
+// ---------------------------------------------------------------------------
+
+static uint32_t bsrr_counting_storage{0U};
+using BsrrCountingReg = ohal::test::ReadCountingMockRegister<uint32_t, &bsrr_counting_storage>;
+
+struct MockGpioRegsCountingBsrr {
+  using Moder = ohal::test::MockRegister<uint32_t, &mock_moder>;
+  using Otyper = ohal::test::MockRegister<uint32_t, &mock_otyper>;
+  using Ospeedr = ohal::test::MockRegister<uint32_t, &mock_ospeedr>;
+  using Pupdr = ohal::test::MockRegister<uint32_t, &mock_pupdr>;
+  using Idr = ohal::test::MockRegister<uint32_t, &mock_idr>;
+  using Odr = ohal::test::MockRegister<uint32_t, &mock_odr>;
+  using Bsrr = BsrrCountingReg;
+  using Lckr = ohal::test::MockRegister<uint32_t, &mock_lckr>;
+  using Afrl = ohal::test::MockRegister<uint32_t, &mock_afrl>;
+  using Afrh = ohal::test::MockRegister<uint32_t, &mock_afrh>;
+  using Brr = ohal::test::MockRegister<uint32_t, &mock_brr>;
+};
+
+using CountingPin5 =
+    ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<5U, MockGpioRegsCountingBsrr>;
+
+class GpioStm32u083BsrrReadCountTest : public ::testing::Test {
+protected:
+  void SetUp() override { BsrrCountingReg::reset(); }
+};
+
+TEST_F(GpioStm32u083BsrrReadCountTest, Set_NeverCallsReadOnBsrr) {
+  CountingPin5::set();
+  EXPECT_EQ(BsrrCountingReg::read_count, 0U);
+}
+
+TEST_F(GpioStm32u083BsrrReadCountTest, Clear_NeverCallsReadOnBsrr) {
+  CountingPin5::clear();
+  EXPECT_EQ(BsrrCountingReg::read_count, 0U);
+}
+
+// ---------------------------------------------------------------------------
+// Capability trait: invalid pin numbers must report false
+// ---------------------------------------------------------------------------
+
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_output_type");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_output_speed");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_pull");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_alternate_function");
+
+struct InvalidPinCapCase {
+  bool value;
+  const char* name;
+};
+
+class GpioStm32u083InvalidPinCapTest : public ::testing::TestWithParam<InvalidPinCapCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidPinCapabilities, GpioStm32u083InvalidPinCapTest,
+    ::testing::Values(
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_OutputType"},
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_OutputSpeed"},
+        InvalidPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
+                          "PortA_Pin16_Pull"},
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_AlternateFunction"}),
+    [](const ::testing::TestParamInfo<InvalidPinCapCase>& info) { return info.param.name; });
+
+TEST_P(GpioStm32u083InvalidPinCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
+
+// ---------------------------------------------------------------------------
+// Port-wiring tests: verify that each Pin<PortX, N> specialisation resolves to
+// the correct hardware base address.
+//
+// Each production specialisation inherits from GpioPortPinImpl<N, GpioX> where
+// GpioX = GpioPortRegs<kGpioXBase>.  Checking the address of BsrrSet::reg_type
+// (the register type backing the BSRR set-bit field) exercises the full
+// Port → Regs → Register<Address> chain without any hardware access.
+// ---------------------------------------------------------------------------
+
+namespace wiring = ohal::platforms::stm32u0::stm32u083;
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address ==
+                  wiring::kGpioABase + wiring::kBsrrOffset,
+              "Pin<PortA,0> must use GPIOA BSRR address");
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address ==
+                  wiring::kGpioBBase + wiring::kBsrrOffset,
+              "Pin<PortB,0> must use GPIOB BSRR address");
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address ==
+                  wiring::kGpioCBase + wiring::kBsrrOffset,
+              "Pin<PortC,0> must use GPIOC BSRR address");
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortD, 0>::BsrrSet::reg_type::address ==
+                  wiring::kGpioDBase + wiring::kBsrrOffset,
+              "Pin<PortD,0> must use GPIOD BSRR address");
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortE, 0>::BsrrSet::reg_type::address ==
+                  wiring::kGpioEBase + wiring::kBsrrOffset,
+              "Pin<PortE,0> must use GPIOE BSRR address");
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address ==
+                  wiring::kGpioFBase + wiring::kBsrrOffset,
+              "Pin<PortF,0> must use GPIOF BSRR address");
+
+// Verify the MODER address for PortA and PortB to catch any offset errors.
+static_assert(ohal::gpio::Pin<ohal::gpio::PortA, 0>::Moder::reg_type::address ==
+                  wiring::kGpioABase + wiring::kModerOffset,
+              "Pin<PortA,0> must use GPIOA MODER address");
+
+static_assert(ohal::gpio::Pin<ohal::gpio::PortB, 0>::Moder::reg_type::address ==
+                  wiring::kGpioBBase + wiring::kModerOffset,
+              "Pin<PortB,0> must use GPIOB MODER address");
+
+struct WiringCase {
+  uintptr_t actual;
+  uintptr_t expected;
+  const char* name;
+};
+
+class GpioStm32u083WiringTest : public ::testing::TestWithParam<WiringCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    PortBsrrAddresses, GpioStm32u083WiringTest,
+    ::testing::Values(WiringCase{ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address,
+                                 wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
+                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address,
+                                 wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
+                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address,
+                                 wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
+                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortD, 0>::BsrrSet::reg_type::address,
+                                 wiring::kGpioDBase + wiring::kBsrrOffset, "PortD"},
+                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortE, 0>::BsrrSet::reg_type::address,
+                                 wiring::kGpioEBase + wiring::kBsrrOffset, "PortE"},
+                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address,
+                                 wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
+    [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
+
+TEST_P(GpioStm32u083WiringTest, BsrrAddressMatchesHardwareBase) {
+  EXPECT_EQ(GetParam().actual, GetParam().expected);
+}
 
 } // namespace
