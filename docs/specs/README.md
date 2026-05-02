@@ -1,25 +1,31 @@
 # Device-Family Register Specifications
 
-This directory contains structured YAML specifications for STM32 device families. Each spec captures
-memory-map and peripheral register/field metadata directly from the vendor reference manual.
+This directory contains structured YAML specifications for microcontroller device families from any
+vendor. Each spec captures memory-map and peripheral register/field metadata directly from the
+vendor reference manual.
 
 ## Directory Layout
 
 ```text
 docs/specs/
-├── README.md           ← this file
-└── stm32/
-    ├── schema.json     ← JSON Schema for all STM32 spec files
-    └── stm32u0.yml     ← STM32U0 family specification
+├── README.md                  ← this file
+├── schema.json                ← common JSON Schema for all spec files
+├── future_improvements.md     ← options for cross-family/cross-vendor settings sharing
+└── {vendor}/                  ← one subdirectory per vendor (e.g. stm32, nxp, nordic)
+    └── {family}.yml           ← one spec file per device family
 ```
+
+**Vendor directory naming:** use the vendor's product-line prefix in lowercase (e.g. `stm32` for
+STMicroelectronics STM32, `nrf` for Nordic nRF, `lpc` for NXP LPC).
 
 ## Format Overview
 
-Every spec file is a YAML document validated against `docs/specs/stm32/schema.json`. The top-level
-keys are:
+Every spec file is a YAML document validated against `docs/specs/schema.json`. The top-level keys
+are:
 
 | Key            | Required | Description                                                       |
 | -------------- | -------- | ----------------------------------------------------------------- |
+| `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                      |
 | `family`       | ✓        | Family name and sub-family list                                   |
 | `architecture` | ✓        | Processor architecture and word size                              |
 | `reference`    | ✓        | Reference manual document identifier and revision                 |
@@ -28,6 +34,15 @@ keys are:
 | `peripherals`  |          | Peripheral blocks with register and bit-field descriptions        |
 
 ## Key Concepts
+
+### Vendor
+
+Every spec must declare the chip vendor so that the spec is self-describing independently of its
+directory location:
+
+```yaml
+vendor: STMicroelectronics
+```
 
 ### Sub-family applicability
 
@@ -180,12 +195,12 @@ under `sequence`:
 
 ## Validation
 
-Specs are validated against `docs/specs/stm32/schema.json` as part of CI (see `lint.sh` and the
-`lint.yml` workflow).
+Specs are validated against `docs/specs/schema.json` as part of CI (see `lint.sh` and the `lint.yml`
+workflow).
 
 To validate locally:
 
 ```sh
 pip install check-jsonschema
-check-jsonschema --schemafile docs/specs/stm32/schema.json docs/specs/stm32/stm32u0.yml
+check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
 ```

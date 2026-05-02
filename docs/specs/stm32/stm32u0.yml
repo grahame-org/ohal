@@ -1,4 +1,5 @@
 ---
+vendor: STMicroelectronics
 family:
   name: stm32u0
   sub-families: [stm32u031, stm32u073, stm32u083]

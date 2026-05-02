@@ -1,12 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/stm32/schema.json",
-  "title": "STM32 device-family register specification",
-  "description": "Schema for STM32 device-family register-map and peripheral register/field metadata.",
+  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema.json",
+  "title": "Microcontroller device-family register specification",
+  "description": "Vendor-agnostic schema for microcontroller device-family register-map and peripheral register/field metadata.",
   "type": "object",
-  "required": ["family", "architecture", "reference"],
+  "required": ["vendor", "family", "architecture", "reference"],
   "additionalProperties": false,
   "properties": {
+    "vendor": {
+      "description": "Chip vendor name, e.g. 'STMicroelectronics', 'Nordic Semiconductor', 'NXP'.",
+      "type": "string"
+    },
     "family": {
       "description": "Device family metadata.",
       "type": "object",
