@@ -1,11 +1,100 @@
-# Future Improvements: Cross-Family and Cross-Vendor Settings Sharing
+# Future Improvements
+
+## Specification Granularity Levels
+
+The longer-term plan is for specifications to cover not just memory maps and peripheral register
+layouts but also device-model-specific information such as alternate-function pin mappings. To keep
+the format manageable and the data reusable, three granularity levels should be kept separate:
+
+| Level            | What it describes                                                                                          | Expected file                                       |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **Architecture** | Word size, endianness, register access type taxonomy, core peripherals (NVIC, SysTick, SCB)                | `docs/specs/common/arch/{arch}.yml`                 |
+| **Family**       | Memory map, peripheral register layouts, clock gating structure, sub-family differences                    | `docs/specs/{vendor}/{family}.yml` (current format) |
+| **Device model** | Specific part number, package, pin count, alternate-function table, available peripheral instances, errata | `docs/specs/{vendor}/models/{part-number}.yml`      |
+
+### Why three levels?
+
+- **Architecture** data is entirely vendor-independent. The ARM Cortex-M0+ access-type taxonomy
+  (`rc_w1`, `w1s`, etc.), NVIC register layout, and word size apply identically to STM32, NXP LPC,
+  Nordic nRF, and any other Cortex-M0+ device. Storing it once avoids duplication and drift.
+
+- **Family** data is shared across all models in a family. The STM32U0 GPIO register layout (MODER,
+  OTYPER, OSPEEDR, …) is the same for every stm32u031, stm32u073, and stm32u083 part. Clock gating
+  register names (e.g. `RCC_IOPENR.GPIOAEN`) are family-level even though each model may expose a
+  different subset of GPIO ports. This is what the current spec file captures.
+
+- **Device model** data is specific to a single part number or package variant. The alternate-function
+  mapping for PA0 differs between a 32-pin UFQFPN and a 48-pin LQFP package of the same family.
+  Errata are tied to silicon revision. The list of available GPIO ports (and hence which peripheral
+  instances exist) changes between stm32u031C4 and stm32u031K4. Conflating this with family-level
+  data would force the family spec to enumerate every part-specific variant.
+
+### Proposed directory layout
+
+```text
+docs/specs/
+├── schema.json                     ← common JSON Schema (family-level)
+├── schema-model.json               ← JSON Schema for device-model spec files
+├── future_improvements.md
+├── common/
+│   └── arch/
+│       └── cortex-m0plus.yml       ← architecture-level definitions
+└── stm32/
+    ├── stm32u0.yml                 ← family spec (current)
+    └── models/
+        ├── stm32u031c4.yml         ← model spec: 32-pin, 256 KB flash
+        ├── stm32u031k4.yml         ← model spec: 32-pin UFQFPN, 256 KB flash
+        └── stm32u073rc.yml         ← model spec: 64-pin, 256 KB flash
+```
+
+### Cross-level references
+
+A model spec references its parent family spec via a `family-ref` key. Tooling can then merge the
+two levels when generating code or documentation:
+
+```yaml
+spec-version: "1.0.0"
+vendor: STMicroelectronics
+family-ref: stm32u0 # links back to stm32u0.yml
+model: stm32u031c4
+package: UFQFPN32
+flash-kb: 256
+sram-kb: 12
+pin-count: 32
+```
+
+### Mapping the identified coverage gaps to levels
+
+The 11 coverage gaps documented below can now be allocated to the correct level:
+
+| Gap | Title                                         | Level                                                            |
+| --- | --------------------------------------------- | ---------------------------------------------------------------- |
+| 1   | Peripheral instances and base-address binding | Family                                                           |
+| 2   | Register reset values                         | Family                                                           |
+| 3   | Extended access-type taxonomy                 | Architecture                                                     |
+| 4   | Reserved fields and write-zero constraint     | Architecture                                                     |
+| 5   | Sub-family conditional registers/fields       | Family                                                           |
+| 6   | Alternate function pin-mapping table          | **Model**                                                        |
+| 7   | Clock gating and power-domain metadata        | Family                                                           |
+| 8   | Interrupt mapping                             | Family (base IRQ numbers) + **Model** (availability per package) |
+| 9   | Errata and silicon-revision annotations       | **Model**                                                        |
+| 10  | Register-array and stride notation            | Family                                                           |
+| 11  | Peripheral description field                  | Family                                                           |
+
+Gaps marked **Model** should be deferred until `schema-model.json` and the `models/` directory
+structure are introduced. The remaining gaps can be addressed incrementally in the existing family
+spec format.
+
+---
+
+## Cross-Family and Cross-Vendor Settings Sharing
 
 The current spec format stores all `definitions.settings` blocks inside individual spec files. This
 works well for a single family but leads to duplication when the same settings encoding appears
 across multiple families or vendors. This document describes the problem and evaluates options for
 addressing it.
 
-## Problem
+### Problem
 
 Many peripheral settings encodings are identical across device families and even across vendors,
 because they implement the same IP (e.g. ARM Cortex-M GPIO) or follow the same de-facto convention:
@@ -21,13 +110,13 @@ because they implement the same IP (e.g. ARM Cortex-M GPIO) or follow the same d
 When the same settings block is copy-pasted into every spec file, a typo or update must be applied
 to every copy. A shared definitions mechanism would provide a single source of truth.
 
-## Constraints
+### Constraints
 
 The spec format is plain YAML. YAML 1.2 (and YAML 1.1) have no built-in cross-file `include` or
 `$ref`. Any cross-file sharing therefore requires either tooling support or a change in the
 validation strategy.
 
-## Options
+### Options
 
 ### Option A: Common definitions YAML library (recommended starting point)
 
@@ -153,7 +242,7 @@ chosen.
 
 ---
 
-## Recommendation
+### Recommendation
 
 1. **Near-term:** ~~Adopt **Option D** (spec-version field) immediately so that format evolution is
    tracked from the start.~~ ✅ Implemented — `spec-version: "1.0.0"` (semver) is now required by the schema.
