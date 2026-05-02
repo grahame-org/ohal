@@ -33,6 +33,21 @@ find "${REPO_ROOT}" \
 echo "=== yamllint ==="
 yamllint -c "${REPO_ROOT}/.yamllint.yml" "${REPO_ROOT}/.github/workflows"
 
+echo "=== spec validation ==="
+while IFS= read -r -d '' spec; do
+    check-jsonschema --schemafile "${REPO_ROOT}/docs/specs/schema.json" "${spec}"
+done < <(find "${REPO_ROOT}/docs/specs" -mindepth 2 -maxdepth 2 -name '*.yml' -print0)
+
+echo "=== model spec validation ==="
+while IFS= read -r -d '' spec; do
+    check-jsonschema --schemafile "${REPO_ROOT}/docs/specs/schema-model.json" "${spec}"
+done < <(find "${REPO_ROOT}/docs/specs" -mindepth 3 -maxdepth 3 -name '*.yml' -path '*/models/*' -print0)
+
+echo "=== arch spec validation ==="
+while IFS= read -r -d '' spec; do
+    check-jsonschema --schemafile "${REPO_ROOT}/docs/specs/schema-arch.json" "${spec}"
+done < <(find "${REPO_ROOT}/docs/specs/common/arch" -name '*.yml' -print0)
+
 echo "=== shellcheck ==="
 find "${REPO_ROOT}" -name '*.sh' -print0 | xargs -0 shellcheck
 

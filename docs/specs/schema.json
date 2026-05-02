@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema.json",
+  "title": "Microcontroller device-family register specification",
+  "description": "Vendor-agnostic schema for microcontroller device-family register-map and peripheral register/field metadata.",
+  "type": "object",
+  "required": ["spec-version", "vendor", "family", "architecture", "reference"],
+  "additionalProperties": false,
+  "properties": {
+    "spec-version": {
+      "description": "Spec format version using semantic versioning (semver), e.g. '1.0.0'. Increment the patch version for corrections, the minor version for backward-compatible additions, and the major version for breaking changes.",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "vendor": {
+      "description": "Chip vendor name, e.g. 'STMicroelectronics', 'Nordic Semiconductor', 'NXP'.",
+      "type": "string"
+    },
+    "family": {
+      "description": "Device family metadata.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Family identifier, e.g. 'stm32u0'.",
+          "type": "string"
+        },
+        "sub-families": {
+          "description": "List of sub-family identifiers that belong to this family.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "arch-ref": {
+      "description": "Identifier of the architecture-level spec file (without the .yml extension) in docs/specs/common/arch/, e.g. 'cortex-m0plus'. Tooling can merge the referenced architecture spec with this family spec when generating code or documentation.",
+      "type": "string"
+    },
+    "architecture": {
+      "description": "Processor architecture metadata.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Architecture name, e.g. 'ARM Cortex-M0+'.",
+          "type": "string"
+        },
+        "word-size": {
+          "description": "Native word size in bits.",
+          "type": "integer",
+          "enum": [8, 16, 32, 64]
+        }
+      }
+    },
+    "reference": {
+      "description": "Reference manual metadata.",
+      "type": "object",
+      "required": ["source", "revision"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "description": "Reference manual document identifier, e.g. 'RM0503'.",
+          "type": "string"
+        },
+        "revision": {
+          "description": "Reference manual revision number.",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "memory": {
+      "description": "Memory map.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "references": { "$ref": "#/$defs/references" },
+        "map": {
+          "description": "List of memory regions.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/memory-region" }
+        }
+      }
+    },
+    "definitions": {
+      "description": "Reusable definitions. Values are referenced via YAML anchors/aliases in the spec.",
+      "type": "object",
+      "properties": {
+        "settings": {
+          "description": "Named settings maps, each referenced by one or more fields.",
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/settings" }
+        }
+      }
+    },
+    "peripherals": {
+      "description": "List of peripheral blocks documented in this spec.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/peripheral-item" }
+    }
+  },
+  "$defs": {
+    "hex-address": {
+      "description": "A hex address or byte offset (e.g. 0x40000000). Written in hex notation in the source YAML; parsed as an integer by most YAML parsers.",
+      "type": ["string", "integer"]
+    },
+    "references": {
+      "description": "Cross-references into the source reference manual.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "section": {
+          "description": "Single section reference (used by individual registers).",
+          "type": ["string", "number"]
+        },
+        "sections": {
+          "description": "Multiple section references.",
+          "type": "array",
+          "items": { "type": ["string", "number"] }
+        },
+        "figures": {
+          "type": "array",
+          "items": { "type": ["string", "number"] }
+        },
+        "tables": {
+          "type": "array",
+          "items": { "type": ["string", "number"] }
+        }
+      }
+    },
+    "memory-region": {
+      "description": "A named address range in the memory map.",
+      "type": "object",
+      "required": ["name", "start", "end"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "sub-families": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "start": { "$ref": "#/$defs/hex-address" },
+        "end": { "$ref": "#/$defs/hex-address" },
+        "base": {
+          "description": "Peripheral base address for register offset calculations, when it differs from the region's start address. Consumers must use this address (not start) when computing register addresses from offsets.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "verified": {
+          "description": "Whether this entry has been verified against the reference manual. Defaults to true. Set to false to flag data that is provisional or still needs checking.",
+          "type": "boolean"
+        },
+        "note": {
+          "description": "Optional free-text annotation.",
+          "type": "string"
+        }
+      }
+    },
+    "settings": {
+      "description": "Enumerated bit-pattern settings for a field. Keys are binary bit patterns (e.g. '00', '10', '1111'). Null means no settings are documented.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      ]
+    },
+    "field": {
+      "description": "A named bit-field within a register.",
+      "type": "object",
+      "required": ["name", "msb", "lsb", "width", "access", "settings"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Field name as it appears in the reference manual.",
+          "type": "string"
+        },
+        "msb": {
+          "description": "Most-significant bit position (inclusive, 0-based).",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 63
+        },
+        "lsb": {
+          "description": "Least-significant bit position (inclusive, 0-based).",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 63
+        },
+        "width": {
+          "description": "Field width in bits (must equal msb - lsb + 1).",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "access": {
+          "description": "Register access type: rw = read/write, ro = read-only, wo = write-only.",
+          "type": "string",
+          "enum": ["rw", "ro", "wo"]
+        },
+        "note": {
+          "description": "Optional free-text annotation for this field.",
+          "type": "string"
+        },
+        "priority-over": {
+          "description": "Names of fields that this field overrides when both are written in the same register access. If this field and any listed field are both written with a non-zero value simultaneously, the effect of this field takes precedence and the listed fields' writes are ignored by the hardware.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "settings": { "$ref": "#/$defs/settings" }
+      }
+    },
+    "sequence": {
+      "description": "Required access sequence (e.g. lock/unlock procedure).",
+      "type": "object",
+      "required": ["description", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "description": "Human-readable explanation of when/why this sequence is required, and any caller arguments it accepts (e.g. 'write-arg' values).",
+          "type": "string"
+        },
+        "steps": {
+          "description": "Ordered list of steps. Steps must be executed in the order listed.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/sequence-step" },
+          "minItems": 2
+        }
+      }
+    },
+    "sequence-step": {
+      "description": "A single step in a register access sequence.",
+      "type": "object",
+      "required": ["op"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "description": "Operation type: 'write' writes field values to the register; 'read' reads the register.",
+          "type": "string",
+          "enum": ["read", "write"]
+        },
+        "note": {
+          "description": "Human-readable explanation of this step's purpose, including any timing or ordering constraints.",
+          "type": "string"
+        },
+        "optional": {
+          "description": "Whether this step may be omitted. Defaults to false. Optional steps should still be executed when possible.",
+          "type": "boolean"
+        },
+        "fields": {
+          "description": "Field values to write. Keys are field names (or logical field groups). Values are either a non-negative integer literal (fixed value) or the string 'write-arg' (caller-supplied value). Only valid when op is 'write'.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "integer", "minimum": 0 },
+              { "type": "string", "const": "write-arg" }
+            ]
+          }
+        },
+        "expect": {
+          "description": "Expected field values to verify after reading. Keys are field names; values are the expected non-negative integers representing the field's bit pattern. A consumer should check these values and treat a mismatch as a sequence failure. Omit on read steps where the result is intentionally discarded. Only valid when op is 'read'.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "if": { "properties": { "op": { "const": "write" } }, "required": ["op"] },
+      "then": {
+        "required": ["fields"],
+        "not": { "required": ["expect"] }
+      },
+      "else": {
+        "not": { "required": ["fields"] }
+      }
+    },
+    "register": {
+      "description": "A hardware register definition.",
+      "type": "object",
+      "required": ["offset", "fields"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "offset": {
+          "description": "Register byte offset from the peripheral base address.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "sequence": { "$ref": "#/$defs/sequence" },
+        "fields": {
+          "description": "Ordered list of bit-fields from MSB to LSB.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/field" },
+          "minItems": 1
+        }
+      }
+    },
+    "peripheral": {
+      "description": "A peripheral block containing registers.",
+      "type": "object",
+      "required": ["registers"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "instances": {
+          "description": "Concrete instances of this peripheral in the device memory map, each binding the register layout to a named base address.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/peripheral-instance" },
+          "minItems": 1
+        },
+        "registers": {
+          "description": "Ordered list of register definitions. Each item is a single-key mapping whose key is the register name.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/register-item" },
+          "minItems": 1
+        }
+      }
+    },
+    "peripheral-instance": {
+      "description": "A named instance of a peripheral at a specific base address.",
+      "type": "object",
+      "required": ["name", "base"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Instance name as it appears in the reference manual, e.g. 'GPIOA', 'TIM2'.",
+          "type": "string"
+        },
+        "base": {
+          "description": "Base address of this peripheral instance.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "sub-families": {
+          "description": "Sub-families for which this instance is present. Omit if the instance is present in all sub-families.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "register-item": {
+      "description": "A single-key mapping where the key is the register name and the value is the register definition.",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/register" }
+    },
+    "peripheral-item": {
+      "description": "A single-key mapping where the key is the peripheral name and the value is the peripheral definition.",
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/peripheral" }
+    }
+  }
+}

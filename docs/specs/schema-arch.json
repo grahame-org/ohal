@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema-arch.json",
+  "title": "Processor architecture specification",
+  "description": "Schema for architecture-level spec files in docs/specs/common/arch/. An architecture spec captures metadata that is identical on every device implementing that processor architecture: word size, endianness, Private Peripheral Bus (PPB) address regions, and settings encodings shared by all devices of that architecture.",
+  "type": "object",
+  "required": ["spec-version", "architecture"],
+  "additionalProperties": false,
+  "properties": {
+    "spec-version": {
+      "description": "Spec format version using semantic versioning (semver), e.g. '1.0.0'. Increment the patch version for corrections, the minor version for backward-compatible additions, and the major version for breaking changes.",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "architecture": {
+      "description": "Processor architecture metadata.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Architecture name, e.g. 'ARM Cortex-M0+'.",
+          "type": "string"
+        },
+        "word-size": {
+          "description": "Native word size in bits.",
+          "type": "integer",
+          "enum": [8, 16, 32, 64]
+        },
+        "endianness": {
+          "description": "Byte order of the architecture.",
+          "type": "string",
+          "enum": ["little", "big"]
+        }
+      }
+    },
+    "memory": {
+      "description": "Architecture-defined memory regions (e.g. Private Peripheral Bus). These regions are identical on every device implementing this architecture.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "description": "Optional free-text annotation for the architecture memory section.",
+          "type": "string"
+        },
+        "map": {
+          "description": "List of architecture-defined memory regions.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/arch-memory-region" }
+        }
+      }
+    },
+    "definitions": {
+      "description": "Reusable definitions shared across all devices of this architecture. Values are referenced via YAML anchors/aliases in family specs.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "settings": {
+          "description": "Named settings maps that are architecturally defined and identical across all devices. Keys are settings-block names; values are the bit-pattern-to-description mappings.",
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/settings" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hex-address": {
+      "description": "A hex address or byte offset (e.g. 0x40000000). Written in hex notation in the source YAML; parsed as an integer by most YAML parsers.",
+      "type": ["string", "integer"]
+    },
+    "settings": {
+      "description": "Enumerated bit-pattern settings for a field. Keys are binary bit patterns (e.g. '00', '10', '1111'). Null means no settings are documented.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      ]
+    },
+    "arch-memory-region": {
+      "description": "A named architecture-defined address range.",
+      "type": "object",
+      "required": ["name", "start", "end"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "start": { "$ref": "#/$defs/hex-address" },
+        "end": { "$ref": "#/$defs/hex-address" },
+        "note": {
+          "description": "Optional free-text annotation.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}
