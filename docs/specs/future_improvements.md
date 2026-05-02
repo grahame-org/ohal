@@ -34,15 +34,15 @@ the format manageable and the data reusable, three granularity levels should be 
 ```text
 docs/specs/
 ├── schema.json                     ← common JSON Schema (family-level)
-├── schema-model.json               ← JSON Schema for device-model spec files
+├── schema-model.json               ← JSON Schema for device-model spec files ✅
 ├── future_improvements.md
 ├── common/
 │   └── arch/
-│       └── cortex-m0plus.yml       ← architecture-level definitions
+│       └── cortex-m0plus.yml       ← architecture-level definitions ✅
 └── stm32/
     ├── stm32u0.yml                 ← family spec (current)
     └── models/
-        ├── stm32u031c4.yml         ← model spec: 32-pin, 256 KB flash
+        ├── stm32u031c4.yml         ← model spec: UFQFPN32, 256 KB flash ✅ (template)
         ├── stm32u031k4.yml         ← model spec: 32-pin UFQFPN, 256 KB flash
         └── stm32u073rc.yml         ← model spec: 64-pin, 256 KB flash
 ```
@@ -69,7 +69,7 @@ The 11 coverage gaps documented below can now be allocated to the correct level:
 
 | Gap | Title                                         | Level                                                            |
 | --- | --------------------------------------------- | ---------------------------------------------------------------- |
-| 1   | Peripheral instances and base-address binding | Family                                                           |
+| 1   | Peripheral instances and base-address binding | Family ✅                                                        |
 | 2   | Register reset values                         | Family                                                           |
 | 3   | Extended access-type taxonomy                 | Architecture                                                     |
 | 4   | Reserved fields and write-zero constraint     | Architecture                                                     |
@@ -268,24 +268,12 @@ other than GPIO have been deliberately excluded for now and will be added in fut
 items below are therefore _format-level_ gaps — things the spec format itself should eventually
 be able to express regardless of which peripheral is being described.
 
-### 1. Peripheral instances and base-address binding
+### 1. Peripheral instances and base-address binding ✅ (implemented)
 
-The `peripherals` section defines a peripheral's register layout once (e.g. `gpio`), but the
-spec does not link that definition to the concrete memory-map instances (e.g. GPIOA at
-`0x50000000`, GPIOB at `0x50000400`, …). Consumers must manually correlate the two sections.
-
-**Proposed addition:** an `instances` list inside each peripheral entry, each item naming the
-base address from the memory map:
-
-```yaml
-- gpio:
-    instances:
-      - name: GPIOA
-        base: 0x50000000
-      - name: GPIOB
-        base: 0x50000400
-    registers: …
-```
+The `peripherals` section defines a peripheral's register layout once (e.g. `gpio`), and the
+`instances` list inside each peripheral entry binds that layout to the concrete memory-map
+instances (e.g. GPIOA at `0x50000000`, GPIOB at `0x50000400`, …). This removes the need for
+consumers to manually correlate the two sections.
 
 ### 2. Register reset values
 

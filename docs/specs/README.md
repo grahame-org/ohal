@@ -9,13 +9,16 @@ vendor reference manual.
 ```text
 docs/specs/
 ├── README.md                  ← this file
-├── schema.json                ← common JSON Schema for family spec files
+├── schema.json                ← JSON Schema for family spec files
+├── schema-model.json          ← JSON Schema for device-model spec files
 ├── future_improvements.md     ← options for cross-family/cross-vendor settings sharing
 ├── common/
 │   └── arch/
 │       └── {arch}.yml         ← one architecture-level spec per processor architecture
 └── {vendor}/                  ← one subdirectory per vendor (e.g. stm32, nxp, nordic)
-    └── {family}.yml           ← one spec file per device family
+    ├── {family}.yml           ← one family spec per device family
+    └── models/
+        └── {part-number}.yml  ← one device-model spec per part number
 ```
 
 **Vendor directory naming:** use the vendor's product-line prefix in lowercase (e.g. `stm32` for
@@ -121,13 +124,18 @@ memory:
 ### Peripherals
 
 Peripherals are listed under `peripherals`. Each item is a single-key mapping whose key is the
-peripheral name and whose value contains `registers`:
+peripheral name and whose value contains an optional `instances` list and `registers`:
 
 ```yaml
 peripherals:
   - gpio:
       reference:
         sections: [7.4]
+      instances:
+        - name: GPIOA
+          base: 0x50000000
+        - name: GPIOB
+          base: 0x50000400
       registers:
         - MODER:
             reference:
@@ -141,6 +149,11 @@ peripherals:
                 access: rw
                 settings: *gpio-mode
 ```
+
+The `instances` list binds the generic register layout to the concrete base addresses in the memory
+map. Each instance has a required `name` and `base`, and an optional `sub-families` list (for
+peripherals whose availability varies across sub-families). Omit `sub-families` if the instance is
+present in all sub-families.
 
 ### Register fields
 
@@ -264,14 +277,57 @@ Each step has a required `op` key (`read` or `write`) and the following optional
 must document what each `write-arg` represents so that consumers can implement the sequence
 correctly. `fields` must not appear on `read` steps; `expect` must not appear on `write` steps.
 
+## Device-model specs
+
+A device-model spec (in `{vendor}/models/{part-number}.yml`) describes a specific part number,
+package, and silicon revision. It is validated against `docs/specs/schema-model.json`.
+
+The required top-level keys are:
+
+| Key            | Type    | Description                                 |
+| -------------- | ------- | ------------------------------------------- |
+| `spec-version` | string  | Spec format version (semver)                |
+| `vendor`       | string  | Must match the parent family spec           |
+| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)     |
+| `model`        | string  | Part number identifier (e.g. `stm32u031c4`) |
+| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)    |
+| `flash-kb`     | integer | On-chip flash in kibibytes                  |
+| `sram-kb`      | integer | On-chip SRAM in kibibytes                   |
+| `pin-count`    | integer | Number of physical pins                     |
+
+Optional keys:
+
+| Key                       | Description                                                 |
+| ------------------------- | ----------------------------------------------------------- |
+| `peripheral-availability` | Which peripheral instances from the family spec are present |
+| `alternate-functions`     | Per-pin AF mapping table (AF0-AF15 -> signal names)         |
+| `errata`                  | Known hardware errata with silicon-revision applicability   |
+
+Example:
+
+```yaml
+spec-version: "1.0.0"
+vendor: STMicroelectronics
+family-ref: stm32u0
+model: stm32u031c4
+package: UFQFPN32
+flash-kb: 256
+sram-kb: 12
+pin-count: 32
+peripheral-availability:
+  - peripheral: gpio
+    instances: [GPIOA, GPIOB, GPIOC, GPIOD, GPIOF]
+```
+
 ## Validation
 
-Specs are validated against `docs/specs/schema.json` as part of CI (see `lint.sh` and the `lint.yml`
-workflow).
+Family specs are validated against `docs/specs/schema.json` and model specs against
+`docs/specs/schema-model.json` as part of CI (see `lint.sh` and the `lint.yml` workflow).
 
 To validate locally:
 
 ```sh
 pip install check-jsonschema
 check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
+check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u031c4.yml
 ```

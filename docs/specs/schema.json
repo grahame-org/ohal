@@ -291,11 +291,38 @@
       "additionalProperties": false,
       "properties": {
         "reference": { "$ref": "#/$defs/references" },
+        "instances": {
+          "description": "Concrete instances of this peripheral in the device memory map, each binding the register layout to a named base address.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/peripheral-instance" },
+          "minItems": 1
+        },
         "registers": {
           "description": "Ordered list of register definitions. Each item is a single-key mapping whose key is the register name.",
           "type": "array",
           "items": { "$ref": "#/$defs/register-item" },
           "minItems": 1
+        }
+      }
+    },
+    "peripheral-instance": {
+      "description": "A named instance of a peripheral at a specific base address.",
+      "type": "object",
+      "required": ["name", "base"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Instance name as it appears in the reference manual, e.g. 'GPIOA', 'TIM2'.",
+          "type": "string"
+        },
+        "base": {
+          "description": "Base address of this peripheral instance.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "sub-families": {
+          "description": "Sub-families for which this instance is present. Omit if the instance is present in all sub-families.",
+          "type": "array",
+          "items": { "type": "string" }
         }
       }
     },

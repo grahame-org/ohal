@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema-model.json",
+  "title": "Microcontroller device-model specification",
+  "description": "Schema for device-model spec files. A model spec describes a specific part number (e.g. stm32u031c4), including its package, memory sizes, available peripheral instances, alternate-function pin mappings, and errata. It references its parent family spec via 'family-ref'.",
+  "type": "object",
+  "required": ["spec-version", "vendor", "family-ref", "model", "package", "flash-kb", "sram-kb", "pin-count"],
+  "additionalProperties": false,
+  "properties": {
+    "spec-version": {
+      "description": "Spec format version using semantic versioning (semver), e.g. '1.0.0'. Increment the patch version for corrections, the minor version for backward-compatible additions, and the major version for breaking changes.",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "vendor": {
+      "description": "Chip vendor name, e.g. 'STMicroelectronics'. Must match the vendor field in the referenced family spec.",
+      "type": "string"
+    },
+    "family-ref": {
+      "description": "Family spec identifier (without the .yml extension), e.g. 'stm32u0'. Tooling resolves this to docs/specs/{vendor-dir}/{family-ref}.yml.",
+      "type": "string"
+    },
+    "model": {
+      "description": "Part number identifier in lowercase, e.g. 'stm32u031c4'. Must match the filename (without .yml extension).",
+      "type": "string"
+    },
+    "package": {
+      "description": "Package code as used in the part number suffix, e.g. 'UFQFPN32', 'LQFP48', 'WLCSP25'.",
+      "type": "string"
+    },
+    "flash-kb": {
+      "description": "On-chip flash memory size in kibibytes.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "sram-kb": {
+      "description": "On-chip SRAM size in kibibytes (total, across all SRAM banks).",
+      "type": "integer",
+      "minimum": 1
+    },
+    "pin-count": {
+      "description": "Total number of pins on the physical package.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "peripheral-availability": {
+      "description": "Lists which peripheral instances from the family spec are present on this device. Omit for instances that are unavailable (e.g. absent GPIO ports on smaller packages).",
+      "type": "array",
+      "items": { "$ref": "#/$defs/peripheral-availability-entry" },
+      "minItems": 1
+    },
+    "alternate-functions": {
+      "description": "Alternate-function pin-mapping table for this specific model and package. Each entry maps a pin name to its available alternate functions.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/pin-af-entry" },
+      "minItems": 1
+    },
+    "errata": {
+      "description": "Known hardware errata for this silicon. Each entry has a title, a description, and an optional silicon-revision applicability list.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/erratum" },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "peripheral-availability-entry": {
+      "description": "Records which instances of a given peripheral type are present on this device model.",
+      "type": "object",
+      "required": ["peripheral", "instances"],
+      "additionalProperties": false,
+      "properties": {
+        "peripheral": {
+          "description": "Peripheral type name as it appears in the family spec (e.g. 'gpio', 'usart').",
+          "type": "string"
+        },
+        "instances": {
+          "description": "List of instance names (e.g. 'GPIOA', 'GPIOB') that are present on this device model.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "pin-af-entry": {
+      "description": "Alternate-function assignments for a single pin.",
+      "type": "object",
+      "required": ["pin", "functions"],
+      "additionalProperties": false,
+      "properties": {
+        "pin": {
+          "description": "Pin name in the form 'P{port}{number}', e.g. 'PA0', 'PB13'.",
+          "type": "string",
+          "pattern": "^P[A-Z][0-9]{1,2}$"
+        },
+        "functions": {
+          "description": "Mapping from AF code (AF0–AF15) to the signal name assigned to that AF on this pin (e.g. 'TIM2_CH1', 'USART1_TX'). Use null for AF slots that are not assigned.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "oneOf": [{ "type": "string" }, { "type": "null" }]
+          }
+        }
+      }
+    },
+    "erratum": {
+      "description": "A single hardware erratum.",
+      "type": "object",
+      "required": ["id", "title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Vendor erratum identifier (e.g. 'ES0561-2.1.1').",
+          "type": "string"
+        },
+        "title": {
+          "description": "Short title of the erratum.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Full description of the erratum including workaround if known.",
+          "type": "string"
+        },
+        "silicon-revisions": {
+          "description": "Silicon revision codes to which this erratum applies (e.g. ['A', 'B']). Omit if the erratum applies to all known revisions.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

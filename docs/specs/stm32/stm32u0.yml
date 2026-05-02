@@ -534,6 +534,19 @@ peripherals:
       reference:
         sections: [2.2, 7.4, 7.4.12]
         tables: [4, 41]
+      instances:
+        - name: GPIOA
+          base: 0x50000000
+        - name: GPIOB
+          base: 0x50000400
+        - name: GPIOC
+          base: 0x50000800
+        - name: GPIOD
+          base: 0x50000C00
+        - name: GPIOE
+          base: 0x50001000
+        - name: GPIOF
+          base: 0x50001400
       registers:
         - MODER:
             reference:
