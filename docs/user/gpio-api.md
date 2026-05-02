@@ -207,6 +207,76 @@ implementing `toggle()` and for verifying the output state without relying on pi
 Level current = Led::read_output();
 ```
 
+## `Port<PortTag>` template
+
+> **Status — planned API:** The `Port<>` primary template is defined in `ohal/gpio.hpp` and
+> available today. The `set()`, `clear()`, and `write()` methods described in this section are
+> part of the planned interface and will be provided by the STM32U083 platform specialisation in
+> Step 8. Instantiating `Port<>` before that specialisation exists produces a compile error.
+
+```cpp
+template <typename PortTag>
+struct Port;
+```
+
+`Port` is the multi-pin companion to `Pin<>`. It is a zero-size struct; all methods are
+`static`. Use it when you need to update several pins on the same port atomically — for example,
+when driving an H-bridge, a parallel bus, or a shift register latch. For single-pin operations
+use `Pin<>` instead.
+
+Platform headers provide a partial specialisation for each supported port tag. If no
+specialisation exists for the selected MCU, instantiating `Port<>` produces a compile error:
+
+```text
+ohal: gpio::Port is not implemented for the selected MCU.
+      Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.
+```
+
+All three methods accept a `uint16_t` bitmask. Bit _n_ corresponds to pin _n_ within the port.
+Ports are at most 16 pins wide on all supported MCUs.
+
+Typical usage:
+
+```cpp
+using namespace ohal::gpio;
+
+// Set PA4 and PA7 high, PA5 and PA6 low — all in one bus transaction.
+Port<PortA>::write((1U << 4) | (1U << 7), (1U << 5) | (1U << 6));
+```
+
+### `set(uint16_t mask)`
+
+Drives every pin whose bit is set in `mask` high in a single bus transaction. Pins whose bit is
+clear in `mask` are unaffected.
+
+```cpp
+Port<PortA>::set((1U << 4) | (1U << 7));  // PA4 and PA7 → HIGH; other pins unchanged
+```
+
+### `clear(uint16_t mask)`
+
+Drives every pin whose bit is set in `mask` low in a single bus transaction. Pins whose bit is
+clear in `mask` are unaffected.
+
+```cpp
+Port<PortA>::clear((1U << 5) | (1U << 6));  // PA5 and PA6 → LOW; other pins unchanged
+```
+
+### `write(uint16_t set_mask, uint16_t clear_mask)`
+
+Atomically drives the pins in `set_mask` high and the pins in `clear_mask` low. On platforms
+that provide a dedicated set/reset register (e.g. STM32 BSRR) this compiles to a **single store
+instruction** with no intermediate hardware state. On platforms without such a register the
+implementation performs two separate writes.
+
+```cpp
+// Forward: AHi=1, ALo=0, BHi=0, BLo=1
+Port<PortA>::write((1U << 4) | (1U << 7), (1U << 5) | (1U << 6));
+```
+
+If a pin number appears in both `set_mask` and `clear_mask` the behaviour is platform-defined.
+Keep the masks disjoint to write portable code.
+
 ## Capability traits
 
 Capability traits are `std::bool_constant` specialisations that indicate at compile time which
