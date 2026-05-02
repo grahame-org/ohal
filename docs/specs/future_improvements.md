@@ -127,10 +127,10 @@ the common `docs/specs/schema.json` when none exists.
 
 ---
 
-### Option D: Spec format versioning
+### Option D: Spec format versioning ✅ (implemented)
 
-Add a `spec-version` field to every spec file so that tooling can handle multiple format revisions
-gracefully as the format evolves:
+A `spec-version` field has been added to every spec file. The field is required by the schema and
+uses `MAJOR.MINOR` semantics:
 
 ```yaml
 spec-version: "1.0"
@@ -155,8 +155,8 @@ chosen.
 
 ## Recommendation
 
-1. **Near-term:** Adopt **Option D** (spec-version field) immediately so that format evolution is
-   tracked from the start.
+1. **Near-term:** ~~Adopt **Option D** (spec-version field) immediately so that format evolution is
+   tracked from the start.~~ ✅ Implemented — `spec-version: "1.0"` is now required by the schema.
 
 2. **Medium-term:** Implement **Option A** (common definitions library) once more than one vendor's
    specs exist and duplication is observed. Keep the merge step simple: a small Python script that

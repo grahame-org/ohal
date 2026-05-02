@@ -25,6 +25,7 @@ are:
 
 | Key            | Required | Description                                                       |
 | -------------- | -------- | ----------------------------------------------------------------- |
+| `spec-version` | ✓        | Spec format version (e.g. `"1.0"`)                                |
 | `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                      |
 | `family`       | ✓        | Family name and sub-family list                                   |
 | `architecture` | ✓        | Processor architecture and word size                              |
@@ -34,6 +35,18 @@ are:
 | `peripherals`  |          | Peripheral blocks with register and bit-field descriptions        |
 
 ## Key Concepts
+
+### Spec version
+
+Every spec must declare the format version as the first key:
+
+```yaml
+spec-version: "1.0"
+```
+
+The version uses `MAJOR.MINOR` semantics: increment the minor version for backward-compatible
+additions, the major version for breaking changes. Tooling can use this field to warn about or
+reject stale spec files.
 
 ### Vendor
 
