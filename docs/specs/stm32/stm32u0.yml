@@ -87,7 +87,7 @@ memory:
       end: 0x20009FFF
       verified: false
       note: >-
-        Table 2 of RM0503 does not document this address range: stm32u031 SRAM ends at
+        Table 3 of RM0503 does not document this address range: stm32u031 SRAM ends at
         0x20002FFF and the next listed region starts at 0x2000A000, leaving this gap unlabelled.
         Assumed reserved until a citable reference is located.
     - name: SRAM
