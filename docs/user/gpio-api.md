@@ -87,6 +87,13 @@ Represents a logic level when reading or driving a pin.
 
 ## `Pin<Port, PinNum>` template
 
+> **Status — planned API:** The `Pin<>` primary template and the enumerations above are implemented
+> and available today. The configuration and I/O methods described in this section
+> (`set_mode`, `set_output_type`, `set_speed`, `set_pull`, `set`, `clear`, `toggle`,
+> `read_input`, `read_output`) are part of the planned interface and will be provided by the
+> STM32U083 platform specialisation in Step 8. Instantiating `Pin<>` before that specialisation
+> exists produces a compile error (see below).
+
 ```cpp
 template <typename Port, uint8_t PinNum>
 struct Pin;

@@ -80,6 +80,11 @@ This header pulls in all core abstractions and the GPIO interface. No other incl
 
 ## First program: blink an LED
 
+> **Note — illustrative example:** The GPIO methods shown below (`set_mode`, `set_output_type`,
+> `set_speed`, `set_pull`, `set`, `toggle`) are part of the planned `Pin<>` interface and will be
+> available once the STM32U083 platform specialisation lands in Step 8. The compile setup, type
+> aliases, and `#include` are correct today; only the method calls are forward-looking.
+
 The following example configures PA5 as a push-pull output and toggles it indefinitely. It targets
 the STM32U083.
 

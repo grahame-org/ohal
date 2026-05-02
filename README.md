@@ -27,7 +27,7 @@ target_compile_definitions(my_app PRIVATE OHAL_FAMILY_STM32U0 OHAL_MODEL_STM32U0
 ```
 
 ```cpp
-// main.cpp
+// main.cpp — illustrative example (Pin<> methods land in Step 8)
 #include <ohal/ohal.hpp>
 
 using namespace ohal::gpio;

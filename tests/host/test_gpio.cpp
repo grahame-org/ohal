@@ -116,8 +116,6 @@ static_assert(!ohal::gpio::capabilities::supports_pull<DummyPort, 0>::value,
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<DummyPort, 0>::value,
               "supports_alternate_function must default to false");
 
-} // namespace
-
 TEST(GpioCapabilitiesTest, SupportsOutputTypeDefaultsFalse) {
   EXPECT_FALSE((ohal::gpio::capabilities::supports_output_type<DummyPort, 0>::value));
 }
@@ -146,3 +144,5 @@ TEST(GpioCapabilitiesTest, SupportsAlternateFunctionDefaultsFalse) {
 //
 // (The primary template fires because no platform specialisation is present
 // in a build that does not define OHAL_FAMILY_* and OHAL_MODEL_*.)
+
+} // namespace
