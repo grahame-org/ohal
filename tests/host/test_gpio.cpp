@@ -116,19 +116,19 @@ static_assert(!ohal::gpio::capabilities::supports_pull<DummyPort, 0>::value,
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<DummyPort, 0>::value,
               "supports_alternate_function must default to false");
 
-TEST(GpioCapabilitiesTest, SupportsOutputTypeDefaultsFalse) {
+TEST(GpioCapabilitiesTest, SupportsOutputType_DefaultsFalse) {
   EXPECT_FALSE((ohal::gpio::capabilities::supports_output_type<DummyPort, 0>::value));
 }
 
-TEST(GpioCapabilitiesTest, SupportsOutputSpeedDefaultsFalse) {
+TEST(GpioCapabilitiesTest, SupportsOutputSpeed_DefaultsFalse) {
   EXPECT_FALSE((ohal::gpio::capabilities::supports_output_speed<DummyPort, 0>::value));
 }
 
-TEST(GpioCapabilitiesTest, SupportsPullDefaultsFalse) {
+TEST(GpioCapabilitiesTest, SupportsPull_DefaultsFalse) {
   EXPECT_FALSE((ohal::gpio::capabilities::supports_pull<DummyPort, 0>::value));
 }
 
-TEST(GpioCapabilitiesTest, SupportsAlternateFunctionDefaultsFalse) {
+TEST(GpioCapabilitiesTest, SupportsAlternateFunction_DefaultsFalse) {
   EXPECT_FALSE((ohal::gpio::capabilities::supports_alternate_function<DummyPort, 0>::value));
 }
 
