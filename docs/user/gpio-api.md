@@ -216,7 +216,11 @@ Level current = Led::read_output();
 
 ```cpp
 template <typename PortTag>
-struct Port;
+struct Port {
+    static void set(uint16_t mask);
+    static void clear(uint16_t mask);
+    static void write(uint16_t set_mask, uint16_t clear_mask);
+};
 ```
 
 `Port` is the multi-pin companion to `Pin<>`. It is a zero-size struct; all methods are
@@ -224,7 +228,7 @@ struct Port;
 when driving an H-bridge, a parallel bus, or a shift register latch. For single-pin operations
 use `Pin<>` instead.
 
-Platform headers provide a partial specialisation for each supported port tag. If no
+Platform headers provide a specialisation for each supported port tag. If no
 specialisation exists for the selected MCU, instantiating `Port<>` produces a compile error:
 
 ```text
@@ -264,10 +268,11 @@ Port<PortA>::clear((1U << 5) | (1U << 6));  // PA5 and PA6 → LOW; other pins u
 
 ### `write(uint16_t set_mask, uint16_t clear_mask)`
 
-Atomically drives the pins in `set_mask` high and the pins in `clear_mask` low. On platforms
-that provide a dedicated set/reset register (e.g. STM32 BSRR) this compiles to a **single store
-instruction** with no intermediate hardware state. On platforms without such a register the
-implementation performs two separate writes.
+Drives the pins in `set_mask` high and the pins in `clear_mask` low. On platforms that provide
+a dedicated set/reset register (e.g. STM32 BSRR) this compiles to a **single store instruction**
+with no intermediate hardware state visible. On platforms without such a register the
+implementation performs two separate writes and a brief intermediate hardware state exists
+between them.
 
 ```cpp
 // Forward: AHi=1, ALo=0, BHi=0, BLo=1

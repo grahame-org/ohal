@@ -201,11 +201,11 @@ self-documenting: every state transition is a single named constant.
 
 ## Summary
 
-| Pattern                     | Intermediate state | Works across ports | Notes                                      |
-| --------------------------- | ------------------ | ------------------ | ------------------------------------------ |
-| Sequential `Pin::set/clear` | Yes — visible      | Yes                | Order must be carefully audited per bridge |
-| Deactivate-first sequencing | Yes — safe (Coast) | Yes                | Always correct; trivial to audit           |
-| `Port::write(set, clear)`   | No                 | Same port only     | Most robust; compile-time state constants  |
+| Pattern                     | Intermediate state  | Works across ports | Notes                                              |
+| --------------------------- | ------------------- | ------------------ | -------------------------------------------------- |
+| Sequential `Pin::set/clear` | Yes — visible       | Yes                | Order must be carefully audited per bridge         |
+| Deactivate-first sequencing | Yes — safe (Coast)  | Yes                | Always correct; trivial to audit                   |
+| `Port::write(set, clear)`   | No (atomic hw only) | Same port only     | Most robust on STM32; compile-time state constants |
 
 Use `Port<PortTag>::write()` whenever you need to update multiple pins as one indivisible
 hardware action. On platforms with a dedicated atomic set/reset register (e.g. STM32 BSRR) it

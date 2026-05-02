@@ -85,7 +85,7 @@ struct Pin {
 // ---------------------------------------------------------------------------
 
 /// Generic GPIO port type for operating on multiple pins simultaneously.
-/// Platform headers provide partial specialisations that implement the full
+/// Platform headers provide specialisations that implement the full
 /// API for a specific MCU.
 ///
 /// Use this type when you need to update several pins on the same port in a
@@ -110,12 +110,12 @@ struct Port {
   /// transaction.  Pins whose bit is clear in @p mask are unaffected.
   static void clear(uint16_t mask);
 
-  /// Atomically drive the pins in @p set_mask high and the pins in
-  /// @p clear_mask low in a single bus transaction.  On platforms that
-  /// provide a dedicated set/reset register (e.g. STM32 BSRR) this
-  /// compiles to a single store instruction with no intermediate hardware
-  /// state.  On platforms without such a register the implementation
-  /// performs two writes.
+  /// Drive the pins in @p set_mask high and the pins in @p clear_mask low.
+  /// On platforms that provide a dedicated set/reset register (e.g. STM32
+  /// BSRR) this compiles to a single store instruction — no intermediate
+  /// hardware state is visible.  On platforms without such a register the
+  /// implementation performs two writes and a brief intermediate state
+  /// exists between them.
   static void write(uint16_t set_mask, uint16_t clear_mask);
 
   static_assert(sizeof(PortTag) == 0,
