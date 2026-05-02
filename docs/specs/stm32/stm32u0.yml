@@ -22,7 +22,7 @@ memory:
       sub-families: [stm32u031]
       start: 0x00000000
       end: 0x0001FFFF
-    - name: Main flash memory,  System memory or SRAM. Depends on boot configuration
+    - name: Main flash memory, System memory or SRAM. Depends on boot configuration
       sub-families: [stm32u073, stm32u083]
       start: 0x00000000
       end: 0x0003FFFF
