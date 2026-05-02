@@ -80,6 +80,49 @@ struct Pin {
                                    "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
 };
 
+// ---------------------------------------------------------------------------
+// Primary (unimplemented) Port template
+// ---------------------------------------------------------------------------
+
+/// Generic GPIO port type for operating on multiple pins simultaneously.
+/// Platform headers provide specialisations that implement the full
+/// API for a specific MCU.
+///
+/// Use this type when you need to update several pins on the same port in a
+/// single atomic bus transaction (e.g. H-bridge state transitions). For
+/// single-pin operations, use Pin<> instead.
+///
+/// If no specialisation is available for the selected Port tag (because the
+/// MCU family or model is not yet supported) compilation fails with a
+/// descriptive static_assert.
+///
+/// All methods accept a @p uint16_t bitmask.  Bit n corresponds to pin n
+/// within the port.  Ports are at most 16 pins wide on all supported MCUs.
+///
+/// @tparam PortTag  A port tag type (e.g. PortA).
+template <typename PortTag>
+struct Port {
+  /// Drive every pin whose bit is set in @p mask high in a single bus
+  /// transaction.  Pins whose bit is clear in @p mask are unaffected.
+  static void set(uint16_t mask);
+
+  /// Drive every pin whose bit is set in @p mask low in a single bus
+  /// transaction.  Pins whose bit is clear in @p mask are unaffected.
+  static void clear(uint16_t mask);
+
+  /// Drive the pins in @p set_mask high and the pins in @p clear_mask low.
+  /// On platforms that provide a dedicated set/reset register (e.g. STM32
+  /// BSRR) this compiles to a single store instruction — no intermediate
+  /// hardware state is visible.  On platforms without such a register the
+  /// implementation performs two writes and a brief intermediate state
+  /// exists between them.
+  static void write(uint16_t set_mask, uint16_t clear_mask);
+
+  static_assert(sizeof(PortTag) == 0,
+                "ohal: gpio::Port is not implemented for the selected MCU. "
+                "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
+};
+
 } // namespace ohal::gpio
 
 #endif // OHAL_GPIO_HPP
