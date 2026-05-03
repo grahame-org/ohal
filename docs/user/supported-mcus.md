@@ -15,13 +15,13 @@ implementation status and the compiler toolchain required to build for each targ
 
 ARM Cortex-M0+ family from STMicroelectronics. 32-bit registers. Toolchain: `arm-none-eabi-g++`.
 
-| Model define               | Device         | Package    | GPIO ports                                                             | Status     |
-| -------------------------- | -------------- | ---------- | ---------------------------------------------------------------------- | ---------- |
-| `OHAL_MODEL_STM32U083KCU`  | STM32U083KCU   | UFQFPN32   | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
-| `OHAL_MODEL_STM32U083HCY`  | STM32U083HCY   | WLCSP42    | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
-| `OHAL_MODEL_STM32U083CCI`  | STM32U083CCI   | UFQFPN48   | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
-| `OHAL_MODEL_STM32U083CCT`  | STM32U083CCT   | LQFP48     | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
-| `OHAL_MODEL_STM32U073`     | STM32U073      | —          | PA–PF                                                                  | 📋 Planned |
+| Model define              | Device       | Package  | GPIO ports                                                          | Status     |
+| ------------------------- | ------------ | -------- | ------------------------------------------------------------------- | ---------- |
+| `OHAL_MODEL_STM32U083KCU` | STM32U083KCU | UFQFPN32 | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package) | 🔧 Partial |
+| `OHAL_MODEL_STM32U083HCY` | STM32U083HCY | WLCSP42  | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package) | 🔧 Partial |
+| `OHAL_MODEL_STM32U083CCI` | STM32U083CCI | UFQFPN48 | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package) | 🔧 Partial |
+| `OHAL_MODEL_STM32U083CCT` | STM32U083CCT | LQFP48   | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package) | 🔧 Partial |
+| `OHAL_MODEL_STM32U073`    | STM32U073    | —        | PA–PF                                                               | 📋 Planned |
 
 **Supported GPIO features on STM32U083:**
 
