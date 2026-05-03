@@ -172,6 +172,34 @@ static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::va
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
               "PortE must not report supports_alternate_function (not bonded out on CCT)");
 
+// PortC bits 0–12 are not bonded out on the 48-pin LQFP package.
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 0>::value,
+              "PortC pin 0 must not report supports_output_type (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 0>::value,
+              "PortC pin 0 must not report supports_output_speed (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 0>::value,
+              "PortC pin 0 must not report supports_pull (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 0>::value,
+              "PortC pin 0 must not report supports_alternate_function (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 12>::value,
+              "PortC pin 12 must not report supports_output_type (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 12>::value,
+              "PortC pin 12 must not report supports_output_speed (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 12>::value,
+              "PortC pin 12 must not report supports_pull (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 12>::value,
+              "PortC pin 12 must not report supports_alternate_function (not bonded out on CCT)");
+
+// PortF bits 4–15 are not bonded out on the 48-pin LQFP package.
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 must not report supports_output_type (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 must not report supports_output_speed (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 must not report supports_pull (not bonded out on CCT)");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 must not report supports_alternate_function (not bonded out on CCT)");
+
 struct CapCase {
   bool value;
   const char* name;
@@ -250,7 +278,42 @@ INSTANTIATE_TEST_SUITE_P(
                        "PortE_Pin0_Pull"},
         InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
-            "PortE_Pin0_AlternateFunction"}),
+            "PortE_Pin0_AlternateFunction"},
+        // PortC bits 0–12 — not bonded out on the CCT 48-pin LQFP package
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 0>::value,
+            "PortC_Pin0_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 0>::value,
+            "PortC_Pin0_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 0>::value,
+                       "PortC_Pin0_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 0>::value,
+            "PortC_Pin0_AlternateFunction"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 12>::value,
+            "PortC_Pin12_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 12>::value,
+            "PortC_Pin12_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 12>::value,
+                       "PortC_Pin12_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 12>::value,
+            "PortC_Pin12_AlternateFunction"},
+        // PortF bits 4–15 — not bonded out on the CCT 48-pin LQFP package
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 4>::value,
+                       "PortF_Pin4_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_AlternateFunction"}),
     [](const ::testing::TestParamInfo<InvalidCapCase>& info) { return info.param.name; });
 // clang-format on
 

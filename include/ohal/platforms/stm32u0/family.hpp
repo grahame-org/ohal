@@ -5,6 +5,16 @@
 // corresponding #include block below when a new model is implemented (see
 // docs/contributor/adding-mcu.md).
 
+// ---------------------------------------------------------------------------
+// Compatibility alias: OHAL_MODEL_STM32U083 (removed in this release) maps
+// to OHAL_MODEL_STM32U083KCU.  Existing projects that still pass the old
+// generic macro will continue to build unchanged.  New projects should use
+// the package-specific macro instead.
+// ---------------------------------------------------------------------------
+#if defined(OHAL_MODEL_STM32U083) && !defined(OHAL_MODEL_STM32U083KCU)
+#define OHAL_MODEL_STM32U083KCU
+#endif
+
 #if (defined(OHAL_MODEL_STM32U083KCU) + defined(OHAL_MODEL_STM32U083HCY) +                         \
      defined(OHAL_MODEL_STM32U083CCI) + defined(OHAL_MODEL_STM32U083CCT) +                         \
      defined(OHAL_MODEL_STM32U073)) > 1
