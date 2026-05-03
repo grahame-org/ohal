@@ -151,11 +151,11 @@ target_compile_definitions(blink_stm32 PRIVATE
     OHAL_FAMILY_STM32U0 OHAL_MODEL_STM32U083)
 target_compile_features(blink_stm32 PRIVATE cxx_std_17)
 
-add_executable(blink_pic18 blink_pic18.cpp)
-target_link_libraries(blink_pic18 PRIVATE ohal::ohal)
-target_compile_definitions(blink_pic18 PRIVATE
-    OHAL_FAMILY_PIC OHAL_MODEL_PIC18F4550)
-target_compile_features(blink_pic18 PRIVATE cxx_std_17)
+add_executable(blink_msp430 blink_msp430.cpp)
+target_link_libraries(blink_msp430 PRIVATE ohal::ohal)
+target_compile_definitions(blink_msp430 PRIVATE
+    OHAL_FAMILY_MSP430FR2XX OHAL_MODEL_MSP430FR2355)
+target_compile_features(blink_msp430 PRIVATE cxx_std_17)
 ```
 
 ### `tests/integration/vcpkg.json`
@@ -173,7 +173,7 @@ Add a job to the CI workflow (see [Step 12](step-12-ci.md)):
 1. Install the current HEAD as a vcpkg overlay port (`--overlay-ports=ports/`).
 2. Configure and build `tests/integration/` using `CMAKE_TOOLCHAIN_FILE` pointing to vcpkg's
    toolchain.
-3. Verify both `blink_stm32` and `blink_pic18` compile without errors.
+3. Verify both `blink_stm32` and `blink_msp430` compile without errors.
 
 This job runs on the host with `g++` (cross-compile flags are not needed for the
 `find_package` validation). It validates the full `find_package(ohal CONFIG REQUIRED)` path.

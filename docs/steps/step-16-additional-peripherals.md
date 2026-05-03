@@ -337,7 +337,7 @@ struct Controller {
 The Cortex-M Memory Protection Unit is implementation-dependent: it is common on Cortex-M3,
 M4, and M7 devices, and optional on some baseline cores such as Cortex-M0+. Its registers are
 at fixed core-level addresses defined by the ARM architecture (`0xE000ED90`), not in the
-normal peripheral bus address space. PIC18 and AVR MCUs do not have an MPU; use
+normal peripheral bus address space. MSP430FR2355, PIC18, and AVR MCUs do not have an MPU; use
 `has_mpu<Family>` to model support for each MCU family.
 
 ### Register Map (ARM architecture — common to all Cortex-M cores with MPU)
@@ -372,7 +372,7 @@ struct Region {
     static_assert(RegionNum < 8u, "ohal: Cortex-M MPU supports at most 8 regions.");
 };
 
-// Capability trait: false for MCUs without an MPU (e.g. some Cortex-M0, PIC18, AVR)
+// Capability trait: false for MCUs without an MPU (e.g. some Cortex-M0, MSP430FR2355, PIC18, AVR)
 template <typename Family>
 struct has_mpu : std::false_type {};
 
