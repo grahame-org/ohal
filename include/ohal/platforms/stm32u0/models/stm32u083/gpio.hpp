@@ -180,17 +180,33 @@ struct GpioPortImpl {
 } // namespace ohal::platforms::stm32u0::stm32u083
 
 // ---------------------------------------------------------------------------
-// ohal::gpio::Pin<> partial specialisations for every STM32U083KCU GPIO port.
-// GPIOA, GPIOB, GPIOC and GPIOF are bonded out on the 32-pin UFQFPN package.
-// GPIOD and GPIOE exist in silicon but are not bonded out; omitting their
-// Pin<> specialisations causes a descriptive static_assert if any code tries
-// to use those ports on this target.
-// ---------------------------------------------------------------------------
-// ohal::gpio::Port<> full specialisations for every STM32U083KCU GPIO port.
+// ohal::gpio::Pin<> and Port<> specialisations for the STM32U083KCU (32-pin
+// UFQFPN) package.
+//
+// NOTE: OHAL_MODEL_STM32U083 currently targets only the KCU 32-pin UFQFPN
+// package variant, whose peripheral-availability spec (stm32u083kcu.yml) lists
+// only GPIOA, GPIOB, GPIOC and GPIOF as bonded-out ports.  If support for a
+// different STM32U083 package (e.g. a 48-pin variant with GPIOD/GPIOE bonded
+// out) is needed in future, a separate model macro (e.g.
+// OHAL_MODEL_STM32U083RCT) and a corresponding header should be added.
+//
+// GPIOD and GPIOE exist in silicon but are not bonded out on this package.
+// Explicit Pin<PortD/E> and Port<PortD/E> specialisations are provided below
+// so that using these ports produces a clear "not bonded out on this package"
+// diagnostic rather than the primary template's generic "not implemented" message.
 // ---------------------------------------------------------------------------
 
 namespace ohal::gpio {
 
+namespace detail {
+/// Helper that is always false but depends on a template parameter, so that
+/// static_assert can be deferred to instantiation time (rather than firing at
+/// class-template definition time, which is a risk for non-dependent expressions).
+template <uint8_t>
+struct always_false : std::false_type {};
+} // namespace detail
+
+// Bonded-out ports: GPIOA, GPIOB, GPIOC, GPIOF
 template <uint8_t PinNum>
 struct Pin<PortA, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
                                 PinNum, ohal::platforms::stm32u0::stm32u083::GpioA> {};
@@ -207,6 +223,20 @@ template <uint8_t PinNum>
 struct Pin<PortF, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
                                 PinNum, ohal::platforms::stm32u0::stm32u083::GpioF> {};
 
+// Not bonded out on the KCU 32-pin UFQFPN package: GPIOD, GPIOE
+// Explicit specialisations produce a descriptive error at the point of use.
+template <uint8_t PinNum>
+struct Pin<PortD, PinNum> {
+  static_assert(detail::always_false<PinNum>::value,
+                "ohal: GPIOD is not bonded out on the STM32U083KCU 32-pin UFQFPN package.");
+};
+
+template <uint8_t PinNum>
+struct Pin<PortE, PinNum> {
+  static_assert(detail::always_false<PinNum>::value,
+                "ohal: GPIOE is not bonded out on the STM32U083KCU 32-pin UFQFPN package.");
+};
+
 template <>
 struct Port<PortA> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
                          ohal::platforms::stm32u0::stm32u083::GpioA> {};
@@ -222,6 +252,23 @@ struct Port<PortC> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
 template <>
 struct Port<PortF> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
                          ohal::platforms::stm32u0::stm32u083::GpioF> {};
+
+// Not bonded out on the KCU 32-pin UFQFPN package: GPIOD, GPIOE.
+// Member functions are deleted so that any attempt to call them produces a
+// clear compiler diagnostic rather than the primary template's generic error.
+template <>
+struct Port<PortD> {
+  static void set(uint16_t) = delete;             // GPIOD not bonded out on KCU
+  static void clear(uint16_t) = delete;           // GPIOD not bonded out on KCU
+  static void write(uint16_t, uint16_t) = delete; // GPIOD not bonded out on KCU
+};
+
+template <>
+struct Port<PortE> {
+  static void set(uint16_t) = delete;             // GPIOE not bonded out on KCU
+  static void clear(uint16_t) = delete;           // GPIOE not bonded out on KCU
+  static void write(uint16_t, uint16_t) = delete; // GPIOE not bonded out on KCU
+};
 
 } // namespace ohal::gpio
 

@@ -480,6 +480,26 @@ static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::v
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
               "PortA pin 16 (out of range) must not report supports_alternate_function");
 
+// PortD and PortE are not bonded out on the STM32U083KCU 32-pin UFQFPN package.
+// All capability traits must report false for every pin on these ports.
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+              "PortD must not report supports_output_type (not bonded out on KCU)");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
+              "PortD must not report supports_output_speed (not bonded out on KCU)");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
+              "PortD must not report supports_pull (not bonded out on KCU)");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
+              "PortD must not report supports_alternate_function (not bonded out on KCU)");
+
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
+              "PortE must not report supports_output_type (not bonded out on KCU)");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortE, 0>::value,
+              "PortE must not report supports_output_speed (not bonded out on KCU)");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::value,
+              "PortE must not report supports_pull (not bonded out on KCU)");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
+              "PortE must not report supports_alternate_function (not bonded out on KCU)");
+
 struct InvalidPinCapCase {
   bool value;
   const char* name;
@@ -490,6 +510,7 @@ class GpioStm32u083InvalidPinCapTest : public ::testing::TestWithParam<InvalidPi
 INSTANTIATE_TEST_SUITE_P(
     InvalidPinCapabilities, GpioStm32u083InvalidPinCapTest,
     ::testing::Values(
+        // Out-of-range pin on a bonded port
         InvalidPinCapCase{
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
             "PortA_Pin16_OutputType"},
@@ -500,7 +521,31 @@ INSTANTIATE_TEST_SUITE_P(
                           "PortA_Pin16_Pull"},
         InvalidPinCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
-            "PortA_Pin16_AlternateFunction"}),
+            "PortA_Pin16_AlternateFunction"},
+        // PortD — not bonded out on the KCU 32-pin UFQFPN package
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_OutputType"},
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_OutputSpeed"},
+        InvalidPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
+                          "PortD_Pin0_Pull"},
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_AlternateFunction"},
+        // PortE — not bonded out on the KCU 32-pin UFQFPN package
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_OutputType"},
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_OutputSpeed"},
+        InvalidPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::value,
+                          "PortE_Pin0_Pull"},
+        InvalidPinCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_AlternateFunction"}),
     [](const ::testing::TestParamInfo<InvalidPinCapCase>& info) { return info.param.name; });
 
 TEST_P(GpioStm32u083InvalidPinCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
