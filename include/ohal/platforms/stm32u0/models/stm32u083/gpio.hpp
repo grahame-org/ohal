@@ -64,8 +64,10 @@ using GpioB = GpioPortRegs<kGpioBBase>;
 using GpioC = GpioPortRegs<kGpioCBase>;
 // GpioD and GpioE peripherals exist in silicon but are not bonded out on
 // STM32U083 packages with only A/B/C/F (e.g. stm32u083kcu, stm32u083hcy).
-// Their address constants and Regs aliases are retained here for reference;
-// Pin<PortD/E> and Port<PortD/E> specialisations are intentionally absent.
+// Their address constants and Regs aliases are retained here for reference.
+// Diagnostic-only Pin<PortD/E> and Port<PortD/E> specialisations are provided
+// below; they static_assert / delete their members to produce a clear
+// compiler diagnostic rather than a generic "not implemented" error.
 using GpioD = GpioPortRegs<kGpioDBase>;
 using GpioE = GpioPortRegs<kGpioEBase>;
 using GpioF = GpioPortRegs<kGpioFBase>;
