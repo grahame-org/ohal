@@ -76,22 +76,35 @@ produce a `static_assert` compile error with a helpful message.
 **Note on pull resistors:** When `PxREN` bit N is set and `PxDIR` bit N is 0 (input), `PxOUT`
 bit N selects the pull direction: `1` = pull-up, `0` = pull-down.
 
+**Note on alternate function:** `PxSEL1:PxSEL0 = 00` selects GPIO. `01` selects the primary
+peripheral function, `10` the secondary, and `11` the tertiary. `PinMode::Analog` is not a
+distinct MSP430 GPIO mode; analogue inputs are selected via the ADC module, not via GPIO
+direction registers. Calling `set_mode(PinMode::Analog)` on this platform fires a
+`static_assert`.
+
 ## Sequence — "set GPIO pin high" on MSP430FR2355
+
+The `Register<>` abstraction exposes only `read()` and `write()` (single volatile bus
+transactions). There is no `set_bits()` helper; every read-modify-write is explicit.
 
 ```mermaid
 sequenceDiagram
     participant App as Application
     participant Pin as gpio::Pin<PortA,2>
-    participant DIR as P1DIR (port 1 direction)
-    participant OUT as P1OUT (port 1 latch)
+    participant DIR as P1DIR reg (uint8_t)
+    participant OUT as P1OUT reg (uint8_t)
 
     App->>Pin: Pin::set_mode(PinMode::Output)
-    Pin->>DIR: set_bits(1u << 2)
-    Note over DIR: PxDIR=1 means output — same polarity as PinMode::Output=1.
+    Pin->>DIR: tmp = read()
+    DIR-->>Pin: tmp
+    Pin->>DIR: write(tmp | (1u << 2))
+    Note over DIR: PxDIR bit 2 = 1 (output).
 
     App->>Pin: Pin::set()
-    Pin->>OUT: set_bits(1u << 2)
-    Note over OUT: Single 8-bit load-modify-store.<br/>Zero overhead vs. direct register access.
+    Pin->>OUT: tmp = read()
+    OUT-->>Pin: tmp
+    Pin->>OUT: write(tmp | (1u << 2))
+    Note over OUT: P1OUT bit 2 = 1 — pin is HIGH.
 ```
 
 ## `msp430fr2xx/family.hpp` Logic
@@ -124,8 +137,16 @@ Key differences from the STM32U083 specialisation:
 - Output is written via `PxOUT` (read-modify-write, unlike STM32 BSRR).
 - Input is read via `PxIN`.
 - Pull resistors are supported: `PxREN=1` enables the resistor; `PxOUT` selects direction.
+- Alternate function is supported via `PxSEL0`/`PxSEL1` — `set_mode(AlternateFunction)` sets
+  `PxSEL0=1, PxSEL1=0` (primary peripheral function).
+- `PinMode::Analog` is not a distinct GPIO mode on MSP430 — fires a `static_assert`.
 - Output type (push-pull / open-drain) is not configurable — fires a `static_assert`.
 - Output speed is not configurable — fires a `static_assert`.
+- Host tests inject a mock `Regs` type (see the `Regs` template parameter below) so that register
+  accesses are redirected into `ohal::test::MockRegister<uint8_t, &storage>` backing variables
+  without modifying the real hardware header, following the same pattern as STM32U083.
+
+### Register set and `GpioPortPinImpl`
 
 ```cpp
 // platforms/msp430fr2xx/models/msp430fr2355/gpio.hpp
@@ -133,80 +154,137 @@ Key differences from the STM32U083 specialisation:
 #define OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2355_GPIO_HPP
 
 #include <cstdint>
-#include "ohal/core/register.hpp"
+#include "ohal/core/access.hpp"
 #include "ohal/core/field.hpp"
+#include "ohal/core/register.hpp"
 #include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp"
 
-namespace ohal::gpio {
+namespace ohal::platforms::msp430fr2xx::msp430fr2355 {
 
-// All MSP430FR2355 GPIO port registers are 8-bit.
-// Register<Addr, uint8_t> is used throughout.
+/// Number of pins per MSP430FR2355 GPIO port (0–7).
+inline constexpr uint8_t kMsp430fr2355PinCount = 8U;
 
-template <uint8_t PinNum>
-struct Pin<PortA, PinNum> {
-    static_assert(PinNum < 8u, "ohal: MSP430FR2355 Port 1 has pins 0-7 only.");
-
-    // Direction: P1DIR bit N. 1=output, 0=input (same polarity as PinMode enum).
-    using DIR_BIT = core::BitField<
-        core::Register<0x0204u, uint8_t>, PinNum, 1u, core::Access::ReadWrite>;
-
-    // Output latch: P1OUT bit N.
-    using OUT_BIT = core::BitField<
-        core::Register<0x0202u, uint8_t>, PinNum, 1u, core::Access::ReadWrite, Level>;
-
-    // Input: P1IN bit N. Read the actual pin state here.
-    using IN_BIT = core::BitField<
-        core::Register<0x0200u, uint8_t>, PinNum, 1u, core::Access::ReadOnly, Level>;
-
-    // Pull resistor enable: P1REN bit N. 1=resistor enabled.
-    using REN_BIT = core::BitField<
-        core::Register<0x0206u, uint8_t>, PinNum, 1u, core::Access::ReadWrite>;
-
-    // set_mode: PinMode::Output -> DIR=1, PinMode::Input -> DIR=0 (no inversion needed).
-    static void set_mode(PinMode mode) noexcept {
-        DIR_BIT::write(static_cast<uint8_t>(mode == PinMode::Output ? 1u : 0u));
-    }
-
-    static void set()   noexcept { OUT_BIT::write(Level::High); }
-    static void clear() noexcept { OUT_BIT::write(Level::Low);  }
-    static Level read_input()  noexcept { return IN_BIT::read();  }
-    static Level read_output() noexcept { return OUT_BIT::read(); }
-    static void toggle() noexcept {
-        if (read_output() == Level::Low) set();
-        else clear();
-    }
-
-    // set_pull: enable PxREN and set PxOUT to select up (1) or down (0).
-    static void set_pull(Pull pull) noexcept {
-        static_assert(capabilities::supports_pull<PortA, PinNum>::value,
-            "ohal: MSP430FR2355 GPIO pull configuration requires this trait to be true.");
-        if (pull == Pull::None) {
-            REN_BIT::write(0u);
-        } else {
-            OUT_BIT::write(pull == Pull::Up ? static_cast<uint8_t>(1u)
-                                            : static_cast<uint8_t>(0u));
-            REN_BIT::write(1u);
-        }
-    }
-
-    // Unsupported features: static_assert fires at call site using capability traits.
-    static void set_output_type(OutputType) noexcept {
-        static_assert(capabilities::supports_output_type<PortA, PinNum>::value,
-            "ohal: MSP430FR2355 GPIO does not support configurable output type.");
-    }
-    static void set_speed(Speed) noexcept {
-        static_assert(capabilities::supports_output_speed<PortA, PinNum>::value,
-            "ohal: MSP430FR2355 GPIO does not support configurable output speed.");
-    }
+/// Register types for one MSP430FR2355 8-bit GPIO port.
+/// Parameterised on six independent 8-bit register addresses (each port has
+/// distinct non-contiguous addresses — see register map table above).
+template <uintptr_t InAddr, uintptr_t OutAddr, uintptr_t DirAddr,
+          uintptr_t RenAddr, uintptr_t Sel0Addr, uintptr_t Sel1Addr>
+struct GpioPortRegs {
+  using In   = core::Register<InAddr,   uint8_t>; ///< PxIN  (RO)
+  using Out  = core::Register<OutAddr,  uint8_t>; ///< PxOUT (RW)
+  using Dir  = core::Register<DirAddr,  uint8_t>; ///< PxDIR (RW)
+  using Ren  = core::Register<RenAddr,  uint8_t>; ///< PxREN (RW)
+  using Sel0 = core::Register<Sel0Addr, uint8_t>; ///< PxSEL0 (RW)
+  using Sel1 = core::Register<Sel1Addr, uint8_t>; ///< PxSEL1 (RW)
 };
 
-// Repeat for PortB ... PortF with their respective PxIN/PxOUT/PxDIR/PxREN addresses.
-// PortB (P2, 8 pins): IN=0x0201, OUT=0x0203, DIR=0x0205, REN=0x0207, PinNum < 8
-// PortC (P3, 8 pins): IN=0x0220, OUT=0x0222, DIR=0x0224, REN=0x0226, PinNum < 8
-// PortD (P4, 8 pins): IN=0x0221, OUT=0x0223, DIR=0x0225, REN=0x0227, PinNum < 8
-// PortE (P5, 8 pins): IN=0x0240, OUT=0x0242, DIR=0x0244, REN=0x0246, PinNum < 8
-// PortF (P6, 8 pins): IN=0x0241, OUT=0x0243, DIR=0x0245, REN=0x0247, PinNum < 8
+// Named register sets for each port using the SLASE54 addresses.
+using GpioP1Regs = GpioPortRegs<0x0200u, 0x0202u, 0x0204u, 0x0206u, 0x020Au, 0x020Cu>;
+using GpioP2Regs = GpioPortRegs<0x0201u, 0x0203u, 0x0205u, 0x0207u, 0x020Bu, 0x020Du>;
+using GpioP3Regs = GpioPortRegs<0x0220u, 0x0222u, 0x0224u, 0x0226u, 0x022Au, 0x022Cu>;
+using GpioP4Regs = GpioPortRegs<0x0221u, 0x0223u, 0x0225u, 0x0227u, 0x022Bu, 0x022Du>;
+using GpioP5Regs = GpioPortRegs<0x0240u, 0x0242u, 0x0244u, 0x0246u, 0x024Au, 0x024Cu>;
+using GpioP6Regs = GpioPortRegs<0x0241u, 0x0243u, 0x0245u, 0x0247u, 0x024Bu, 0x024Du>;
+
+/// Implements the ohal::gpio::Pin<Port, PinNum> API for one MSP430FR2355 GPIO port.
+///
+/// Parameterised on @p Regs so that host-side tests can inject a mock register set
+/// (using ohal::test::MockRegister types) without modifying the real hardware header.
+/// Production code uses GpioP1Regs…GpioP6Regs as the @p Regs argument.
+///
+/// @tparam PinNum  Zero-based pin number within the port (0–7).
+/// @tparam Regs    A type whose nested type aliases (In, Out, Dir, Ren, Sel0, Sel1)
+///                 satisfy the ohal::core::Register or MockRegister interface.
+template <uint8_t PinNum, typename Regs>
+struct GpioPortPinImpl {
+  static_assert(PinNum < kMsp430fr2355PinCount,
+      "ohal: MSP430FR2355 GPIO ports have pins 0-7 only.");
+
+  // Bit-field descriptors — 1 bit per pin.
+  using DirBit  = core::BitField<typename Regs::Dir,  PinNum, 1U, core::Access::ReadWrite>;
+  using OutBit  = core::BitField<typename Regs::Out,  PinNum, 1U, core::Access::ReadWrite,
+                                 gpio::Level>;
+  using InBit   = core::BitField<typename Regs::In,   PinNum, 1U, core::Access::ReadOnly,
+                                 gpio::Level>;
+  using RenBit  = core::BitField<typename Regs::Ren,  PinNum, 1U, core::Access::ReadWrite>;
+  using Sel0Bit = core::BitField<typename Regs::Sel0, PinNum, 1U, core::Access::ReadWrite>;
+  using Sel1Bit = core::BitField<typename Regs::Sel1, PinNum, 1U, core::Access::ReadWrite>;
+
+  /// set_mode maps all four PinMode values explicitly:
+  ///   Input            → DIR=0, SEL0=0, SEL1=0 (GPIO input)
+  ///   Output           → DIR=1, SEL0=0, SEL1=0 (GPIO output)
+  ///   AlternateFunction→ SEL0=1, SEL1=0 (primary AF; DIR set by peripheral)
+  ///   Analog           → not a distinct MSP430 GPIO mode; compile error.
+  static void set_mode(gpio::PinMode mode) noexcept {
+    static_assert(mode != gpio::PinMode::Analog || sizeof(Regs) == 0,
+        "ohal: MSP430FR2355 GPIO does not have an Analog pin mode. "
+        "Use AlternateFunction and configure the ADC module separately.");
+    if (mode == gpio::PinMode::Output) {
+      DirBit::write(1U);
+      Sel0Bit::write(0U);
+      Sel1Bit::write(0U);
+    } else if (mode == gpio::PinMode::AlternateFunction) {
+      // Primary peripheral function: SEL1:SEL0 = 0b01. Direction is
+      // controlled by the selected peripheral, not written here.
+      Sel0Bit::write(1U);
+      Sel1Bit::write(0U);
+    } else { // PinMode::Input (and PinMode::Analog blocked above)
+      DirBit::write(0U);
+      Sel0Bit::write(0U);
+      Sel1Bit::write(0U);
+    }
+  }
+
+  static void set()   noexcept { OutBit::write(gpio::Level::High); }
+  static void clear() noexcept { OutBit::write(gpio::Level::Low);  }
+  [[nodiscard]] static gpio::Level read_input()  noexcept { return InBit::read();  }
+  [[nodiscard]] static gpio::Level read_output() noexcept { return OutBit::read(); }
+
+  static void toggle() noexcept {
+    if (read_output() == gpio::Level::Low) set();
+    else clear();
+  }
+
+  /// set_pull: enable PxREN and use PxOUT to select up/down.
+  /// Requires PxDIR=0 (input); call set_mode(Input) before set_pull().
+  static void set_pull(gpio::Pull pull) noexcept {
+    if (pull == gpio::Pull::None) {
+      RenBit::write(0U);
+    } else {
+      OutBit::write(pull == gpio::Pull::Up ? 1U : 0U);
+      RenBit::write(1U);
+    }
+  }
+
+  // Unsupported features: static_assert fires at call site.
+  static void set_output_type(gpio::OutputType) noexcept {
+    static_assert(capabilities::supports_output_type<gpio::PortA, PinNum>::value,
+        "ohal: MSP430FR2355 GPIO does not support configurable output type.");
+  }
+  static void set_speed(gpio::Speed) noexcept {
+    static_assert(capabilities::supports_output_speed<gpio::PortA, PinNum>::value,
+        "ohal: MSP430FR2355 GPIO does not support configurable output speed.");
+  }
+};
+
+} // namespace ohal::platforms::msp430fr2xx::msp430fr2355
+
+namespace ohal::gpio {
+
+// Pin<PortA…PortF, PinNum> partial specialisations delegate to GpioPortPinImpl.
+template <uint8_t PinNum>
+struct Pin<PortA, PinNum>
+    : platforms::msp430fr2xx::msp430fr2355::GpioPortPinImpl<
+          PinNum, platforms::msp430fr2xx::msp430fr2355::GpioP1Regs> {};
+
+template <uint8_t PinNum>
+struct Pin<PortB, PinNum>
+    : platforms::msp430fr2xx::msp430fr2355::GpioPortPinImpl<
+          PinNum, platforms::msp430fr2xx::msp430fr2355::GpioP2Regs> {};
+
+// Repeat for PortC (GpioP3Regs), PortD (GpioP4Regs),
+//           PortE (GpioP5Regs), PortF (GpioP6Regs).
 
 } // namespace ohal::gpio
 
@@ -214,6 +292,10 @@ struct Pin<PortA, PinNum> {
 ```
 
 ## Capability Specialisations (`msp430fr2355/capabilities.hpp`)
+
+Capabilities follow the same per-port pattern as the STM32U083 implementation: a `detail`
+helper evaluates to `true_type` only for valid pin numbers (0–7), so out-of-range pins correctly
+report `false`.
 
 ```cpp
 // platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp
@@ -225,12 +307,48 @@ struct Pin<PortA, PinNum> {
 
 namespace ohal::gpio::capabilities {
 
-// MSP430FR2355 supports pull resistors on all ports and pins.
-template <typename Port, uint8_t PinNum>
-struct supports_pull<Port, PinNum> : std::true_type {};
+namespace detail {
+/// MSP430FR2355 GPIO ports have 8 pins (0–7).
+inline constexpr uint8_t kMsp430fr2355PinCount = 8U;
 
-// MSP430FR2355 does not support configurable output type or output speed.
-// The default false_type primary templates already handle those correctly.
+/// Evaluates to true_type for valid pin numbers (0–7), false_type otherwise.
+/// Used as the base for every MSP430FR2355 capability specialisation so that
+/// out-of-range pin numbers correctly report false.
+template <uint8_t PinNum>
+using Msp430fr2355PortCapability = std::bool_constant<(PinNum < kMsp430fr2355PinCount)>;
+} // namespace detail
+
+// MSP430FR2355 supports pull resistors and alternate-function selection on all
+// ports and pins 0–7.  Output type and output speed are not supported; the
+// default false_type primary templates handle those.
+
+// NOLINTBEGIN(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
+template <uint8_t PinNum>
+struct supports_pull<PortA, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_pull<PortB, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_pull<PortC, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_pull<PortD, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_pull<PortE, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_pull<PortF, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+
+template <uint8_t PinNum>
+struct supports_alternate_function<PortA, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_alternate_function<PortB, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_alternate_function<PortC, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_alternate_function<PortD, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_alternate_function<PortE, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+template <uint8_t PinNum>
+struct supports_alternate_function<PortF, PinNum> : detail::Msp430fr2355PortCapability<PinNum> {};
+// NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 
 } // namespace ohal::gpio::capabilities
 
@@ -241,32 +359,57 @@ struct supports_pull<Port, PinNum> : std::true_type {};
 
 1. Add `platforms/msp430fr2xx/family.hpp` — validates model define; errors with a clear message
    if none is supplied.
-2. Add `platforms/msp430fr2xx/models/msp430fr2355/gpio.hpp` — partial specialisations using
-   `uint8_t` registers with `PxIN`/`PxOUT`/`PxDIR`/`PxREN` layout.
-3. Add `platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp` — specialises
-   `supports_pull` to `true_type`; all other traits remain `false_type` (default).
-4. Application code using `ohal::gpio::Pin<PortA, 2>` for basic `set()`/`clear()`/`toggle()`
+2. Add `platforms/msp430fr2xx/models/msp430fr2355/gpio.hpp` — defines `GpioPortRegs<…>` with
+   six 8-bit register types, `GpioPortPinImpl<PinNum, Regs>` implementing the full GPIO API, and
+   `Pin<PortA…PortF, PinNum>` partial specialisations that instantiate `GpioPortPinImpl` with the
+   real hardware register types (`GpioP1Regs…GpioP6Regs`).
+3. Add `platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp` — per-port specialisations of
+   `supports_pull` and `supports_alternate_function` bounded by pin count (0–7); all other traits
+   remain `false_type` (default).
+4. Host tests instantiate `GpioPortPinImpl<PinNum, MockGpioRegs>` directly (where `MockGpioRegs`
+   carries `ohal::test::MockRegister<uint8_t, &storage>` type aliases), following the same
+   mock-injection pattern as STM32U083. No macro-based address override is needed.
+5. Application code using `ohal::gpio::Pin<PortA, 2>` for basic `set()`/`clear()`/`toggle()`
    compiles unchanged.
-5. Application code calling `set_speed()` or `set_output_type()` on an MSP430FR2355 target fails
+6. Application code calling `set_speed()` or `set_output_type()` on an MSP430FR2355 target fails
    with a clear compile-time error message.
-6. Run the same `set()`/`clear()`/`toggle()`/`read_input()`/`set_pull()` host tests against
-   MSP430FR2355 mock registers (8-bit `mock_memory` array via `mock_addr8()`).
 
 ## Tests to Write (host)
 
-- `Pin<PortA, 2>::set()` calls `OUT_BIT::write(Level::High)` — verifies bit 2 of P1OUT mock slot
-  is set.
-- `Pin<PortA, 2>::clear()` — verifies bit 2 of P1OUT mock slot is cleared.
-- `Pin<PortA, 2>::set_mode(PinMode::Output)` — verifies bit 2 of P1DIR mock slot is set
-  (`DIR=1` for output).
-- `Pin<PortA, 2>::set_mode(PinMode::Input)` — verifies bit 2 of P1DIR mock slot is cleared
-  (`DIR=0` for input).
-- `Pin<PortA, 2>::read_input()` — reads P1IN mock slot, returns correct `Level`.
-- `Pin<PortA, 2>::set_pull(Pull::Up)` — verifies P1REN bit 2 is set and P1OUT bit 2 is set.
-- `Pin<PortA, 2>::set_pull(Pull::Down)` — verifies P1REN bit 2 is set and P1OUT bit 2 is
-  cleared.
-- `Pin<PortA, 2>::set_pull(Pull::None)` — verifies P1REN bit 2 is cleared.
-- `Pin<PortA, 2>::set_speed(Speed::High)` fails to compile with message
-  `MSP430FR2355 GPIO does not support configurable output speed` (negative-compile test).
-- `Pin<PortA, 2>::set_output_type(OutputType::OpenDrain)` fails to compile with message
-  `MSP430FR2355 GPIO does not support configurable output type` (negative-compile test).
+Create `tests/host/test_gpio_msp430fr2355.cpp`. Instantiate
+`GpioPortPinImpl<PinNum, MockGpioRegs>` with mock `uint8_t` backing variables, following the
+STM32U083 test pattern.
+
+**Positive tests (GPIO behaviour):**
+
+- `GpioPortPinImpl<2, MockRegs>::set()` — verifies bit 2 of mock `Out` slot is set.
+- `GpioPortPinImpl<2, MockRegs>::clear()` — verifies bit 2 of mock `Out` slot is cleared.
+- `GpioPortPinImpl<2, MockRegs>::set_mode(PinMode::Output)` — verifies bit 2 of mock `Dir` slot
+  is set and `Sel0`/`Sel1` bits are cleared.
+- `GpioPortPinImpl<2, MockRegs>::set_mode(PinMode::Input)` — verifies bit 2 of mock `Dir` slot
+  is cleared and `Sel0`/`Sel1` bits are cleared.
+- `GpioPortPinImpl<2, MockRegs>::set_mode(PinMode::AlternateFunction)` — verifies `Sel0` bit 2
+  is set and `Sel1` bit 2 is cleared.
+- `GpioPortPinImpl<2, MockRegs>::read_input()` — reads mock `In` slot, returns correct `Level`.
+- `GpioPortPinImpl<2, MockRegs>::set_pull(Pull::Up)` — verifies mock `Ren` bit 2 is set and
+  mock `Out` bit 2 is set.
+- `GpioPortPinImpl<2, MockRegs>::set_pull(Pull::Down)` — verifies mock `Ren` bit 2 is set and
+  mock `Out` bit 2 is cleared.
+- `GpioPortPinImpl<2, MockRegs>::set_pull(Pull::None)` — verifies mock `Ren` bit 2 is cleared.
+
+**Capability trait tests:**
+
+- `supports_pull<PortA, 0>::value == true` — valid pin.
+- `supports_pull<PortA, 7>::value == true` — valid pin (boundary).
+- `supports_pull<PortA, 8>::value == false` — out-of-range pin.
+- `supports_alternate_function<PortA, 0>::value == true` — valid pin.
+- `supports_alternate_function<PortA, 8>::value == false` — out-of-range pin.
+
+**Negative-compile tests:**
+
+- `GpioPortPinImpl<2, MockRegs>::set_speed(Speed::High)` — compile error:
+  `MSP430FR2355 GPIO does not support configurable output speed`.
+- `GpioPortPinImpl<2, MockRegs>::set_output_type(OutputType::OpenDrain)` — compile error:
+  `MSP430FR2355 GPIO does not support configurable output type`.
+- `GpioPortPinImpl<2, MockRegs>::set_mode(PinMode::Analog)` — compile error:
+  `MSP430FR2355 GPIO does not have an Analog pin mode`.

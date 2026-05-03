@@ -326,8 +326,10 @@ ohal/
 │   │   └── blink_msp430.cpp
 │   └── target/
 │       ├── stm32u083/
+│       │   ├── blink.cpp                ← minimal blink used by CI binary-size check
 │       │   └── test_gpio_stm32u083.cpp
 │       └── msp430fr2355/
+│           ├── blink.cpp                ← minimal blink used by CI binary-size check
 │           └── test_gpio_msp430fr2355.cpp
 ├── CMakeLists.txt
 ├── lint.sh                              ← single entry-point for all linting (Step 2)
@@ -564,6 +566,9 @@ sequenceDiagram
 
 ### 8.3 GPIO Configuration Sequence (MSP430FR2355)
 
+`Register<>` exposes only `read()` and `write()`. Every read-modify-write is two bus
+transactions; there is no `set_bits()` helper.
+
 ```mermaid
 sequenceDiagram
     participant App
@@ -572,8 +577,13 @@ sequenceDiagram
     participant OUT as P1OUT reg (uint8_t)
 
     App->>Pin: configure as output, initially high
-    Pin->>DIR: set_bits(1 << 2) [PxDIR=1 means output]
-    Pin->>OUT: set_bits(1 << 2)
+    Pin->>DIR: tmp = read()
+    DIR-->>Pin: tmp
+    Pin->>DIR: write(tmp | (1 << 2))
+    Note over DIR: P1DIR bit 2 = 1 (output)
+    Pin->>OUT: tmp = read()
+    OUT-->>Pin: tmp
+    Pin->>OUT: write(tmp | (1 << 2))
     Note over OUT: Pin is now HIGH
 ```
 
@@ -601,14 +611,14 @@ graph TD
 graph TD
     subgraph "Test binary (host, MSP430FR2355)"
         TEST2["test_gpio_msp430fr2355.cpp"]
-        MOCK2["mock/mock_register.hpp<br/>(8-bit mock via mock_addr8())"]
+        MOCK2["mock/mock_register.hpp<br/>(MockRegister&lt;uint8_t, &storage&gt;)"]
         IFACE2["ohal/gpio.hpp<br/>(generic interface)"]
-        PLAT2["platforms/msp430fr2xx/models/msp430fr2355/gpio.hpp<br/>(base addresses overridden by mock_addr8())"]
+        IMPL2["GpioPortPinImpl&lt;PinNum, MockGpioRegs&gt;<br/>(mock Regs injected via template parameter)"]
     end
     TEST2 --> MOCK2
     TEST2 --> IFACE2
-    IFACE2 --> PLAT2
-    PLAT2 --> MOCK2
+    IFACE2 --> IMPL2
+    IMPL2 --> MOCK2
 ```
 
 See [Step 11](steps/step-11-unit-testing.md) for the full mock infrastructure, target testing

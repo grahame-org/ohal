@@ -71,12 +71,14 @@ TEST_CASE("Register::set_bits ORs without disturbing other bits") {
 }
 ```
 
-**How addresses are mocked:** The STM32U083 platform header uses preprocessor macros for base
-addresses (`OHAL_STM32U083_GPIOA_BASE`). In normal builds these default to the real hardware
-addresses. In host test builds the CMake target passes
-`-DOHAL_STM32U083_GPIOA_BASE=ohal::test::mock_addr(0)` (and similar for other ports/registers),
-redirecting all register accesses into the mock array. The same mechanism is used for MSP430FR2355
-using `mock_addr8()` for 8-bit slots.
+**How addresses are mocked:** The STM32U083 platform header defines
+`GpioPortPinImpl<PinNum, Regs>` parameterised on a `Regs` type. In normal builds the
+`Pin<PortA, N>` specialisation injects `GpioARegs` (which wraps the real hardware addresses).
+Host test builds instead instantiate `GpioPortPinImpl<PinNum, MockGpioRegs>` directly, where
+`MockGpioRegs` carries `ohal::test::MockRegister<uint32_t, &storage>` type aliases — no address
+override macros are needed. The MSP430FR2355 implementation follows the same template-injection
+pattern using `GpioPortPinImpl<PinNum, Regs>` with `ohal::test::MockRegister<uint8_t, &storage8>`
+backing variables for its 8-bit registers.
 
 ## 11.2 Target Testing
 
@@ -125,12 +127,12 @@ Example negative-compile tests:
 
 ## 11.4 Test Coverage Targets
 
-| Component               | Test type                       | Coverage target                                                                                      |
-| ----------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `Register<uint32_t>`    | Host unit tests                 | 100% of all methods                                                                                  |
-| `Register<uint8_t>`     | Host unit tests                 | 100% of all methods (for 8-bit platform coverage)                                                    |
-| `BitField<>`            | Host unit tests                 | 100% of all methods + negative-compile tests for access violations                                   |
-| `platform.hpp`          | Negative-compile tests          | All invalid define combinations                                                                      |
-| `stm32u083/gpio.hpp`    | Host unit tests with mock       | All GPIO methods for at least pins 0 and 15 of at least PortA and PortB                              |
-| `msp430fr2355/gpio.hpp` | Host unit tests with 8-bit mock | All GPIO methods for at least pins 0 and 7 of PortA; unsupported features via negative-compile tests |
-| Consumer API            | Host integration test           | Typical GPIO init + toggle sequence                                                                  |
+| Component               | Test type                       | Coverage target                                                                                                                                                                                                              |
+| ----------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Register<uint32_t>`    | Host unit tests                 | 100% of all methods                                                                                                                                                                                                          |
+| `Register<uint8_t>`     | Host unit tests                 | 100% of all methods (for 8-bit platform coverage)                                                                                                                                                                            |
+| `BitField<>`            | Host unit tests                 | 100% of all methods + negative-compile tests for access violations                                                                                                                                                           |
+| `platform.hpp`          | Negative-compile tests          | All invalid define combinations                                                                                                                                                                                              |
+| `stm32u083/gpio.hpp`    | Host unit tests with mock       | All GPIO methods for at least pins 0 and 15 of at least PortA and PortB                                                                                                                                                      |
+| `msp430fr2355/gpio.hpp` | Host unit tests with 8-bit mock | All GPIO methods for at least pins 0 and 7 of PortA; capability traits (`supports_pull`, `supports_alternate_function`) true for valid pins and false for out-of-range pins; negative-compile tests for unsupported features |
+| Consumer API            | Host integration test           | Typical GPIO init + toggle sequence                                                                                                                                                                                          |
