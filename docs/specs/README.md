@@ -417,12 +417,12 @@ Optional keys:
 Each entry in `alternate-functions.pins` maps one package pin to its alternate-function
 assignments:
 
-| Key         | Description                                                                                        |
-| ----------- | -------------------------------------------------------------------------------------------------- |
-| `pin`       | Pin name, e.g. `PA0`, `PC14-OSC32_IN`, `VDD`                                                       |
-| `number`    | Physical pin number on the package (optional)                                                      |
-| `gpio`      | GPIO port and bit (`port`, `bit`), or `~` for non-GPIO pins (optional)                             |
-| `functions` | Required. AF0–AF15 mapping to signal names; `~` for unused AF slots. Set to `~` for non-GPIO pins. |
+| Key         | Description                                                                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pin`       | Pin name, e.g. `PA0`, `PC14-OSC32_IN`, `VDD`                                                                                                                              |
+| `number`    | Physical pin identifier on the package (optional). Integer for QFP/QFN/DIP packages (e.g. `1`, `6`); string ball designator for BGA/WLCSP packages (e.g. `"A2"`, `"B3"`). |
+| `gpio`      | GPIO port and bit (`port`, `bit`), or `~` for non-GPIO pins (optional)                                                                                                    |
+| `functions` | Required. AF0–AF15 mapping to signal names; `~` for unused AF slots. Set to `~` for non-GPIO pins.                                                                        |
 
 Example:
 
