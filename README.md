@@ -23,7 +23,7 @@ FetchContent_Declare(ohal GIT_REPOSITORY https://github.com/grahame-org/ohal GIT
 FetchContent_MakeAvailable(ohal)
 
 target_link_libraries(my_app PRIVATE ohal)
-target_compile_definitions(my_app PRIVATE OHAL_FAMILY_STM32U0 OHAL_MODEL_STM32U083)
+target_compile_definitions(my_app PRIVATE OHAL_FAMILY_STM32U0 OHAL_MODEL_STM32U083KCU)
 ```
 
 ```cpp

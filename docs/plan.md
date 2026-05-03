@@ -33,7 +33,7 @@
 | G9  | **C++17 strict**                                 | No compiler extensions, no C++20 features.                                                                                                                                                                                                                                     |
 | G10 | **Consistent namespace**                         | All public symbols live inside `ohal::`. Peripheral types are in sub-namespaces: `ohal::gpio`, `ohal::timer`, `ohal::uart`.                                                                                                                                                    |
 | G11 | **Minimal consumer imports**                     | Consumers write `using namespace ohal::gpio;` and nothing more (beyond including the single top-level header).                                                                                                                                                                 |
-| G12 | **MCU selection via compiler defines**           | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083` (or `-DOHAL_FAMILY_MSP430FR2XX` and `-DOHAL_MODEL_MSP430FR2355`). Invalid or missing define combinations fail at compile time.                                                                                            |
+| G12 | **MCU selection via compiler defines**           | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083KCU` (or `-DOHAL_FAMILY_MSP430FR2XX` and `-DOHAL_MODEL_MSP430FR2355`). Invalid or missing define combinations fail at compile time.                                                                                         |
 | G13 | **Multi-pin atomic operations at the HAL level** | `Port<PortTag>` provides `set()`, `clear()`, and `write()` across multiple pins on the same port. Where the hardware supports it (e.g. STM32 BSRR), `write()` compiles to a single store instruction. Application code never reaches into platform namespaces to achieve this. |
 
 ---
@@ -102,7 +102,7 @@ graph TD
     end
 
     subgraph "Platform-Specific Layer (platforms/)"
-        STM32U0["stm32u0/<br/>family.hpp + models/stm32u083/"]
+        STM32U0["stm32u0/<br/>family.hpp + models/stm32u083kcu/"]
         MSP["ti_mspm0/<br/>family.hpp + models/..."]
         MSP430["msp430fr2xx/<br/>family.hpp + models/msp430fr2355/"]
     end
@@ -212,7 +212,7 @@ classDiagram
 
 ```mermaid
 flowchart TD
-    A["Compiler invoked with<br/>-DOHAL_FAMILY_STM32U0<br/>-DOHAL_MODEL_STM32U083"] --> B["#include &lt;ohal/ohal.hpp&gt;"]
+    A["Compiler invoked with<br/>-DOHAL_FAMILY_STM32U0<br/>-DOHAL_MODEL_STM32U083KCU"] --> B["#include &lt;ohal/ohal.hpp&gt;"]
     B --> C["include/ohal/platform.hpp"]
     C --> D{OHAL_FAMILY_* defined?}
     D -- No --> E["#error:<br/>'No MCU family defined.<br/>Pass -DOHAL_FAMILY_XXX to compiler.'"]
@@ -222,8 +222,8 @@ flowchart TD
     H -- No --> I["#error 'Unknown family OHAL_FAMILY_XXX'"]
     H -- Yes --> J["include platforms/stm32u0/family.hpp"]
     J --> K{Model in family?}
-    K -- No --> L["#error:<br/>'Model STM32U083 is not in family STM32U0'"]
-    K -- Yes --> M["include platforms/stm32u0/models/stm32u083/"]
+    K -- No --> L["#error:<br/>'Model STM32U083KCU is not in family STM32U0'"]
+    K -- Yes --> M["include platforms/stm32u0/models/stm32u083kcu/"]
     M --> N["Peripheral register maps available"]
 ```
 
@@ -313,7 +313,7 @@ ohal/
 │   ├── host/
 │   │   ├── CMakeLists.txt
 │   │   ├── test_register.cpp            ← tests for Register<> and BitField<>
-│   │   ├── test_gpio_stm32u083.cpp      ← STM32U083 GPIO tests with mock registers
+│   │   ├── test_gpio_stm32u083kcu.cpp   ← STM32U083KCU GPIO tests with mock registers
 │   │   ├── test_gpio_msp430fr2355.cpp   ← MSP430FR2355 GPIO tests with 8-bit mock registers
 │   │   └── mock/
 │   │       └── mock_register.hpp        ← in-memory mock of volatile register access
@@ -325,7 +325,7 @@ ohal/
 │   └── target/
 │       ├── stm32u083/
 │       │   ├── blink.cpp                ← minimal blink used by CI binary-size check
-│       │   └── test_gpio_stm32u083.cpp
+│       │   └── test_gpio_stm32u083kcu.cpp
 │       └── msp430fr2355/
 │           ├── blink.cpp                ← minimal blink used by CI binary-size check
 │           └── test_gpio_msp430fr2355.cpp
@@ -591,7 +591,7 @@ sequenceDiagram
 ```mermaid
 graph TD
     subgraph "Test binary (host, STM32U083)"
-        TEST["test_gpio_stm32u083.cpp"]
+        TEST["test_gpio_stm32u083kcu.cpp"]
         MOCK["mock/mock_register.hpp<br/>(MockRegister&lt;uint32_t, &storage&gt;)"]
         IFACE["ohal/gpio.hpp<br/>(generic interface)"]
         IMPL["GpioPortPinImpl&lt;PinNum, MockGpioRegs&gt;<br/>(mock Regs injected via template parameter)"]
@@ -625,16 +625,16 @@ approach, negative-compile test helper, and coverage targets.
 
 ### 10.1 Classes of Error
 
-| Class                      | Mechanism                                  | Example message                                                                                                                                                                  |
-| -------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No MCU defined             | `#error` preprocessor directive            | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.`                                                                                   |
-| Wrong model for family     | `#error` preprocessor directive            | `ohal: No STM32U0 model defined. Pass -DOHAL_MODEL_STM32U083 (or another U0 model) to the compiler.` (an unrecognised model macro falls through to the family's catch-all check) |
-| Unimplemented peripheral   | `static_assert` in primary template        | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.`                                                          |
-| Write to read-only field   | `static_assert` in `BitField::write`       | `ohal: cannot write to a read-only field`                                                                                                                                        |
-| Read from write-only field | `static_assert` in `BitField::read`        | `ohal: cannot read from a write-only field`                                                                                                                                      |
-| BitField overflow          | `static_assert` in `BitField` body         | `ohal: BitField (Offset + Width) exceeds register width`                                                                                                                         |
-| Out-of-range pin number    | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.`                                                                                                                                      |
-| Unsupported feature        | `static_assert` in platform specialisation | `ohal: MSP430FR2355 GPIO does not support configurable output speed.`                                                                                                            |
+| Class                      | Mechanism                                  | Example message                                                                                                                                                                     |
+| -------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No MCU defined             | `#error` preprocessor directive            | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.`                                                                                      |
+| Wrong model for family     | `#error` preprocessor directive            | `ohal: No STM32U0 model defined. Pass -DOHAL_MODEL_STM32U083KCU (or another U0 model) to the compiler.` (an unrecognised model macro falls through to the family's catch-all check) |
+| Unimplemented peripheral   | `static_assert` in primary template        | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.`                                                             |
+| Write to read-only field   | `static_assert` in `BitField::write`       | `ohal: cannot write to a read-only field`                                                                                                                                           |
+| Read from write-only field | `static_assert` in `BitField::read`        | `ohal: cannot read from a write-only field`                                                                                                                                         |
+| BitField overflow          | `static_assert` in `BitField` body         | `ohal: BitField (Offset + Width) exceeds register width`                                                                                                                            |
+| Out-of-range pin number    | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.`                                                                                                                                         |
+| Unsupported feature        | `static_assert` in platform specialisation | `ohal: MSP430FR2355 GPIO does not support configurable output speed.`                                                                                                               |
 
 ### 10.2 Error Design Principles
 
@@ -680,10 +680,10 @@ Led::set();
 
 ## 12. Consumer Usage Examples
 
-### 12.1 Blink an LED (STM32U083, PA5)
+### 12.1 Blink an LED (STM32U083KCU, PA5)
 
 ```cpp
-// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 -std=c++17
+// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU -std=c++17
 
 #include <ohal/ohal.hpp>
 
@@ -770,10 +770,10 @@ int main() {
 //            Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler."
 ```
 
-### 12.6 Atomic multi-pin write — H-bridge (STM32U083, Port A)
+### 12.6 Atomic multi-pin write — H-bridge (STM32U083KCU, Port A)
 
 ```cpp
-// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 -std=c++17
+// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU -std=c++17
 #include <ohal/ohal.hpp>
 
 using namespace ohal::gpio;

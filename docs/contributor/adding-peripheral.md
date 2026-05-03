@@ -141,10 +141,10 @@ Add the new header to the model's include list in `family.hpp`:
 
 ```cpp
 // platforms/stm32u0/family.hpp  (excerpt)
-#if defined(OHAL_MODEL_STM32U083)
-#include "ohal/platforms/stm32u0/models/stm32u083/gpio.hpp"
-#include "ohal/platforms/stm32u0/models/stm32u083/timer.hpp"   // ← add this line
-#include "ohal/platforms/stm32u0/models/stm32u083/capabilities.hpp"
+#if defined(OHAL_MODEL_STM32U083KCU)
+#include "ohal/platforms/stm32u0/models/stm32u083kcu/gpio.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083kcu/timer.hpp"   // ← add this line
+#include "ohal/platforms/stm32u0/models/stm32u083kcu/capabilities.hpp"
 #endif
 ```
 

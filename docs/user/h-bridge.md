@@ -111,7 +111,7 @@ Both actions happen simultaneously on hardware that provides an atomic set/reset
 platforms without such a register the implementation performs two writes.
 
 ```cpp
-// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 -std=c++17
+// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU -std=c++17
 #include <ohal/ohal.hpp>
 
 using namespace ohal::gpio;
