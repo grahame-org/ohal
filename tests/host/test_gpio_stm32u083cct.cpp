@@ -134,13 +134,13 @@ static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 0>::val
 static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 0>::value,
               "PortA must support alternate function on CCT");
 
-static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 3>::value,
               "PortF must support output type on CCT");
-static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 3>::value,
               "PortF must support output speed on CCT");
-static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 3>::value,
               "PortF must support pull on CCT");
-static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
               "PortF must support alternate function on CCT");
 
 // Out-of-range pin numbers must report false even on bonded-out ports.
@@ -193,12 +193,12 @@ INSTANTIATE_TEST_SUITE_P(
                 "PortA_Pin0_AlternateFunction"},
         CapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortB, 7>::value,
                 "PortB_Pin7_OutputType"},
-        CapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 3>::value,
-                "PortC_Pin3_OutputSpeed"},
+        CapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 13>::value,
+                "PortC_Pin13_OutputSpeed"},
         CapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 14>::value,
                 "PortC_Pin14_Pull"},
-        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 15>::value,
-                "PortF_Pin15_AlternateFunction"}),
+        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
+                "PortF_Pin3_AlternateFunction"}),
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
 // clang-format on
 
@@ -271,9 +271,9 @@ static_assert(ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address 
                   wiring::kGpioBBase + wiring::kBsrrOffset,
               "Pin<PortB,0> must use GPIOB BSRR address on CCT");
 
-static_assert(ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address ==
+static_assert(ohal::gpio::Pin<ohal::gpio::PortC, 13>::BsrrSet::reg_type::address ==
                   wiring::kGpioCBase + wiring::kBsrrOffset,
-              "Pin<PortC,0> must use GPIOC BSRR address on CCT");
+              "Pin<PortC,13> must use GPIOC BSRR address on CCT");
 
 static_assert(ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
@@ -311,7 +311,7 @@ INSTANTIATE_TEST_SUITE_P(
                    wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
         WiringCase{ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address,
                    wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
-        WiringCase{ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address,
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortC, 13>::BsrrSet::reg_type::address,
                    wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
         WiringCase{ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address,
                    wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
