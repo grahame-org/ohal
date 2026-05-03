@@ -319,25 +319,25 @@ Device-model specs are validated against `docs/specs/schema-model.json`.
 
 Required top-level keys:
 
-| Key            | Type    | Description                                 |
-| -------------- | ------- | ------------------------------------------- |
-| `spec-version` | string  | Spec format version (semver)                |
-| `vendor`       | string  | Must match the parent family spec           |
-| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)     |
+| Key            | Type    | Description                                  |
+| -------------- | ------- | -------------------------------------------- |
+| `spec-version` | string  | Spec format version (semver)                 |
+| `vendor`       | string  | Must match the parent family spec            |
+| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)      |
 | `model`        | string  | Part number identifier (e.g. `stm32u083kcu`) |
-| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)    |
-| `flash-kb`     | integer | On-chip flash in kibibytes                  |
-| `sram-kb`      | integer | On-chip SRAM in kibibytes                   |
-| `pin-count`    | integer | Number of physical pins                     |
+| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)     |
+| `flash-kb`     | integer | On-chip flash in kibibytes                   |
+| `sram-kb`      | integer | On-chip SRAM in kibibytes                    |
+| `pin-count`    | integer | Number of physical pins                      |
 
 Optional keys:
 
-| Key                       | Description                                                                                  |
-| ------------------------- | -------------------------------------------------------------------------------------------- |
-| `reference`               | Primary vendor document (datasheet) for this model (`source`, `revision`, optional `title`)  |
-| `peripheral-availability` | Which peripheral instances from the family spec are present; supports an optional `note`     |
+| Key                       | Description                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `reference`               | Primary vendor document (datasheet) for this model (`source`, `revision`, optional `title`)   |
+| `peripheral-availability` | Which peripheral instances from the family spec are present; supports an optional `note`      |
 | `alternate-functions`     | Object with optional `reference` sub-key (sections/figures/tables) and a required `pins` list |
-| `errata`                  | Known hardware errata with silicon-revision applicability                                    |
+| `errata`                  | Known hardware errata with silicon-revision applicability                                     |
 
 Minimal example:
 

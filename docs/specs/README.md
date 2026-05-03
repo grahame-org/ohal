@@ -394,16 +394,16 @@ package, and silicon revision. It is validated against `docs/specs/schema-model.
 
 The required top-level keys are:
 
-| Key            | Type    | Description                                 |
-| -------------- | ------- | ------------------------------------------- |
-| `spec-version` | string  | Spec format version (semver)                |
-| `vendor`       | string  | Must match the parent family spec           |
-| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)     |
+| Key            | Type    | Description                                  |
+| -------------- | ------- | -------------------------------------------- |
+| `spec-version` | string  | Spec format version (semver)                 |
+| `vendor`       | string  | Must match the parent family spec            |
+| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)      |
 | `model`        | string  | Part number identifier (e.g. `stm32u083kcu`) |
-| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)    |
-| `flash-kb`     | integer | On-chip flash in kibibytes                  |
-| `sram-kb`      | integer | On-chip SRAM in kibibytes                   |
-| `pin-count`    | integer | Number of physical pins                     |
+| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)     |
+| `flash-kb`     | integer | On-chip flash in kibibytes                   |
+| `sram-kb`      | integer | On-chip SRAM in kibibytes                    |
+| `pin-count`    | integer | Number of physical pins                      |
 
 Optional keys:
 
