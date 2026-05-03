@@ -196,7 +196,7 @@ alternate-functions:
         AF9: TSC_G3_IO2
         AF11: LCD_COM4/LCD_SEG28/LCD_SEG48
         AF15: EVENTOUT
-    - pin: "PA12[PA10]"
+    - pin: "PA12 [PA10]"
       number: B8
       gpio:
         port: A
@@ -295,7 +295,7 @@ alternate-functions:
         AF11: LCD_COM1
         AF14: TIM15_BKIN
         AF15: EVENTOUT
-    - pin: "PA11[PA9]"
+    - pin: "PA11 [PA9]"
       number: C8
       gpio:
         port: A
