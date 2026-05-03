@@ -14,7 +14,9 @@ architecture:
 
 reference:
   source: RM0503
+  title: STM32U0 series advanced Arm-based 32-bit MCUs - Reference Manual
   revision: 4
+  last-modified: 2025-07
 
 memory:
   references:

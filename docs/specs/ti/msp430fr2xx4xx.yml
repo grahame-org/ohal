@@ -14,7 +14,9 @@ architecture:
 
 reference:
   source: SLAU445
+  title: MSP430FR4xx and MSP430FR2xx Family User's Guide
   revision: "I"
+  last-modified: 2019-03
 
 memory:
   references:

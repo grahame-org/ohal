@@ -44,17 +44,17 @@ There are three distinct spec file types, each with its own JSON Schema:
 
 Family specs (`docs/specs/{vendor}/{family}.yml`) are validated against `schema.json`:
 
-| Key            | Required | Description                                                       |
-| -------------- | -------- | ----------------------------------------------------------------- |
-| `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                 |
-| `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                      |
-| `family`       | ✓        | Family name and sub-family list                                   |
-| `architecture` | ✓        | Processor architecture and word size (inline summary)             |
-| `arch-ref`     |          | Reference to an architecture-level spec (see below)               |
-| `reference`    | ✓        | Reference manual document identifier and revision                 |
-| `memory`       |          | Memory map with address ranges and sub-family applicability       |
-| `definitions`  |          | Reusable settings blocks (referenced by YAML anchors in the spec) |
-| `peripherals`  |          | Peripheral blocks with register and bit-field descriptions        |
+| Key            | Required | Description                                                              |
+| -------------- | -------- | ------------------------------------------------------------------------ |
+| `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                        |
+| `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                             |
+| `family`       | ✓        | Family name and sub-family list                                          |
+| `architecture` | ✓        | Processor architecture and word size (inline summary)                    |
+| `arch-ref`     |          | Reference to an architecture-level spec (see below)                      |
+| `reference`    | ✓        | Reference manual source, revision, optional title and last-modified date |
+| `memory`       |          | Memory map with address ranges and sub-family applicability              |
+| `definitions`  |          | Reusable settings blocks (referenced by YAML anchors in the spec)        |
+| `peripherals`  |          | Peripheral blocks with register and bit-field descriptions               |
 
 ### Architecture spec top-level keys
 
@@ -122,6 +122,25 @@ definition lives in the architecture spec.
 
 Many registers and memory regions differ between sub-families (e.g. flash size). The `sub-families`
 key on a memory region or register lists which sub-families the entry applies to.
+
+### Reference manual metadata
+
+Every family spec must declare the source reference manual under the top-level `reference` key:
+
+```yaml
+reference:
+  source: RM0503
+  title: STM32U0 series advanced Arm-based 32-bit MCUs - Reference Manual
+  revision: 4
+  last-modified: 2025-07
+```
+
+| Key             | Required | Description                                                                            |
+| --------------- | -------- | -------------------------------------------------------------------------------------- |
+| `source`        | ✓        | Vendor document identifier (e.g. `RM0503`, `SLAU445`)                                  |
+| `revision`      | ✓        | Revision number (integer) or letter/alphanumeric code (quoted string, e.g. `"I"`)      |
+| `title`         |          | Human-readable document title                                                          |
+| `last-modified` |          | Year-month the revision was published, in `YYYY-MM` format (e.g. `2025-07`, `2019-03`) |
 
 ### References
 
