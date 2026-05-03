@@ -11,6 +11,7 @@
 // headers include this file and then provide their own specialisations.
 
 #include <cstdint>
+#include <type_traits>
 
 #include "ohal/core/access.hpp"
 #include "ohal/core/field.hpp"

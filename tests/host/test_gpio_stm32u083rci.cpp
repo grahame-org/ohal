@@ -133,22 +133,22 @@ static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 0>::val
 static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 0>::value,
               "PortA must support alternate function on RCI");
 
-static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 2>::value,
               "PortD must support output type on RCI");
-static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
+static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 2>::value,
               "PortD must support output speed on RCI");
-static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
+static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 2>::value,
               "PortD must support pull on RCI");
-static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
+static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 2>::value,
               "PortD must support alternate function on RCI");
 
-static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 3>::value,
               "PortF must support output type on RCI");
-static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 3>::value,
               "PortF must support output speed on RCI");
-static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 3>::value,
               "PortF must support pull on RCI");
-static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 15>::value,
+static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
               "PortF must support alternate function on RCI");
 
 // Out-of-range pin numbers must report false even on bonded-out ports.
@@ -168,6 +168,26 @@ static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 16>::v
               "PortD pin 16 (out of range) must not report supports_pull on RCI");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 16>::value,
               "PortD pin 16 (out of range) must not report supports_alternate_function on RCI");
+
+// Non-bonded pins within partially-bonded ports.
+// GPIOD: only PD2 bonded out — PD0 is not present on this package.
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+              "PortD pin 0 (not bonded) must not report supports_output_type on RCI");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
+              "PortD pin 0 (not bonded) must not report supports_output_speed on RCI");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
+              "PortD pin 0 (not bonded) must not report supports_pull on RCI");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
+              "PortD pin 0 (not bonded) must not report supports_alternate_function on RCI");
+// GPIOF: only PF0–PF3 bonded out — PF4 is not present on this package.
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 (not bonded) must not report supports_output_type on RCI");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 (not bonded) must not report supports_output_speed on RCI");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 (not bonded) must not report supports_pull on RCI");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 4>::value,
+              "PortF pin 4 (not bonded) must not report supports_alternate_function on RCI");
 
 // PortE is not bonded out on the 64-pin UFBGA package.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
@@ -206,8 +226,8 @@ INSTANTIATE_TEST_SUITE_P(
                 "PortD_Pin2_Pull"},
         CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 2>::value,
                 "PortD_Pin2_AlternateFunction"},
-        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 15>::value,
-                "PortF_Pin15_AlternateFunction"}),
+        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
+                "PortF_Pin3_AlternateFunction"}),
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
 // clang-format on
 
@@ -259,7 +279,21 @@ INSTANTIATE_TEST_SUITE_P(
                        "PortE_Pin0_Pull"},
         InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
-            "PortE_Pin0_AlternateFunction"}),
+            "PortE_Pin0_AlternateFunction"},
+        // Non-bonded pins within partially-bonded PortD (only PD2 present)
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_AlternateFunction"},
+        // Non-bonded pins within partially-bonded PortF (only PF0–PF3 present)
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_AlternateFunction"}),
     [](const ::testing::TestParamInfo<InvalidCapCase>& info) { return info.param.name; });
 // clang-format on
 
@@ -284,9 +318,9 @@ static_assert(ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address 
                   wiring::kGpioCBase + wiring::kBsrrOffset,
               "Pin<PortC,0> must use GPIOC BSRR address on RCI");
 
-static_assert(ohal::gpio::Pin<ohal::gpio::PortD, 0>::BsrrSet::reg_type::address ==
+static_assert(ohal::gpio::Pin<ohal::gpio::PortD, 2>::BsrrSet::reg_type::address ==
                   wiring::kGpioDBase + wiring::kBsrrOffset,
-              "Pin<PortD,0> must use GPIOD BSRR address on RCI");
+              "Pin<PortD,2> must use GPIOD BSRR address on RCI");
 
 static_assert(ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
@@ -322,7 +356,7 @@ INSTANTIATE_TEST_SUITE_P(
                    wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
         WiringCase{ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address,
                    wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
-        WiringCase{ohal::gpio::Pin<ohal::gpio::PortD, 0>::BsrrSet::reg_type::address,
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortD, 2>::BsrrSet::reg_type::address,
                    wiring::kGpioDBase + wiring::kBsrrOffset, "PortD"},
         WiringCase{ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address,
                    wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
