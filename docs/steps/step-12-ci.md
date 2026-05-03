@@ -8,7 +8,7 @@
 flowchart LR
     A[Push / PR] --> B[Host build and test<br/>g++ -std=c++17]
     A --> C[ARM cross-compile check<br/>arm-none-eabi-g++<br/>STM32U083 target]
-    A --> D[PIC cross-compile check<br/>Microchip XC8<br/>PIC18F4550 target]
+    A --> D[MSP430 cross-compile check<br/>msp430-elf-g++<br/>MSP430FR2355 target]
     A --> E[Clang-tidy static analysis]
     A --> F[Negative-compile tests<br/>ohal_expect_compile_failure]
     B --> G{All pass?}
@@ -27,18 +27,19 @@ flowchart LR
   itself is header-only).
 - CMake toolchain file for `arm-none-eabi`.
 
-## Required Inputs for PIC Cross-Compile Check
+## Required Inputs for MSP430 Cross-Compile Check
 
-- Microchip XC8 compiler installed in the runner image (or a Docker image containing it).
-- PIC18F4550 device support pack (provides startup and device header files, outside OHAL scope).
-- CMake toolchain file for XC8.
+- `msp430-elf-g++` toolchain installed in the runner image.
+- MSP430FR2355 device support files (linker script and startup code, outside the scope of OHAL;
+  OHAL itself is header-only).
+- CMake toolchain file for `msp430-elf`.
 
 ## Notes
 
 - OHAL itself is header-only. Both cross-compile jobs verify that the headers parse and
   instantiate correctly for the target; they do not need to produce a flashable binary.
 - A minimal blink example (`tests/target/stm32u083/blink.cpp` and
-  `tests/target/pic18f4550/blink.cpp`) is built as part of the cross-compile job. The resulting
+  `tests/target/msp430fr2355/blink.cpp`) is built as part of the cross-compile job. The resulting
   binary size is checked against a per-target budget to guard the zero-overhead guarantee.
 - The `lint` and `zizmor` workflow files were created in [Step 2](step-02-linting-formatting.md).
   The `conventional-commits.yml` workflow was created in
