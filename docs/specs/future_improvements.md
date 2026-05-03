@@ -42,7 +42,7 @@ docs/specs/
 └── stm32/
     ├── stm32u0.yml                 ← family spec (current)
     └── models/
-        ├── stm32u031c4.yml         ← model spec: UFQFPN32, 256 KB flash ✅ (template)
+        ├── stm32u083kcu.yml        ← model spec: UFQFPN32, 256 KB flash, 40 KB SRAM ✅
         ├── stm32u031k4.yml         ← model spec: 32-pin UFQFPN, 256 KB flash
         └── stm32u073rc.yml         ← model spec: 64-pin, 256 KB flash
 ```
@@ -56,10 +56,10 @@ two levels when generating code or documentation:
 spec-version: "1.0.0"
 vendor: STMicroelectronics
 family-ref: stm32u0 # links back to stm32u0.yml
-model: stm32u031c4
+model: stm32u083kcu
 package: UFQFPN32
 flash-kb: 256
-sram-kb: 12
+sram-kb: 40
 pin-count: 32
 ```
 
