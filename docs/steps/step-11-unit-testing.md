@@ -35,7 +35,7 @@ inline uintptr_t mock_addr(std::size_t slot) {
 }
 
 // Returns the uintptr_t address of 8-bit slot N in mock_memory.
-// Used for 8-bit platforms (e.g. PIC18F4550).
+// Used for 8-bit port registers (e.g. MSP430FR2355 GPIO ports).
 inline uintptr_t mock_addr8(std::size_t slot) {
     return reinterpret_cast<uintptr_t>(
         reinterpret_cast<uint8_t*>(mock_memory.data()) + slot);
@@ -71,12 +71,14 @@ TEST_CASE("Register::set_bits ORs without disturbing other bits") {
 }
 ```
 
-**How addresses are mocked:** The STM32U083 platform header uses preprocessor macros for base
-addresses (`OHAL_STM32U083_GPIOA_BASE`). In normal builds these default to the real hardware
-addresses. In host test builds the CMake target passes
-`-DOHAL_STM32U083_GPIOA_BASE=ohal::test::mock_addr(0)` (and similar for other ports/registers),
-redirecting all register accesses into the mock array. The same mechanism is used for PIC18F4550
-using `mock_addr8()` for 8-bit slots.
+**How addresses are mocked:** The STM32U083 platform header defines
+`GpioPortPinImpl<PinNum, Regs>` parameterised on a `Regs` type. In normal builds the
+`Pin<PortA, N>` specialisation injects `GpioARegs` (which wraps the real hardware addresses).
+Host test builds instead instantiate `GpioPortPinImpl<PinNum, MockGpioRegs>` directly, where
+`MockGpioRegs` carries `ohal::test::MockRegister<uint32_t, &storage>` type aliases — no address
+override macros are needed. The MSP430FR2355 implementation follows the same template-injection
+pattern using `GpioPortPinImpl<PinNum, Regs>` with `ohal::test::MockRegister<uint8_t, &storage8>`
+backing variables for its 8-bit registers.
 
 ## 11.2 Target Testing
 
@@ -91,7 +93,7 @@ The test CMake target `ohal_target_tests` links the test sources plus the real p
 and the BSP startup files. It is built only when cross-compiling for a supported target:
 
 - ARM targets: `arm-none-eabi-g++` (STM32U083)
-- PIC18 targets: Microchip XC8 (PIC18F4550)
+- MSP430 targets: `msp430-elf-g++` (MSP430FR2355)
 
 ## 11.3 Negative-Compile Tests
 
@@ -113,24 +115,24 @@ endfunction()
 
 Example negative-compile tests:
 
-| Test name                     | Source fragment                                        | Expected error string                              |
-| ----------------------------- | ------------------------------------------------------ | -------------------------------------------------- |
-| `write_to_readonly_field`     | `IDR_field::write(Level::High)`                        | `cannot write to a read-only field`                |
-| `read_from_writeonly_field`   | `BSRR_SET_field::read()`                               | `cannot read from a write-only field`              |
-| `overflow_bitfield`           | `BitField<Reg, 30, 4, RW>`                             | `BitField (Offset + Width) exceeds register width` |
-| `no_family_defined`           | compile with no defines                                | `No MCU family defined`                            |
-| `wrong_model_for_family`      | `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_PIC18F4550`        | `not in family STM32U0`                            |
-| `pic_unsupported_speed`       | `Pin<PortA,2>::set_speed(Speed::High)` with PIC target | `does not support configurable output speed`       |
-| `pic_unsupported_output_type` | `Pin<PortA,2>::set_output_type(OutputType::OpenDrain)` | `does not support configurable output type`        |
+| Test name                        | Source fragment                                           | Expected error string                              |
+| -------------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| `write_to_readonly_field`        | `IDR_field::write(Level::High)`                           | `cannot write to a read-only field`                |
+| `read_from_writeonly_field`      | `BSRR_SET_field::read()`                                  | `cannot read from a write-only field`              |
+| `overflow_bitfield`              | `BitField<Reg, 30, 4, RW>`                                | `BitField (Offset + Width) exceeds register width` |
+| `no_family_defined`              | compile with no defines                                   | `No MCU family defined`                            |
+| `wrong_model_for_family`         | `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_MSP430FR2355`         | `not in family STM32U0`                            |
+| `msp430_unsupported_speed`       | `Pin<PortA,2>::set_speed(Speed::High)` with MSP430 target | `does not support configurable output speed`       |
+| `msp430_unsupported_output_type` | `Pin<PortA,2>::set_output_type(OutputType::OpenDrain)`    | `does not support configurable output type`        |
 
 ## 11.4 Test Coverage Targets
 
-| Component             | Test type                       | Coverage target                                                                                      |
-| --------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `Register<uint32_t>`  | Host unit tests                 | 100% of all methods                                                                                  |
-| `Register<uint8_t>`   | Host unit tests                 | 100% of all methods (for 8-bit platform coverage)                                                    |
-| `BitField<>`          | Host unit tests                 | 100% of all methods + negative-compile tests for access violations                                   |
-| `platform.hpp`        | Negative-compile tests          | All invalid define combinations                                                                      |
-| `stm32u083/gpio.hpp`  | Host unit tests with mock       | All GPIO methods for at least pins 0 and 15 of at least PortA and PortB                              |
-| `pic18f4550/gpio.hpp` | Host unit tests with 8-bit mock | All GPIO methods for at least pins 0 and 5 of PortA; unsupported features via negative-compile tests |
-| Consumer API          | Host integration test           | Typical GPIO init + toggle sequence                                                                  |
+| Component               | Test type                       | Coverage target                                                                                                                                                                                                              |
+| ----------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Register<uint32_t>`    | Host unit tests                 | 100% of all methods                                                                                                                                                                                                          |
+| `Register<uint8_t>`     | Host unit tests                 | 100% of all methods (for 8-bit platform coverage)                                                                                                                                                                            |
+| `BitField<>`            | Host unit tests                 | 100% of all methods + negative-compile tests for access violations                                                                                                                                                           |
+| `platform.hpp`          | Negative-compile tests          | All invalid define combinations                                                                                                                                                                                              |
+| `stm32u083/gpio.hpp`    | Host unit tests with mock       | All GPIO methods for at least pins 0 and 15 of at least PortA and PortB                                                                                                                                                      |
+| `msp430fr2355/gpio.hpp` | Host unit tests with 8-bit mock | All GPIO methods for at least pins 0 and 7 of PortA; capability traits (`supports_pull`, `supports_alternate_function`) true for valid pins and false for out-of-range pins; negative-compile tests for unsupported features |
+| Consumer API            | Host integration test           | Typical GPIO init + toggle sequence                                                                                                                                                                                          |

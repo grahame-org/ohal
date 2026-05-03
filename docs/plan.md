@@ -24,7 +24,7 @@
 | --- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | G1  | **Zero RAM at runtime**                          | All peripheral configuration is encoded in types and template parameters; no global or heap-allocated state is needed for the HAL itself.                                                                                                                                      |
 | G2  | **Register-write efficiency**                    | Every HAL operation must compile to the same instruction sequence as a hand-written `volatile` register access. Verified by inspecting generated assembly and zero-cost abstraction guarantees.                                                                                |
-| G3  | **Consistent API across MCU families**           | The same `ohal::gpio` API works on STM32, TI MSP-M0, Microchip PIC18, and any future platform with no changes to application code.                                                                                                                                             |
+| G3  | **Consistent API across MCU families**           | The same `ohal::gpio` API works on STM32, TI MSP430, and any future platform with no changes to application code.                                                                                                                                                              |
 | G4  | **Noisy compile-time failures**                  | If an application targets a peripheral feature that is not supported by the selected MCU, compilation fails with a human-readable `static_assert` message.                                                                                                                     |
 | G5  | **Strongly typed**                               | Registers, bit fields, peripheral instances, pin modes, and all configuration values are distinct types — no `uint32_t` magic numbers in application code.                                                                                                                     |
 | G6  | **Correct-by-construction**                      | Writing to a read-only register/field is a compile error. Reading from a write-only register/field is a compile error.                                                                                                                                                         |
@@ -33,7 +33,7 @@
 | G9  | **C++17 strict**                                 | No compiler extensions, no C++20 features.                                                                                                                                                                                                                                     |
 | G10 | **Consistent namespace**                         | All public symbols live inside `ohal::`. Peripheral types are in sub-namespaces: `ohal::gpio`, `ohal::timer`, `ohal::uart`.                                                                                                                                                    |
 | G11 | **Minimal consumer imports**                     | Consumers write `using namespace ohal::gpio;` and nothing more (beyond including the single top-level header).                                                                                                                                                                 |
-| G12 | **MCU selection via compiler defines**           | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083`. Invalid or missing define combinations fail at compile time.                                                                                                                                                             |
+| G12 | **MCU selection via compiler defines**           | `-DOHAL_FAMILY_STM32U0` and `-DOHAL_MODEL_STM32U083` (or `-DOHAL_FAMILY_MSP430FR2XX` and `-DOHAL_MODEL_MSP430FR2355`). Invalid or missing define combinations fail at compile time.                                                                                            |
 | G13 | **Multi-pin atomic operations at the HAL level** | `Port<PortTag>` provides `set()`, `clear()`, and `write()` across multiple pins on the same port. Where the hardware supports it (e.g. STM32 BSRR), `write()` compiles to a single store instruction. Application code never reaches into platform namespaces to achieve this. |
 
 ---
@@ -104,7 +104,7 @@ graph TD
     subgraph "Platform-Specific Layer (platforms/)"
         STM32U0["stm32u0/<br/>family.hpp + models/stm32u083/"]
         MSP["ti_mspm0/<br/>family.hpp + models/..."]
-        PIC["pic/<br/>family.hpp + models/pic18f4550/"]
+        MSP430["msp430fr2xx/<br/>family.hpp + models/msp430fr2355/"]
     end
 
     subgraph "Platform Model Detail (stm32u083 example)"
@@ -112,9 +112,9 @@ graph TD
         STM32U083_CAPS["stm32u083/capabilities.hpp<br/>supports_output_type = true ..."]
     end
 
-    subgraph "Platform Model Detail (pic18f4550 example)"
-        PIC18_GPIO["pic18f4550/gpio.hpp<br/>PORTA, LATA, TRISA (uint8_t regs)"]
-        PIC18_CAPS["pic18f4550/capabilities.hpp<br/>all capability traits = false"]
+    subgraph "Platform Model Detail (msp430fr2355 example)"
+        MSP430FR2355_GPIO["msp430fr2355/gpio.hpp<br/>P1IN, P1OUT, P1DIR, P1REN (uint8_t regs)"]
+        MSP430FR2355_CAPS["msp430fr2355/capabilities.hpp<br/>supports_pull = true; output_type = false"]
     end
 
     APP --> GPIO_IF
@@ -135,12 +135,12 @@ graph TD
     GPIO_IF --> SEL
     SEL --> STM32U0
     SEL --> MSP
-    SEL --> PIC
+    SEL --> MSP430
 
     STM32U0 --> STM32U083_GPIO
     STM32U0 --> STM32U083_CAPS
-    PIC --> PIC18_GPIO
-    PIC --> PIC18_CAPS
+    MSP430 --> MSP430FR2355_GPIO
+    MSP430 --> MSP430FR2355_CAPS
 ```
 
 ### 3.2 Class / Type Diagram
@@ -256,7 +256,7 @@ ohal/
 │       ├── step-06-mcu-selection.md
 │       ├── step-07-gpio-interface.md
 │       ├── step-08-stm32u0-gpio.md
-│       ├── step-09-pic18f4550-gpio.md   ← non-ARM concrete implementation
+│       ├── step-09-msp430fr2355-gpio.md  ← non-ARM concrete implementation (MSP430FR2355)
 │       ├── step-10-timer-uart.md
 │       ├── step-11-unit-testing.md
 │       ├── step-12-ci.md
@@ -300,18 +300,13 @@ ohal/
 │   │           ├── clock.hpp            ← STM32U083 RCC register map (Step 16)
 │   │           ├── power.hpp            ← STM32U083 PWR register map (Step 16)
 │   │           └── capabilities.hpp     ← STM32U083 peripheral capability traits
-│   ├── ti_mspm0/                        ← added in Step 15
+│   ├── msp430fr2xx/                     ← added in Step 9
 │   │   ├── family.hpp
 │   │   └── models/
-│   │       └── mspm0g3507/
+│   │       └── msp430fr2355/
 │   │           ├── gpio.hpp
 │   │           └── capabilities.hpp
-│   └── pic/
-│       ├── family.hpp
-│       └── models/
-│           └── pic18f4550/              ← non-ARM concrete implementation (Step 9)
-│               ├── gpio.hpp
-│               └── capabilities.hpp
+│   └── ti_mspm0/                        ← added in Step 15
 ├── ports/
 │   └── ohal/                            ← vcpkg overlay port (Step 14)
 │       ├── portfile.cmake
@@ -321,19 +316,21 @@ ohal/
 │   │   ├── CMakeLists.txt
 │   │   ├── test_register.cpp            ← tests for Register<> and BitField<>
 │   │   ├── test_gpio_stm32u083.cpp      ← STM32U083 GPIO tests with mock registers
-│   │   ├── test_gpio_pic18f4550.cpp     ← PIC18F4550 GPIO tests with 8-bit mock registers
+│   │   ├── test_gpio_msp430fr2355.cpp   ← MSP430FR2355 GPIO tests with 8-bit mock registers
 │   │   └── mock/
 │   │       └── mock_register.hpp        ← in-memory mock of volatile register access
 │   ├── integration/                     ← vcpkg find_package integration test (Step 14)
 │   │   ├── CMakeLists.txt
 │   │   ├── vcpkg.json
 │   │   ├── blink_stm32.cpp
-│   │   └── blink_pic18.cpp
+│   │   └── blink_msp430.cpp
 │   └── target/
 │       ├── stm32u083/
+│       │   ├── blink.cpp                ← minimal blink used by CI binary-size check
 │       │   └── test_gpio_stm32u083.cpp
-│       └── pic18f4550/
-│           └── test_gpio_pic18f4550.cpp
+│       └── msp430fr2355/
+│           ├── blink.cpp                ← minimal blink used by CI binary-size check
+│           └── test_gpio_msp430fr2355.cpp
 ├── CMakeLists.txt
 ├── lint.sh                              ← single entry-point for all linting (Step 2)
 ├── .clang-format                        ← C++ formatting rules (Step 2)
@@ -363,7 +360,7 @@ graph LR
     S5 --> S6[6. MCU Selection]
     S6 --> S7[7. GPIO Interface]
     S7 --> S8[8. STM32U0 GPIO]
-    S7 --> S9[9. PIC18 GPIO]
+    S7 --> S9[9. MSP430FR2355 GPIO]
     S8 --> S10[10. Timer / UART]
     S8 --> S11[11. Unit Tests]
     S9 --> S11
@@ -389,7 +386,7 @@ entries without needing to re-examine or amend earlier history.
 
 Steps 8 and 9 can be worked in parallel (both depend on Step 7, not on each other), but Step 8
 is numbered first to reflect the principle of proving cross-platform portability at the GPIO
-level _before_ expanding the peripheral count on a single platform. If PIC18 GPIO reveals
+level _before_ expanding the peripheral count on a single platform. If MSP430FR2355 GPIO reveals
 issues with the generic interface design, they can be corrected before Timer/UART is built,
 avoiding rework.
 
@@ -411,7 +408,7 @@ expansion steps (15 and 16) so that:
 | 6    | [MCU Family/Model Selection](steps/step-06-mcu-selection.md)                              | First platform   | Step 5           |
 | 7    | [GPIO Peripheral Interface](steps/step-07-gpio-interface.md)                              | First platform   | Step 6           |
 | 8    | [STM32U0 GPIO Implementation](steps/step-08-stm32u0-gpio.md)                              | First platform   | Step 7           |
-| 9    | [PIC18F4550 GPIO (non-ARM)](steps/step-09-pic18f4550-gpio.md)                             | Second platform  | Step 7           |
+| 9    | [MSP430FR2355 GPIO (non-ARM)](steps/step-09-msp430fr2355-gpio.md)                         | Second platform  | Step 7           |
 | 10   | [Timer and UART Peripherals](steps/step-10-timer-uart.md)                                 | First platform   | Step 8           |
 | 11   | [Host and Target Unit Testing](steps/step-11-unit-testing.md)                             | Validation       | Steps 8–10       |
 | 12   | [CI / Continuous Integration](steps/step-12-ci.md)                                        | Validation       | Step 11          |
@@ -437,7 +434,7 @@ classDiagram
         +static void clear_bits(T mask) noexcept
         +static void modify(T clear_mask, T set_mask) noexcept
     }
-    note for `Register~Addr, T~` "All data is in template parameters.\nZero data members. sizeof == 1 (empty struct).\nT = uint32_t for ARM; T = uint8_t for PIC18."
+    note for `Register~Addr, T~` "All data is in template parameters.\nZero data members. sizeof == 1 (empty struct).\nT = uint32_t for ARM; T = uint8_t for MSP430FR2355 port registers."
 ```
 
 ### 6.2 BitField Template
@@ -477,23 +474,23 @@ graph LR
     MODER_PIN5 --> GPIOA_MODER
 ```
 
-### 6.4 Type Relationships (PIC18F4550 example)
+### 6.4 Type Relationships (MSP430FR2355 example)
 
 ```mermaid
 graph LR
     subgraph "Platform layer (uint8_t registers)"
-        LATA["Register&lt;0xF89, uint8_t&gt;"]
-        LAT_BIT["BitField&lt;LATA, 5, 1, RW, Level&gt;"]
+        P1OUT["Register&lt;0x0202, uint8_t&gt;"]
+        OUT_BIT["BitField&lt;P1OUT, 2, 1, RW, Level&gt;"]
     end
     subgraph "Peripheral layer"
-        PIN2["Pin&lt;PortA, 5&gt;::set()"]
+        PIN2["Pin&lt;PortA, 2&gt;::set()"]
     end
     subgraph "Application"
-        APP2["Pin&lt;PortA,5&gt;::set()"]
+        APP2["Pin&lt;PortA,2&gt;::set()"]
     end
     APP2 --> PIN2
-    PIN2 --> LAT_BIT
-    LAT_BIT --> LATA
+    PIN2 --> OUT_BIT
+    OUT_BIT --> P1OUT
 ```
 
 ---
@@ -502,16 +499,16 @@ graph LR
 
 ### 7.1 Define Combinations
 
-| `OHAL_FAMILY_*` | `OHAL_MODEL_*` | Result                                                     |
-| --------------- | -------------- | ---------------------------------------------------------- |
-| (none)          | (any)          | Compile error: "No MCU family defined"                     |
-| `STM32U0`       | (none)         | Compile error: "No STM32U0 model defined"                  |
-| `STM32U0`       | `STM32U083`    | OK                                                         |
-| `STM32U0`       | `PIC18F4550`   | Compile error: "Model PIC18F4550 is not in family STM32U0" |
-| `PIC`           | `PIC18F4550`   | OK                                                         |
-| `PIC`           | (none)         | Compile error: "No PIC model defined"                      |
-| `TI_MSPM0`      | `MSPM0G3507`   | OK (once implemented)                                      |
-| `TI_MSPM0`      | (none)         | Compile error: "No TI_MSPM0 model defined"                 |
+| `OHAL_FAMILY_*` | `OHAL_MODEL_*` | Result                                                       |
+| --------------- | -------------- | ------------------------------------------------------------ |
+| (none)          | (any)          | Compile error: "No MCU family defined"                       |
+| `STM32U0`       | (none)         | Compile error: "No STM32U0 model defined"                    |
+| `STM32U0`       | `STM32U083`    | OK                                                           |
+| `STM32U0`       | `MSP430FR2355` | Compile error: "Model MSP430FR2355 is not in family STM32U0" |
+| `MSP430FR2XX`   | `MSP430FR2355` | OK                                                           |
+| `MSP430FR2XX`   | (none)         | Compile error: "No MSP430FR2xx model defined"                |
+| `TI_MSPM0`      | `MSPM0G3507`   | OK (once implemented)                                        |
+| `TI_MSPM0`      | (none)         | Compile error: "No TI_MSPM0 model defined"                   |
 
 ### 7.2 How to Add a New MCU Family
 
@@ -534,7 +531,7 @@ No changes to `include/ohal/gpio.hpp` (or any other peripheral interface header)
 ```mermaid
 stateDiagram-v2
     [*] --> Analog : Power-on reset (STM32 default)
-    [*] --> Input : Power-on reset (PIC18 default)
+    [*] --> Input : Power-on reset (MSP430FR2355 default)
     Analog --> Input : set_mode(Input)
     Analog --> Output : set_mode(Output)
     Analog --> AlternateFunction : set_mode(AlternateFunction)
@@ -567,19 +564,27 @@ sequenceDiagram
     Note over BSRR: Pin is now HIGH
 ```
 
-### 8.3 GPIO Configuration Sequence (PIC18F4550)
+### 8.3 GPIO Configuration Sequence (MSP430FR2355)
+
+`Register<>` exposes only `read()` and `write()`. Every read-modify-write is two bus
+transactions; there is no `set_bits()` helper.
 
 ```mermaid
 sequenceDiagram
     participant App
     participant Pin as Pin<PortA, 2>
-    participant TRISA as TRISA reg (uint8_t)
-    participant LATA as LATA reg (uint8_t)
+    participant DIR as P1DIR reg (uint8_t)
+    participant OUT as P1OUT reg (uint8_t)
 
     App->>Pin: configure as output, initially high
-    Pin->>TRISA: clear_bits(1 << 2) [TRIS=0 means output]
-    Pin->>LATA: set_bits(1 << 2)
-    Note over LATA: Pin is now HIGH
+    Pin->>DIR: tmp = read()
+    DIR-->>Pin: tmp
+    Pin->>DIR: write(tmp | (1 << 2))
+    Note over DIR: P1DIR bit 2 = 1 (output)
+    Pin->>OUT: tmp = read()
+    OUT-->>Pin: tmp
+    Pin->>OUT: write(tmp | (1 << 2))
+    Note over OUT: Pin is now HIGH
 ```
 
 ---
@@ -604,16 +609,16 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "Test binary (host, PIC18)"
-        TEST2["test_gpio_pic18f4550.cpp"]
-        MOCK2["mock/mock_register.hpp<br/>(8-bit mock via mock_addr8())"]
+    subgraph "Test binary (host, MSP430FR2355)"
+        TEST2["test_gpio_msp430fr2355.cpp"]
+        MOCK2["mock/mock_register.hpp<br/>(MockRegister&lt;uint8_t, &storage&gt;)"]
         IFACE2["ohal/gpio.hpp<br/>(generic interface)"]
-        PLAT2["platforms/pic/models/pic18f4550/gpio.hpp<br/>(base addresses overridden by mock_addr8())"]
+        IMPL2["GpioPortPinImpl&lt;PinNum, MockGpioRegs&gt;<br/>(mock Regs injected via template parameter)"]
     end
     TEST2 --> MOCK2
     TEST2 --> IFACE2
-    IFACE2 --> PLAT2
-    PLAT2 --> MOCK2
+    IFACE2 --> IMPL2
+    IMPL2 --> MOCK2
 ```
 
 See [Step 11](steps/step-11-unit-testing.md) for the full mock infrastructure, target testing
@@ -628,13 +633,13 @@ approach, negative-compile test helper, and coverage targets.
 | Class                      | Mechanism                                  | Example message                                                                                                         |
 | -------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | No MCU defined             | `#error` preprocessor directive            | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.`                          |
-| Wrong model for family     | `#error` preprocessor directive            | `ohal: Model PIC18F4550 is not part of family STM32U0. Check -DOHAL_MODEL_*.`                                           |
+| Wrong model for family     | `#error` preprocessor directive            | `ohal: Model MSP430FR2355 is not part of family STM32U0. Check -DOHAL_MODEL_*.`                                         |
 | Unimplemented peripheral   | `static_assert` in primary template        | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.` |
 | Write to read-only field   | `static_assert` in `BitField::write`       | `ohal: cannot write to a read-only field`                                                                               |
 | Read from write-only field | `static_assert` in `BitField::read`        | `ohal: cannot read from a write-only field`                                                                             |
 | BitField overflow          | `static_assert` in `BitField` body         | `ohal: BitField (Offset + Width) exceeds register width`                                                                |
 | Out-of-range pin number    | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.`                                                                             |
-| Unsupported feature        | `static_assert` in platform specialisation | `ohal: PIC18F4550 GPIO does not support configurable output speed.`                                                     |
+| Unsupported feature        | `static_assert` in platform specialisation | `ohal: MSP430FR2355 GPIO does not support configurable output speed.`                                                   |
 
 ### 10.2 Error Design Principles
 
@@ -705,10 +710,10 @@ int main() {
 }
 ```
 
-### 12.2 Blink an LED (PIC18F4550, RA2) — non-ARM
+### 12.2 Blink an LED (MSP430FR2355, P1.2) — non-ARM
 
 ```cpp
-// Compile with: -DOHAL_FAMILY_PIC -DOHAL_MODEL_PIC18F4550 -std=c++17
+// Compile with: -DOHAL_FAMILY_MSP430FR2XX -DOHAL_MODEL_MSP430FR2355 -std=c++17
 
 #include <ohal/ohal.hpp>
 
@@ -727,10 +732,10 @@ int main() {
 }
 ```
 
-### 12.3 Unsupported Feature Compile Error (PIC18F4550)
+### 12.3 Unsupported Feature Compile Error (MSP430FR2355)
 
 ```cpp
-// Compile with: -DOHAL_FAMILY_PIC -DOHAL_MODEL_PIC18F4550
+// Compile with: -DOHAL_FAMILY_MSP430FR2XX -DOHAL_MODEL_MSP430FR2355
 #include <ohal/ohal.hpp>
 
 using namespace ohal::gpio;
@@ -738,7 +743,7 @@ using namespace ohal::gpio;
 int main() {
     Pin<PortA, 2>::set_speed(Speed::High);
     // → static_assert failure:
-    //   "ohal: PIC18F4550 GPIO does not support configurable output speed."
+    //   "ohal: MSP430FR2355 GPIO does not support configurable output speed."
 }
 ```
 
@@ -819,7 +824,7 @@ No platform namespace is named in application code. The platform specialisation 
 | Interrupt / EXTI             | GPIO interrupt configuration involves EXTI registers outside the GPIO block. Needs a separate `ohal::exti` abstraction.                                                                                                                                                                                                                 |
 | Atomic register access       | On multi-core MCUs (e.g., STM32H7 dual-core) register access may need memory barriers or hardware semaphores. The `Register<>` template could be extended with an `Ordering` template parameter.                                                                                                                                        |
 | C++20 concepts               | Once C++20 is permitted, `requires` clauses can replace `static_assert` chains for cleaner error messages.                                                                                                                                                                                                                              |
-| PIC18 PORTB weak pull-ups    | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction.                                                                                                                                                                       |
+| PIC18 PORTB weak pull-ups    | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction if PIC18 is added as an additional family in Step 15.                                                                                                                  |
 | DMA runtime memory addresses | DMA is the one deliberate exception to the zero-runtime-data principle (see [Step 16](steps/step-16-additional-peripherals.md)). The design decision (NTTP peripheral address, runtime buffer pointer) should be reviewed once DMA is implemented.                                                                                      |
-| TI MSP-M0                    | MSP-M0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (see [Step 15](steps/step-15-additional-mcu-families.md)).                                                                              |
+| TI MSPM0                     | MSPM0 GPIO uses 32-bit registers with a different layout from STM32. Register maps and capability traits must be gathered from the MSPM0G3507 Technical Reference Manual before implementation (see [Step 15](steps/step-15-additional-mcu-families.md)).                                                                               |
 | Code size tracking           | A CI job should build a minimal blink example for each supported target and check that the resulting binary size does not regress. This guards the zero-overhead guarantee.                                                                                                                                                             |
