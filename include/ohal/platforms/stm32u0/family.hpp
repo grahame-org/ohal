@@ -5,15 +5,18 @@
 // corresponding #include block below when a new model is implemented (see
 // docs/contributor/adding-mcu.md).
 
-#if (defined(OHAL_MODEL_STM32U083) &&                                                              \
-     (defined(OHAL_MODEL_STM32U083HCY) || defined(OHAL_MODEL_STM32U073))) ||                       \
-    (defined(OHAL_MODEL_STM32U083HCY) && defined(OHAL_MODEL_STM32U073))
+#if ((defined(OHAL_MODEL_STM32U083) ? 1 : 0) + (defined(OHAL_MODEL_STM32U083HCY) ? 1 : 0) +        \
+     (defined(OHAL_MODEL_STM32U083RCT) ? 1 : 0) + (defined(OHAL_MODEL_STM32U083RCI) ? 1 : 0) +     \
+     (defined(OHAL_MODEL_STM32U073) ? 1 : 0)) > 1
 #error "ohal: Multiple STM32U0 models defined. " \
        "Pass exactly one OHAL_MODEL_* macro to the compiler."
 #elif !defined(OHAL_MODEL_STM32U083) && !defined(OHAL_MODEL_STM32U083HCY) &&                       \
+    !defined(OHAL_MODEL_STM32U083RCT) && !defined(OHAL_MODEL_STM32U083RCI) &&                      \
     !defined(OHAL_MODEL_STM32U073)
-#error "ohal: No STM32U0 model defined. " \
-       "Pass -DOHAL_MODEL_STM32U083, -DOHAL_MODEL_STM32U083HCY (or another U0 model) to the compiler."
+#error "ohal: No STM32U0 model defined. "                                                           \
+       "Pass -DOHAL_MODEL_STM32U083, -DOHAL_MODEL_STM32U083HCY, "                                  \
+       "-DOHAL_MODEL_STM32U083RCT, -DOHAL_MODEL_STM32U083RCI "                                     \
+       "(or another U0 model) to the compiler."
 #endif
 
 #if defined(OHAL_MODEL_STM32U083)
@@ -26,6 +29,16 @@
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/uart.hpp"
+#elif defined(OHAL_MODEL_STM32U083RCT)
+#include "ohal/platforms/stm32u0/models/stm32u083rct/capabilities.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rct/gpio.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rct/timer.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rct/uart.hpp"
+#elif defined(OHAL_MODEL_STM32U083RCI)
+#include "ohal/platforms/stm32u0/models/stm32u083rci/capabilities.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rci/gpio.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rci/timer.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rci/uart.hpp"
 #elif defined(OHAL_MODEL_STM32U073)
 // STM32U073 register maps and capabilities are not yet implemented.
 // Remove this #error and add a models/stm32u073/ directory when implementing
