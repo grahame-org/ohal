@@ -19,13 +19,14 @@ Families are listed in suggested implementation order: start with 32-bit familie
 register layout similar to STM32 (less mapping work), then move to more architecturally distinct
 families.
 
-| Family define          | MCU family                       | Architecture             | Register width | GPIO style                                         | Toolchain           |
-| ---------------------- | -------------------------------- | ------------------------ | -------------- | -------------------------------------------------- | ------------------- |
-| `OHAL_FAMILY_TI_MSPM0` | TI MSPM0 (e.g. MSPM0G3507)       | ARM Cortex-M0+           | 32-bit         | DOUT/DIN/DOE with set/clear/toggle registers       | `arm-none-eabi-g++` |
-| `OHAL_FAMILY_NRF5`     | Nordic nRF5x (e.g. nRF52840)     | ARM Cortex-M4F           | 32-bit         | DIR/OUT/OUTSET/OUTCLR/IN + PIN_CNF array           | `arm-none-eabi-g++` |
-| `OHAL_FAMILY_RP2040`   | Raspberry Pi RP2040              | ARM Cortex-M0+ dual-core | 32-bit         | SIO (GPIO_OUT/OE with set/clr/xor) + pad control   | `arm-none-eabi-g++` |
-| `OHAL_FAMILY_AVR`      | Microchip AVR (e.g. ATmega328P)  | AVR 8-bit RISC           | 8-bit          | DDR (direction), PORT (output), PIN (input/toggle) | `avr-g++`           |
-| `OHAL_FAMILY_SAMD`     | Microchip SAM D (e.g. SAMD21G18) | ARM Cortex-M0+           | 32-bit         | PORT with DIRSET/DIRCLR/OUTSET/OUTCLR/IN           | `arm-none-eabi-g++` |
+| Family define          | MCU family                        | Architecture             | Register width | GPIO style                                         | Toolchain           |
+| ---------------------- | --------------------------------- | ------------------------ | -------------- | -------------------------------------------------- | ------------------- |
+| `OHAL_FAMILY_TI_MSPM0` | TI MSPM0 (e.g. MSPM0G3507)        | ARM Cortex-M0+           | 32-bit         | DOUT/DIN/DOE with set/clear/toggle registers       | `arm-none-eabi-g++` |
+| `OHAL_FAMILY_NRF5`     | Nordic nRF5x (e.g. nRF52840)      | ARM Cortex-M4F           | 32-bit         | DIR/OUT/OUTSET/OUTCLR/IN + PIN_CNF array           | `arm-none-eabi-g++` |
+| `OHAL_FAMILY_RP2040`   | Raspberry Pi RP2040               | ARM Cortex-M0+ dual-core | 32-bit         | SIO (GPIO_OUT/OE with set/clr/xor) + pad control   | `arm-none-eabi-g++` |
+| `OHAL_FAMILY_PIC`      | Microchip PIC18 (e.g. PIC18F4550) | 8-bit Harvard RISC       | 8-bit          | PORT (input), LAT (output), TRIS (direction)       | Microchip XC8       |
+| `OHAL_FAMILY_AVR`      | Microchip AVR (e.g. ATmega328P)   | AVR 8-bit RISC           | 8-bit          | DDR (direction), PORT (output), PIN (input/toggle) | `avr-g++`           |
+| `OHAL_FAMILY_SAMD`     | Microchip SAM D (e.g. SAMD21G18)  | ARM Cortex-M0+           | 32-bit         | PORT with DIRSET/DIRCLR/OUTSET/OUTCLR/IN           | `arm-none-eabi-g++` |
 
 ### Inputs Required Before Implementing Each New Family
 
@@ -70,11 +71,11 @@ When adding a new model to an already-supported family (e.g. STM32U073 alongside
 
 ### Candidate Additional Models
 
-| Family   | Additional models      | Notes                                                                           |
-| -------- | ---------------------- | ------------------------------------------------------------------------------- |
-| STM32U0  | STM32U073, STM32U031   | Same GPIO register layout as STM32U083; different base addresses and pin counts |
-| PIC      | PIC18F4520, PIC18F2550 | Subset of PIC18F4550 port count; same PORT/LAT/TRIS layout                      |
-| TI_MSPM0 | MSPM0L1306             | Fewer GPIO ports than MSPM0G3507; same register layout                          |
+| Family      | Additional models          | Notes                                                                           |
+| ----------- | -------------------------- | ------------------------------------------------------------------------------- |
+| STM32U0     | STM32U073, STM32U031       | Same GPIO register layout as STM32U083; different base addresses and pin counts |
+| MSP430FR2XX | MSP430FR2353, MSP430FR2310 | Subset of MSP430FR2355 port count; same PxIN/PxOUT/PxDIR/PxREN layout           |
+| TI_MSPM0    | MSPM0L1306                 | Fewer GPIO ports than MSPM0G3507; same register layout                          |
 
 ## 15.3 Cross-Platform Consistency Validation
 
