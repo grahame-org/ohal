@@ -139,7 +139,9 @@ Key differences from the STM32U083 specialisation:
 - Pull resistors are supported: `PxREN=1` enables the resistor; `PxOUT` selects direction.
 - Alternate function is supported via `PxSEL0`/`PxSEL1` — `set_mode(AlternateFunction)` sets
   `PxSEL0=1, PxSEL1=0` (primary peripheral function).
-- `PinMode::Analog` is not a distinct GPIO mode on MSP430 — fires a `static_assert`.
+- `PinMode::Analog` is not a distinct GPIO mode on MSP430: ADC channel selection is done through
+  the ADC module, not GPIO direction registers. `set_mode(Analog)` is treated the same as
+  `set_mode(Input)` (clears SEL0/SEL1, sets DIR=0).
 - Output type (push-pull / open-drain) is not configurable — fires a `static_assert`.
 - Output speed is not configurable — fires a `static_assert`.
 - Host tests inject a mock `Regs` type (see the `Regs` template parameter below) so that register
@@ -153,6 +155,7 @@ Key differences from the STM32U083 specialisation:
 #ifndef OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2355_GPIO_HPP
 #define OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2355_GPIO_HPP
 
+#include <type_traits>
 #include <cstdint>
 #include "ohal/core/access.hpp"
 #include "ohal/core/field.hpp"
@@ -187,6 +190,14 @@ using GpioP4Regs = GpioPortRegs<0x0221u, 0x0223u, 0x0225u, 0x0227u, 0x022Bu, 0x0
 using GpioP5Regs = GpioPortRegs<0x0240u, 0x0242u, 0x0244u, 0x0246u, 0x024Au, 0x024Cu>;
 using GpioP6Regs = GpioPortRegs<0x0241u, 0x0243u, 0x0245u, 0x0247u, 0x024Bu, 0x024Du>;
 
+namespace detail {
+/// Helper for a compile-time false that is dependent on a template parameter.
+/// Used in static_assert to ensure the assertion fires only when the
+/// containing function is actually called (instantiated), not when the
+/// enclosing class template is instantiated.
+template <typename> struct dependent_false : std::false_type {};
+} // namespace detail
+
 /// Implements the ohal::gpio::Pin<Port, PinNum> API for one MSP430FR2355 GPIO port.
 ///
 /// Parameterised on @p Regs so that host-side tests can inject a mock register set
@@ -211,15 +222,13 @@ struct GpioPortPinImpl {
   using Sel0Bit = core::BitField<typename Regs::Sel0, PinNum, 1U, core::Access::ReadWrite>;
   using Sel1Bit = core::BitField<typename Regs::Sel1, PinNum, 1U, core::Access::ReadWrite>;
 
-  /// set_mode maps all four PinMode values explicitly:
+  /// set_mode maps PinMode values to MSP430 GPIO register writes:
   ///   Input            → DIR=0, SEL0=0, SEL1=0 (GPIO input)
   ///   Output           → DIR=1, SEL0=0, SEL1=0 (GPIO output)
   ///   AlternateFunction→ SEL0=1, SEL1=0 (primary AF; DIR set by peripheral)
-  ///   Analog           → not a distinct MSP430 GPIO mode; compile error.
+  ///   Analog           → treated as Input (MSP430 has no distinct Analog mode;
+  ///                      ADC channel selection is done through the ADC module)
   static void set_mode(gpio::PinMode mode) noexcept {
-    static_assert(mode != gpio::PinMode::Analog || sizeof(Regs) == 0,
-        "ohal: MSP430FR2355 GPIO does not have an Analog pin mode. "
-        "Use AlternateFunction and configure the ADC module separately.");
     if (mode == gpio::PinMode::Output) {
       DirBit::write(1U);
       Sel0Bit::write(0U);
@@ -229,7 +238,7 @@ struct GpioPortPinImpl {
       // controlled by the selected peripheral, not written here.
       Sel0Bit::write(1U);
       Sel1Bit::write(0U);
-    } else { // PinMode::Input (and PinMode::Analog blocked above)
+    } else { // PinMode::Input or PinMode::Analog (treated as GPIO input on MSP430)
       DirBit::write(0U);
       Sel0Bit::write(0U);
       Sel1Bit::write(0U);
@@ -257,13 +266,15 @@ struct GpioPortPinImpl {
     }
   }
 
-  // Unsupported features: static_assert fires at call site.
+  // Unsupported features: static_assert fires when the function is called.
+  // dependent_false<Regs>::value is a template-dependent false expression,
+  // ensuring the assertion is only evaluated (and fires) at the call site.
   static void set_output_type(gpio::OutputType) noexcept {
-    static_assert(capabilities::supports_output_type<gpio::PortA, PinNum>::value,
+    static_assert(detail::dependent_false<Regs>::value,
         "ohal: MSP430FR2355 GPIO does not support configurable output type.");
   }
   static void set_speed(gpio::Speed) noexcept {
-    static_assert(capabilities::supports_output_speed<gpio::PortA, PinNum>::value,
+    static_assert(detail::dependent_false<Regs>::value,
         "ohal: MSP430FR2355 GPIO does not support configurable output speed.");
   }
 };
@@ -372,7 +383,7 @@ struct supports_alternate_function<PortF, PinNum> : detail::Msp430fr2355PortCapa
 5. Application code using `ohal::gpio::Pin<PortA, 2>` for basic `set()`/`clear()`/`toggle()`
    compiles unchanged.
 6. Application code calling `set_speed()` or `set_output_type()` on an MSP430FR2355 target fails
-   with a clear compile-time error message.
+   with a clear compile-time error message (via `detail::dependent_false<Regs>`).
 
 ## Tests to Write (host)
 
@@ -411,5 +422,3 @@ STM32U083 test pattern.
   `MSP430FR2355 GPIO does not support configurable output speed`.
 - `GpioPortPinImpl<2, MockRegs>::set_output_type(OutputType::OpenDrain)` — compile error:
   `MSP430FR2355 GPIO does not support configurable output type`.
-- `GpioPortPinImpl<2, MockRegs>::set_mode(PinMode::Analog)` — compile error:
-  `MSP430FR2355 GPIO does not have an Analog pin mode`.
