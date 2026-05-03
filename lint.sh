@@ -28,6 +28,7 @@ find "${REPO_ROOT}/include" -name '*.hpp' \
 echo "=== cmake-lint ==="
 find "${REPO_ROOT}" \
     \( -name 'CMakeLists.txt' -o -name '*.cmake' -o -name '*.cmake.in' \) \
+    ! -path "${REPO_ROOT}/build/*" \
     -print0 | xargs -0 cmake-lint
 
 echo "=== yamllint ==="
