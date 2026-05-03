@@ -48,14 +48,14 @@ ohal requires two compile-time defines that identify the MCU family and model. P
 ```cmake
 target_compile_definitions(my_app PRIVATE
     OHAL_FAMILY_STM32U0
-    OHAL_MODEL_STM32U083
+    OHAL_MODEL_STM32U083KCU
 )
 ```
 
 Or as compiler flags:
 
 ```sh
-arm-none-eabi-g++ -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 ...
+arm-none-eabi-g++ -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU ...
 ```
 
 Omitting either define, or combining defines from different families, is a **compile error** with a
@@ -89,7 +89,7 @@ The following example configures PA5 as a push-pull output and toggles it indefi
 the STM32U083.
 
 ```cpp
-// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 -std=c++17
+// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU -std=c++17
 
 #include <ohal/ohal.hpp>
 
@@ -121,7 +121,7 @@ messages are prefixed with `ohal:` so they are easy to grep for in build logs.
 | Situation                  | Example error message                                               |
 | -------------------------- | ------------------------------------------------------------------- |
 | No MCU family define       | `ohal: No MCU family defined. Pass exactly one of …`                |
-| No model define            | `ohal: No STM32U0 model defined. Pass -DOHAL_MODEL_STM32U083 …`     |
+| No model define            | `ohal: No STM32U0 model defined. Pass -DOHAL_MODEL_STM32U083KCU …`  |
 | Wrong model for family     | `ohal: Model PIC18F4550 is not part of family STM32U0.`             |
 | Unsupported peripheral     | `ohal: gpio::Pin is not implemented for the selected MCU.`          |
 | Unsupported feature        | `ohal: PIC18F4550 GPIO does not support configurable output speed.` |

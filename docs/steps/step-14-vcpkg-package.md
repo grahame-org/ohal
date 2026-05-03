@@ -148,7 +148,7 @@ find_package(ohal CONFIG REQUIRED)
 add_executable(blink_stm32 blink_stm32.cpp)
 target_link_libraries(blink_stm32 PRIVATE ohal::ohal)
 target_compile_definitions(blink_stm32 PRIVATE
-    OHAL_FAMILY_STM32U0 OHAL_MODEL_STM32U083)
+    OHAL_FAMILY_STM32U0 OHAL_MODEL_STM32U083KCU)
 target_compile_features(blink_stm32 PRIVATE cxx_std_17)
 
 add_executable(blink_msp430 blink_msp430.cpp)

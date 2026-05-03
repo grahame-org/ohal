@@ -15,7 +15,8 @@
 // ---------------------------------------------------------------------------
 // ohal::gpio::Pin<> and Port<> specialisations for STM32U083 packages where
 // only GPIOA, GPIOB, GPIOC and GPIOF are bonded out (e.g. STM32U083KCU
-// 32-pin UFQFPN and STM32U083HCY 42-ball WLCSP).
+// 32-pin UFQFPN, STM32U083HCY 42-ball WLCSP, STM32U083CCI 48-pin UFQFPN,
+// and STM32U083CCT 48-pin LQFP).
 //
 // GPIOD and GPIOE exist in silicon but are not bonded out on these packages.
 // Explicit Pin<PortD/E> and Port<PortD/E> specialisations are provided below
