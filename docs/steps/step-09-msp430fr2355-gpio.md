@@ -127,7 +127,7 @@ sequenceDiagram
 //   #error "ohal: No MSP430FR2xx model defined. ..."
 //   #endif
 
-#if !defined(OHAL_MODEL_MSP430FR2355) /* … add: && !defined(OHAL_MODEL_<NEW>) … */
+#if !defined(OHAL_MODEL_MSP430FR2355)
   #error "ohal: No MSP430FR2xx model defined. " \
          "Pass -DOHAL_MODEL_MSP430FR2355 (or another MSP430FR2xx model) to the compiler."
 #endif

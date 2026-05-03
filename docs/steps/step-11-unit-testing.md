@@ -58,7 +58,7 @@ inline uintptr_t mock_addr8(std::size_t slot) {
 #endif // OHAL_TESTS_HOST_MOCK_MOCK_REGISTER_HPP
 ```
 
-The example below tests the `Register<>` core template via mechanism (2) (MockRegister):
+The example below tests the `Register<>` core template via `MockRegister`:
 
 ```cpp
 // tests/host/test_register.cpp  (GoogleTest)
