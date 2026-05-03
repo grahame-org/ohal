@@ -195,6 +195,36 @@ map. Each instance has a required `name` and `base`, and an optional `sub-famili
 peripherals whose availability varies across sub-families). Omit `sub-families` if the instance is
 present in all sub-families.
 
+### Registers
+
+Each entry in the `registers` list is a single-key mapping whose key is the register name. Optional
+register-level keys:
+
+| Key         | Description                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------ |
+| `reference` | Cross-references into the source reference manual (section, sections, figures, tables)                 |
+| `offset`    | (required) Byte offset from the peripheral base address                                                |
+| `note`      | Free-text annotation, e.g. to document cross-register dependencies not expressible in field `settings` |
+| `sequence`  | Required access sequence (e.g. lock/unlock procedure; see below)                                       |
+| `fields`    | (required) Ordered list of bit-fields                                                                  |
+
+Use `note` at the register level when the meaning of a field depends on bits in a **different**
+register. For example, when two adjacent registers each hold one bit per pin of a 2-bit selector:
+
+```yaml
+- PxSEL0:
+    offset: 0x0A
+    note: >-
+      Each bit PxSEL0n is the SEL0 bit for pin n. Combined with the corresponding
+      bit PxSEL1n (in register PxSEL1), {PxSEL1n, PxSEL0n} selects pin function:
+      "00" = GPIO, "01" = Primary, "10" = Secondary, "11" = Tertiary.
+      Both PxSEL0 and PxSEL1 must be written to select a non-GPIO function.
+    fields:
+      - name: PxSEL07
+        # ...
+        settings: *bit-value
+```
+
 ### Register fields
 
 Each field has:

@@ -14,9 +14,7 @@ architecture:
 
 reference:
   source: SLAU445
-  title: MSP430FR4xx and MSP430FR2xx Family User's Guide
-  revision: I
-  last-modified: 2019-03
+  revision: "I"
 
 memory:
   references:
@@ -137,7 +135,7 @@ definitions:
     bit-value: &bit-value
       "0": reset
       "1": set
-      
+
     dir-value: &dir-value
       "0": input
       "1": output
@@ -1004,6 +1002,13 @@ peripherals:
             reference:
               section: 8.4.9
             offset: 0x0A
+            note: >-
+              Each bit PxSEL0n in this register is the SEL0 bit for pin n of port P1 (bits 15:8)
+              or port P2 (bits 7:0). Together with the corresponding bit PxSEL1n in PASEL1, they
+              form a 2-bit pin-function selector {PxSEL1n, PxSEL0n}: "00" = General-purpose I/O,
+              "01" = Primary module function, "10" = Secondary module function,
+              "11" = Tertiary module function. Both PASEL0 and PASEL1 must be written to select
+              a pin function other than GPIO.
             fields:
               - name: P1SEL07
                 msb: 15
@@ -1094,15 +1099,131 @@ peripherals:
                 lsb: 1
                 width: 1
                 access: rw
+                settings: *bit-value
               - name: P2SEL00
                 msb: 0
                 lsb: 0
                 width: 1
                 access: rw
+                settings: *bit-value
+        - PASEL1:
+            reference:
+              section: 8.4.10
+            offset: 0x0C
+            note: >-
+              Each bit PxSEL1n in this register is the SEL1 bit for pin n of port P1 (bits 15:8)
+              or port P2 (bits 7:0). Together with the corresponding bit PxSEL0n in PASEL0, they
+              form a 2-bit pin-function selector {PxSEL1n, PxSEL0n}: "00" = General-purpose I/O,
+              "01" = Primary module function, "10" = Secondary module function,
+              "11" = Tertiary module function. Both PASEL1 and PASEL0 must be written to select
+              a pin function other than GPIO.
+            fields:
+              - name: P1SEL17
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL16
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL15
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL14
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL13
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL12
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL11
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL10
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL17
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL16
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL15
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL14
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL13
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL12
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL11
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL10
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
         - P1SEL0:
             reference:
               section: 8.4.9
             offset: 0x0A
+            note: >-
+              Each bit P1SEL0n in this register is the SEL0 bit for port P1 pin n. Together with
+              the corresponding bit P1SEL1n in P1SEL1, they form a 2-bit pin-function selector
+              {P1SEL1n, P1SEL0n}: "00" = General-purpose I/O, "01" = Primary module function,
+              "10" = Secondary module function, "11" = Tertiary module function. Both P1SEL0 and
+              P1SEL1 must be written to select a pin function other than GPIO.
             fields:
               - name: P1SEL07
                 msb: 7
@@ -1156,6 +1277,12 @@ peripherals:
             reference:
               section: 8.4.9
             offset: 0x0B
+            note: >-
+              Each bit P2SEL0n in this register is the SEL0 bit for port P2 pin n. Together with
+              the corresponding bit P2SEL1n in P2SEL1, they form a 2-bit pin-function selector
+              {P2SEL1n, P2SEL0n}: "00" = General-purpose I/O, "01" = Primary module function,
+              "10" = Secondary module function, "11" = Tertiary module function. Both P2SEL0 and
+              P2SEL1 must be written to select a pin function other than GPIO.
             fields:
               - name: P2SEL07
                 msb: 7
@@ -1210,6 +1337,12 @@ peripherals:
             reference:
               section: 8.4.10
             offset: 0x0C
+            note: >-
+              Each bit P1SEL1n in this register is the SEL1 bit for port P1 pin n. Together with
+              the corresponding bit P1SEL0n in P1SEL0, they form a 2-bit pin-function selector
+              {P1SEL1n, P1SEL0n}: "00" = General-purpose I/O, "01" = Primary module function,
+              "10" = Secondary module function, "11" = Tertiary module function. Both P1SEL1 and
+              P1SEL0 must be written to select a pin function other than GPIO.
             fields:
               - name: P1SEL17
                 msb: 7
@@ -1263,6 +1396,12 @@ peripherals:
             reference:
               section: 8.4.10
             offset: 0x0D
+            note: >-
+              Each bit P2SEL1n in this register is the SEL1 bit for port P2 pin n. Together with
+              the corresponding bit P2SEL0n in P2SEL0, they form a 2-bit pin-function selector
+              {P2SEL1n, P2SEL0n}: "00" = General-purpose I/O, "01" = Primary module function,
+              "10" = Secondary module function, "11" = Tertiary module function. Both P2SEL1 and
+              P2SEL0 must be written to select a pin function other than GPIO.
             fields:
               - name: P2SEL17
                 msb: 7

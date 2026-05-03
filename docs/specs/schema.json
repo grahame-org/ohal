@@ -66,9 +66,11 @@
           "type": "string"
         },
         "revision": {
-          "description": "Reference manual revision number.",
-          "type": "integer",
-          "minimum": 1
+          "description": "Reference manual revision identifier. Numeric for vendors that use integer revisions (e.g. 4); a quoted string for vendors that use letter or alphanumeric codes (e.g. 'I', 'B.1').",
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "minLength": 1 }
+          ]
         }
       }
     },
@@ -78,6 +80,10 @@
       "additionalProperties": false,
       "properties": {
         "references": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the memory map as a whole.",
+          "type": "string"
+        },
         "map": {
           "description": "List of memory regions.",
           "type": "array",
@@ -288,6 +294,10 @@
         "offset": {
           "description": "Register byte offset from the peripheral base address.",
           "$ref": "#/$defs/hex-address"
+        },
+        "note": {
+          "description": "Optional free-text annotation for this register, e.g. to document cross-register dependencies or constraints not expressible in the structured fields.",
+          "type": "string"
         },
         "sequence": { "$ref": "#/$defs/sequence" },
         "fields": {
