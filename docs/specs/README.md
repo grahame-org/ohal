@@ -44,17 +44,17 @@ There are three distinct spec file types, each with its own JSON Schema:
 
 Family specs (`docs/specs/{vendor}/{family}.yml`) are validated against `schema.json`:
 
-| Key            | Required | Description                                                       |
-| -------------- | -------- | ----------------------------------------------------------------- |
-| `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                 |
-| `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                      |
-| `family`       | ✓        | Family name and sub-family list                                   |
-| `architecture` | ✓        | Processor architecture and word size (inline summary)             |
-| `arch-ref`     |          | Reference to an architecture-level spec (see below)               |
-| `reference`    | ✓        | Reference manual document identifier and revision                 |
-| `memory`       |          | Memory map with address ranges and sub-family applicability       |
-| `definitions`  |          | Reusable settings blocks (referenced by YAML anchors in the spec) |
-| `peripherals`  |          | Peripheral blocks with register and bit-field descriptions        |
+| Key            | Required | Description                                                              |
+| -------------- | -------- | ------------------------------------------------------------------------ |
+| `spec-version` | ✓        | Spec format version using semver (e.g. `"1.0.0"`)                        |
+| `vendor`       | ✓        | Chip vendor name (e.g. 'STMicroelectronics')                             |
+| `family`       | ✓        | Family name and sub-family list                                          |
+| `architecture` | ✓        | Processor architecture and word size (inline summary)                    |
+| `arch-ref`     |          | Reference to an architecture-level spec (see below)                      |
+| `reference`    | ✓        | Reference manual source, revision, optional title and last-modified date |
+| `memory`       |          | Memory map with address ranges and sub-family applicability              |
+| `definitions`  |          | Reusable settings blocks (referenced by YAML anchors in the spec)        |
+| `peripherals`  |          | Peripheral blocks with register and bit-field descriptions               |
 
 ### Architecture spec top-level keys
 
@@ -122,6 +122,25 @@ definition lives in the architecture spec.
 
 Many registers and memory regions differ between sub-families (e.g. flash size). The `sub-families`
 key on a memory region or register lists which sub-families the entry applies to.
+
+### Reference manual metadata
+
+Every family spec must declare the source reference manual under the top-level `reference` key:
+
+```yaml
+reference:
+  source: RM0503
+  title: STM32U0 series advanced Arm-based 32-bit MCUs - Reference Manual
+  revision: 4
+  last-modified: 2025-07
+```
+
+| Key             | Required | Description                                                                            |
+| --------------- | -------- | -------------------------------------------------------------------------------------- |
+| `source`        | ✓        | Vendor document identifier (e.g. `RM0503`, `SLAU445`)                                  |
+| `revision`      | ✓        | Revision number (integer) or letter/alphanumeric code (quoted string, e.g. `"I"`)      |
+| `title`         |          | Human-readable document title                                                          |
+| `last-modified` |          | Year-month the revision was published, in `YYYY-MM` format (e.g. `2025-07`, `2019-03`) |
 
 ### References
 
@@ -194,6 +213,36 @@ The `instances` list binds the generic register layout to the concrete base addr
 map. Each instance has a required `name` and `base`, and an optional `sub-families` list (for
 peripherals whose availability varies across sub-families). Omit `sub-families` if the instance is
 present in all sub-families.
+
+### Registers
+
+Each entry in the `registers` list is a single-key mapping whose key is the register name. Optional
+register-level keys:
+
+| Key         | Description                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------ |
+| `reference` | Cross-references into the source reference manual (section, sections, figures, tables)                 |
+| `offset`    | (required) Byte offset from the peripheral base address                                                |
+| `note`      | Free-text annotation, e.g. to document cross-register dependencies not expressible in field `settings` |
+| `sequence`  | Required access sequence (e.g. lock/unlock procedure; see below)                                       |
+| `fields`    | (required) Ordered list of bit-fields                                                                  |
+
+Use `note` at the register level when the meaning of a field depends on bits in a **different**
+register. For example, when two adjacent registers each hold one bit per pin of a 2-bit selector:
+
+```yaml
+- PxSEL0:
+    offset: 0x0A
+    note: >-
+      Each bit PxSEL0n is the SEL0 bit for pin n. Combined with the corresponding
+      bit PxSEL1n (in register PxSEL1), {PxSEL1n, PxSEL0n} selects pin function:
+      "00" = GPIO, "01" = Primary, "10" = Secondary, "11" = Tertiary.
+      Both PxSEL0 and PxSEL1 must be written to select a non-GPIO function.
+    fields:
+      - name: PxSEL07
+        # ...
+        settings: *bit-value
+```
 
 ### Register fields
 

@@ -1,0 +1,1764 @@
+spec-version: "1.0.0"
+
+vendor: "Texas Instruments"
+
+family:
+  name: "msp430fr2xx4xx"
+  sub-families: [msp430fr2xx, msp430fr4xx]
+
+arch-ref: "msp430"
+
+architecture:
+  name: "Texas Instruments MSP430"
+  word-size: 16
+
+reference:
+  source: SLAU445
+  title: MSP430FR4xx and MSP430FR2xx Family User's Guide
+  revision: "I"
+  last-modified: 2019-03
+
+memory:
+  references:
+    sections: ["1.9.1"]
+  note: >-
+    The family guide describes a common memory-map layout for MSP430FR2xx/MSP430FR4xx.
+    Several regions (RAM size and program FRAM size) vary by device; this skeleton records
+    the inclusive ranges and annotates the variability. Vacant memory behaviour and
+    access side-effects are described in the SYS chapter.
+  map:
+    - name: "Peripherals (with gaps)"
+      start: 0x00000
+      end: 0x00FFF
+      verified: true
+      note: >-
+        Peripheral space; includes reserved system extension and descriptor metadata ranges.
+
+    - name: Reserved for system extension
+      start: 0x00000
+      end: 0x000FF
+      verified: true
+
+    - name: Peripherals
+      start: 0x00100
+      end: 0x00FEF
+      verified: true
+
+    - name: Descriptor type
+      start: 0x00FF0
+      end: 0x00FF3
+      verified: true
+
+    - name: Start address of descriptor structure
+      start: 0x00FF4
+      end: 0x00FF7
+      verified: true
+
+    - name: "Information memory (FRAM)"
+      start: 0x01800
+      end: 0x019FF
+      verified: true
+
+    - name: "RAM - 8kb"
+      start: 0x02000
+      end: 0x03FFF
+      verified: true
+
+    - name: "RAM - 4kb"
+      start: 0x02000
+      end: 0x02FFF
+      verified: true
+
+    - name: "RAM - 2kb"
+      start: 0x02000
+      end: 0x027FF
+      verified: true
+
+    - name: "RAM - 1kb"
+      start: 0x02000
+      end: 0x023FF
+      verified: true
+
+    - name: "RAM - 512b"
+      start: 0x02000
+      end: 0x021FF
+      verified: true
+
+    - name: "Program memory - 32kb"
+      start: 0x08000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 16kb"
+      start: 0x0C000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 15kb"
+      start: 0x0C400
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 8kb"
+      start: 0x0E000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 4kb"
+      start: 0x0F000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 2kb"
+      start: 0x0F800
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 1kb"
+      start: 0x0FC00
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 512b"
+      start: 0x0FE00
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Interrupt vectors"
+      start: 0x0FF80
+      end: 0x0FFFF
+      verified: true
+      note: "Vector table region (top of address space)."
+
+definitions:
+  settings:
+    # Architecture-generic: canonical definition lives in docs/specs/common/arch/msp430.yml.
+    # Repeated here because YAML anchors cannot span files.
+    bit-value: &bit-value
+      "0": reset
+      "1": set
+
+    dir-value: &dir-value
+      "0": input
+      "1": output
+
+    ren-value: &ren-value
+      "0": disabled
+      "1": enabled
+
+    ies-value: &ies-value
+      "0": low-to-high
+      "1": high-to-low
+
+    ie-value: &ie-value
+      "0": disabled
+      "1": enabled
+
+    ifg-value: &ifg-value
+      "0": no interrupt pending
+      "1": interrupt pending
+
+peripherals:
+  - gpio-port-16:
+      reference:
+        sections: [8.2, 8.4]
+      note: >-
+        Reusable register layout for any 16-bit GPIO port. 16-bit ports are labelled
+        alphabetically; each combines two consecutive numerically-ordered 8-bit ports.
+        Bits 7:0 access the lower-addressed 8-bit port and bits 15:8 access the
+        higher-addressed 8-bit port. Base addresses vary by device model; no instances
+        are defined at the family layer.
+      registers:
+        - IN:
+            reference:
+              section: 8.4.5
+            offset: 0x00
+            fields:
+              - name: IN15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings: *bit-value
+
+        - OUT:
+            reference:
+              section: 8.4.6
+            offset: 0x02
+            fields:
+              - name: OUT15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - DIR:
+            reference:
+              section: 8.4.7
+            offset: 0x04
+            fields:
+              - name: DIR15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *dir-value
+
+        - REN:
+            reference:
+              section: 8.4.8
+            offset: 0x06
+            fields:
+              - name: REN15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ren-value
+
+        - SEL0:
+            reference:
+              section: 8.4.9
+            offset: 0x0A
+            note: >-
+              Each SEL0n bit pairs with the corresponding SEL1n bit in SEL1 to form a 2-bit
+              pin-function selector {SEL1n, SEL0n}: 00 = General-purpose I/O,
+              01 = Primary module function, 10 = Secondary module function,
+              11 = Tertiary module function. Both SEL0 and SEL1 must be written
+              together to change a pin's function.
+            fields:
+              - name: SEL015
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL014
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL013
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL012
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL011
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL010
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL09
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL08
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL07
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL06
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL05
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL04
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL03
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL02
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL01
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL00
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - SEL1:
+            reference:
+              section: 8.4.10
+            offset: 0x0C
+            note: >-
+              Each SEL1n bit pairs with the corresponding SEL0n bit in SEL0 to form a 2-bit
+              pin-function selector {SEL1n, SEL0n}: 00 = General-purpose I/O,
+              01 = Primary module function, 10 = Secondary module function,
+              11 = Tertiary module function. Both SEL1 and SEL0 must be written
+              together to change a pin's function.
+            fields:
+              - name: SEL115
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL114
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL113
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL112
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL111
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL110
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL19
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL18
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL17
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL16
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL15
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL14
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL13
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL12
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL11
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL10
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - SELC:
+            reference:
+              section: 8.4.11
+            offset: 0x16
+            fields:
+              - name: SELC15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - IES:
+            reference:
+              section: 8.4.12
+            offset: 0x18
+            fields:
+              - name: IES15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ies-value
+
+        - IE:
+            reference:
+              section: 8.4.13
+            offset: 0x1A
+            fields:
+              - name: IE15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ie-value
+
+        - IFG:
+            reference:
+              section: 8.4.14
+            offset: 0x1C
+            fields:
+              - name: IFG15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ifg-value
+
+  - gpio-port-8:
+      reference:
+        sections: [8.2, 8.4]
+      note: >-
+        Reusable register layout for any 8-bit GPIO port. Each 8-bit port is the
+        byte-access view of one byte within its parent 16-bit port. The lower-numbered
+        port in each pair sits at the parent port's base address; the higher-numbered
+        port sits at parent base + 1. Base addresses vary by device model; no instances
+        are defined at the family layer.
+      registers:
+        - IN:
+            reference:
+              section: 8.4.5
+            offset: 0x00
+            fields:
+              - name: IN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: IN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings: *bit-value
+
+        - OUT:
+            reference:
+              section: 8.4.6
+            offset: 0x02
+            fields:
+              - name: OUT7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: OUT0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - DIR:
+            reference:
+              section: 8.4.7
+            offset: 0x04
+            fields:
+              - name: DIR7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: DIR0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *dir-value
+
+        - REN:
+            reference:
+              section: 8.4.8
+            offset: 0x06
+            fields:
+              - name: REN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: REN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ren-value
+
+        - SEL0:
+            reference:
+              section: 8.4.9
+            offset: 0x0A
+            note: >-
+              Each SEL0n bit pairs with the corresponding SEL1n bit in SEL1 to form a 2-bit
+              pin-function selector {SEL1n, SEL0n}: 00 = General-purpose I/O,
+              01 = Primary module function, 10 = Secondary module function,
+              11 = Tertiary module function. Both SEL0 and SEL1 must be written
+              together to change a pin's function.
+            fields:
+              - name: SEL07
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL06
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL05
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL04
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL03
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL02
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL01
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL00
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - SEL1:
+            reference:
+              section: 8.4.10
+            offset: 0x0C
+            note: >-
+              Each SEL1n bit pairs with the corresponding SEL0n bit in SEL0 to form a 2-bit
+              pin-function selector {SEL1n, SEL0n}: 00 = General-purpose I/O,
+              01 = Primary module function, 10 = Secondary module function,
+              11 = Tertiary module function. Both SEL1 and SEL0 must be written
+              together to change a pin's function.
+            fields:
+              - name: SEL17
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL16
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL15
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL14
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL13
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL12
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL11
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SEL10
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - SELC:
+            reference:
+              section: 8.4.11
+            offset: 0x16
+            fields:
+              - name: SELC7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: SELC0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - IES:
+            reference:
+              section: 8.4.12
+            offset: 0x18
+            fields:
+              - name: IES7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ies-value
+              - name: IES0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ies-value
+
+        - IE:
+            reference:
+              section: 8.4.13
+            offset: 0x1A
+            fields:
+              - name: IE7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ie-value
+              - name: IE0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ie-value
+
+        - IFG:
+            reference:
+              section: 8.4.14
+            offset: 0x1C
+            fields:
+              - name: IFG7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ifg-value
+              - name: IFG0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ifg-value
