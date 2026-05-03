@@ -20,14 +20,15 @@ template <uint8_t PinNum>
 using Stm32u083PortCapability = std::bool_constant<(PinNum < kStm32u083PinCount)>;
 } // namespace detail
 
-// All STM32U083 GPIO pins (on every port) support output-type configuration,
-// output-speed configuration, pull-up/pull-down configuration, and alternate-function
-// selection.  These partial specialisations override the primary false_type defaults
-// for any (Port, PinNum) pair that is a valid STM32U083 port tag.
+// The STM32U083KCU is a 32-pin UFQFPN package.  Of the six GPIO ports present in
+// silicon (A–F), only GPIOA, GPIOB, GPIOC and GPIOF have bonded-out pins on this
+// package; GPIOD and GPIOE are not bonded out (DS14463, §4.1).
 //
-// Capability is reported as true only for valid pin numbers (0-15), which matches
-// the range accepted by GpioPortPinImpl.  Out-of-range pin numbers correctly report
-// false so that generic code relying on these traits is not misled.
+// These partial specialisations therefore override the primary false_type defaults
+// only for PortA, PortB, PortC and PortF.  Capability is reported as true only for
+// valid pin numbers (0–15), which matches the range accepted by GpioPortPinImpl.
+// Out-of-range pin numbers correctly report false so that generic code relying on
+// these traits is not misled.
 
 // NOLINTBEGIN(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 template <uint8_t PinNum>
@@ -38,12 +39,6 @@ struct supports_output_type<PortB, PinNum> : detail::Stm32u083PortCapability<Pin
 
 template <uint8_t PinNum>
 struct supports_output_type<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
-struct supports_output_type<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
-struct supports_output_type<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
 struct supports_output_type<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
@@ -58,12 +53,6 @@ template <uint8_t PinNum>
 struct supports_output_speed<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
-struct supports_output_speed<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
 struct supports_output_speed<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
@@ -76,12 +65,6 @@ template <uint8_t PinNum>
 struct supports_pull<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
-struct supports_pull<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
 struct supports_pull<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
@@ -92,12 +75,6 @@ struct supports_alternate_function<PortB, PinNum> : detail::Stm32u083PortCapabil
 
 template <uint8_t PinNum>
 struct supports_alternate_function<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
-struct supports_alternate_function<PortD, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
-
-template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
 
 template <uint8_t PinNum>
 struct supports_alternate_function<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};

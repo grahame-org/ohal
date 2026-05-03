@@ -394,39 +394,72 @@ package, and silicon revision. It is validated against `docs/specs/schema-model.
 
 The required top-level keys are:
 
-| Key            | Type    | Description                                 |
-| -------------- | ------- | ------------------------------------------- |
-| `spec-version` | string  | Spec format version (semver)                |
-| `vendor`       | string  | Must match the parent family spec           |
-| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)     |
-| `model`        | string  | Part number identifier (e.g. `stm32u031c4`) |
-| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)    |
-| `flash-kb`     | integer | On-chip flash in kibibytes                  |
-| `sram-kb`      | integer | On-chip SRAM in kibibytes                   |
-| `pin-count`    | integer | Number of physical pins                     |
+| Key            | Type    | Description                                  |
+| -------------- | ------- | -------------------------------------------- |
+| `spec-version` | string  | Spec format version (semver)                 |
+| `vendor`       | string  | Must match the parent family spec            |
+| `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)      |
+| `model`        | string  | Part number identifier (e.g. `stm32u083kcu`) |
+| `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)     |
+| `flash-kb`     | integer | On-chip flash in kibibytes                   |
+| `sram-kb`      | integer | On-chip SRAM in kibibytes                    |
+| `pin-count`    | integer | Number of physical pins                      |
 
 Optional keys:
 
-| Key                       | Description                                                 |
-| ------------------------- | ----------------------------------------------------------- |
-| `peripheral-availability` | Which peripheral instances from the family spec are present |
-| `alternate-functions`     | Per-pin AF mapping table (AF0-AF15 -> signal names)         |
-| `errata`                  | Known hardware errata with silicon-revision applicability   |
+| Key                       | Description                                                                                 |
+| ------------------------- | ------------------------------------------------------------------------------------------- |
+| `reference`               | Primary vendor document (datasheet) for this device model (`source`, `revision`, `title`)   |
+| `peripheral-availability` | Which peripheral instances from the family spec are present; supports an optional `note`    |
+| `alternate-functions`     | Object with optional `reference` (sections/figures/tables) and a `pins` list of AF mappings |
+| `errata`                  | Known hardware errata with silicon-revision applicability                                   |
+
+Each entry in `alternate-functions.pins` maps one package pin to its alternate-function
+assignments:
+
+| Key         | Description                                                                                        |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| `pin`       | Pin name, e.g. `PA0`, `PC14-OSC32_IN`, `VDD`                                                       |
+| `number`    | Physical pin number on the package (optional)                                                      |
+| `gpio`      | GPIO port and bit (`port`, `bit`), or `~` for non-GPIO pins (optional)                             |
+| `functions` | Required. AF0–AF15 mapping to signal names; `~` for unused AF slots. Set to `~` for non-GPIO pins. |
 
 Example:
 
 ```yaml
 spec-version: "1.0.0"
 vendor: STMicroelectronics
+reference:
+  source: DS14463
+  title: STM32U083xC Datasheet
+  revision: 2
 family-ref: stm32u0
-model: stm32u031c4
+model: stm32u083kcu
 package: UFQFPN32
 flash-kb: 256
-sram-kb: 12
+sram-kb: 40
 pin-count: 32
 peripheral-availability:
   - peripheral: gpio
-    instances: [GPIOA, GPIOB, GPIOC, GPIOD, GPIOF]
+    instances: [GPIOA, GPIOB, GPIOC, GPIOF]
+    note: GPIOD / GPIOE are not bonded out on the 32-pin UFQFPN package.
+alternate-functions:
+  reference:
+    sections: [4.1, 4.3]
+    tables: [13, 14]
+  pins:
+    - pin: VDD
+      number: 1
+      gpio: ~
+      functions: ~
+    - pin: PA0-CK_IN
+      number: 6
+      gpio:
+        port: A
+        bit: 0
+      functions:
+        AF1: TIM2_CH1
+        AF15: EVENTOUT
 ```
 
 ## Validation
@@ -439,5 +472,5 @@ To validate locally:
 ```sh
 pip install check-jsonschema
 check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
-check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u031c4.yml
+check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u083kcu.yml
 ```
