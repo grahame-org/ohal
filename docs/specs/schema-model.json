@@ -16,6 +16,34 @@
       "description": "Chip vendor name, e.g. 'STMicroelectronics'. Must match the vendor field in the referenced family spec.",
       "type": "string"
     },
+    "reference": {
+      "description": "Primary vendor document (datasheet) for this device model.",
+      "type": "object",
+      "required": ["source", "revision"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "description": "Vendor document identifier, e.g. 'DS14463'.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Human-readable document title.",
+          "type": "string"
+        },
+        "revision": {
+          "description": "Document revision. An integer for numeric revisions; a quoted string for letter or alphanumeric codes.",
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "minLength": 1 }
+          ]
+        },
+        "last-modified": {
+          "description": "Year-month the revision was published, in YYYY-MM format (e.g. '2025-07').",
+          "type": "string",
+          "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
+        }
+      }
+    },
     "family-ref": {
       "description": "Family spec identifier (without the .yml extension), e.g. 'stm32u0'. Tooling resolves this to docs/specs/{vendor-dir}/{family-ref}.yml.",
       "type": "string"
@@ -50,10 +78,19 @@
       "minItems": 1
     },
     "alternate-functions": {
-      "description": "Alternate-function pin-mapping table for this specific model and package. Each entry maps a pin name to its available alternate functions.",
-      "type": "array",
-      "items": { "$ref": "#/$defs/pin-af-entry" },
-      "minItems": 1
+      "description": "Alternate-function pin-mapping table for this specific model and package.",
+      "type": "object",
+      "required": ["pins"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "pins": {
+          "description": "Ordered list of all package pins with their alternate-function assignments.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/pin-af-entry" },
+          "minItems": 1
+        }
+      }
     },
     "errata": {
       "description": "Known hardware errata for this silicon. Each entry has a title, a description, and an optional silicon-revision applicability list.",
@@ -63,6 +100,28 @@
     }
   },
   "$defs": {
+    "references": {
+      "description": "Cross-references into a vendor document (datasheet, reference manual, or errata sheet).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sections": {
+          "description": "List of section references.",
+          "type": "array",
+          "items": { "type": ["string", "number"] }
+        },
+        "figures": {
+          "description": "List of figure references.",
+          "type": "array",
+          "items": { "type": ["string", "number"] }
+        },
+        "tables": {
+          "description": "List of table references.",
+          "type": "array",
+          "items": { "type": ["string", "number"] }
+        }
+      }
+    },
     "peripheral-availability-entry": {
       "description": "Records which instances of a given peripheral type are present on this device model.",
       "type": "object",
@@ -78,27 +137,65 @@
           "type": "array",
           "items": { "type": "string" },
           "minItems": 1
+        },
+        "note": {
+          "description": "Optional free-text annotation, e.g. to document which instances are absent on this package.",
+          "type": "string"
         }
       }
     },
     "pin-af-entry": {
-      "description": "Alternate-function assignments for a single pin.",
+      "description": "Alternate-function assignments for a single package pin.",
       "type": "object",
       "required": ["pin", "functions"],
       "additionalProperties": false,
       "properties": {
         "pin": {
-          "description": "Pin name in the form 'P{port}{number}', e.g. 'PA0', 'PB13'.",
+          "description": "Pin name. GPIO pins use the form 'P{port}{bit}[-{suffix}]', e.g. 'PA0', 'PC14-OSC32_IN'. Power, reset, and boot pins use their signal name, e.g. 'VDD', 'NRST', 'BOOT0'.",
           "type": "string",
-          "pattern": "^P[A-Z][0-9]{1,2}$"
+          "minLength": 1
+        },
+        "number": {
+          "description": "Physical pin number on the package (1-based). Matches the pin-number column in the datasheet package pin-out table.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "gpio": {
+          "description": "GPIO port and bit for this pin. Null for pins that are not GPIO-capable (e.g. power or reset pins).",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["port", "bit"],
+              "additionalProperties": false,
+              "properties": {
+                "port": {
+                  "description": "GPIO port letter, e.g. 'A', 'B', 'C'.",
+                  "type": "string",
+                  "pattern": "^[A-Z]$"
+                },
+                "bit": {
+                  "description": "GPIO pin bit number within the port (0–15).",
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 15
+                }
+              }
+            }
+          ]
         },
         "functions": {
-          "description": "Mapping from AF code (AF0–AF15) to the signal name assigned to that AF on this pin (e.g. 'TIM2_CH1', 'USART1_TX'). Use null for AF slots that are not assigned.",
-          "type": "object",
-          "minProperties": 1,
-          "additionalProperties": {
-            "oneOf": [{ "type": "string" }, { "type": "null" }]
-          }
+          "description": "Mapping from AF code (AF0–AF15) to the peripheral signal assigned to that alternate function on this pin (e.g. 'TIM2_CH1', 'USART1_TX'). Use null for AF slots that are not assigned. Set to null for pins that have no alternate functions (e.g. power pins).",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "oneOf": [{ "type": "string" }, { "type": "null" }]
+              }
+            }
+          ]
         }
       }
     },
