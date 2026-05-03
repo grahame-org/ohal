@@ -6,7 +6,7 @@ reference:
   title: "STM32U083xC Datasheet"
   revision: 2
 family-ref: stm32u0
-model: stm32u083kc
+model: stm32u083kcu
 package: UFQFPN32
 flash-kb: 256
 sram-kb: 40
@@ -19,7 +19,7 @@ alternate-functions:
   reference:
     sections: [4.1, 4.3]
     figures: [3]
-    tables: [13, 14, 15, 16, 18]
+    tables: [13, 14, 15, 18]
   pins:
     - pin: "VDD"
       number: 1
@@ -296,7 +296,6 @@ alternate-functions:
         AF0: SWCLK
         AF1: LPTIM1_CH1
         AF9: TSC_G3_IO4
-        AF10: ~
         AF11: LCD_SEG41
         AF15: EVENTOUT
     - pin: "PA15"
