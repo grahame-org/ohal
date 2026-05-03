@@ -27,6 +27,7 @@ find "${REPO_ROOT}/include" -name '*.hpp' \
 
 echo "=== cmake-lint ==="
 find "${REPO_ROOT}" \
+    -path "${REPO_ROOT}/build" -prune -o \
     \( -name 'CMakeLists.txt' -o -name '*.cmake' -o -name '*.cmake.in' \) \
     -print0 | xargs -0 cmake-lint
 
