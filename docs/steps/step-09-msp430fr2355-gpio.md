@@ -78,9 +78,9 @@ bit N selects the pull direction: `1` = pull-up, `0` = pull-down.
 
 **Note on alternate function:** `PxSEL1:PxSEL0 = 00` selects GPIO. `01` selects the primary
 peripheral function, `10` the secondary, and `11` the tertiary. `PinMode::Analog` is not a
-distinct MSP430 GPIO mode; analogue inputs are selected via the ADC module, not via GPIO
-direction registers. Calling `set_mode(PinMode::Analog)` on this platform fires a
-`static_assert`.
+distinct MSP430 GPIO mode; analog inputs are selected via the ADC module, not via GPIO
+direction registers. `set_mode(PinMode::Analog)` is treated the same as `set_mode(Input)`
+(clears `PxSEL0`/`PxSEL1` and sets `PxDIR=0`).
 
 ## Sequence — "set GPIO pin high" on MSP430FR2355
 
@@ -337,6 +337,12 @@ report `false`.
 #include "ohal/core/capabilities.hpp"
 // Include the shared constants header (not gpio.hpp itself, to avoid a circular include).
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
+
+namespace ohal::gpio::capabilities {
+
+namespace detail {
+/// Evaluates to true_type for valid MSP430FR2355 pin numbers (0–7), false_type otherwise.
+/// Reuses kPinCount from the platform namespace to avoid duplicating the constant.
 template <uint8_t PinNum>
 using Msp430fr2355PortCapability =
     std::bool_constant<(PinNum < platforms::msp430fr2xx::msp430fr2355::kPinCount)>;
