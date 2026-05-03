@@ -148,6 +148,28 @@ Key differences from the STM32U083 specialisation:
   accesses are redirected into `ohal::test::MockRegister<uint8_t, &storage>` backing variables
   without modifying the real hardware header, following the same pattern as STM32U083.
 
+### `msp430fr2355/constants.hpp`
+
+A lightweight header shared by `gpio.hpp` and `capabilities.hpp` to avoid duplicating the pin
+count constant (which would otherwise be needed in both files):
+
+```cpp
+// platforms/msp430fr2xx/models/msp430fr2355/constants.hpp
+#ifndef OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2355_CONSTANTS_HPP
+#define OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2355_CONSTANTS_HPP
+
+#include <cstdint>
+
+namespace ohal::platforms::msp430fr2xx::msp430fr2355 {
+
+/// Number of pins per MSP430FR2355 GPIO port (0–7).
+inline constexpr uint8_t kPinCount = 8U;
+
+} // namespace ohal::platforms::msp430fr2xx::msp430fr2355
+
+#endif // OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2355_CONSTANTS_HPP
+```
+
 ### Register set and `GpioPortPinImpl`
 
 ```cpp
@@ -162,11 +184,9 @@ Key differences from the STM32U083 specialisation:
 #include "ohal/core/register.hpp"
 #include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp"
+#include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 
 namespace ohal::platforms::msp430fr2xx::msp430fr2355 {
-
-/// Number of pins per MSP430FR2355 GPIO port (0–7).
-inline constexpr uint8_t kMsp430fr2355PinCount = 8U;
 
 /// Register types for one MSP430FR2355 8-bit GPIO port.
 /// Parameterised on six independent 8-bit register addresses (each port has
@@ -209,7 +229,7 @@ template <typename> struct dependent_false : std::false_type {};
 ///                 satisfy the ohal::core::Register or MockRegister interface.
 template <uint8_t PinNum, typename Regs>
 struct GpioPortPinImpl {
-  static_assert(PinNum < kMsp430fr2355PinCount,
+  static_assert(PinNum < kPinCount,
       "ohal: MSP430FR2355 GPIO ports have pins 0-7 only.");
 
   // Bit-field descriptors — 1 bit per pin.
@@ -315,18 +335,11 @@ report `false`.
 
 #include <type_traits>
 #include "ohal/core/capabilities.hpp"
-
-namespace ohal::gpio::capabilities {
-
-namespace detail {
-/// MSP430FR2355 GPIO ports have 8 pins (0–7).
-inline constexpr uint8_t kMsp430fr2355PinCount = 8U;
-
-/// Evaluates to true_type for valid pin numbers (0–7), false_type otherwise.
-/// Used as the base for every MSP430FR2355 capability specialisation so that
-/// out-of-range pin numbers correctly report false.
+// Include the shared constants header (not gpio.hpp itself, to avoid a circular include).
+#include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 template <uint8_t PinNum>
-using Msp430fr2355PortCapability = std::bool_constant<(PinNum < kMsp430fr2355PinCount)>;
+using Msp430fr2355PortCapability =
+    std::bool_constant<(PinNum < platforms::msp430fr2xx::msp430fr2355::kPinCount)>;
 } // namespace detail
 
 // MSP430FR2355 supports pull resistors and alternate-function selection on all
@@ -370,19 +383,21 @@ struct supports_alternate_function<PortF, PinNum> : detail::Msp430fr2355PortCapa
 
 1. Add `platforms/msp430fr2xx/family.hpp` — validates model define; errors with a clear message
    if none is supplied.
-2. Add `platforms/msp430fr2xx/models/msp430fr2355/gpio.hpp` — defines `GpioPortRegs<…>` with
+2. Add `platforms/msp430fr2xx/models/msp430fr2355/constants.hpp` — single source of truth for
+   `kPinCount = 8`, shared by `gpio.hpp` and `capabilities.hpp` to avoid duplication.
+3. Add `platforms/msp430fr2xx/models/msp430fr2355/gpio.hpp` — defines `GpioPortRegs<…>` with
    six 8-bit register types, `GpioPortPinImpl<PinNum, Regs>` implementing the full GPIO API, and
    `Pin<PortA…PortF, PinNum>` partial specialisations that instantiate `GpioPortPinImpl` with the
    real hardware register types (`GpioP1Regs…GpioP6Regs`).
-3. Add `platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp` — per-port specialisations of
-   `supports_pull` and `supports_alternate_function` bounded by pin count (0–7); all other traits
-   remain `false_type` (default).
-4. Host tests instantiate `GpioPortPinImpl<PinNum, MockGpioRegs>` directly (where `MockGpioRegs`
+4. Add `platforms/msp430fr2xx/models/msp430fr2355/capabilities.hpp` — per-port specialisations of
+   `supports_pull` and `supports_alternate_function` bounded by `kPinCount` (0–7); all other
+   traits remain `false_type` (default).
+5. Host tests instantiate `GpioPortPinImpl<PinNum, MockGpioRegs>` directly (where `MockGpioRegs`
    carries `ohal::test::MockRegister<uint8_t, &storage>` type aliases), following the same
    mock-injection pattern as STM32U083. No macro-based address override is needed.
-5. Application code using `ohal::gpio::Pin<PortA, 2>` for basic `set()`/`clear()`/`toggle()`
+6. Application code using `ohal::gpio::Pin<PortA, 2>` for basic `set()`/`clear()`/`toggle()`
    compiles unchanged.
-6. Application code calling `set_speed()` or `set_output_type()` on an MSP430FR2355 target fails
+7. Application code calling `set_speed()` or `set_output_type()` on an MSP430FR2355 target fails
    with a clear compile-time error message (via `detail::dependent_false<Regs>`).
 
 ## Tests to Write (host)

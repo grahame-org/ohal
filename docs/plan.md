@@ -304,6 +304,7 @@ ohal/
 │   │   ├── family.hpp
 │   │   └── models/
 │   │       └── msp430fr2355/
+│   │           ├── constants.hpp        ← shared pin-count constant
 │   │           ├── gpio.hpp
 │   │           └── capabilities.hpp
 │   └── ti_mspm0/                        ← added in Step 15
