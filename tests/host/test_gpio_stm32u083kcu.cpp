@@ -3,8 +3,8 @@
 #include <ohal/core/capabilities.hpp>
 #include <ohal/core/field.hpp>
 #include <ohal/gpio.hpp>
-#include <ohal/platforms/stm32u0/models/stm32u083/capabilities.hpp>
-#include <ohal/platforms/stm32u0/models/stm32u083/gpio.hpp>
+#include <ohal/platforms/stm32u0/models/stm32u083kcu/capabilities.hpp>
+#include <ohal/platforms/stm32u0/models/stm32u083kcu/gpio.hpp>
 
 #include <cstdint>
 
@@ -65,7 +65,7 @@ using MockPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegs>
 // Test fixture: resets every mock register before each test.
 // ---------------------------------------------------------------------------
 
-class GpioStm32u083Test : public ::testing::Test {
+class GpioStm32u083KcuTest : public ::testing::Test {
 protected:
   void SetUp() override {
     mock_moder = 0U;
@@ -86,12 +86,12 @@ protected:
 // set() — writes 1u << PinNum to BSRR
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, Set_WritesBitToBsrr) {
+TEST_F(GpioStm32u083KcuTest, Set_WritesBitToBsrr) {
   MockPin5::set();
   EXPECT_EQ(mock_bsrr, 1U << 5U);
 }
 
-TEST_F(GpioStm32u083Test, Set_DoesNotModifyModer) {
+TEST_F(GpioStm32u083KcuTest, Set_DoesNotModifyModer) {
   MockPin5::set();
   EXPECT_EQ(mock_moder, 0U);
 }
@@ -107,16 +107,16 @@ struct PinClearConfig {
 };
 
 template <typename Config>
-class GpioStm32u083ClearBoundaryTest : public ::testing::Test {
+class GpioStm32u083KcuClearBoundaryTest : public ::testing::Test {
 protected:
   void SetUp() override { mock_bsrr = 0U; }
 };
 
 using ClearBoundaryConfigs =
     ::testing::Types<PinClearConfig<0U>, PinClearConfig<5U>, PinClearConfig<15U>>;
-TYPED_TEST_SUITE(GpioStm32u083ClearBoundaryTest, ClearBoundaryConfigs);
+TYPED_TEST_SUITE(GpioStm32u083KcuClearBoundaryTest, ClearBoundaryConfigs);
 
-TYPED_TEST(GpioStm32u083ClearBoundaryTest, WritesBsrrResetBit) {
+TYPED_TEST(GpioStm32u083KcuClearBoundaryTest, WritesBsrrResetBit) {
   TypeParam::PinType::clear();
   EXPECT_EQ(mock_bsrr, TypeParam::expected_bsrr);
 }
@@ -125,17 +125,17 @@ TYPED_TEST(GpioStm32u083ClearBoundaryTest, WritesBsrrResetBit) {
 // Port::set() — writes uint16_t mask to BSRR bits 0-15
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, PortSet_WritesMaskToBsrrLow16Bits) {
+TEST_F(GpioStm32u083KcuTest, PortSet_WritesMaskToBsrrLow16Bits) {
   MockPort::set(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FFU);
 }
 
-TEST_F(GpioStm32u083Test, PortSet_AllPins_WritesMaskToBsrr) {
+TEST_F(GpioStm32u083KcuTest, PortSet_AllPins_WritesMaskToBsrr) {
   MockPort::set(0xFFFFU);
   EXPECT_EQ(mock_bsrr, 0xFFFFU);
 }
 
-TEST_F(GpioStm32u083Test, PortSet_DoesNotModifyModer) {
+TEST_F(GpioStm32u083KcuTest, PortSet_DoesNotModifyModer) {
   MockPort::set(0xFFFFU);
   EXPECT_EQ(mock_moder, 0U);
 }
@@ -144,17 +144,17 @@ TEST_F(GpioStm32u083Test, PortSet_DoesNotModifyModer) {
 // Port::clear() — writes uint16_t mask to BSRR bits 16-31
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, PortClear_WritesMaskToBsrrHigh16Bits) {
+TEST_F(GpioStm32u083KcuTest, PortClear_WritesMaskToBsrrHigh16Bits) {
   MockPort::clear(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FF0000U);
 }
 
-TEST_F(GpioStm32u083Test, PortClear_AllPins_WritesMaskToBsrr) {
+TEST_F(GpioStm32u083KcuTest, PortClear_AllPins_WritesMaskToBsrr) {
   MockPort::clear(0xFFFFU);
   EXPECT_EQ(mock_bsrr, 0xFFFF0000U);
 }
 
-TEST_F(GpioStm32u083Test, PortClear_DoesNotModifyModer) {
+TEST_F(GpioStm32u083KcuTest, PortClear_DoesNotModifyModer) {
   MockPort::clear(0xFFFFU);
   EXPECT_EQ(mock_moder, 0U);
 }
@@ -163,22 +163,22 @@ TEST_F(GpioStm32u083Test, PortClear_DoesNotModifyModer) {
 // Port::write() — writes combined set/clear mask to BSRR in a single store
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
+TEST_F(GpioStm32u083KcuTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
   MockPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(mock_bsrr, 0x00F0000FU);
 }
 
-TEST_F(GpioStm32u083Test, PortWrite_OnlySetMask_WritesMaskToBsrrLow16Bits) {
+TEST_F(GpioStm32u083KcuTest, PortWrite_OnlySetMask_WritesMaskToBsrrLow16Bits) {
   MockPort::write(0xABCDU, 0x0000U);
   EXPECT_EQ(mock_bsrr, 0x0000ABCDU);
 }
 
-TEST_F(GpioStm32u083Test, PortWrite_OnlyClearMask_WritesMaskToBsrrHigh16Bits) {
+TEST_F(GpioStm32u083KcuTest, PortWrite_OnlyClearMask_WritesMaskToBsrrHigh16Bits) {
   MockPort::write(0x0000U, 0xABCDU);
   EXPECT_EQ(mock_bsrr, 0xABCD0000U);
 }
 
-TEST_F(GpioStm32u083Test, PortWrite_DoesNotModifyModer) {
+TEST_F(GpioStm32u083KcuTest, PortWrite_DoesNotModifyModer) {
   MockPort::write(0xFFFFU, 0xFFFFU);
   EXPECT_EQ(mock_moder, 0U);
 }
@@ -194,7 +194,7 @@ struct SetModeCase {
   const char* name;
 };
 
-class GpioStm32u083SetModeTest : public ::testing::TestWithParam<SetModeCase> {
+class GpioStm32u083KcuSetModeTest : public ::testing::TestWithParam<SetModeCase> {
 protected:
   // SetUp is called after the test parameter is bound, so GetParam() is valid here.
   void SetUp() override { mock_moder = GetParam().moder_preload; }
@@ -202,7 +202,7 @@ protected:
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    PinModes, GpioStm32u083SetModeTest,
+    PinModes, GpioStm32u083KcuSetModeTest,
     ::testing::Values(
         SetModeCase{ohal::gpio::PinMode::Output,            0U,           0b01U << 10U, "Output"},
         SetModeCase{ohal::gpio::PinMode::Input,             0b11U << 10U, 0U,           "Input"},
@@ -211,13 +211,13 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<SetModeCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioStm32u083SetModeTest, WritesCorrectModerBits) {
+TEST_P(GpioStm32u083KcuSetModeTest, WritesCorrectModerBits) {
   MockPin5::set_mode(GetParam().mode);
   EXPECT_EQ(mock_moder & (0b11U << 10U), GetParam().expected_field);
 }
 
 // Pin 5: MODER bits [11:10] — verify that writing any mode preserves the other bits.
-TEST_F(GpioStm32u083Test, SetMode_Output_OtherModerBitsPreserved) {
+TEST_F(GpioStm32u083KcuTest, SetMode_Output_OtherModerBitsPreserved) {
   mock_moder = ~(0b11U << 10U); // all ones except bits [11:10]
   MockPin5::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & ~(0b11U << 10U), ~(0b11U << 10U));
@@ -227,12 +227,12 @@ TEST_F(GpioStm32u083Test, SetMode_Output_OtherModerBitsPreserved) {
 // set_output_type() — writes 1-bit OutputType value to OTYPER at offset PinNum
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, SetOutputType_OpenDrain_WritesOtyper) {
+TEST_F(GpioStm32u083KcuTest, SetOutputType_OpenDrain_WritesOtyper) {
   MockPin5::set_output_type(ohal::gpio::OutputType::OpenDrain);
   EXPECT_EQ(mock_otyper & (1U << 5U), 1U << 5U);
 }
 
-TEST_F(GpioStm32u083Test, SetOutputType_PushPull_WritesOtyper) {
+TEST_F(GpioStm32u083KcuTest, SetOutputType_PushPull_WritesOtyper) {
   mock_otyper = 1U << 5U; // pre-load OpenDrain
   MockPin5::set_output_type(ohal::gpio::OutputType::PushPull);
   EXPECT_EQ(mock_otyper & (1U << 5U), 0U);
@@ -242,12 +242,12 @@ TEST_F(GpioStm32u083Test, SetOutputType_PushPull_WritesOtyper) {
 // set_speed() — writes 2-bit Speed value to OSPEEDR at offset PinNum*2
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, SetSpeed_VeryHigh_WritesOspeedr) {
+TEST_F(GpioStm32u083KcuTest, SetSpeed_VeryHigh_WritesOspeedr) {
   MockPin5::set_speed(ohal::gpio::Speed::VeryHigh);
   EXPECT_EQ(mock_ospeedr & (0b11U << 10U), 0b11U << 10U);
 }
 
-TEST_F(GpioStm32u083Test, SetSpeed_Low_WritesOspeedr) {
+TEST_F(GpioStm32u083KcuTest, SetSpeed_Low_WritesOspeedr) {
   mock_ospeedr = 0b11U << 10U; // pre-load VeryHigh
   MockPin5::set_speed(ohal::gpio::Speed::Low);
   EXPECT_EQ(mock_ospeedr & (0b11U << 10U), 0U);
@@ -257,17 +257,17 @@ TEST_F(GpioStm32u083Test, SetSpeed_Low_WritesOspeedr) {
 // set_pull() — writes 2-bit Pull value to PUPDR at offset PinNum*2
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, SetPull_Up_WritesPupdr) {
+TEST_F(GpioStm32u083KcuTest, SetPull_Up_WritesPupdr) {
   MockPin5::set_pull(ohal::gpio::Pull::Up);
   EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0b01U << 10U);
 }
 
-TEST_F(GpioStm32u083Test, SetPull_Down_WritesPupdr) {
+TEST_F(GpioStm32u083KcuTest, SetPull_Down_WritesPupdr) {
   MockPin5::set_pull(ohal::gpio::Pull::Down);
   EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0b10U << 10U);
 }
 
-TEST_F(GpioStm32u083Test, SetPull_None_WritesPupdr) {
+TEST_F(GpioStm32u083KcuTest, SetPull_None_WritesPupdr) {
   mock_pupdr = 0b11U << 10U; // pre-load with non-zero bits (0b11 is reserved; Down = 0b10)
   MockPin5::set_pull(ohal::gpio::Pull::None);
   EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0U);
@@ -277,17 +277,17 @@ TEST_F(GpioStm32u083Test, SetPull_None_WritesPupdr) {
 // read_input() — reads bit PinNum from IDR
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, ReadInput_ReturnsHigh_WhenIdrBitSet) {
+TEST_F(GpioStm32u083KcuTest, ReadInput_ReturnsHigh_WhenIdrBitSet) {
   mock_idr = 1U << 5U;
   EXPECT_EQ(MockPin5::read_input(), ohal::gpio::Level::High);
 }
 
-TEST_F(GpioStm32u083Test, ReadInput_ReturnsLow_WhenIdrBitClear) {
+TEST_F(GpioStm32u083KcuTest, ReadInput_ReturnsLow_WhenIdrBitClear) {
   mock_idr = 0U;
   EXPECT_EQ(MockPin5::read_input(), ohal::gpio::Level::Low);
 }
 
-TEST_F(GpioStm32u083Test, ReadInput_IgnoresOtherIdrBits) {
+TEST_F(GpioStm32u083KcuTest, ReadInput_IgnoresOtherIdrBits) {
   mock_idr = ~(1U << 5U); // all bits set except pin 5
   EXPECT_EQ(MockPin5::read_input(), ohal::gpio::Level::Low);
 }
@@ -296,12 +296,12 @@ TEST_F(GpioStm32u083Test, ReadInput_IgnoresOtherIdrBits) {
 // read_output() — reads bit PinNum from ODR
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, ReadOutput_ReturnsHigh_WhenOdrBitSet) {
+TEST_F(GpioStm32u083KcuTest, ReadOutput_ReturnsHigh_WhenOdrBitSet) {
   mock_odr = 1U << 5U;
   EXPECT_EQ(MockPin5::read_output(), ohal::gpio::Level::High);
 }
 
-TEST_F(GpioStm32u083Test, ReadOutput_ReturnsLow_WhenOdrBitClear) {
+TEST_F(GpioStm32u083KcuTest, ReadOutput_ReturnsLow_WhenOdrBitClear) {
   mock_odr = 0U;
   EXPECT_EQ(MockPin5::read_output(), ohal::gpio::Level::Low);
 }
@@ -310,13 +310,13 @@ TEST_F(GpioStm32u083Test, ReadOutput_ReturnsLow_WhenOdrBitClear) {
 // toggle() — reads ODR then drives opposite level via BSRR
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, Toggle_SetsPin_WhenOutputWasLow) {
+TEST_F(GpioStm32u083KcuTest, Toggle_SetsPin_WhenOutputWasLow) {
   mock_odr = 0U; // pin 5 is Low
   MockPin5::toggle();
   EXPECT_EQ(mock_bsrr, 1U << 5U);
 }
 
-TEST_F(GpioStm32u083Test, Toggle_ClearsPin_WhenOutputWasHigh) {
+TEST_F(GpioStm32u083KcuTest, Toggle_ClearsPin_WhenOutputWasHigh) {
   mock_odr = 1U << 5U; // pin 5 is High
   MockPin5::toggle();
   EXPECT_EQ(mock_bsrr, 1U << 21U);
@@ -326,22 +326,22 @@ TEST_F(GpioStm32u083Test, Toggle_ClearsPin_WhenOutputWasHigh) {
 // Boundary pins: verify pin 0 and pin 15 use the correct bit positions
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083Test, SetPin0_WritesBit0ToBsrr) {
+TEST_F(GpioStm32u083KcuTest, SetPin0_WritesBit0ToBsrr) {
   MockPin0::set();
   EXPECT_EQ(mock_bsrr, 1U << 0U);
 }
 
-TEST_F(GpioStm32u083Test, SetPin15_WritesBit15ToBsrr) {
+TEST_F(GpioStm32u083KcuTest, SetPin15_WritesBit15ToBsrr) {
   MockPin15::set();
   EXPECT_EQ(mock_bsrr, 1U << 15U);
 }
 
-TEST_F(GpioStm32u083Test, SetModePin0_WritesModer) {
+TEST_F(GpioStm32u083KcuTest, SetModePin0_WritesModer) {
   MockPin0::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & 0b11U, 0b01U);
 }
 
-TEST_F(GpioStm32u083Test, SetModePin15_WritesModer) {
+TEST_F(GpioStm32u083KcuTest, SetModePin15_WritesModer) {
   MockPin15::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & (0b11U << 30U), 0b01U << 30U);
 }
@@ -373,10 +373,10 @@ struct CapCase {
   const char* name;
 };
 
-class GpioStm32u083CapabilityTest : public ::testing::TestWithParam<CapCase> {};
+class GpioStm32u083KcuCapabilityTest : public ::testing::TestWithParam<CapCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    AllCapabilities, GpioStm32u083CapabilityTest,
+    AllCapabilities, GpioStm32u083KcuCapabilityTest,
     ::testing::Values(
         CapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 0>::value,
                 "PortA_Pin0_OutputType"},
@@ -396,7 +396,7 @@ INSTANTIATE_TEST_SUITE_P(
                 "PortF_Pin15_AlternateFunction"}),
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
 
-TEST_P(GpioStm32u083CapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
+TEST_P(GpioStm32u083KcuCapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
 
 // ---------------------------------------------------------------------------
 // Negative-compile tests (manual verification only)
@@ -437,32 +437,32 @@ using CountingPin5 =
 
 using CountingPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegsCountingBsrr>;
 
-class GpioStm32u083BsrrReadCountTest : public ::testing::Test {
+class GpioStm32u083KcuBsrrReadCountTest : public ::testing::Test {
 protected:
   void SetUp() override { BsrrCountingReg::reset(); }
 };
 
-TEST_F(GpioStm32u083BsrrReadCountTest, Set_NeverCallsReadOnBsrr) {
+TEST_F(GpioStm32u083KcuBsrrReadCountTest, Set_NeverCallsReadOnBsrr) {
   CountingPin5::set();
   EXPECT_EQ(BsrrCountingReg::read_count, 0U);
 }
 
-TEST_F(GpioStm32u083BsrrReadCountTest, Clear_NeverCallsReadOnBsrr) {
+TEST_F(GpioStm32u083KcuBsrrReadCountTest, Clear_NeverCallsReadOnBsrr) {
   CountingPin5::clear();
   EXPECT_EQ(BsrrCountingReg::read_count, 0U);
 }
 
-TEST_F(GpioStm32u083BsrrReadCountTest, PortSet_NeverCallsReadOnBsrr) {
+TEST_F(GpioStm32u083KcuBsrrReadCountTest, PortSet_NeverCallsReadOnBsrr) {
   CountingPort::set(0xFFFFU);
   EXPECT_EQ(BsrrCountingReg::read_count, 0U);
 }
 
-TEST_F(GpioStm32u083BsrrReadCountTest, PortClear_NeverCallsReadOnBsrr) {
+TEST_F(GpioStm32u083KcuBsrrReadCountTest, PortClear_NeverCallsReadOnBsrr) {
   CountingPort::clear(0xFFFFU);
   EXPECT_EQ(BsrrCountingReg::read_count, 0U);
 }
 
-TEST_F(GpioStm32u083BsrrReadCountTest, PortWrite_NeverCallsReadOnBsrr) {
+TEST_F(GpioStm32u083KcuBsrrReadCountTest, PortWrite_NeverCallsReadOnBsrr) {
   CountingPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(BsrrCountingReg::read_count, 0U);
 }
@@ -505,10 +505,10 @@ struct InvalidPinCapCase {
   const char* name;
 };
 
-class GpioStm32u083InvalidPinCapTest : public ::testing::TestWithParam<InvalidPinCapCase> {};
+class GpioStm32u083KcuInvalidPinCapTest : public ::testing::TestWithParam<InvalidPinCapCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidPinCapabilities, GpioStm32u083InvalidPinCapTest,
+    InvalidPinCapabilities, GpioStm32u083KcuInvalidPinCapTest,
     ::testing::Values(
         // Out-of-range pin on a bonded port
         InvalidPinCapCase{
@@ -548,7 +548,7 @@ INSTANTIATE_TEST_SUITE_P(
             "PortE_Pin0_AlternateFunction"}),
     [](const ::testing::TestParamInfo<InvalidPinCapCase>& info) { return info.param.name; });
 
-TEST_P(GpioStm32u083InvalidPinCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
+TEST_P(GpioStm32u083KcuInvalidPinCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
 
 // ---------------------------------------------------------------------------
 // Port-wiring tests: verify that each Pin<PortX, N> specialisation resolves to
@@ -593,10 +593,10 @@ struct WiringCase {
   const char* name;
 };
 
-class GpioStm32u083WiringTest : public ::testing::TestWithParam<WiringCase> {};
+class GpioStm32u083KcuWiringTest : public ::testing::TestWithParam<WiringCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    PortBsrrAddresses, GpioStm32u083WiringTest,
+    PortBsrrAddresses, GpioStm32u083KcuWiringTest,
     ::testing::Values(WiringCase{ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address,
                                  wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
                       WiringCase{ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address,
@@ -607,7 +607,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 
-TEST_P(GpioStm32u083WiringTest, BsrrAddressMatchesHardwareBase) {
+TEST_P(GpioStm32u083KcuWiringTest, BsrrAddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 
@@ -636,10 +636,10 @@ static_assert(ohal::gpio::Port<ohal::gpio::PortF>::BsrrReg::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
               "Port<PortF> must use GPIOF BSRR address");
 
-class GpioStm32u083PortWiringTest : public ::testing::TestWithParam<WiringCase> {};
+class GpioStm32u083KcuPortWiringTest : public ::testing::TestWithParam<WiringCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    PortBsrrAddresses, GpioStm32u083PortWiringTest,
+    PortBsrrAddresses, GpioStm32u083KcuPortWiringTest,
     ::testing::Values(WiringCase{ohal::gpio::Port<ohal::gpio::PortA>::BsrrReg::address,
                                  wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
                       WiringCase{ohal::gpio::Port<ohal::gpio::PortB>::BsrrReg::address,
@@ -650,7 +650,7 @@ INSTANTIATE_TEST_SUITE_P(
                                  wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 
-TEST_P(GpioStm32u083PortWiringTest, BsrrAddressMatchesHardwareBase) {
+TEST_P(GpioStm32u083KcuPortWiringTest, BsrrAddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 

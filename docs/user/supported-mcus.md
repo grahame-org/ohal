@@ -15,10 +15,13 @@ implementation status and the compiler toolchain required to build for each targ
 
 ARM Cortex-M0+ family from STMicroelectronics. 32-bit registers. Toolchain: `arm-none-eabi-g++`.
 
-| Model define           | Device    | GPIO ports                                                         | Status     |
-| ---------------------- | --------- | ------------------------------------------------------------------ | ---------- |
-| `OHAL_MODEL_STM32U083` | STM32U083 | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on KCU package) | 🔧 Partial |
-| `OHAL_MODEL_STM32U073` | STM32U073 | PA–PF                                                              | 📋 Planned |
+| Model define               | Device         | Package    | GPIO ports                                                             | Status     |
+| -------------------------- | -------------- | ---------- | ---------------------------------------------------------------------- | ---------- |
+| `OHAL_MODEL_STM32U083KCU`  | STM32U083KCU   | UFQFPN32   | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
+| `OHAL_MODEL_STM32U083HCY`  | STM32U083HCY   | WLCSP42    | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
+| `OHAL_MODEL_STM32U083CCI`  | STM32U083CCI   | UFQFPN48   | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
+| `OHAL_MODEL_STM32U083CCT`  | STM32U083CCT   | LQFP48     | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on this package)    | 🔧 Partial |
+| `OHAL_MODEL_STM32U073`     | STM32U073      | —          | PA–PF                                                                  | 📋 Planned |
 
 **Supported GPIO features on STM32U083:**
 
@@ -37,12 +40,12 @@ ARM Cortex-M0+ family from STMicroelectronics. 32-bit registers. Toolchain: `arm
 ```cmake
 target_compile_definitions(my_app PRIVATE
     OHAL_FAMILY_STM32U0
-    OHAL_MODEL_STM32U083
+    OHAL_MODEL_STM32U083KCU
 )
 ```
 
 ```sh
-arm-none-eabi-g++ -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083 -std=c++17 ...
+arm-none-eabi-g++ -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU -std=c++17 ...
 ```
 
 ## PIC family — `OHAL_FAMILY_PIC`
