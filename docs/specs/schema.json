@@ -324,6 +324,10 @@
       "additionalProperties": false,
       "properties": {
         "reference": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for this peripheral, e.g. to document the port-pair mapping or address layout conventions.",
+          "type": "string"
+        },
         "instances": {
           "description": "Concrete instances of this peripheral in the device memory map, each binding the register layout to a named base address.",
           "type": "array",
