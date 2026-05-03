@@ -14,7 +14,7 @@ pin-count: 64
 peripheral-availability:
   - peripheral: gpio
     instances: [GPIOA, GPIOB, GPIOC, GPIOD, GPIOF]
-    note: GPIOE is not bonded out on the 64-pin UFBGA package.
+    note: GPIOE is not bonded out on the 64-pin UFBGA package. GPIOD is limited to PD2 only.
 alternate-functions:
   reference:
     sections: [4.1, 4.3]

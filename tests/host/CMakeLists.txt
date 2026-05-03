@@ -15,13 +15,18 @@ add_executable(ohal_host_tests main.cpp test_register.cpp test_bitfield.cpp test
                                test_gpio_stm32u083cci.cpp test_gpio_stm32u083cct.cpp)
 target_link_libraries(ohal_host_tests PRIVATE ohal GTest::gtest_main GTest::gmock)
 
-# RC-model tests use a separate executable because the STM32U083RC packages bond
-# out GPIOD, giving Pin<PortD> a different definition than the KCU/HCY models.
-# Mixing those definitions in a single executable would be an ODR violation.
-add_executable(ohal_host_tests_rc main.cpp test_gpio_stm32u083rct.cpp
-                                  test_gpio_stm32u083rci.cpp)
-target_link_libraries(ohal_host_tests_rc PRIVATE ohal GTest::gtest_main GTest::gmock)
+# RC-model tests use separate executables: the STM32U083RC packages bond out
+# GPIOD (giving Pin<PortD> a working definition), while the KCU/HCY models
+# provide a static_assert for Pin<PortD>.  Mixing those in one executable would
+# be an ODR violation.  RCT and RCI are kept separate so each binary contains
+# only one set of explicit template specialisations.
+add_executable(ohal_host_tests_rct main.cpp test_gpio_stm32u083rct.cpp)
+target_link_libraries(ohal_host_tests_rct PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+add_executable(ohal_host_tests_rci main.cpp test_gpio_stm32u083rci.cpp)
+target_link_libraries(ohal_host_tests_rci PRIVATE ohal GTest::gtest_main GTest::gmock)
 
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
-gtest_discover_tests(ohal_host_tests_rc)
+gtest_discover_tests(ohal_host_tests_rct)
+gtest_discover_tests(ohal_host_tests_rci)
