@@ -7,13 +7,17 @@ testing.
 
 The mock infrastructure provides two complementary mechanisms for host tests:
 
-1. **Direct `Register<>` tests** — `mock_addr(N)` / `mock_addr8(N)` return the address of a slot in
-   the shared `mock_memory` array, so `Register<mock_addr(N)>` and `BitField<Register<mock_addr(N)>, ...>`
-   can be used in tests for the core register and bit-field templates themselves.
+1. **`MockRegister<T, &storage>` tests** — `MockRegister<T, &storage>` is a type alias that models
+   the same `read()`/`write()` API as `Register<Addr, T>` but reads from and writes to a plain
+   variable. All host tests (including `Register<>` and `BitField<>` coverage) use this approach
+   because `mock_addr()` returns a runtime `uintptr_t` computed from `reinterpret_cast`, which
+   is not a constant expression in C++17 and cannot be used as a `Register<>` non-type template
+   parameter.
 
-2. **GPIO platform tests** — `MockRegister<T, &storage>` is a type that models the same API as
-   `Register<Addr, T>` but reads/writes a plain variable. GPIO tests inject a struct of `MockRegister`
-   aliases as the `Regs` template parameter, so no address overrides are needed at all.
+2. **Shared mock memory** — `mock_memory`, `mock_addr(N)`, and `mock_addr8(N)` are provided in
+   `mock_register.hpp` for completeness and potential legacy use, but GPIO and register tests
+   do **not** instantiate `Register<mock_addr(N)>` directly. All host-test register accesses go
+   through `MockRegister`.
 
 The `mock_register.hpp` header provides both:
 
@@ -54,7 +58,7 @@ inline uintptr_t mock_addr8(std::size_t slot) {
 #endif // OHAL_TESTS_HOST_MOCK_MOCK_REGISTER_HPP
 ```
 
-The example below tests the `Register<>` core template via mechanism (1):
+The example below tests the `Register<>` core template via mechanism (2) (MockRegister):
 
 ```cpp
 // tests/host/test_register.cpp  (GoogleTest)
@@ -72,9 +76,9 @@ TEST(RegisterTest, WriteStoresValueAtCorrectAddress) {
 }
 ```
 
-**How addresses are mocked:** The STM32U083 platform header defines
+**How registers are mocked:** The STM32U083 platform header defines
 `GpioPortPinImpl<PinNum, Regs>` parameterised on a `Regs` type. In normal builds the
-`Pin<PortA, N>` specialisation injects `GpioARegs` (which wraps the real hardware addresses).
+`Pin<PortA, N>` specialisation injects `GpioA` (which wraps the real hardware addresses).
 Host test builds instead instantiate `GpioPortPinImpl<PinNum, MockGpioRegs>` directly, where
 `MockGpioRegs` carries `ohal::test::MockRegister<uint32_t, &storage>` type aliases — no address
 override macros are needed. The MSP430FR2355 implementation follows the same template-injection
