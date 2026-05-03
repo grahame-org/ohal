@@ -63,7 +63,8 @@ using GpioA = GpioPortRegs<kGpioABase>;
 using GpioB = GpioPortRegs<kGpioBBase>;
 using GpioC = GpioPortRegs<kGpioCBase>;
 // GpioD and GpioE peripherals exist in silicon but are not bonded out on
-// STM32U083 packages with only A/B/C/F (e.g. stm32u083kcu, stm32u083hcy).
+// STM32U083 packages with only A/B/C/F (e.g. stm32u083kcu, stm32u083hcy,
+// stm32u083cci, stm32u083cct).
 // Their address constants and Regs aliases are retained here for reference.
 // Diagnostic-only Pin<PortD/E> and Port<PortD/E> specialisations are provided
 // below; they static_assert / delete their members to produce a clear
@@ -184,7 +185,8 @@ struct GpioPortImpl {
 // ---------------------------------------------------------------------------
 // ohal::gpio::Pin<> and Port<> specialisations for STM32U083 packages where
 // only GPIOA, GPIOB, GPIOC and GPIOF are bonded out (e.g. STM32U083KCU
-// 32-pin UFQFPN and STM32U083HCY 42-ball WLCSP).
+// 32-pin UFQFPN, STM32U083HCY 42-ball WLCSP, STM32U083CCI 48-pin UFQFPN,
+// and STM32U083CCT 48-pin LQFP).
 //
 // GPIOD and GPIOE exist in silicon but are not bonded out on these packages.
 // Explicit Pin<PortD/E> and Port<PortD/E> specialisations are provided below
