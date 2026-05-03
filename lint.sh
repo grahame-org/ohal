@@ -22,7 +22,7 @@ find "${REPO_ROOT}/include" -name '*.hpp' \
     --extra-arg="-std=c++17" \
     --extra-arg="-I${REPO_ROOT}/include" \
     --extra-arg="-DOHAL_FAMILY_STM32U0" \
-    --extra-arg="-DOHAL_MODEL_STM32U083" \
+    --extra-arg="-DOHAL_MODEL_STM32U083KCU" \
     {} --
 
 echo "=== cmake-lint ==="

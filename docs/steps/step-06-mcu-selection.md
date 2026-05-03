@@ -61,17 +61,17 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
 #ifndef OHAL_PLATFORMS_STM32U0_FAMILY_HPP
 #define OHAL_PLATFORMS_STM32U0_FAMILY_HPP
 
-#if !defined(OHAL_MODEL_STM32U083) && \
+#if !defined(OHAL_MODEL_STM32U083KCU) && \
     !defined(OHAL_MODEL_STM32U073) /* … list all U0 models … */
   #error "ohal: No STM32U0 model defined. " \
-         "Pass -DOHAL_MODEL_STM32U083 (or another U0 model) to the compiler."
+         "Pass -DOHAL_MODEL_STM32U083KCU (or another U0 model) to the compiler."
 #endif
 
-#if defined(OHAL_MODEL_STM32U083)
-  #include "ohal/platforms/stm32u0/models/stm32u083/gpio.hpp"
-  #include "ohal/platforms/stm32u0/models/stm32u083/timer.hpp"
-  #include "ohal/platforms/stm32u0/models/stm32u083/uart.hpp"
-  #include "ohal/platforms/stm32u0/models/stm32u083/capabilities.hpp"
+#if defined(OHAL_MODEL_STM32U083KCU)
+  #include "ohal/platforms/stm32u0/models/stm32u083kcu/gpio.hpp"
+  #include "ohal/platforms/stm32u0/models/stm32u083kcu/timer.hpp"
+  #include "ohal/platforms/stm32u0/models/stm32u083kcu/uart.hpp"
+  #include "ohal/platforms/stm32u0/models/stm32u083kcu/capabilities.hpp"
 // … other models …
 #endif
 
@@ -83,5 +83,5 @@ and a skeleton for the first platform (STM32U0 / STM32U083).
 - Compiling with no defines produces the "No MCU family defined" error.
 - Compiling with `OHAL_FAMILY_STM32U0` but no model produces the "No STM32U0 model defined"
   error.
-- Compiling with `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_STM32U083` succeeds.
+- Compiling with `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_STM32U083KCU` succeeds.
 - Compiling with an invalid family produces the unknown-family error.

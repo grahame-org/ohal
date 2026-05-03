@@ -25,7 +25,7 @@ graph TD
     PIL["Peripheral interface layer — include/ohal/\ngpio.hpp · timer.hpp · uart.hpp\nPrimary Pin/Channel templates — static_assert if unspecialised"]
     CAL["Core abstraction layer — include/ohal/core/\nregister.hpp · field.hpp · access.hpp · capabilities.hpp"]
     PSL["Platform selection layer — include/ohal/platform.hpp\nValidates OHAL_FAMILY_* + OHAL_MODEL_*\nand includes the correct platform header"]
-    PPL["Platform-specific layer — include/ohal/platforms/\nstm32u0/family.hpp → models/stm32u083/gpio.hpp + capabilities.hpp\npic/family.hpp → models/pic18f4550/gpio.hpp + capabilities.hpp"]
+    PPL["Platform-specific layer — include/ohal/platforms/\nstm32u0/family.hpp → models/stm32u083kcu/gpio.hpp + capabilities.hpp\npic/family.hpp → models/pic18f4550/gpio.hpp + capabilities.hpp"]
 
     APP -->|"#include ohal/ohal.hpp"| PIL
     PIL -->|uses| CAL
