@@ -99,9 +99,9 @@ alternate-functions:
         port: A
         bit: 3
       functions:
-        AF0: TIM2_CH4
+        AF1: TIM2_CH4
         AF7: USART2_RX
-        AF8: LPUART1_TX
+        AF8: LPUART1_RX
         AF11: LCD_SEG2
         AF14: TIM15_CH2
         AF15: EVENTOUT
@@ -128,7 +128,7 @@ alternate-functions:
         AF2: TIM2_ETR
         AF5: SPI1_SCK
         AF7: USART3_TX
-        AF8: USART3_RX
+        AF8: LPUART3_RX
         AF11: LCD_SEG44
         AF14: LPTIM2_ETR
         AF15: EVENTOUT
@@ -148,7 +148,7 @@ alternate-functions:
         AF8: LPUART1_CTS
         AF9: TSC_G5_IO1
         AF11: LCD_SEG3
-        AF14: TIM15_CH1
+        AF14: TIM16_CH1
         AF15: EVENTOUT
     - pin: "PA7"
       number: 13
