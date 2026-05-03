@@ -390,8 +390,8 @@ INSTANTIATE_TEST_SUITE_P(
                 "PortB_Pin7_OutputType"},
         CapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 3>::value,
                 "PortC_Pin3_OutputSpeed"},
-        CapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 11>::value,
-                "PortD_Pin11_Pull"},
+        CapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 14>::value,
+                "PortC_Pin14_Pull"},
         CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 15>::value,
                 "PortF_Pin15_AlternateFunction"}),
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
@@ -529,14 +529,6 @@ static_assert(ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address 
                   wiring::kGpioCBase + wiring::kBsrrOffset,
               "Pin<PortC,0> must use GPIOC BSRR address");
 
-static_assert(ohal::gpio::Pin<ohal::gpio::PortD, 0>::BsrrSet::reg_type::address ==
-                  wiring::kGpioDBase + wiring::kBsrrOffset,
-              "Pin<PortD,0> must use GPIOD BSRR address");
-
-static_assert(ohal::gpio::Pin<ohal::gpio::PortE, 0>::BsrrSet::reg_type::address ==
-                  wiring::kGpioEBase + wiring::kBsrrOffset,
-              "Pin<PortE,0> must use GPIOE BSRR address");
-
 static_assert(ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
               "Pin<PortF,0> must use GPIOF BSRR address");
@@ -566,10 +558,6 @@ INSTANTIATE_TEST_SUITE_P(
                                  wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
                       WiringCase{ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address,
                                  wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
-                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortD, 0>::BsrrSet::reg_type::address,
-                                 wiring::kGpioDBase + wiring::kBsrrOffset, "PortD"},
-                      WiringCase{ohal::gpio::Pin<ohal::gpio::PortE, 0>::BsrrSet::reg_type::address,
-                                 wiring::kGpioEBase + wiring::kBsrrOffset, "PortE"},
                       WiringCase{ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address,
                                  wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
@@ -599,14 +587,6 @@ static_assert(ohal::gpio::Port<ohal::gpio::PortC>::BsrrReg::address ==
                   wiring::kGpioCBase + wiring::kBsrrOffset,
               "Port<PortC> must use GPIOC BSRR address");
 
-static_assert(ohal::gpio::Port<ohal::gpio::PortD>::BsrrReg::address ==
-                  wiring::kGpioDBase + wiring::kBsrrOffset,
-              "Port<PortD> must use GPIOD BSRR address");
-
-static_assert(ohal::gpio::Port<ohal::gpio::PortE>::BsrrReg::address ==
-                  wiring::kGpioEBase + wiring::kBsrrOffset,
-              "Port<PortE> must use GPIOE BSRR address");
-
 static_assert(ohal::gpio::Port<ohal::gpio::PortF>::BsrrReg::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
               "Port<PortF> must use GPIOF BSRR address");
@@ -621,10 +601,6 @@ INSTANTIATE_TEST_SUITE_P(
                                  wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
                       WiringCase{ohal::gpio::Port<ohal::gpio::PortC>::BsrrReg::address,
                                  wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
-                      WiringCase{ohal::gpio::Port<ohal::gpio::PortD>::BsrrReg::address,
-                                 wiring::kGpioDBase + wiring::kBsrrOffset, "PortD"},
-                      WiringCase{ohal::gpio::Port<ohal::gpio::PortE>::BsrrReg::address,
-                                 wiring::kGpioEBase + wiring::kBsrrOffset, "PortE"},
                       WiringCase{ohal::gpio::Port<ohal::gpio::PortF>::BsrrReg::address,
                                  wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });

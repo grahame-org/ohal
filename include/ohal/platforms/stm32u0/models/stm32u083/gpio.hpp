@@ -62,6 +62,10 @@ struct GpioPortRegs {
 using GpioA = GpioPortRegs<kGpioABase>;
 using GpioB = GpioPortRegs<kGpioBBase>;
 using GpioC = GpioPortRegs<kGpioCBase>;
+// GpioD and GpioE peripherals exist in silicon but are not bonded out on the
+// 32-pin UFQFPN package (stm32u083kcu).  Their address constants and Regs
+// aliases are retained here for reference; Pin<PortD/E> and Port<PortD/E>
+// specialisations are intentionally absent.
 using GpioD = GpioPortRegs<kGpioDBase>;
 using GpioE = GpioPortRegs<kGpioEBase>;
 using GpioF = GpioPortRegs<kGpioFBase>;
@@ -176,14 +180,13 @@ struct GpioPortImpl {
 } // namespace ohal::platforms::stm32u0::stm32u083
 
 // ---------------------------------------------------------------------------
-// ohal::gpio::Pin<> partial specialisations for every STM32U083 GPIO port.
-// Each port delegates to GpioPortPinImpl with its corresponding physical
-// register set.  All six ports share identical register layouts; only the
-// base address differs.
+// ohal::gpio::Pin<> partial specialisations for every STM32U083KCU GPIO port.
+// GPIOA, GPIOB, GPIOC and GPIOF are bonded out on the 32-pin UFQFPN package.
+// GPIOD and GPIOE exist in silicon but are not bonded out; omitting their
+// Pin<> specialisations causes a descriptive static_assert if any code tries
+// to use those ports on this target.
 // ---------------------------------------------------------------------------
-// ohal::gpio::Port<> full specialisations for every STM32U083 GPIO port.
-// Each port delegates to GpioPortImpl with its corresponding physical
-// register set.
+// ohal::gpio::Port<> full specialisations for every STM32U083KCU GPIO port.
 // ---------------------------------------------------------------------------
 
 namespace ohal::gpio {
@@ -201,14 +204,6 @@ struct Pin<PortC, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl
                                 PinNum, ohal::platforms::stm32u0::stm32u083::GpioC> {};
 
 template <uint8_t PinNum>
-struct Pin<PortD, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioD> {};
-
-template <uint8_t PinNum>
-struct Pin<PortE, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioE> {};
-
-template <uint8_t PinNum>
 struct Pin<PortF, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
                                 PinNum, ohal::platforms::stm32u0::stm32u083::GpioF> {};
 
@@ -223,14 +218,6 @@ struct Port<PortB> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
 template <>
 struct Port<PortC> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
                          ohal::platforms::stm32u0::stm32u083::GpioC> {};
-
-template <>
-struct Port<PortD> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioD> {};
-
-template <>
-struct Port<PortE> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioE> {};
 
 template <>
 struct Port<PortF> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
