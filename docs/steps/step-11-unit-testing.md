@@ -55,9 +55,7 @@ verify that the correct memory locations are modified:
 #include "mock/mock_register.hpp"
 #include "ohal/core/register.hpp"
 
-namespace {
 static uint32_t mock_storage{0U};
-}
 
 TEST(RegisterTest, WriteStoresValueAtCorrectAddress) {
     mock_storage = 0U;

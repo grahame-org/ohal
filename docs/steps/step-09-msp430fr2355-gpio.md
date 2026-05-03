@@ -280,7 +280,7 @@ struct GpioPortPinImpl {
   /// **Important:** On MSP430FR2355, `PxOUT` controls both the output driven level
   /// (when the pin is an output) and the pull resistor direction (when the pin is an
   /// input with PxREN set). Calling `set_pull()` while the pin is still configured as
-  /// an output will change the pin's driven level as a side-effect. Always call
+  /// an output will change the pin's driven level as a side effect. Always call
   /// `set_mode(PinMode::Input)` before `set_pull()`.
   static void set_pull(gpio::Pull pull) noexcept {
     if (pull == gpio::Pull::None) {
