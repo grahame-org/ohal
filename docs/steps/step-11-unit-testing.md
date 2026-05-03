@@ -50,24 +50,20 @@ Host tests instantiate `Register<mock_addr(N)>` and `BitField<Register<mock_addr
 verify that the correct memory locations are modified:
 
 ```cpp
-// tests/host/test_register.cpp  (example using Catch2)
-#include <catch2/catch_test_macros.hpp>
+// tests/host/test_register.cpp  (GoogleTest)
+#include <gtest/gtest.h>
 #include "mock/mock_register.hpp"
 #include "ohal/core/register.hpp"
 
-TEST_CASE("Register::write stores value at correct address") {
-    ohal::test::reset_mock();
-    using Reg = ohal::core::Register<ohal::test::mock_addr(0)>;
-    Reg::write(0xDEADBEEFu);
-    REQUIRE(ohal::test::mock_memory[0] == 0xDEADBEEFu);
+namespace {
+static uint32_t mock_storage{0U};
 }
 
-TEST_CASE("Register::set_bits ORs without disturbing other bits") {
-    ohal::test::reset_mock();
-    ohal::test::mock_memory[0] = 0xF0F0F0F0u;
-    using Reg = ohal::core::Register<ohal::test::mock_addr(0)>;
-    Reg::set_bits(0x0F0F0F0Fu);
-    REQUIRE(ohal::test::mock_memory[0] == 0xFFFFFFFFu);
+TEST(RegisterTest, WriteStoresValueAtCorrectAddress) {
+    mock_storage = 0U;
+    using Reg = ohal::test::MockRegister<uint32_t, &mock_storage>;
+    Reg::write(0xDEADBEEFu);
+    EXPECT_EQ(mock_storage, 0xDEADBEEFu);
 }
 ```
 
@@ -121,7 +117,7 @@ Example negative-compile tests:
 | `read_from_writeonly_field`      | `BSRR_SET_field::read()`                                  | `cannot read from a write-only field`              |
 | `overflow_bitfield`              | `BitField<Reg, 30, 4, RW>`                                | `BitField (Offset + Width) exceeds register width` |
 | `no_family_defined`              | compile with no defines                                   | `No MCU family defined`                            |
-| `wrong_model_for_family`         | `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_MSP430FR2355`         | `not in family STM32U0`                            |
+| `wrong_model_for_family`         | `OHAL_FAMILY_STM32U0` + `OHAL_MODEL_MSP430FR2355`         | `No STM32U0 model defined`                         |
 | `msp430_unsupported_speed`       | `Pin<PortA,2>::set_speed(Speed::High)` with MSP430 target | `does not support configurable output speed`       |
 | `msp430_unsupported_output_type` | `Pin<PortA,2>::set_output_type(OutputType::OpenDrain)`    | `does not support configurable output type`        |
 

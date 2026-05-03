@@ -276,11 +276,17 @@ struct GpioPortPinImpl {
   }
 
   /// set_pull: enable PxREN and use PxOUT to select up/down.
-  /// Requires PxDIR=0 (input); call set_mode(Input) before set_pull().
+  ///
+  /// **Important:** On MSP430FR2355, `PxOUT` controls both the output driven level
+  /// (when the pin is an output) and the pull resistor direction (when the pin is an
+  /// input with PxREN set). Calling `set_pull()` while the pin is still configured as
+  /// an output will change the pin's driven level as a side-effect. Always call
+  /// `set_mode(PinMode::Input)` before `set_pull()`.
   static void set_pull(gpio::Pull pull) noexcept {
     if (pull == gpio::Pull::None) {
       RenBit::write(0U);
     } else {
+      // PxOUT bit N: 1 = pull-up, 0 = pull-down (only meaningful when PxREN=1 and PxDIR=0).
       OutBit::write(pull == gpio::Pull::Up ? 1U : 0U);
       RenBit::write(1U);
     }
@@ -335,7 +341,7 @@ report `false`.
 
 #include <type_traits>
 #include "ohal/core/capabilities.hpp"
-// Include the shared constants header (not gpio.hpp itself, to avoid a circular include).
+#include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 
 namespace ohal::gpio::capabilities {

@@ -431,11 +431,8 @@ classDiagram
         +static constexpr uintptr_t address = Addr
         +static T read() noexcept
         +static void write(T value) noexcept
-        +static void set_bits(T mask) noexcept
-        +static void clear_bits(T mask) noexcept
-        +static void modify(T clear_mask, T set_mask) noexcept
     }
-    note for `Register~Addr, T~` "All data is in template parameters.\nZero data members. sizeof == 1 (empty struct).\nT = uint32_t for ARM; T = uint8_t for MSP430FR2355 port registers."
+    note for `Register~Addr, T~` "All data is in template parameters.\nZero data members. sizeof == 1 (empty struct).\nOnly read() and write() — no RMW helpers.\nT = uint32_t for ARM; T = uint8_t for MSP430FR2355 port registers."
 ```
 
 ### 6.2 BitField Template
@@ -500,16 +497,16 @@ graph LR
 
 ### 7.1 Define Combinations
 
-| `OHAL_FAMILY_*` | `OHAL_MODEL_*` | Result                                                       |
-| --------------- | -------------- | ------------------------------------------------------------ |
-| (none)          | (any)          | Compile error: "No MCU family defined"                       |
-| `STM32U0`       | (none)         | Compile error: "No STM32U0 model defined"                    |
-| `STM32U0`       | `STM32U083`    | OK                                                           |
-| `STM32U0`       | `MSP430FR2355` | Compile error: "Model MSP430FR2355 is not in family STM32U0" |
-| `MSP430FR2XX`   | `MSP430FR2355` | OK                                                           |
-| `MSP430FR2XX`   | (none)         | Compile error: "No MSP430FR2xx model defined"                |
-| `TI_MSPM0`      | `MSPM0G3507`   | OK (once implemented)                                        |
-| `TI_MSPM0`      | (none)         | Compile error: "No TI_MSPM0 model defined"                   |
+| `OHAL_FAMILY_*` | `OHAL_MODEL_*` | Result                                                                                                  |
+| --------------- | -------------- | ------------------------------------------------------------------------------------------------------- |
+| (none)          | (any)          | Compile error: "No MCU family defined"                                                                  |
+| `STM32U0`       | (none)         | Compile error: "No STM32U0 model defined"                                                               |
+| `STM32U0`       | `STM32U083`    | OK                                                                                                      |
+| `STM32U0`       | `MSP430FR2355` | Compile error: "No STM32U0 model defined" (MSP430FR2355 is not recognised by the STM32U0 family header) |
+| `MSP430FR2XX`   | `MSP430FR2355` | OK                                                                                                      |
+| `MSP430FR2XX`   | (none)         | Compile error: "No MSP430FR2xx model defined"                                                           |
+| `TI_MSPM0`      | `MSPM0G3507`   | OK (once implemented)                                                                                   |
+| `TI_MSPM0`      | (none)         | Compile error: "No TI_MSPM0 model defined"                                                              |
 
 ### 7.2 How to Add a New MCU Family
 
