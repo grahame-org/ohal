@@ -1,0 +1,38 @@
+spec-version: "1.0.0"
+
+architecture:
+  name: "Texas Instruments MSP430"
+  word-size: 16
+  endianness: little
+
+memory:
+  note: >-
+    MSP430 memory maps vary by family/model (e.g., address space size, memory types, vector placement,
+    peripheral regions). Therefore, no fixed, architecture-wide address ranges are defined here.
+    Memory regions must be specified at the family/model layers.
+
+definitions:
+  settings:
+    # Status Register (SR / R2) control bits used across MSP430 cores.
+    # These are defined as single-bit enumerations so that family specs can reuse them
+    # when describing SR bitfields or mode-control behaviours.
+
+    sr-cpuoff: &sr-cpuoff
+      "0": "CPU active"
+      "1": "CPU off"
+
+    sr-oscoff: &sr-oscoff
+      "0": "Oscillator on"
+      "1": "Oscillator off"
+
+    sr-scg0: &sr-scg0
+      "0": "System clock generator 0 enabled"
+      "1": "System clock generator 0 disabled"
+
+    sr-scg1: &sr-scg1
+      "0": "System clock generator 1 enabled"
+      "1": "System clock generator 1 disabled"
+
+    sr-gie: &sr-gie
+      "0": "Maskable interrupts disabled (GIE=0)"
+      "1": "Maskable interrupts enabled (GIE=1)"

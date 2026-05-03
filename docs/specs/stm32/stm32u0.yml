@@ -1,16 +1,23 @@
----
 spec-version: "1.0.0"
+
 vendor: STMicroelectronics
+
 family:
   name: stm32u0
   sub-families: [stm32u031, stm32u073, stm32u083]
+
+arch-ref: cortex-m0plus
+
 architecture:
   name: ARM Cortex-M0+
   word-size: 32
-arch-ref: cortex-m0plus
+
 reference:
   source: RM0503
+  title: STM32U0 series advanced Arm-based 32-bit MCUs - Reference Manual
   revision: 4
+  last-modified: 2025-07
+
 memory:
   references:
     sections: [2.2.2]

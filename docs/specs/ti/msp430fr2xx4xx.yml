@@ -1,0 +1,2142 @@
+spec-version: "1.0.0"
+
+vendor: "Texas Instruments"
+
+family:
+  name: "msp430fr2xx4xx"
+  sub-families: [msp430fr2xx, msp430fr4xx]
+
+arch-ref: "msp430"
+
+architecture:
+  name: "Texas Instruments MSP430"
+  word-size: 16
+
+reference:
+  source: SLAU445
+  title: MSP430FR4xx and MSP430FR2xx Family User's Guide
+  revision: I
+  last-modified: 2019-03
+
+memory:
+  references:
+    sections: ["1.9.1"]
+  note: >-
+    The family guide describes a common memory-map layout for MSP430FR2xx/MSP430FR4xx.
+    Several regions (RAM size and program FRAM size) vary by device; this skeleton records
+    the inclusive ranges and annotates the variability. Vacant memory behaviour and
+    access side-effects are described in the SYS chapter.
+  map:
+    - name: "Peripherals (with gaps)"
+      start: 0x00000
+      end: 0x00FFF
+      verified: true
+      note: >-
+        Peripheral space; includes reserved system extension and descriptor metadata ranges.
+
+    - name: Reserved for system extension
+      start: 0x00000
+      end: 0x000FF
+      verified: true
+
+    - name: Peripherals
+      start: 0x00100
+      end: 0x00FEF
+      verified: true
+
+    - name: Descriptor type
+      start: 0x00FF0
+      end: 0x00FF3
+      verified: true
+
+    - name: Start address of descriptor structure
+      start: 0x00FF4
+      end: 0x00FF7
+      verified: true
+
+    - name: "Information memory (FRAM)"
+      start: 0x01800
+      end: 0x019FF
+      verified: true
+
+    - name: "RAM - 8kb"
+      start: 0x02000
+      end: 0x03FFF
+      verified: true
+
+    - name: "RAM - 4kb"
+      start: 0x02000
+      end: 0x02FFF
+      verified: true
+
+    - name: "RAM - 2kb"
+      start: 0x02000
+      end: 0x027FF
+      verified: true
+
+    - name: "RAM - 1kb"
+      start: 0x02000
+      end: 0x023FF
+      verified: true
+
+    - name: "RAM - 512b"
+      start: 0x02000
+      end: 0x021FF
+      verified: true
+
+    - name: "Program memory - 32kb"
+      start: 0x08000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 16kb"
+      start: 0x0C000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 15kb"
+      start: 0x0C400
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 8kb"
+      start: 0x0E000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 4kb"
+      start: 0x0F000
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 2kb"
+      start: 0x0F800
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 1kb"
+      start: 0x0FC00
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Program memory - 512b"
+      start: 0x0FE00
+      end: 0x0FFFF
+      verified: true
+
+    - name: "Interrupt vectors"
+      start: 0x0FF80
+      end: 0x0FFFF
+      verified: true
+      note: "Vector table region (top of address space)."
+
+definitions:
+  settings:
+    # Architecture-generic: canonical definition lives in docs/specs/common/arch/msp430.yml.
+    # Repeated here because YAML anchors cannot span files.
+    bit-value: &bit-value
+      "0": reset
+      "1": set
+      
+    dir-value: &dir-value
+      "0": input
+      "1": output
+
+    ren-value: &ren-value
+      "0": disabled
+      "1": enabled
+
+    ies-value: &ies-value
+      "0": low-to-high
+      "1": high-to-low
+
+    ie-value: &ie-value
+      "0": disabled
+      "1": enabled
+
+    ifg-value: &ifg-value
+      "0": no interrupt pending
+      "1": interrupt pending
+
+peripherals:
+  - gpio:
+      reference:
+        sections: [8.2]
+      registers:
+        - PAIN:
+            reference:
+              section: 8.4.5
+            offset: 0x00
+            fields:
+              - name: P1IN7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings: *bit-value
+        - P1IN:
+            reference:
+              section: 8.4.5
+            offset: 0x00
+            fields:
+              - name: P1IN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P1IN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings: *bit-value
+        - P2IN:
+            reference:
+              section: 8.4.5
+            offset: 0x01
+            fields:
+              - name: P2IN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings: *bit-value
+              - name: P2IN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings: *bit-value
+        - PAOUT:
+            reference:
+              section: 8.4.6
+            offset: 0x02
+            fields:
+              - name: P1OUT7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - P1OUT:
+            reference:
+              section: 8.4.6
+            offset: 0x02
+            fields:
+              - name: P1OUT7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1OUT0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - P2OUT:
+            reference:
+              section: 8.4.6
+            offset: 0x03
+            fields:
+              - name: P2OUT7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2OUT0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - PADIR:
+            reference:
+              section: 8.4.7
+            offset: 0x04
+            fields:
+              - name: P1DIR7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *dir-value
+
+        - P1DIR:
+            reference:
+              section: 8.4.7
+            offset: 0x04
+            fields:
+              - name: P1DIR7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P1DIR0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *dir-value
+
+        - P2DIR:
+            reference:
+              section: 8.4.7
+            offset: 0x05
+            fields:
+              - name: P2DIR7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *dir-value
+              - name: P2DIR0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *dir-value
+
+        - PAREN:
+            reference:
+              section: 8.4.8
+            offset: 0x06
+            fields:
+              - name: P1REN7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ren-value
+
+        - P1REN:
+            reference:
+              section: 8.4.8
+            offset: 0x06
+            fields:
+              - name: P1REN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P1REN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ren-value
+
+        - P2REN:
+            reference:
+              section: 8.4.8
+            offset: 0x07
+            fields:
+              - name: P2REN7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *ren-value
+              - name: P2REN0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *ren-value
+
+        - PASEL0:
+            reference:
+              section: 8.4.9
+            offset: 0x0A
+            fields:
+              - name: P1SEL07
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL06
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL05
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL04
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL03
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL02
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL01
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL00
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL07
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL06
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL05
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL04
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL03
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL02
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL01
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+              - name: P2SEL00
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+        - P1SEL0:
+            reference:
+              section: 8.4.9
+            offset: 0x0A
+            fields:
+              - name: P1SEL07
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL06
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL05
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL04
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL03
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL02
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL01
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL00
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P2SEL0:
+            reference:
+              section: 8.4.9
+            offset: 0x0B
+            fields:
+              - name: P2SEL07
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL06
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL05
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL04
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL03
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL02
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL01
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL00
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+
+        - P1SEL1:
+            reference:
+              section: 8.4.10
+            offset: 0x0C
+            fields:
+              - name: P1SEL17
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL16
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL15
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL14
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL13
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL12
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL11
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SEL10
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P2SEL1:
+            reference:
+              section: 8.4.10
+            offset: 0x0D
+            fields:
+              - name: P2SEL17
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL16
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL15
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL14
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL13
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL12
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL11
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SEL10
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - PASELC:
+            reference:
+              section: 8.4.11
+            offset: 0x16
+            fields:
+              - name: P1SELC7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P1SELC:
+            reference:
+              section: 8.4.11
+            offset: 0x16
+            fields:
+              - name: P1SELC7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1SELC0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P2SELC:
+            reference:
+              section: 8.4.11
+            offset: 0x17
+            fields:
+              - name: P2SELC7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2SELC0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - PAIES:
+            reference:
+              section: 8.4.12
+            offset: 0x18
+            fields:
+              - name: P1IES7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P1IES:
+            reference:
+              section: 8.4.12
+            offset: 0x18
+            fields:
+              - name: P1IES7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IES0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P2IES:
+            reference:
+              section: 8.4.12
+            offset: 0x19
+            fields:
+              - name: P2IES7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IES0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - PAIE:
+            reference:
+              section: 8.4.13
+            offset: 0x1A
+            fields:
+              - name: P1IE7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P1IE:
+            reference:
+              section: 8.4.13
+            offset: 0x1A
+            fields:
+              - name: P1IE7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IE0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P2IE:
+            reference:
+              section: 8.4.13
+            offset: 0x1B
+            fields:
+              - name: P2IE7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IE0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - PAIFG:
+            reference:
+              section: 8.4.14
+            offset: 0x1C
+            fields:
+              - name: P1IFG7
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG6
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG5
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG4
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG3
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG2
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG1
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG0
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P1IFG:
+            reference:
+              section: 8.4.14
+            offset: 0x1C
+            fields:
+              - name: P1IFG7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P1IFG0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
+        - P2IFG:
+            reference:
+              section: 8.4.14
+            offset: 0x1D
+            fields:
+              - name: P2IFG7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *bit-value
+              - name: P2IFG0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *bit-value
