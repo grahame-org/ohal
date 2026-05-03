@@ -65,10 +65,21 @@
           "description": "Reference manual document identifier, e.g. 'RM0503'.",
           "type": "string"
         },
+        "title": {
+          "description": "Human-readable title of the reference manual, e.g. 'STM32U0 series advanced Arm-based 32-bit MCUs - Reference Manual'.",
+          "type": "string"
+        },
         "revision": {
-          "description": "Reference manual revision number.",
-          "type": "integer",
-          "minimum": 1
+          "description": "Reference manual revision identifier. Numeric for vendors that use integer revisions (e.g. 4); a quoted string for vendors that use letter or alphanumeric codes (e.g. 'I', 'B.1').",
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "minLength": 1 }
+          ]
+        },
+        "last-modified": {
+          "description": "Year-month when this revision of the reference manual was last modified, in YYYY-MM format (e.g. '2025-07').",
+          "type": "string",
+          "pattern": "^[1-9][0-9]{3}-(0[1-9]|1[0-2])$"
         }
       }
     },
@@ -78,6 +89,10 @@
       "additionalProperties": false,
       "properties": {
         "references": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the memory map as a whole.",
+          "type": "string"
+        },
         "map": {
           "description": "List of memory regions.",
           "type": "array",
@@ -289,6 +304,10 @@
           "description": "Register byte offset from the peripheral base address.",
           "$ref": "#/$defs/hex-address"
         },
+        "note": {
+          "description": "Optional free-text annotation for this register, e.g. to document cross-register dependencies or constraints not expressible in the structured fields.",
+          "type": "string"
+        },
         "sequence": { "$ref": "#/$defs/sequence" },
         "fields": {
           "description": "Ordered list of bit-fields from MSB to LSB.",
@@ -305,6 +324,10 @@
       "additionalProperties": false,
       "properties": {
         "reference": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for this peripheral, e.g. to document the port-pair mapping or address layout conventions.",
+          "type": "string"
+        },
         "instances": {
           "description": "Concrete instances of this peripheral in the device memory map, each binding the register layout to a named base address.",
           "type": "array",
