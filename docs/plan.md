@@ -151,9 +151,6 @@ classDiagram
         +static constexpr uintptr_t address
         +static T read()
         +static void write(T value)
-        +static void set_bits(T mask)
-        +static void clear_bits(T mask)
-        +static void modify(T clear_mask, T set_mask)
     }
 
     class BitField~Reg, Offset, Width, Acc~ {
@@ -593,16 +590,16 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    subgraph "Test binary (host)"
+    subgraph "Test binary (host, STM32U083)"
         TEST["test_gpio_stm32u083.cpp"]
-        MOCK["mock/mock_register.hpp<br/>(in-memory register array)"]
+        MOCK["mock/mock_register.hpp<br/>(MockRegister&lt;uint32_t, &storage&gt;)"]
         IFACE["ohal/gpio.hpp<br/>(generic interface)"]
-        PLAT["platforms/stm32u0/models/stm32u083/gpio.hpp<br/>(base addresses overridden by mock_addr())"]
+        IMPL["GpioPortPinImpl&lt;PinNum, MockGpioRegs&gt;<br/>(mock Regs injected via template parameter)"]
     end
     TEST --> MOCK
     TEST --> IFACE
-    IFACE --> PLAT
-    PLAT --> MOCK
+    IFACE --> IMPL
+    IMPL --> MOCK
 ```
 
 ```mermaid
@@ -628,16 +625,16 @@ approach, negative-compile test helper, and coverage targets.
 
 ### 10.1 Classes of Error
 
-| Class                      | Mechanism                                  | Example message                                                                                                         |
-| -------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| No MCU defined             | `#error` preprocessor directive            | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.`                          |
-| Wrong model for family     | `#error` preprocessor directive            | `ohal: Model MSP430FR2355 is not part of family STM32U0. Check -DOHAL_MODEL_*.`                                         |
-| Unimplemented peripheral   | `static_assert` in primary template        | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.` |
-| Write to read-only field   | `static_assert` in `BitField::write`       | `ohal: cannot write to a read-only field`                                                                               |
-| Read from write-only field | `static_assert` in `BitField::read`        | `ohal: cannot read from a write-only field`                                                                             |
-| BitField overflow          | `static_assert` in `BitField` body         | `ohal: BitField (Offset + Width) exceeds register width`                                                                |
-| Out-of-range pin number    | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.`                                                                             |
-| Unsupported feature        | `static_assert` in platform specialisation | `ohal: MSP430FR2355 GPIO does not support configurable output speed.`                                                   |
+| Class                      | Mechanism                                  | Example message                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No MCU defined             | `#error` preprocessor directive            | `ohal: No MCU family defined. Pass -DOHAL_FAMILY_STM32U0 (or another family) to the compiler.`                                                                                   |
+| Wrong model for family     | `#error` preprocessor directive            | `ohal: No STM32U0 model defined. Pass -DOHAL_MODEL_STM32U083 (or another U0 model) to the compiler.` (an unrecognised model macro falls through to the family's catch-all check) |
+| Unimplemented peripheral   | `static_assert` in primary template        | `ohal: gpio::Pin is not implemented for the selected MCU. Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.`                                                          |
+| Write to read-only field   | `static_assert` in `BitField::write`       | `ohal: cannot write to a read-only field`                                                                                                                                        |
+| Read from write-only field | `static_assert` in `BitField::read`        | `ohal: cannot read from a write-only field`                                                                                                                                      |
+| BitField overflow          | `static_assert` in `BitField` body         | `ohal: BitField (Offset + Width) exceeds register width`                                                                                                                         |
+| Out-of-range pin number    | `static_assert` in platform specialisation | `ohal: STM32U083 GPIOA has pins 0-15 only.`                                                                                                                                      |
+| Unsupported feature        | `static_assert` in platform specialisation | `ohal: MSP430FR2355 GPIO does not support configurable output speed.`                                                                                                            |
 
 ### 10.2 Error Design Principles
 

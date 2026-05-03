@@ -287,7 +287,7 @@ struct GpioPortPinImpl {
       RenBit::write(0U);
     } else {
       // PxOUT bit N: 1 = pull-up, 0 = pull-down (only meaningful when PxREN=1 and PxDIR=0).
-      OutBit::write(pull == gpio::Pull::Up ? 1U : 0U);
+      OutBit::write(pull == gpio::Pull::Up ? gpio::Level::High : gpio::Level::Low);
       RenBit::write(1U);
     }
   }

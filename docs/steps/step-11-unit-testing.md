@@ -5,9 +5,17 @@ testing.
 
 ## 11.1 Host Testing with Mock Registers
 
-The mock infrastructure replaces the `volatile` memory-mapped I/O with plain in-memory arrays.
-This is achieved by **not** using the real platform headers during host tests. Instead, the test
-provides its own register addresses pointing into a local array:
+The mock infrastructure provides two complementary mechanisms for host tests:
+
+1. **Direct `Register<>` tests** — `mock_addr(N)` / `mock_addr8(N)` return the address of a slot in
+   the shared `mock_memory` array, so `Register<mock_addr(N)>` and `BitField<Register<mock_addr(N)>, ...>`
+   can be used in tests for the core register and bit-field templates themselves.
+
+2. **GPIO platform tests** — `MockRegister<T, &storage>` is a type that models the same API as
+   `Register<Addr, T>` but reads/writes a plain variable. GPIO tests inject a struct of `MockRegister`
+   aliases as the `Regs` template parameter, so no address overrides are needed at all.
+
+The `mock_register.hpp` header provides both:
 
 ```cpp
 // tests/host/mock/mock_register.hpp
@@ -46,8 +54,7 @@ inline uintptr_t mock_addr8(std::size_t slot) {
 #endif // OHAL_TESTS_HOST_MOCK_MOCK_REGISTER_HPP
 ```
 
-Host tests instantiate `Register<mock_addr(N)>` and `BitField<Register<mock_addr(N)>, ...>` and
-verify that the correct memory locations are modified:
+The example below tests the `Register<>` core template via mechanism (1):
 
 ```cpp
 // tests/host/test_register.cpp  (GoogleTest)
