@@ -156,9 +156,11 @@
           "minLength": 1
         },
         "number": {
-          "description": "Physical pin number on the package (1-based). Matches the pin-number column in the datasheet package pin-out table.",
-          "type": "integer",
-          "minimum": 1
+          "description": "Physical pin identifier on the package. For traditional packages (QFP, QFN, DIP), a 1-based integer pin number (e.g. 1, 6). For BGA/WLCSP packages, an alphanumeric ball designator string (e.g. \"A2\", \"B3\").",
+          "oneOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "minLength": 1 }
+          ]
         },
         "gpio": {
           "description": "GPIO port and bit for this pin. Null for pins that are not GPIO-capable (e.g. power or reset pins).",
