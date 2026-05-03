@@ -1,12 +1,73 @@
 #ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U083RCI_GPIO_HPP
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083RCI_GPIO_HPP
 
-// The STM32U083RCI (64-pin UFBGA) shares the same GPIO register map and
-// bonded-out port set (GPIOA, GPIOB, GPIOC, GPIOD, GPIOF) as the
-// STM32U083RCT (64-pin LQFP).  All GpioPortRegs, GpioPortPinImpl,
-// GpioPortImpl types and ohal::gpio::Pin<>/Port<> specialisations from the
-// shared stm32u083rc header apply unchanged.
+// GPIO Pin<>/Port<> specialisations for the STM32U083RCI (64-pin UFBGA).
+// Bonded-out ports: GPIOA, GPIOB, GPIOC, GPIOD, GPIOF.
+// GPIOE is not bonded out on this package (DS14463, §4.1).
 
-#include "ohal/platforms/stm32u0/models/stm32u083rc/gpio.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083/gpio_impl.hpp"
+
+namespace ohal::gpio {
+
+// Bonded-out ports: GPIOA, GPIOB, GPIOC, GPIOD, GPIOF
+template <uint8_t PinNum>
+struct Pin<PortA, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioA> {};
+
+template <uint8_t PinNum>
+struct Pin<PortB, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioB> {};
+
+template <uint8_t PinNum>
+struct Pin<PortC, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioC> {};
+
+template <uint8_t PinNum>
+struct Pin<PortD, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioD> {};
+
+template <uint8_t PinNum>
+struct Pin<PortF, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioF> {};
+
+// Not bonded out on the UFBGA64 package: GPIOE.
+// Explicit specialisation produces a descriptive error at the point of use.
+template <uint8_t PinNum>
+struct Pin<PortE, PinNum> {
+  static_assert(detail::always_false<PinNum>::value,
+                "ohal: GPIOE is not bonded out on this STM32U083 package.");
+};
+
+template <>
+struct Port<PortA> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioA> {};
+
+template <>
+struct Port<PortB> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioB> {};
+
+template <>
+struct Port<PortC> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioC> {};
+
+template <>
+struct Port<PortD> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioD> {};
+
+template <>
+struct Port<PortF> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
+                         ohal::platforms::stm32u0::stm32u083::GpioF> {};
+
+// Not bonded out on the UFBGA64 package: GPIOE.
+// Member functions are deleted so that any attempt to call them produces a
+// clear compiler diagnostic rather than the primary template's generic error.
+template <>
+struct Port<PortE> {
+  static void set(uint16_t) = delete;             // GPIOE not bonded out on this package
+  static void clear(uint16_t) = delete;           // GPIOE not bonded out on this package
+  static void write(uint16_t, uint16_t) = delete; // GPIOE not bonded out on this package
+};
+
+} // namespace ohal::gpio
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083RCI_GPIO_HPP

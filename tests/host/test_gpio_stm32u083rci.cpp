@@ -154,8 +154,20 @@ static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::
 // Out-of-range pin numbers must report false even on bonded-out ports.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
               "PortA pin 16 (out of range) must not report supports_output_type on RCI");
+static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_output_speed on RCI");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_pull on RCI");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
+              "PortA pin 16 (out of range) must not report supports_alternate_function on RCI");
+static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 16>::value,
+              "PortD pin 16 (out of range) must not report supports_output_type on RCI");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 16>::value,
               "PortD pin 16 (out of range) must not report supports_output_speed on RCI");
+static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 16>::value,
+              "PortD pin 16 (out of range) must not report supports_pull on RCI");
+static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 16>::value,
+              "PortD pin 16 (out of range) must not report supports_alternate_function on RCI");
 
 // PortE is not bonded out on the 64-pin UFBGA package.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
@@ -217,8 +229,25 @@ INSTANTIATE_TEST_SUITE_P(
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
             "PortA_Pin16_OutputType"},
         InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
+                       "PortA_Pin16_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_AlternateFunction"},
+        // Out-of-range pin on PortD (bonded out, but pin 16 is beyond the 0–15 range)
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 16>::value,
+            "PortD_Pin16_OutputType"},
+        InvalidCapCase{
             ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 16>::value,
             "PortD_Pin16_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 16>::value,
+                       "PortD_Pin16_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 16>::value,
+            "PortD_Pin16_AlternateFunction"},
         // PortE — not bonded out on the RCI 64-pin UFBGA package
         InvalidCapCase{
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,

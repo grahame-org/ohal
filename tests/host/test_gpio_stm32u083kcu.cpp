@@ -376,7 +376,7 @@ struct CapCase {
 class GpioStm32u083KcuCapabilityTest : public ::testing::TestWithParam<CapCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    AllCapabilities, GpioStm32u083KcuCapabilityTest,
+    BondedPortCapabilities, GpioStm32u083KcuCapabilityTest,
     ::testing::Values(
         CapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 0>::value,
                 "PortA_Pin0_OutputType"},
@@ -500,55 +500,50 @@ static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::va
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
               "PortE must not report supports_alternate_function (not bonded out on KCU)");
 
-struct InvalidPinCapCase {
+struct InvalidCapCase {
   bool value;
   const char* name;
 };
 
-class GpioStm32u083KcuInvalidPinCapTest : public ::testing::TestWithParam<InvalidPinCapCase> {};
+class GpioStm32u083KcuInvalidCapTest : public ::testing::TestWithParam<InvalidCapCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    InvalidPinCapabilities, GpioStm32u083KcuInvalidPinCapTest,
+    UnbondedAndOutOfRangeCapabilities, GpioStm32u083KcuInvalidCapTest,
     ::testing::Values(
         // Out-of-range pin on a bonded port
-        InvalidPinCapCase{
-            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
-            "PortA_Pin16_OutputType"},
-        InvalidPinCapCase{
+        InvalidCapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
+                       "PortA_Pin16_OutputType"},
+        InvalidCapCase{
             ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
             "PortA_Pin16_OutputSpeed"},
-        InvalidPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
-                          "PortA_Pin16_Pull"},
-        InvalidPinCapCase{
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
+                       "PortA_Pin16_Pull"},
+        InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
             "PortA_Pin16_AlternateFunction"},
         // PortD — not bonded out on the KCU 32-pin UFQFPN package
-        InvalidPinCapCase{
-            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
-            "PortD_Pin0_OutputType"},
-        InvalidPinCapCase{
-            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
-            "PortD_Pin0_OutputSpeed"},
-        InvalidPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
-                          "PortD_Pin0_Pull"},
-        InvalidPinCapCase{
+        InvalidCapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+                       "PortD_Pin0_OutputType"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
+                       "PortD_Pin0_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
+                       "PortD_Pin0_Pull"},
+        InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
             "PortD_Pin0_AlternateFunction"},
         // PortE — not bonded out on the KCU 32-pin UFQFPN package
-        InvalidPinCapCase{
-            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
-            "PortE_Pin0_OutputType"},
-        InvalidPinCapCase{
-            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortE, 0>::value,
-            "PortE_Pin0_OutputSpeed"},
-        InvalidPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::value,
-                          "PortE_Pin0_Pull"},
-        InvalidPinCapCase{
+        InvalidCapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
+                       "PortE_Pin0_OutputType"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortE, 0>::value,
+                       "PortE_Pin0_OutputSpeed"},
+        InvalidCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::value,
+                       "PortE_Pin0_Pull"},
+        InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
             "PortE_Pin0_AlternateFunction"}),
-    [](const ::testing::TestParamInfo<InvalidPinCapCase>& info) { return info.param.name; });
+    [](const ::testing::TestParamInfo<InvalidCapCase>& info) { return info.param.name; });
 
-TEST_P(GpioStm32u083KcuInvalidPinCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
+TEST_P(GpioStm32u083KcuInvalidCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
 
 // ---------------------------------------------------------------------------
 // Port-wiring tests: verify that each Pin<PortX, N> specialisation resolves to
