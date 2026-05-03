@@ -25,7 +25,7 @@ There are three distinct spec types, each with its own JSON Schema and directory
 graph LR
     ARCH["Architecture spec\ndocs/specs/common/arch/cortex-m0plus.yml\nWord size · endianness · PPB regions\ncommon settings encodings"]
     FAM["Family spec\ndocs/specs/stm32/stm32u0.yml\nMemory map · peripheral register layout\nsettings · sequences"]
-    MOD["Model spec\ndocs/specs/stm32/models/stm32u031c4.yml\nPackage · flash/SRAM · pin count\nperipheral availability · AF table · errata"]
+    MOD["Model spec\ndocs/specs/stm32/models/stm32u083kcu.yml\nPackage · flash/SRAM · pin count\nperipheral availability · AF table · errata"]
 
     ARCH -->|"arch-ref: cortex-m0plus"| FAM
     FAM -->|"family-ref: stm32u0"| MOD
@@ -47,7 +47,7 @@ graph TD
     VENDOR["stm32/ nrf/ lpc/ …\none subdirectory per vendor"]
     FAM_YML["stm32u0.yml\nfamily spec"]
     MODELS["models/\nmodel specs"]
-    MODEL_YML["stm32u031c4.yml\nmodel spec"]
+    MODEL_YML["stm32u083kcu.yml\nmodel spec"]
 
     ROOT --> SCHEMAS
     ROOT --> COMMON
@@ -324,7 +324,7 @@ Required top-level keys:
 | `spec-version` | string  | Spec format version (semver)                |
 | `vendor`       | string  | Must match the parent family spec           |
 | `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)     |
-| `model`        | string  | Part number identifier (e.g. `stm32u031c4`) |
+| `model`        | string  | Part number identifier (e.g. `stm32u083kcu`) |
 | `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)    |
 | `flash-kb`     | integer | On-chip flash in kibibytes                  |
 | `sram-kb`      | integer | On-chip SRAM in kibibytes                   |
@@ -332,11 +332,12 @@ Required top-level keys:
 
 Optional keys:
 
-| Key                       | Description                                                 |
-| ------------------------- | ----------------------------------------------------------- |
-| `peripheral-availability` | Which peripheral instances from the family spec are present |
-| `alternate-functions`     | Per-pin AF mapping table (AF0–AF15 → signal names)          |
-| `errata`                  | Known hardware errata with silicon-revision applicability   |
+| Key                       | Description                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| `reference`               | Primary vendor document (datasheet) for this model (`source`, `revision`, optional `title`)  |
+| `peripheral-availability` | Which peripheral instances from the family spec are present; supports an optional `note`     |
+| `alternate-functions`     | Object with optional `reference` sub-key (sections/figures/tables) and a required `pins` list |
+| `errata`                  | Known hardware errata with silicon-revision applicability                                    |
 
 Minimal example:
 
@@ -344,14 +345,15 @@ Minimal example:
 spec-version: "1.0.0"
 vendor: STMicroelectronics
 family-ref: stm32u0
-model: stm32u031c4
+model: stm32u083kcu
 package: UFQFPN32
 flash-kb: 256
-sram-kb: 12
+sram-kb: 40
 pin-count: 32
 peripheral-availability:
   - peripheral: gpio
-    instances: [GPIOA, GPIOB, GPIOC, GPIOD, GPIOF]
+    instances: [GPIOA, GPIOB, GPIOC, GPIOF]
+    note: GPIOD / GPIOE are not bonded out on the 32-pin UFQFPN package.
 ```
 
 ## Validation
@@ -365,7 +367,7 @@ pip install check-jsonschema
 check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
 
 # Model spec
-check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u031c4.yml
+check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u083kcu.yml
 
 # Architecture spec
 check-jsonschema --schemafile docs/specs/schema-arch.json docs/specs/common/arch/cortex-m0plus.yml

@@ -399,7 +399,7 @@ The required top-level keys are:
 | `spec-version` | string  | Spec format version (semver)                |
 | `vendor`       | string  | Must match the parent family spec           |
 | `family-ref`   | string  | Family spec identifier (e.g. `stm32u0`)     |
-| `model`        | string  | Part number identifier (e.g. `stm32u031c4`) |
+| `model`        | string  | Part number identifier (e.g. `stm32u083kcu`) |
 | `package`      | string  | Package code (e.g. `UFQFPN32`, `LQFP48`)    |
 | `flash-kb`     | integer | On-chip flash in kibibytes                  |
 | `sram-kb`      | integer | On-chip SRAM in kibibytes                   |
@@ -434,7 +434,7 @@ reference:
   title: STM32U083xC Datasheet
   revision: 2
 family-ref: stm32u0
-model: stm32u083kc
+model: stm32u083kcu
 package: UFQFPN32
 flash-kb: 256
 sram-kb: 40
@@ -472,5 +472,5 @@ To validate locally:
 ```sh
 pip install check-jsonschema
 check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
-check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u083kc.yml
+check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u083kcu.yml
 ```

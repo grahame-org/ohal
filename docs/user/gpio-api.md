@@ -328,7 +328,10 @@ This is useful in generic middleware that must be portable but requires a minimu
 - `set_mode()`, `set_output_type()`, `set_speed()`, and `set_pull()` use read-modify-write on the
   corresponding configuration registers. These operations are not atomic with respect to interrupts
   that modify the same register. Mask interrupts at the call site if required.
-- All four capability traits are `true` for every port/pin on the STM32U083.
+- All four capability traits (`supports_output_type`, `supports_output_speed`, `supports_pull`,
+  `supports_alternate_function`) are `true` for pins 0–15 on ports PA, PB, PC, and PF. Ports PD
+  and PE exist in the STM32U083 silicon but are not bonded out on the 32-pin UFQFPN (KCU)
+  package, so all capability traits return `false` for those ports.
 
 ### PIC18F4550 (planned)
 

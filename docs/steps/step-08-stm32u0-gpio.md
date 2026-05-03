@@ -84,9 +84,11 @@ struct Pin<PortA, PinNum> {
     }
 };
 
-// Repeat for PortB ... PortF (identical structure, different base address)
-// PortB base: 0x50000400, PortC: 0x50000800, PortD: 0x50000C00,
-// PortE: 0x50001000, PortF: 0x50001400
+// Repeat for PortB, PortC, PortF (identical structure, different base address).
+// PortB base: 0x50000400, PortC: 0x50000800, PortF: 0x50001400.
+// Note: GPIOD (0x50000C00) and GPIOE (0x50001000) exist in the STM32U083 silicon
+// but are not bonded out on the 32-pin UFQFPN (stm32u083kcu) package; Pin<PortD/E>
+// and Port<PortD/E> specialisations are intentionally absent for that package.
 
 } // namespace ohal::gpio
 
@@ -104,18 +106,19 @@ struct Pin<PortA, PinNum> {
 
 namespace ohal::gpio::capabilities {
 
-// All STM32U083 GPIO pins support all four capability traits
-template <typename Port, uint8_t PinNum>
-struct supports_output_type<Port, PinNum>     : std::true_type {};
+// STM32U083KCU (32-pin UFQFPN) only bonds out GPIOA, GPIOB, GPIOC, and GPIOF.
+// Specialise per bonded-out port; GPIOD and GPIOE are absent so the primary
+// false_type template handles them correctly (capability returns false).
+template <uint8_t PinNum>
+struct supports_output_type<PortA, PinNum>     : std::bool_constant<(PinNum < 16U)> {};
+template <uint8_t PinNum>
+struct supports_output_type<PortB, PinNum>     : std::bool_constant<(PinNum < 16U)> {};
+template <uint8_t PinNum>
+struct supports_output_type<PortC, PinNum>     : std::bool_constant<(PinNum < 16U)> {};
+template <uint8_t PinNum>
+struct supports_output_type<PortF, PinNum>     : std::bool_constant<(PinNum < 16U)> {};
 
-template <typename Port, uint8_t PinNum>
-struct supports_output_speed<Port, PinNum>    : std::true_type {};
-
-template <typename Port, uint8_t PinNum>
-struct supports_pull<Port, PinNum>            : std::true_type {};
-
-template <typename Port, uint8_t PinNum>
-struct supports_alternate_function<Port, PinNum> : std::true_type {};
+// … same pattern for supports_output_speed, supports_pull, supports_alternate_function …
 
 } // namespace ohal::gpio::capabilities
 

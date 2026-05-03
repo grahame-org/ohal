@@ -17,7 +17,7 @@ ARM Cortex-M0+ family from STMicroelectronics. 32-bit registers. Toolchain: `arm
 
 | Model define           | Device    | GPIO ports           | Status     |
 | ---------------------- | --------- | -------------------- | ---------- |
-| `OHAL_MODEL_STM32U083` | STM32U083 | PA–PF (16 pins each) | 🔧 Partial |
+| `OHAL_MODEL_STM32U083` | STM32U083 | PA, PB, PC, PF (16 pins each; PD/PE not bonded out on KCU package) | 🔧 Partial |
 | `OHAL_MODEL_STM32U073` | STM32U073 | PA–PF                | 📋 Planned |
 
 **Supported GPIO features on STM32U083:**
