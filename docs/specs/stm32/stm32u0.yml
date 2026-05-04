@@ -545,6 +545,119 @@ definitions:
     brr: &brr
       "0": No action on the corresponding ODx bit
       "1": Reset the corresponding ODx bit
+    # USART/LPUART shared settings
+    uart-fifo-enable: &uart-fifo-enable
+      "0": FIFO mode disabled
+      "1": FIFO mode enabled
+    uart-mme: &uart-mme
+      "0": Receiver in active mode permanently
+      "1": Receiver can switch between mute and active mode
+    uart-wake: &uart-wake
+      "0": Idle line
+      "1": Address mark
+    uart-pce: &uart-pce
+      "0": Parity control disabled
+      "1": Parity control enabled
+    uart-ps: &uart-ps
+      "0": Even parity
+      "1": Odd parity
+    uart-te: &uart-te
+      "0": Transmitter disabled
+      "1": Transmitter enabled
+    uart-re: &uart-re
+      "0": Receiver disabled
+      "1": Receiver enabled
+    uart-msbfirst: &uart-msbfirst
+      "0": data is transmitted/received with data bit 0 first
+      "1": data is transmitted/received with MSB first
+    uart-datainv: &uart-datainv
+      "0": Logical data from the data register are sent/received in positive logic
+      "1": Logical data from the data register are sent/received in negative logic
+    uart-txinv: &uart-txinv
+      "0": TX pin signal works using the standard logic levels
+      "1": TX pin signal values are inverted
+    uart-rxinv: &uart-rxinv
+      "0": RX pin signal works using the standard logic levels
+      "1": RX pin signal values are inverted
+    uart-swap: &uart-swap
+      "0": TX/RX pins are used as defined in standard pinout
+      "1": TX and RX pins functions are swapped
+    uart-fifo-tx-threshold: &uart-fifo-tx-threshold
+      "000": TXFIFO reaches 1/8 of its depth
+      "001": TXFIFO reaches 1/4 of its depth
+      "010": TXFIFO reaches 1/2 of its depth
+      "011": TXFIFO reaches 3/4 of its depth
+      "100": TXFIFO reaches 7/8 of its depth
+      "101": TXFIFO is empty
+    uart-fifo-rx-threshold: &uart-fifo-rx-threshold
+      "000": RXFIFO reaches 1/8 of its depth
+      "001": RXFIFO reaches 1/4 of its depth
+      "010": RXFIFO reaches 1/2 of its depth
+      "011": RXFIFO reaches 3/4 of its depth
+      "100": RXFIFO reaches 7/8 of its depth
+      "101": RXFIFO is full
+    uart-wus: &uart-wus
+      "00": WUF active on address match
+      "10": WUF active on start bit detection
+      "11": WUF active on RXFNE or RXFF
+    uart-dep: &uart-dep
+      "0": DE signal is active high
+      "1": DE signal is active low
+    uart-dem: &uart-dem
+      "0": DE function disabled
+      "1": DE function enabled
+    uart-ddre: &uart-ddre
+      "0": DMA is not disabled in case of reception error
+      "1": DMA is disabled following a reception error
+    uart-ovrdis: &uart-ovrdis
+      "0": Overrun error flag and interrupt enabled
+      "1": Overrun functionality disabled
+    uart-ctse: &uart-ctse
+      "0": CTS hardware flow control disabled
+      "1": CTS hardware flow control enabled
+    uart-rtse: &uart-rtse
+      "0": RTS hardware flow control disabled
+      "1": RTS hardware flow control enabled
+    uart-dmat: &uart-dmat
+      "0": DMA mode disabled for transmission
+      "1": DMA mode enabled for transmission
+    uart-dmar: &uart-dmar
+      "0": DMA mode disabled for reception
+      "1": DMA mode enabled for reception
+    uart-hdsel: &uart-hdsel
+      "0": Half-duplex mode not selected
+      "1": Half-duplex mode selected
+    uart-rwu: &uart-rwu
+      "0": Receiver in active mode
+      "1": Receiver in mute mode
+    uart-sbkf: &uart-sbkf
+      "0": No break character transmitted
+      "1": Break character transmitted
+    uart-cts-line: &uart-cts-line
+      "0": CTS line set
+      "1": CTS line reset
+    uart-interrupt-enable: &uart-interrupt-enable
+      "0": Interrupt inhibited
+      "1": Interrupt enabled
+    uart-request: &uart-request
+      "0": No action
+      "1": Request asserted
+    uart-clear-flag: &uart-clear-flag
+      "0": No effect
+      "1": Clears the corresponding flag in ISR
+    uart-prescaler: &uart-prescaler
+      "0000": input clock not divided
+      "0001": input clock divided by 2
+      "0010": input clock divided by 4
+      "0011": input clock divided by 6
+      "0100": input clock divided by 8
+      "0101": input clock divided by 10
+      "0110": input clock divided by 12
+      "0111": input clock divided by 16
+      "1000": input clock divided by 32
+      "1001": input clock divided by 64
+      "1010": input clock divided by 128
+      "1011": input clock divided by 256
 peripherals:
   - gpio:
       reference:
@@ -1760,3 +1873,1870 @@ peripherals:
                 width: 1
                 access: wo
                 settings: *brr
+  - usart:
+      reference:
+        sections: [34.8]
+        tables: [209]
+      instances:
+        - name: USART1
+          base: 0x40013800
+        - name: USART2
+          base: 0x40004400
+        - name: USART3
+          base: 0x40004800
+        - name: USART4
+          base: 0x40004C00
+      registers:
+        - CR1:
+            reference:
+              section: 34.8.1
+            offset: 0x00
+            note: >-
+              Two layouts exist for this register depending on the FIFOEN bit.
+              Section 34.8.1 documents the FIFO-enabled layout (FIFOEN=1);
+              section 34.8.2 documents the FIFO-disabled layout (FIFOEN=0).
+            fields:
+              - name: RXFFIE
+                msb: 31
+                lsb: 31
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: TXFEIE
+                msb: 30
+                lsb: 30
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: FIFOEN
+                msb: 29
+                lsb: 29
+                width: 1
+                access: rw
+                settings: *uart-fifo-enable
+              - name: M1
+                msb: 28
+                lsb: 28
+                width: 1
+                access: rw
+                note: Word length bit 1 — use with M0 (bit 12)
+                settings: ~
+              - name: EOBIE
+                msb: 27
+                lsb: 27
+                width: 1
+                access: rw
+                note: Smartcard mode only
+                settings: *uart-interrupt-enable
+              - name: RTOIE
+                msb: 26
+                lsb: 26
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: DEAT
+                msb: 25
+                lsb: 21
+                width: 5
+                access: rw
+                note: Driver Enable assertion time (in sample-time units)
+                settings: ~
+              - name: DEDT
+                msb: 20
+                lsb: 16
+                width: 5
+                access: rw
+                note: Driver Enable deassertion time (in sample-time units)
+                settings: ~
+              - name: OVER8
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings:
+                  "0": Oversampling by 16
+                  "1": Oversampling by 8
+              - name: CMIE
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: MME
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *uart-mme
+              - name: M0
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                note: Word length bit 0 — use with M1 (bit 28)
+                settings: ~
+              - name: WAKE
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *uart-wake
+              - name: PCE
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *uart-pce
+              - name: PS
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *uart-ps
+              - name: PEIE
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: TXFNFIE
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                note: TXFIFO not full interrupt enable (FIFO mode); TXEIE in non-FIFO mode
+                settings: *uart-interrupt-enable
+              - name: TCIE
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: RXFNEIE
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                note: RXFIFO not empty interrupt enable (FIFO mode); RXNEIE in non-FIFO mode
+                settings: *uart-interrupt-enable
+              - name: IDLEIE
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: TE
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *uart-te
+              - name: RE
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *uart-re
+              - name: UESM
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": USART not able to wake up MCU from low-power mode
+                  "1": USART able to wake up MCU from low-power mode
+              - name: UE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": USART prescaler and outputs disabled
+                  "1": USART enabled
+        - CR2:
+            reference:
+              section: 34.8.3
+            offset: 0x04
+            fields:
+              - name: ADD
+                msb: 31
+                lsb: 24
+                width: 8
+                access: rw
+                note: Address of the USART node (7- or 4-bit depending on ADDM7)
+                settings: ~
+              - name: RTOEN
+                msb: 23
+                lsb: 23
+                width: 1
+                access: rw
+                settings:
+                  "0": Receiver timeout feature disabled
+                  "1": Receiver timeout feature enabled
+              - name: ABRMOD
+                msb: 22
+                lsb: 21
+                width: 2
+                access: rw
+                settings:
+                  "00": Measurement of start bit — falling edge to first rising edge
+                  "01": Falling edge to falling edge measurement
+                  "10": 0x7F frame detection
+                  "11": 0x55 frame detection
+              - name: ABREN
+                msb: 20
+                lsb: 20
+                width: 1
+                access: rw
+                settings:
+                  "0": Auto baud rate detection disabled
+                  "1": Auto baud rate detection enabled
+              - name: MSBFIRST
+                msb: 19
+                lsb: 19
+                width: 1
+                access: rw
+                settings: *uart-msbfirst
+              - name: DATAINV
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings: *uart-datainv
+              - name: TXINV
+                msb: 17
+                lsb: 17
+                width: 1
+                access: rw
+                settings: *uart-txinv
+              - name: RXINV
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                settings: *uart-rxinv
+              - name: SWAP
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *uart-swap
+              - name: LINEN
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings:
+                  "0": LIN mode disabled
+                  "1": LIN mode enabled
+              - name: STOP
+                msb: 13
+                lsb: 12
+                width: 2
+                access: rw
+                settings:
+                  "00": 1 stop bit
+                  "01": 0.5 stop bit
+                  "10": 2 stop bits
+                  "11": 1.5 stop bits
+              - name: CLKEN
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings:
+                  "0": CK pin disabled
+                  "1": CK pin enabled
+              - name: CPOL
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings:
+                  "0": Steady low value on CK pin outside transmission window
+                  "1": Steady high value on CK pin outside transmission window
+              - name: CPHA
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings:
+                  "0": The first clock transition is the first data capture edge
+                  "1": The second clock transition is the first data capture edge
+              - name: LBCL
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": The clock pulse of the last data bit is not output to the CK pin
+                  "1": The clock pulse of the last data bit is output to the CK pin
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                settings: ~
+              - name: LBDIE
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings:
+                  "0": Interrupt inhibited
+                  "1": Interrupt generated when LBDF=1 in USART_ISR
+              - name: LBDL
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": 10-bit break detection
+                  "1": 11-bit break detection
+              - name: ADDM7
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings:
+                  "0": 4-bit address detection
+                  "1": 7-bit address detection
+              - name: DIS_NSS
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                note: >-
+                  When SCEN = 1 in SPI slave mode: NSS pin input is ignored. In SPI
+                  master mode this bit is reserved.
+                settings: ~
+              - name: RESERVED
+                msb: 2
+                lsb: 1
+                width: 2
+                access: ro
+                settings: ~
+              - name: SLVEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": SPI slave mode disabled
+                  "1": SPI slave mode enabled
+        - CR3:
+            reference:
+              section: 34.8.4
+            offset: 0x08
+            note: >-
+              Two layouts exist for this register depending on the FIFOEN bit.
+              Section 34.8.4 documents the FIFO-enabled layout (FIFOEN=1);
+              section 34.8.5 documents the FIFO-disabled layout (FIFOEN=0).
+            fields:
+              - name: TXFTCFG
+                msb: 31
+                lsb: 29
+                width: 3
+                access: rw
+                note: FIFO mode only
+                settings: *uart-fifo-tx-threshold
+              - name: RXFTIE
+                msb: 28
+                lsb: 28
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: RXFTCFG
+                msb: 27
+                lsb: 25
+                width: 3
+                access: rw
+                note: FIFO mode only
+                settings: *uart-fifo-rx-threshold
+              - name: TCBGTIE
+                msb: 24
+                lsb: 24
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: TXFTIE
+                msb: 23
+                lsb: 23
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: WUFIE
+                msb: 22
+                lsb: 22
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: WUS
+                msb: 21
+                lsb: 20
+                width: 2
+                access: rw
+                settings: *uart-wus
+              - name: SCARCNT
+                msb: 19
+                lsb: 17
+                width: 3
+                access: rw
+                note: Smartcard auto-retry count (0 disables retransmission)
+                settings: ~
+              - name: RESERVED
+                msb: 16
+                lsb: 16
+                width: 1
+                access: ro
+                settings: ~
+              - name: DEP
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *uart-dep
+              - name: DEM
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *uart-dem
+              - name: DDRE
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *uart-ddre
+              - name: OVRDIS
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *uart-ovrdis
+              - name: ONEBIT
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings:
+                  "0": Three-sample bit method
+                  "1": One-sample bit method
+              - name: CTSIE
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: CTSE
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *uart-ctse
+              - name: RTSE
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *uart-rtse
+              - name: DMAT
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *uart-dmat
+              - name: DMAR
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *uart-dmar
+              - name: SCEN
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": Smartcard mode disabled
+                  "1": Smartcard mode enabled
+              - name: NACK
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings:
+                  "0": NACK transmission in case of parity error disabled
+                  "1": NACK transmission during parity error enabled
+              - name: HDSEL
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *uart-hdsel
+              - name: IRLP
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings:
+                  "0": Normal mode
+                  "1": Low-power mode
+              - name: IREN
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": IrDA disabled
+                  "1": IrDA mode enabled
+              - name: EIE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Interrupt inhibited
+                  "1": Interrupt generated when FE=1, ORE=1 or NE=1 in USART_ISR
+        - BRR:
+            reference:
+              section: 34.8.6
+            offset: 0x0C
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: ro
+                settings: ~
+              - name: BRR
+                msb: 15
+                lsb: 0
+                width: 16
+                access: rw
+                note: >-
+                  Baud rate register value. When OVER8=1 bit [3] must be kept
+                  cleared.
+                settings: ~
+        - GTPR:
+            reference:
+              section: 34.8.7
+            offset: 0x10
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: ro
+                settings: ~
+              - name: GT
+                msb: 15
+                lsb: 8
+                width: 8
+                access: rw
+                note: Guard time value in baud clock periods (smartcard mode)
+                settings: ~
+              - name: PSC
+                msb: 7
+                lsb: 0
+                width: 8
+                access: rw
+                note: Prescaler value (IrDA low-power or smartcard modes)
+                settings: ~
+        - RTOR:
+            reference:
+              section: 34.8.8
+            offset: 0x14
+            fields:
+              - name: BLEN
+                msb: 31
+                lsb: 24
+                width: 8
+                access: rw
+                note: Block length in smartcard mode (number of bytes in the received block)
+                settings: ~
+              - name: RTO
+                msb: 23
+                lsb: 0
+                width: 24
+                access: rw
+                note: Receiver timeout value in baud clock periods
+                settings: ~
+        - RQR:
+            reference:
+              section: 34.8.9
+            offset: 0x18
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 5
+                width: 27
+                access: ro
+                settings: ~
+              - name: TXFRQ
+                msb: 4
+                lsb: 4
+                width: 1
+                access: wo
+                note: FIFO mode only
+                settings: *uart-request
+              - name: RXFRQ
+                msb: 3
+                lsb: 3
+                width: 1
+                access: wo
+                settings: *uart-request
+              - name: MMRQ
+                msb: 2
+                lsb: 2
+                width: 1
+                access: wo
+                settings: *uart-request
+              - name: SBKRQ
+                msb: 1
+                lsb: 1
+                width: 1
+                access: wo
+                settings: *uart-request
+              - name: ABRRQ
+                msb: 0
+                lsb: 0
+                width: 1
+                access: wo
+                settings: *uart-request
+        - ISR:
+            reference:
+              section: 34.8.10
+            offset: 0x1C
+            note: >-
+              Two read layouts exist depending on FIFOEN. Section 34.8.10 is the
+              FIFO-enabled view; section 34.8.11 is the FIFO-disabled view. All
+              fields are read-only.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 28
+                width: 4
+                access: ro
+                settings: ~
+              - name: TXFT
+                msb: 27
+                lsb: 27
+                width: 1
+                access: ro
+                settings:
+                  "0": TXFIFO above configured threshold
+                  "1": TXFIFO at or below configured threshold (FIFO mode only)
+              - name: RXFT
+                msb: 26
+                lsb: 26
+                width: 1
+                access: ro
+                settings:
+                  "0": RXFIFO below configured threshold
+                  "1": RXFIFO at or above configured threshold (FIFO mode only)
+              - name: TCBGT
+                msb: 25
+                lsb: 25
+                width: 1
+                access: ro
+                settings:
+                  "0": No transmission complete before guard time event
+                  "1": Transmission complete before guard time (smartcard mode)
+              - name: RXFF
+                msb: 24
+                lsb: 24
+                width: 1
+                access: ro
+                settings:
+                  "0": RXFIFO not full
+                  "1": RXFIFO full (FIFO mode only)
+              - name: TXFE
+                msb: 23
+                lsb: 23
+                width: 1
+                access: ro
+                settings:
+                  "0": TXFIFO not empty
+                  "1": TXFIFO empty (FIFO mode only)
+              - name: REACK
+                msb: 22
+                lsb: 22
+                width: 1
+                access: ro
+                settings:
+                  "0": Receive not yet enabled or acknowledgement pending
+                  "1": Receive enabled and acknowledged by hardware
+              - name: TEACK
+                msb: 21
+                lsb: 21
+                width: 1
+                access: ro
+                settings:
+                  "0": Transmit not yet enabled or acknowledgement pending
+                  "1": Transmit enabled and acknowledged by hardware
+              - name: WUF
+                msb: 20
+                lsb: 20
+                width: 1
+                access: ro
+                settings:
+                  "0": No wake-up event
+                  "1": Wake-up event detected from low-power mode
+              - name: RWU
+                msb: 19
+                lsb: 19
+                width: 1
+                access: ro
+                settings: *uart-rwu
+              - name: SBKF
+                msb: 18
+                lsb: 18
+                width: 1
+                access: ro
+                settings: *uart-sbkf
+              - name: CMF
+                msb: 17
+                lsb: 17
+                width: 1
+                access: ro
+                settings:
+                  "0": No character match
+                  "1": Character match detected
+              - name: BUSY
+                msb: 16
+                lsb: 16
+                width: 1
+                access: ro
+                settings:
+                  "0": USART is idle
+                  "1": Receive or transmit in progress
+              - name: ABRF
+                msb: 15
+                lsb: 15
+                width: 1
+                access: ro
+                settings:
+                  "0": Auto baud rate not yet complete
+                  "1": Auto baud rate sequence complete
+              - name: ABRE
+                msb: 14
+                lsb: 14
+                width: 1
+                access: ro
+                settings:
+                  "0": No auto baud rate error
+                  "1": Auto baud rate error detected
+              - name: UDR
+                msb: 13
+                lsb: 13
+                width: 1
+                access: ro
+                settings:
+                  "0": No SPI slave underrun error
+                  "1": SPI slave underrun error detected
+              - name: EOBF
+                msb: 12
+                lsb: 12
+                width: 1
+                access: ro
+                settings:
+                  "0": No end of block
+                  "1": End of block detected (smartcard mode)
+              - name: RTOF
+                msb: 11
+                lsb: 11
+                width: 1
+                access: ro
+                settings:
+                  "0": No receiver timeout
+                  "1": Receiver timeout elapsed
+              - name: CTS
+                msb: 10
+                lsb: 10
+                width: 1
+                access: ro
+                settings: *uart-cts-line
+              - name: CTSIF
+                msb: 9
+                lsb: 9
+                width: 1
+                access: ro
+                settings:
+                  "0": No CTS change
+                  "1": CTS line change detected
+              - name: LBDF
+                msb: 8
+                lsb: 8
+                width: 1
+                access: ro
+                settings:
+                  "0": No LIN break detected
+                  "1": LIN break detected
+              - name: TXFNF
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                note: TXE in non-FIFO mode
+                settings:
+                  "0": TXFIFO full (FIFO mode) or TX register not empty (non-FIFO mode)
+                  "1": TXFIFO not full (FIFO mode) or TX register empty (non-FIFO mode)
+              - name: TC
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings:
+                  "0": Transmission not complete
+                  "1": Transmission complete
+              - name: RXFNE
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                note: RXNE in non-FIFO mode
+                settings:
+                  "0": RXFIFO empty (FIFO mode) or RX register empty (non-FIFO mode)
+                  "1": RXFIFO not empty (FIFO mode) or RX register not empty (non-FIFO mode)
+              - name: IDLE
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings:
+                  "0": No idle line detected
+                  "1": Idle line detected
+              - name: ORE
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings:
+                  "0": No overrun error
+                  "1": Overrun error detected
+              - name: NE
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings:
+                  "0": No noise detected
+                  "1": Noise detected
+              - name: FE
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings:
+                  "0": No framing error
+                  "1": Framing error detected
+              - name: PE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings:
+                  "0": No parity error
+                  "1": Parity error detected
+        - ICR:
+            reference:
+              section: 34.8.12
+            offset: 0x20
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 21
+                width: 11
+                access: ro
+                settings: ~
+              - name: WUCF
+                msb: 20
+                lsb: 20
+                width: 1
+                access: wo
+                note: Wake-up from low-power mode clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 19
+                lsb: 18
+                width: 2
+                access: ro
+                settings: ~
+              - name: CMCF
+                msb: 17
+                lsb: 17
+                width: 1
+                access: wo
+                note: Character match clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 16
+                lsb: 14
+                width: 3
+                access: ro
+                settings: ~
+              - name: UDRCF
+                msb: 13
+                lsb: 13
+                width: 1
+                access: wo
+                note: SPI slave underrun clear flag
+                settings: *uart-clear-flag
+              - name: EOBCF
+                msb: 12
+                lsb: 12
+                width: 1
+                access: wo
+                note: End of block clear flag (smartcard mode)
+                settings: *uart-clear-flag
+              - name: RTOCF
+                msb: 11
+                lsb: 11
+                width: 1
+                access: wo
+                note: Receiver timeout clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 10
+                lsb: 10
+                width: 1
+                access: ro
+                settings: ~
+              - name: CTSCF
+                msb: 9
+                lsb: 9
+                width: 1
+                access: wo
+                note: CTS clear flag
+                settings: *uart-clear-flag
+              - name: LBDCF
+                msb: 8
+                lsb: 8
+                width: 1
+                access: wo
+                note: LIN break detection clear flag
+                settings: *uart-clear-flag
+              - name: TCBGTCF
+                msb: 7
+                lsb: 7
+                width: 1
+                access: wo
+                note: Transmission complete before guard time clear flag
+                settings: *uart-clear-flag
+              - name: TCCF
+                msb: 6
+                lsb: 6
+                width: 1
+                access: wo
+                note: Transmission complete clear flag
+                settings: *uart-clear-flag
+              - name: TXFECF
+                msb: 5
+                lsb: 5
+                width: 1
+                access: wo
+                note: TXFIFO empty clear flag
+                settings: *uart-clear-flag
+              - name: IDLECF
+                msb: 4
+                lsb: 4
+                width: 1
+                access: wo
+                note: Idle line detected clear flag
+                settings: *uart-clear-flag
+              - name: ORECF
+                msb: 3
+                lsb: 3
+                width: 1
+                access: wo
+                note: Overrun error clear flag
+                settings: *uart-clear-flag
+              - name: NECF
+                msb: 2
+                lsb: 2
+                width: 1
+                access: wo
+                note: Noise detected clear flag
+                settings: *uart-clear-flag
+              - name: FECF
+                msb: 1
+                lsb: 1
+                width: 1
+                access: wo
+                note: Framing error clear flag
+                settings: *uart-clear-flag
+              - name: PECF
+                msb: 0
+                lsb: 0
+                width: 1
+                access: wo
+                note: Parity error clear flag
+                settings: *uart-clear-flag
+        - RDR:
+            reference:
+              section: 34.8.13
+            offset: 0x24
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 9
+                width: 23
+                access: ro
+                settings: ~
+              - name: RDR
+                msb: 8
+                lsb: 0
+                width: 9
+                access: ro
+                note: Received data value (bits [8:0]; bit 8 is parity when enabled)
+                settings: ~
+        - TDR:
+            reference:
+              section: 34.8.14
+            offset: 0x28
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 9
+                width: 23
+                access: ro
+                settings: ~
+              - name: TDR
+                msb: 8
+                lsb: 0
+                width: 9
+                access: rw
+                note: Transmit data value (bits [8:0]; bit 8 is parity when enabled)
+                settings: ~
+        - PRESC:
+            reference:
+              section: 34.8.15
+            offset: 0x2C
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 4
+                width: 28
+                access: ro
+                settings: ~
+              - name: PRESCALER
+                msb: 3
+                lsb: 0
+                width: 4
+                access: rw
+                settings: *uart-prescaler
+  - lpuart:
+      reference:
+        sections: [35.7]
+        tables: [214]
+      instances:
+        - name: LPUART1
+          base: 0x40008000
+        - name: LPUART2
+          base: 0x40008400
+        - name: LPUART3
+          base: 0x40008C00
+      registers:
+        - CR1:
+            reference:
+              section: 35.7.1
+            offset: 0x00
+            note: >-
+              Two layouts exist for this register depending on the FIFOEN bit.
+              Section 35.7.1 documents the FIFO-enabled layout (FIFOEN=1);
+              section 35.7.2 documents the FIFO-disabled layout (FIFOEN=0).
+            fields:
+              - name: RXFFIE
+                msb: 31
+                lsb: 31
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: TXFEIE
+                msb: 30
+                lsb: 30
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: FIFOEN
+                msb: 29
+                lsb: 29
+                width: 1
+                access: rw
+                settings: *uart-fifo-enable
+              - name: M1
+                msb: 28
+                lsb: 28
+                width: 1
+                access: rw
+                note: Word length bit 1 — use with M0 (bit 12)
+                settings: ~
+              - name: RESERVED
+                msb: 27
+                lsb: 26
+                width: 2
+                access: ro
+                settings: ~
+              - name: DEAT
+                msb: 25
+                lsb: 21
+                width: 5
+                access: rw
+                note: Driver Enable assertion time (in sample-time units)
+                settings: ~
+              - name: DEDT
+                msb: 20
+                lsb: 16
+                width: 5
+                access: rw
+                note: Driver Enable deassertion time (in sample-time units)
+                settings: ~
+              - name: RESERVED
+                msb: 15
+                lsb: 15
+                width: 1
+                access: ro
+                settings: ~
+              - name: CMIE
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: MME
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *uart-mme
+              - name: M0
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                note: Word length bit 0 — use with M1 (bit 28)
+                settings: ~
+              - name: WAKE
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *uart-wake
+              - name: PCE
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *uart-pce
+              - name: PS
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *uart-ps
+              - name: PEIE
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: TXFNFIE
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                note: TXFIFO not full interrupt enable (FIFO mode); TXEIE in non-FIFO mode
+                settings: *uart-interrupt-enable
+              - name: TCIE
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: RXFNEIE
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                note: RXFIFO not empty interrupt enable (FIFO mode); RXNEIE in non-FIFO mode
+                settings: *uart-interrupt-enable
+              - name: IDLEIE
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: TE
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *uart-te
+              - name: RE
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *uart-re
+              - name: UESM
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": LPUART not able to wake up MCU from low-power mode
+                  "1": LPUART able to wake up MCU from low-power mode
+              - name: UE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": LPUART prescaler and outputs disabled
+                  "1": LPUART enabled
+        - CR2:
+            reference:
+              section: 35.7.3
+            offset: 0x04
+            fields:
+              - name: ADD
+                msb: 31
+                lsb: 24
+                width: 8
+                access: rw
+                note: Address of the LPUART node (7- or 4-bit depending on ADDM7)
+                settings: ~
+              - name: RESERVED
+                msb: 23
+                lsb: 20
+                width: 4
+                access: ro
+                settings: ~
+              - name: MSBFIRST
+                msb: 19
+                lsb: 19
+                width: 1
+                access: rw
+                settings: *uart-msbfirst
+              - name: DATAINV
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings: *uart-datainv
+              - name: TXINV
+                msb: 17
+                lsb: 17
+                width: 1
+                access: rw
+                settings: *uart-txinv
+              - name: RXINV
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                settings: *uart-rxinv
+              - name: SWAP
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *uart-swap
+              - name: RESERVED
+                msb: 14
+                lsb: 14
+                width: 1
+                access: ro
+                settings: ~
+              - name: STOP
+                msb: 13
+                lsb: 12
+                width: 2
+                access: rw
+                settings:
+                  "00": 1 stop bit
+                  "10": 2 stop bits
+              - name: RESERVED
+                msb: 11
+                lsb: 5
+                width: 7
+                access: ro
+                settings: ~
+              - name: ADDM7
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings:
+                  "0": 4-bit address detection
+                  "1": 7-bit address detection
+              - name: RESERVED
+                msb: 3
+                lsb: 0
+                width: 4
+                access: ro
+                settings: ~
+        - CR3:
+            reference:
+              section: 35.7.4
+            offset: 0x08
+            note: >-
+              Two layouts exist for this register depending on the FIFOEN bit.
+              Section 35.7.4 documents the FIFO-enabled layout (FIFOEN=1);
+              section 35.7.5 documents the FIFO-disabled layout (FIFOEN=0).
+            fields:
+              - name: TXFTCFG
+                msb: 31
+                lsb: 29
+                width: 3
+                access: rw
+                note: FIFO mode only
+                settings: *uart-fifo-tx-threshold
+              - name: RXFTIE
+                msb: 28
+                lsb: 28
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: RXFTCFG
+                msb: 27
+                lsb: 25
+                width: 3
+                access: rw
+                note: FIFO mode only
+                settings: *uart-fifo-rx-threshold
+              - name: RESERVED
+                msb: 24
+                lsb: 24
+                width: 1
+                access: ro
+                settings: ~
+              - name: TXFTIE
+                msb: 23
+                lsb: 23
+                width: 1
+                access: rw
+                note: FIFO mode only
+                settings: *uart-interrupt-enable
+              - name: WUFIE
+                msb: 22
+                lsb: 22
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: WUS
+                msb: 21
+                lsb: 20
+                width: 2
+                access: rw
+                settings: *uart-wus
+              - name: RESERVED
+                msb: 19
+                lsb: 16
+                width: 4
+                access: ro
+                settings: ~
+              - name: DEP
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *uart-dep
+              - name: DEM
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *uart-dem
+              - name: DDRE
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *uart-ddre
+              - name: OVRDIS
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *uart-ovrdis
+              - name: RESERVED
+                msb: 11
+                lsb: 11
+                width: 1
+                access: ro
+                settings: ~
+              - name: CTSIE
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *uart-interrupt-enable
+              - name: CTSE
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *uart-ctse
+              - name: RTSE
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *uart-rtse
+              - name: DMAT
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *uart-dmat
+              - name: DMAR
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *uart-dmar
+              - name: RESERVED
+                msb: 5
+                lsb: 4
+                width: 2
+                access: ro
+                settings: ~
+              - name: HDSEL
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *uart-hdsel
+              - name: RESERVED
+                msb: 2
+                lsb: 1
+                width: 2
+                access: ro
+                settings: ~
+              - name: EIE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Interrupt inhibited
+                  "1": Interrupt generated when FE=1, ORE=1 or NE=1 in LPUART_ISR
+        - BRR:
+            reference:
+              section: 35.7.6
+            offset: 0x0C
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 20
+                width: 12
+                access: ro
+                settings: ~
+              - name: BRR
+                msb: 19
+                lsb: 0
+                width: 20
+                access: rw
+                note: >-
+                  Baud rate register value. lpuart_ker_ck_pres must be in the
+                  range [3×baud rate .. 4096×baud rate].
+                settings: ~
+        - RQR:
+            reference:
+              section: 35.7.7
+            offset: 0x18
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 5
+                width: 27
+                access: ro
+                settings: ~
+              - name: TXFRQ
+                msb: 4
+                lsb: 4
+                width: 1
+                access: wo
+                note: FIFO mode only
+                settings: *uart-request
+              - name: RXFRQ
+                msb: 3
+                lsb: 3
+                width: 1
+                access: wo
+                settings: *uart-request
+              - name: MMRQ
+                msb: 2
+                lsb: 2
+                width: 1
+                access: wo
+                settings: *uart-request
+              - name: SBKRQ
+                msb: 1
+                lsb: 1
+                width: 1
+                access: wo
+                settings: *uart-request
+              - name: RESERVED
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings: ~
+        - ISR:
+            reference:
+              section: 35.7.8
+            offset: 0x1C
+            note: >-
+              Two read layouts exist depending on FIFOEN. Section 35.7.8 is the
+              FIFO-enabled view; section 35.7.9 is the FIFO-disabled view. All
+              fields are read-only.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 28
+                width: 4
+                access: ro
+                settings: ~
+              - name: TXFT
+                msb: 27
+                lsb: 27
+                width: 1
+                access: ro
+                settings:
+                  "0": TXFIFO above configured threshold
+                  "1": TXFIFO at or below configured threshold (FIFO mode only)
+              - name: RXFT
+                msb: 26
+                lsb: 26
+                width: 1
+                access: ro
+                settings:
+                  "0": RXFIFO below configured threshold
+                  "1": RXFIFO at or above configured threshold (FIFO mode only)
+              - name: RESERVED
+                msb: 25
+                lsb: 25
+                width: 1
+                access: ro
+                settings: ~
+              - name: RXFF
+                msb: 24
+                lsb: 24
+                width: 1
+                access: ro
+                settings:
+                  "0": RXFIFO not full
+                  "1": RXFIFO full (FIFO mode only)
+              - name: TXFE
+                msb: 23
+                lsb: 23
+                width: 1
+                access: ro
+                settings:
+                  "0": TXFIFO not empty
+                  "1": TXFIFO empty (FIFO mode only)
+              - name: REACK
+                msb: 22
+                lsb: 22
+                width: 1
+                access: ro
+                settings:
+                  "0": Receive not yet enabled or acknowledgement pending
+                  "1": Receive enabled and acknowledged by hardware
+              - name: TEACK
+                msb: 21
+                lsb: 21
+                width: 1
+                access: ro
+                settings:
+                  "0": Transmit not yet enabled or acknowledgement pending
+                  "1": Transmit enabled and acknowledged by hardware
+              - name: WUF
+                msb: 20
+                lsb: 20
+                width: 1
+                access: ro
+                settings:
+                  "0": No wake-up event
+                  "1": Wake-up event detected from low-power mode
+              - name: RWU
+                msb: 19
+                lsb: 19
+                width: 1
+                access: ro
+                settings: *uart-rwu
+              - name: SBKF
+                msb: 18
+                lsb: 18
+                width: 1
+                access: ro
+                settings: *uart-sbkf
+              - name: CMF
+                msb: 17
+                lsb: 17
+                width: 1
+                access: ro
+                settings:
+                  "0": No character match
+                  "1": Character match detected
+              - name: BUSY
+                msb: 16
+                lsb: 16
+                width: 1
+                access: ro
+                settings:
+                  "0": LPUART is idle
+                  "1": Receive or transmit in progress
+              - name: RESERVED
+                msb: 15
+                lsb: 11
+                width: 5
+                access: ro
+                settings: ~
+              - name: CTS
+                msb: 10
+                lsb: 10
+                width: 1
+                access: ro
+                settings: *uart-cts-line
+              - name: CTSIF
+                msb: 9
+                lsb: 9
+                width: 1
+                access: ro
+                settings:
+                  "0": No CTS change
+                  "1": CTS line change detected
+              - name: RESERVED
+                msb: 8
+                lsb: 8
+                width: 1
+                access: ro
+                settings: ~
+              - name: TXFNF
+                msb: 7
+                lsb: 7
+                width: 1
+                access: ro
+                note: TXE in non-FIFO mode
+                settings:
+                  "0": TXFIFO full (FIFO mode) or TX register not empty (non-FIFO mode)
+                  "1": TXFIFO not full (FIFO mode) or TX register empty (non-FIFO mode)
+              - name: TC
+                msb: 6
+                lsb: 6
+                width: 1
+                access: ro
+                settings:
+                  "0": Transmission not complete
+                  "1": Transmission complete
+              - name: RXFNE
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                note: RXNE in non-FIFO mode
+                settings:
+                  "0": RXFIFO empty (FIFO mode) or RX register empty (non-FIFO mode)
+                  "1": RXFIFO not empty (FIFO mode) or RX register not empty (non-FIFO mode)
+              - name: IDLE
+                msb: 4
+                lsb: 4
+                width: 1
+                access: ro
+                settings:
+                  "0": No idle line detected
+                  "1": Idle line detected
+              - name: ORE
+                msb: 3
+                lsb: 3
+                width: 1
+                access: ro
+                settings:
+                  "0": No overrun error
+                  "1": Overrun error detected
+              - name: NE
+                msb: 2
+                lsb: 2
+                width: 1
+                access: ro
+                settings:
+                  "0": No noise detected
+                  "1": Noise detected
+              - name: FE
+                msb: 1
+                lsb: 1
+                width: 1
+                access: ro
+                settings:
+                  "0": No framing error
+                  "1": Framing error detected
+              - name: PE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: ro
+                settings:
+                  "0": No parity error
+                  "1": Parity error detected
+        - ICR:
+            reference:
+              section: 35.7.10
+            offset: 0x20
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 21
+                width: 11
+                access: ro
+                settings: ~
+              - name: WUCF
+                msb: 20
+                lsb: 20
+                width: 1
+                access: wo
+                note: Wake-up from low-power mode clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 19
+                lsb: 18
+                width: 2
+                access: ro
+                settings: ~
+              - name: CMCF
+                msb: 17
+                lsb: 17
+                width: 1
+                access: wo
+                note: Character match clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 16
+                lsb: 10
+                width: 7
+                access: ro
+                settings: ~
+              - name: CTSCF
+                msb: 9
+                lsb: 9
+                width: 1
+                access: wo
+                note: CTS clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 8
+                lsb: 7
+                width: 2
+                access: ro
+                settings: ~
+              - name: TCCF
+                msb: 6
+                lsb: 6
+                width: 1
+                access: wo
+                note: Transmission complete clear flag
+                settings: *uart-clear-flag
+              - name: RESERVED
+                msb: 5
+                lsb: 5
+                width: 1
+                access: ro
+                settings: ~
+              - name: IDLECF
+                msb: 4
+                lsb: 4
+                width: 1
+                access: wo
+                note: Idle line detected clear flag
+                settings: *uart-clear-flag
+              - name: ORECF
+                msb: 3
+                lsb: 3
+                width: 1
+                access: wo
+                note: Overrun error clear flag
+                settings: *uart-clear-flag
+              - name: NECF
+                msb: 2
+                lsb: 2
+                width: 1
+                access: wo
+                note: Noise detected clear flag
+                settings: *uart-clear-flag
+              - name: FECF
+                msb: 1
+                lsb: 1
+                width: 1
+                access: wo
+                note: Framing error clear flag
+                settings: *uart-clear-flag
+              - name: PECF
+                msb: 0
+                lsb: 0
+                width: 1
+                access: wo
+                note: Parity error clear flag
+                settings: *uart-clear-flag
+        - RDR:
+            reference:
+              section: 35.7.11
+            offset: 0x24
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 9
+                width: 23
+                access: ro
+                settings: ~
+              - name: RDR
+                msb: 8
+                lsb: 0
+                width: 9
+                access: ro
+                note: Received data value (bits [8:0]; bit 8 is parity when enabled)
+                settings: ~
+        - TDR:
+            reference:
+              section: 35.7.12
+            offset: 0x28
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 9
+                width: 23
+                access: ro
+                settings: ~
+              - name: TDR
+                msb: 8
+                lsb: 0
+                width: 9
+                access: rw
+                note: Transmit data value (bits [8:0]; bit 8 is parity when enabled)
+                settings: ~
+        - PRESC:
+            reference:
+              section: 35.7.13
+            offset: 0x2C
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 4
+                width: 28
+                access: ro
+                settings: ~
+              - name: PRESCALER
+                msb: 3
+                lsb: 0
+                width: 4
+                access: rw
+                settings: *uart-prescaler
