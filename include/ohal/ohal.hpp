@@ -12,7 +12,8 @@
 // compile-time checks for invalid/missing family or model defines.
 // Omitted in host-side (non-target) builds where no OHAL_FAMILY_* macro is
 // defined, so that host tests can include this header without errors.
-#if defined(OHAL_FAMILY_STM32U0) || defined(OHAL_FAMILY_TI_MSPM0) || defined(OHAL_FAMILY_PIC)
+#if defined(OHAL_FAMILY_STM32U0) || defined(OHAL_FAMILY_TI_MSPM0) || defined(OHAL_FAMILY_PIC) ||   \
+    defined(OHAL_FAMILY_MSP430FR2XX)
 #include <ohal/platform.hpp>
 #endif
 

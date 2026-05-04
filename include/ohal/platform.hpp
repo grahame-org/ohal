@@ -1,16 +1,15 @@
 #ifndef OHAL_PLATFORM_HPP
 #define OHAL_PLATFORM_HPP
 
-#if defined(OHAL_FAMILY_STM32U0) && (defined(OHAL_FAMILY_TI_MSPM0) || defined(OHAL_FAMILY_PIC))
+#if (defined(OHAL_FAMILY_STM32U0) + defined(OHAL_FAMILY_TI_MSPM0) + defined(OHAL_FAMILY_PIC) +     \
+     defined(OHAL_FAMILY_MSP430FR2XX)) > 1
 #error "ohal: Multiple MCU families defined. " \
        "Pass exactly one OHAL_FAMILY_* macro to the compiler."
-#elif defined(OHAL_FAMILY_TI_MSPM0) && defined(OHAL_FAMILY_PIC)
-#error "ohal: Multiple MCU families defined. " \
-       "Pass exactly one OHAL_FAMILY_* macro to the compiler."
-#elif !defined(OHAL_FAMILY_STM32U0) && !defined(OHAL_FAMILY_TI_MSPM0) && !defined(OHAL_FAMILY_PIC)
+#elif !defined(OHAL_FAMILY_STM32U0) && !defined(OHAL_FAMILY_TI_MSPM0) &&                           \
+    !defined(OHAL_FAMILY_PIC) && !defined(OHAL_FAMILY_MSP430FR2XX)
 #error "ohal: No MCU family defined. " \
        "Pass exactly one of -DOHAL_FAMILY_STM32U0, -DOHAL_FAMILY_TI_MSPM0, " \
-       "-DOHAL_FAMILY_PIC to the compiler."
+       "-DOHAL_FAMILY_PIC, -DOHAL_FAMILY_MSP430FR2XX to the compiler."
 #endif
 
 #if defined(OHAL_FAMILY_STM32U0)
@@ -19,6 +18,8 @@
 #include "ohal/platforms/ti_mspm0/family.hpp"
 #elif defined(OHAL_FAMILY_PIC)
 #include "ohal/platforms/pic/family.hpp"
+#elif defined(OHAL_FAMILY_MSP430FR2XX)
+#include "ohal/platforms/msp430fr2xx/family.hpp"
 #endif
 
 #endif // OHAL_PLATFORM_HPP

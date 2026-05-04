@@ -49,6 +49,13 @@ target_link_libraries(ohal_host_tests_mct PRIVATE ohal GTest::gtest_main GTest::
 add_executable(ohal_host_tests_mci main.cpp test_gpio_stm32u083mci.cpp)
 target_link_libraries(ohal_host_tests_mci PRIVATE ohal GTest::gtest_main GTest::gmock)
 
+# MSP430FR2355 tests use a separate executable: msp430fr2355/gpio.hpp introduces
+# Pin<PortA…PortF, PinNum> partial specialisations backed by MSP430-specific
+# GpioPortPinImpl.  Linking this with any STM32U083 test binary would produce
+# two different definitions for those Pin<> instantiations — an ODR violation.
+add_executable(ohal_host_tests_msp430fr2355 main.cpp test_gpio_msp430fr2355.cpp)
+target_link_libraries(ohal_host_tests_msp430fr2355 PRIVATE ohal GTest::gtest_main GTest::gmock)
+
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
 gtest_discover_tests(ohal_host_tests_cc)
@@ -56,3 +63,4 @@ gtest_discover_tests(ohal_host_tests_rct)
 gtest_discover_tests(ohal_host_tests_rci)
 gtest_discover_tests(ohal_host_tests_mct)
 gtest_discover_tests(ohal_host_tests_mci)
+gtest_discover_tests(ohal_host_tests_msp430fr2355)
