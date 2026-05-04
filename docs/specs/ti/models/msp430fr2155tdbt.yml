@@ -1,0 +1,318 @@
+---
+spec-version: "1.0.0"
+vendor: "Texas Instruments"
+reference:
+  source: SLASEC4D
+  title: "MSP430FR235x, MSP430FR215x Mixed-Signal Microcontrollers"
+  revision: "D"
+  last-modified: "2019-12"
+family-ref: msp430fr2xx4xx
+model: msp430fr2155tdbt
+package: TSSOP38
+flash-kb: 32
+sram-kb: 4
+pin-count: 38
+peripheral-availability:
+  - peripheral: gpio
+    instances: [P1, P2, P3, P4, P5]
+    note: >-
+      P5 exposes bits 0–1 (2 pins) on the 38-pin TSSOP package.
+      P5.2–P5.4 and all P6 pins are not bonded out. Total 32 GPIO-capable pins.
+alternate-functions:
+  reference:
+    sections: [4.1, 4.2, 4.3, 6.11]
+    figures: ["4-7"]
+    tables: ["4-1", "4-2"]
+  pins:
+    - pin: "PC2"
+      number: 1
+      gpio:
+        port: C
+        bit: 2
+      functions: ~
+    - pin: "PC1"
+      number: 2
+      gpio:
+        port: C
+        bit: 1
+      functions: ~
+    - pin: "PC0"
+      number: 3
+      gpio:
+        port: C
+        bit: 0
+      functions:
+        "SEL=01,DIR=0": VSS
+        "SEL=01,DIR=1": MCLK
+    - pin: "PA3"
+      number: 4
+      gpio:
+        port: A
+        bit: 3
+      functions:
+        "SEL=01": UCB0SOMI/UCB0SCL
+        "SEL=11": A3
+    - pin: "PA2"
+      number: 5
+      gpio:
+        port: A
+        bit: 2
+      functions:
+        "SEL=01": UCB0SIMO/UCB0SDA
+        "SEL=10": TB0TRG
+        "SEL=11": A2/Veref-
+    - pin: "PA1"
+      number: 6
+      gpio:
+        port: A
+        bit: 1
+      functions:
+        "SEL=01": UCB0CLK
+        "SEL=10,DIR=0": VSS
+        "SEL=10,DIR=1": ACLK
+        "SEL=11": COMP0.1/A1
+    - pin: "PA0"
+      number: 7
+      gpio:
+        port: A
+        bit: 0
+      functions:
+        "SEL=01": UCB0STE
+        "SEL=10,DIR=0": VSS
+        "SEL=10,DIR=1": SMCLK
+        "SEL=11": COMP0.0/A0/Veref+
+    - pin: "TEST"
+      number: 8
+      gpio: ~
+      functions:
+        "SEL=01": SBWTCK
+    - pin: "RST/NMI"
+      number: 9
+      gpio: ~
+      functions:
+        "SEL=01": NMI/SBWTDIO
+    - pin: "DVCC"
+      number: 10
+      gpio: ~
+      functions: ~
+    - pin: "DVSS"
+      number: 11
+      gpio: ~
+      functions: ~
+    - pin: "PB7"
+      number: 12
+      gpio:
+        port: B
+        bit: 7
+      functions:
+        "SEL=01,DIR=0": TB0CLK
+        "SEL=01,DIR=1": VSS
+        "SEL=10": XIN
+    - pin: "PB6"
+      number: 13
+      gpio:
+        port: B
+        bit: 6
+      functions:
+        "SEL=01,DIR=0": VSS
+        "SEL=01,DIR=1": MCLK
+        "SEL=10": XOUT
+    - pin: "PB5"
+      number: 14
+      gpio:
+        port: B
+        bit: 5
+      functions:
+        "SEL=11": COMP1.0
+    - pin: "PB4"
+      number: 15
+      gpio:
+        port: B
+        bit: 4
+      functions:
+        "SEL=11": COMP1.1
+    - pin: "PD7"
+      number: 16
+      gpio:
+        port: D
+        bit: 7
+      functions:
+        "SEL=01": UCB1SOMI/UCB1SCL
+    - pin: "PD6"
+      number: 17
+      gpio:
+        port: D
+        bit: 6
+      functions:
+        "SEL=01": UCB1SIMO/UCB1SDA
+    - pin: "PD5"
+      number: 18
+      gpio:
+        port: D
+        bit: 5
+      functions:
+        "SEL=01": UCB1CLK
+    - pin: "PD4"
+      number: 19
+      gpio:
+        port: D
+        bit: 4
+      functions:
+        "SEL=01": UCB1STE
+    - pin: "PD3"
+      number: 20
+      gpio:
+        port: D
+        bit: 3
+      functions:
+        "SEL=01": UCA1TXD/UCA1SIMO
+        "SEL=10": UCA1TXD
+    - pin: "PD2"
+      number: 21
+      gpio:
+        port: D
+        bit: 2
+      functions:
+        "SEL=01": UCA1RXD/UCA1SOMI
+        "SEL=10": UCA1RXD
+    - pin: "PD1"
+      number: 22
+      gpio:
+        port: D
+        bit: 1
+      functions:
+        "SEL=01": UCA1CLK
+    - pin: "PD0"
+      number: 23
+      gpio:
+        port: D
+        bit: 0
+      functions:
+        "SEL=01": UCA1STE
+        "SEL=10,DIR=0": UCA1RXD/TB3.CCI2B
+        "SEL=10,DIR=1": UCA1TXD/TB3.2B
+    - pin: "PB3"
+      number: 24
+      gpio:
+        port: B
+        bit: 3
+      functions:
+        "SEL=01,DIR=0": TB1TRG
+        "SEL=01,DIR=1": VSS
+    - pin: "PB2"
+      number: 25
+      gpio:
+        port: B
+        bit: 2
+      functions:
+        "SEL=01,DIR=0": TB1CLK
+    - pin: "PB1"
+      number: 26
+      gpio:
+        port: B
+        bit: 1
+      functions:
+        "SEL=01,DIR=0": TB1.CCI2A
+        "SEL=01,DIR=1": TB1.2
+        "SEL=10,DIR=1": COMP1.O
+    - pin: "PB0"
+      number: 27
+      gpio:
+        port: B
+        bit: 0
+      functions:
+        "SEL=01,DIR=0": TB1.CCI1A
+        "SEL=01,DIR=1": TB1.1
+        "SEL=10,DIR=1": COMP0.O
+    - pin: "PA7"
+      number: 28
+      gpio:
+        port: A
+        bit: 7
+      functions:
+        "SEL=01": UCA0TXD/UCA0SIMO
+        "SEL=10,DIR=0": TB0.CCI2A
+        "SEL=10,DIR=1": TB0.2
+        "SEL=11": A7/VREF+
+        JTAG: TDO
+    - pin: "PA6"
+      number: 29
+      gpio:
+        port: A
+        bit: 6
+      functions:
+        "SEL=01": UCA0RXD/UCA0SOMI
+        "SEL=10,DIR=0": TB0.CCI1A
+        "SEL=10,DIR=1": TB0.1
+        "SEL=11": A6
+        JTAG: TDI/TCLK
+    - pin: "PA5"
+      number: 30
+      gpio:
+        port: A
+        bit: 5
+      functions:
+        "SEL=01": UCA0CLK
+        "SEL=11": A5
+        JTAG: TMS
+    - pin: "PA4"
+      number: 31
+      gpio:
+        port: A
+        bit: 4
+      functions:
+        "SEL=01": UCA0STE
+        "SEL=11": A4
+        JTAG: TCK
+    - pin: "PC7"
+      number: 32
+      gpio:
+        port: C
+        bit: 7
+      functions: ~
+    - pin: "PC6"
+      number: 33
+      gpio:
+        port: C
+        bit: 6
+      functions: ~
+    - pin: "PC5"
+      number: 34
+      gpio:
+        port: C
+        bit: 5
+      functions: ~
+    - pin: "PC4"
+      number: 35
+      gpio:
+        port: C
+        bit: 4
+      functions:
+        "SEL=01,DIR=0": VSS
+        "SEL=01,DIR=1": SMCLK
+    - pin: "PE1"
+      number: 36
+      gpio:
+        port: E
+        bit: 1
+      functions:
+        "SEL=01,DIR=0": TB2.CCI2A
+        "SEL=01,DIR=1": TB2.2
+        "SEL=10": MFM.TX
+        "SEL=11": A9
+    - pin: "PE0"
+      number: 37
+      gpio:
+        port: E
+        bit: 0
+      functions:
+        "SEL=01,DIR=0": TB2.CCI1A
+        "SEL=01,DIR=1": TB2.1
+        "SEL=10": MFM.RX
+        "SEL=11": A8
+    - pin: "PC3"
+      number: 38
+      gpio:
+        port: C
+        bit: 3
+      functions: ~
