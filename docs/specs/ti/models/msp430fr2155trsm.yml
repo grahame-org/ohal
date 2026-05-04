@@ -17,10 +17,10 @@ peripheral-availability:
     instances: [P1, P2, P3, P4]
     note: >-
       P4 exposes bits 0–3 and 6–7 (6 pins) on the 32-pin VQFN package.
-      P4.4–P4.5, all P5 pins, all P6 pins, P2.2–P2.3, and P3.3 are not bonded out.
+      P4.4–P4.5, all P5 pins, all P6 pins, and P2.2–P2.3 are not bonded out.
       UCB1SOMI and UCB1SIMO are not applicable in this package.
       Exposed thermal pad (EP, pad 33) must be connected to VSS.
-      Total 26 GPIO-capable pins.
+      Total 28 GPIO-capable pins.
 alternate-functions:
   reference:
     sections: [4.1, 4.2, 4.3, 6.11]
