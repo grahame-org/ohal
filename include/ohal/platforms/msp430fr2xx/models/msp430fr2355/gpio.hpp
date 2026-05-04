@@ -163,11 +163,9 @@ struct GpioPortPinImpl {
   [[nodiscard]] static gpio::Level read_output() noexcept { return OutBit::read(); }
 
   static void toggle() noexcept {
-    if (read_output() == gpio::Level::Low) {
-      set();
-    } else {
-      clear();
-    }
+    // Single read-modify-write: XOR the pin bit in PxOUT directly.
+    // Avoids the extra register read that the read_output()/set()/clear() path would incur.
+    Regs::Out::write(static_cast<typename Regs::Out::value_type>(Regs::Out::read() ^ OutBit::mask));
   }
 
   /// set_pull: enable PxREN and use PxOUT to select up/down.

@@ -125,7 +125,7 @@ TEST_F(GpioMsp430fr2355Test, ReadOutput_ReturnsLow_WhenOutBitClear) {
 }
 
 // ---------------------------------------------------------------------------
-// toggle() — reads Out register then drives the opposite level
+// toggle() — XOR pin bit in Out register (single read-modify-write)
 // ---------------------------------------------------------------------------
 
 TEST_F(GpioMsp430fr2355Test, Toggle_SetsPin_WhenOutputWasLow) {
@@ -262,13 +262,19 @@ TEST_F(GpioMsp430fr2355Test, SetPull_Down_ClearsOutBit) {
 }
 
 // ---------------------------------------------------------------------------
-// set_pull(None) — clears Ren bit; Out is not modified
+// set_pull(None) — clears Ren bit; Out register must not be modified
 // ---------------------------------------------------------------------------
 
 TEST_F(GpioMsp430fr2355Test, SetPull_None_ClearsRenBit) {
   mock_ren = static_cast<uint8_t>(1U << 2U); // pre-load enabled
   MockPin2::set_pull(ohal::gpio::Pull::None);
   EXPECT_EQ((mock_ren >> 2U) & 1U, 0U);
+}
+
+TEST_F(GpioMsp430fr2355Test, SetPull_None_DoesNotModifyOutRegister) {
+  mock_out = static_cast<uint8_t>(0xA5U); // sentinel: must remain unchanged
+  MockPin2::set_pull(ohal::gpio::Pull::None);
+  EXPECT_EQ(mock_out, static_cast<uint8_t>(0xA5U));
 }
 
 // ---------------------------------------------------------------------------
