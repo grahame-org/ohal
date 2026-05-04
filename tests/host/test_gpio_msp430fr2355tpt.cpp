@@ -68,13 +68,13 @@ protected:
 
 TEST_F(GpioMsp430fr2355TptTest, Set_SetsBitInOutRegister) {
   MockPin3::set();
-  EXPECT_EQ((mock_out >> 3U) & 1U, 1U);
+  EXPECT_EQ(mock_out, static_cast<uint8_t>(1U << 3U));
 }
 
 TEST_F(GpioMsp430fr2355TptTest, Clear_ClearsBitInOutRegister) {
   mock_out = static_cast<uint8_t>(1U << 3U);
   MockPin3::clear();
-  EXPECT_EQ((mock_out >> 3U) & 1U, 0U);
+  EXPECT_EQ(mock_out, static_cast<uint8_t>(0U));
 }
 
 TEST_F(GpioMsp430fr2355TptTest, ReadInput_ReturnsHigh_WhenInBitSet) {
@@ -84,29 +84,29 @@ TEST_F(GpioMsp430fr2355TptTest, ReadInput_ReturnsHigh_WhenInBitSet) {
 
 TEST_F(GpioMsp430fr2355TptTest, SetMode_Output_SetsDirBit) {
   MockPin3::set_mode(ohal::gpio::PinMode::Output);
-  EXPECT_EQ((mock_dir >> 3U) & 1U, 1U);
+  EXPECT_EQ(mock_dir, static_cast<uint8_t>(1U << 3U));
 }
 
 TEST_F(GpioMsp430fr2355TptTest, SetMode_Input_ClearsDirBit) {
   mock_dir = static_cast<uint8_t>(1U << 3U);
   MockPin3::set_mode(ohal::gpio::PinMode::Input);
-  EXPECT_EQ((mock_dir >> 3U) & 1U, 0U);
+  EXPECT_EQ(mock_dir, static_cast<uint8_t>(0U));
 }
 
 TEST_F(GpioMsp430fr2355TptTest, SetMode_AlternateFunction_SetsSel0Bit) {
   MockPin3::set_mode(ohal::gpio::PinMode::AlternateFunction);
-  EXPECT_EQ((mock_sel0 >> 3U) & 1U, 1U);
+  EXPECT_EQ(mock_sel0, static_cast<uint8_t>(1U << 3U));
 }
 
 TEST_F(GpioMsp430fr2355TptTest, SetPull_Up_SetsRenBit) {
   MockPin3::set_pull(ohal::gpio::Pull::Up);
-  EXPECT_EQ((mock_ren >> 3U) & 1U, 1U);
+  EXPECT_EQ(mock_ren, static_cast<uint8_t>(1U << 3U));
 }
 
 TEST_F(GpioMsp430fr2355TptTest, SetPull_Down_ClearsOutBit) {
   mock_out = static_cast<uint8_t>(1U << 3U);
   MockPin3::set_pull(ohal::gpio::Pull::Down);
-  EXPECT_EQ((mock_out >> 3U) & 1U, 0U);
+  EXPECT_EQ(mock_out, static_cast<uint8_t>(0U));
 }
 
 // ---------------------------------------------------------------------------
@@ -276,7 +276,9 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioMsp430fr2355TptCapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
+TEST_P(GpioMsp430fr2355TptCapabilityTest, BondedPinCapability_ReturnsTrue) {
+  EXPECT_TRUE(GetParam().value);
+}
 
 // ---------------------------------------------------------------------------
 // Capability trait runtime tests — non-bonded and out-of-range (must be false)
@@ -320,6 +322,8 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<NegCapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioMsp430fr2355TptNegCapabilityTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
+TEST_P(GpioMsp430fr2355TptNegCapabilityTest, NonBondedPinCapability_ReturnsFalse) {
+  EXPECT_FALSE(GetParam().value);
+}
 
 } // namespace
