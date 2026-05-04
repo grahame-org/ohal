@@ -2,8 +2,8 @@
 
 ## Completing work on a PR
 
-**Always run `bash lint.sh` from the repository root before completing any
-work on a PR.**
+**Always run `bash lint.sh` from the repository root before pushing any
+changes to a PR or marking a PR ready for review.**
 
 The lint script checks:
 
