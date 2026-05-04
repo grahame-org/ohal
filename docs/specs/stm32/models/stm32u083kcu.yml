@@ -376,8 +376,9 @@ alternate-functions:
         AF4: I2C1_SCL
         AF5: I2C2_SCL
         AF6: LPUART3_TX
-        AF7: LPUART1_TX
+        AF7: USART1_TX
         AF9: TSC_G2_IO3
+        AF10: LPUART2_TX
         AF14: TIM16_CH1N
         AF15: EVENTOUT
     - pin: "PB7"

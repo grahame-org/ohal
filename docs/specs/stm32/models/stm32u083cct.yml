@@ -127,7 +127,7 @@ alternate-functions:
         port: A
         bit: 3
       functions:
-        AF0: TIM2_CH4
+        AF1: TIM2_CH4
         AF7: USART2_RX
         AF8: LPUART1_RX
         AF11: LCD_SEG2
