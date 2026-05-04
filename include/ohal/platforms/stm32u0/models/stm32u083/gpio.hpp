@@ -1,8 +1,8 @@
 #ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_GPIO_HPP
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_GPIO_HPP
 
-// The STM32U083KCU (32-pin UFQFPN) and STM32U083HCY (42-ball WLCSP) expose
-// only GPIOA, GPIOB, GPIOC and GPIOF.  GPIOD and GPIOE exist in silicon but
+// Shared STM32U083 GPIO header for packages that bond out only
+// GPIOA, GPIOB, GPIOC and GPIOF.  GPIOD and GPIOE exist in silicon but
 // are not bonded out on these packages.
 //
 // This header pulls in the shared STM32U083 register map and then provides
