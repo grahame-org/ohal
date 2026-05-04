@@ -10,14 +10,14 @@ family-ref: msp430fr2xx4xx
 model: msp430fr2153tdbt
 package: TSSOP38
 flash-kb: 16
-sram-kb: 4
+sram-kb: 2
 pin-count: 38
 peripheral-availability:
   - peripheral: gpio
     instances: [P1, P2, P3, P4, P5]
     note: >-
       P5 exposes bits 0–1 (2 pins) on the 38-pin TSSOP package.
-      P5.2–P5.4 and all P6 pins are not bonded out. Total 32 GPIO-capable pins.
+      P5.2–P5.4 and all P6 pins are not bonded out. Total 34 GPIO-capable pins.
 alternate-functions:
   reference:
     sections: [4.1, 4.2, 4.3, 6.11]
