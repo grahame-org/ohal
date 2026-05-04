@@ -25,57 +25,47 @@ alternate-functions:
     tables: ["4-1", "4-2"]
   pins:
     # Pins are listed in package order (pin 1 at top-left, counter-clockwise).
-    # MSP430 alternate functions are selected by the PxSEL0/PxSEL1 register bits.
-    # SEL=01 (SEL0=1, SEL1=0): module function 1
-    # SEL=10 (SEL0=0, SEL1=1): module function 2
-    # SEL=11 (SEL0=1, SEL1=1): module function 3 / analog
-    # SEL=00 (both clear) selects GPIO; not listed in functions below.
-    - pin: "P1.2/UCB0SIMO/UCB0SDA/TB0TRG/OA0-/A2/Veref-"
+    # Port letters follow the OHAL mapping: P1=A, P2=B, P3=C, P4=D, P5=E, P6=F.
+    # Function keys encode the PxSEL0/PxSEL1 register bits (SEL=<SEL1:SEL0>) and,
+    # for direction-dependent functions, the PxDIR register bit:
+    #   "SEL=01"        SEL0=1, SEL1=0 (module function 1, direction-independent)
+    #   "SEL=01,DIR=0"  SEL0=1, SEL1=0, DIR=0 (input only)
+    #   "SEL=01,DIR=1"  SEL0=1, SEL1=0, DIR=1 (output only)
+    #   "SEL=10"        SEL0=0, SEL1=1 (module function 2, direction-independent)
+    #   "SEL=10,DIR=0"  SEL0=0, SEL1=1, DIR=0 (input only)
+    #   "SEL=10,DIR=1"  SEL0=0, SEL1=1, DIR=1 (output only)
+    #   "SEL=11"        SEL0=1, SEL1=1 (module function 3 / analog)
+    #   "JTAG"          JTAG override (active regardless of SEL bits when JTAG enabled)
+    # GPIO mode (SEL0=0, SEL1=0) is the default and is not listed as a function.
+    - pin: "PA2"
       number: 1
       gpio:
-        port: 1
+        port: A
         bit: 2
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB0SIMO/UCB0SDA function for the pin.
-        AF1: UCB0SIMO/UCB0SDA
-        # DIR = 0, SEL0 = 0, SEL1 = 1 selects the TB0TRG function for the pin.
-        AF2: TB0TRG
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF3: OA0-/A2/Veref-
-    - pin: "P1.1/UCB0CLK/ACLK/OA0O/COMP0.1/A1"
+        "SEL=01": UCB0SIMO/UCB0SDA
+        "SEL=10": TB0TRG
+        "SEL=11": OA0-/A2/Veref-
+    - pin: "PA1"
       number: 2
       gpio:
-        port: 1
+        port: A
         bit: 1
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB0CLK function for the pin.
-        AF1: UCB0CLK
-        # DIR = 0, SEL0 = 0, SEL1 = 1 selects the VSS function for the pin.
-        AF2: VSS
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the ACLK function for the pin.
-        AF3: ACLK
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF4: OA0O/COMP0.1/A1
-    - pin: "P1.0/UCB0STE/SMCLK/COMP0.0/A0/Veref+"
+        "SEL=01": UCB0CLK
+        "SEL=10,DIR=0": VSS
+        "SEL=10,DIR=1": ACLK
+        "SEL=11": OA0O/COMP0.1/A1
+    - pin: "PA0"
       number: 3
       gpio:
-        port: 1
+        port: A
         bit: 0
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB0STE function for the pin.
-        AF1: UCB0STE
-        # DIR = 0, SEL0 = 0, SEL1 = 1 selects the VSS function for the pin.
-        AF2: VSS
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the SMCLK function for the pin.
-        AF3: SMCLK
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF4: COMP0.0/A0/Veref+
+        "SEL=01": UCB0STE
+        "SEL=10,DIR=0": VSS
+        "SEL=10,DIR=1": SMCLK
+        "SEL=11": COMP0.0/A0/Veref+
     - pin: "TEST"
       number: 4
       gpio: ~
@@ -94,501 +84,335 @@ alternate-functions:
       number: 7
       gpio: ~
       functions: ~
-    - pin: "P2.7/TB0CLK/XIN"
+    - pin: "PB7"
       number: 8
       gpio:
-        port: 2
+        port: B
         bit: 7
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB0CLK function for the pin.
-        AF1: TB0CLK
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF2: VSS
-        # DIR = x, SEL0 = 0, SEL1 = 1 selects the XIN function for the pin.
-        AF3: XIN
-    - pin: "P2.6/MCLK/XOUT"
+        "SEL=01,DIR=0": TB0CLK
+        "SEL=01,DIR=1": VSS
+        "SEL=10": XIN
+    - pin: "PB6"
       number: 9
       gpio:
-        port: 2
+        port: B
         bit: 6
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF1: VSS
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the MCLK function for the pin.
-        AF2: MCLK
-        # DIR = x, SEL0 = 0, SEL1 = 1 selects the XOUT function for the pin.
-        AF3: XOUT
-    - pin: "P2.5/COMP1.0"
+        "SEL=01,DIR=0": VSS
+        "SEL=01,DIR=1": MCLK
+        "SEL=10": XOUT
+    - pin: "PB5"
       number: 10
       gpio:
-        port: 2
+        port: B
         bit: 5
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: COMP1.0
-    - pin: "P2.4/COMP1.1"
+        "SEL=11": COMP1.0
+    - pin: "PB4"
       number: 11
       gpio:
-        port: 2
+        port: B
         bit: 4
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: COMP1.1
-    - pin: "P4.7/UCB1SOMI/UCB1SCL"
+        "SEL=11": COMP1.1
+    - pin: "PD7"
       number: 12
       gpio:
-        port: 4
+        port: D
         bit: 7
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB1SOMI/UCB1SCL function for the pin.
-        AF1: UCB1SOMI/UCB1SCL
-    - pin: "P4.6/UCB1SIMO/UCB1SDA"
+        "SEL=01": UCB1SOMI/UCB1SCL
+    - pin: "PD6"
       number: 13
       gpio:
-        port: 4
+        port: D
         bit: 6
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB1SIMO/UCB1SDA function for the pin.
-        AF1: UCB1SIMO/UCB1SDA
-    - pin: "P4.5/UCB1CLK"
+        "SEL=01": UCB1SIMO/UCB1SDA
+    - pin: "PD5"
       number: 14
       gpio:
-        port: 4
+        port: D
         bit: 5
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB1CLK function for the pin.
-        AF1: UCB1CLK
-    - pin: "P4.4/UCB1STE"
+        "SEL=01": UCB1CLK
+    - pin: "PD4"
       number: 15
       gpio:
-        port: 4
+        port: D
         bit: 4
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB1STE function for the pin.
-        AF1: UCB1STE
-    - pin: "P6.6/TB3CLK"
+        "SEL=01": UCB1STE
+    - pin: "PF6"
       number: 16
       gpio:
-        port: 6
+        port: F
         bit: 6
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3CLK function for the pin.
-        AF1: TB3CLK
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF2: VSS
-    - pin: "P6.5/TB3.6"
+        "SEL=01,DIR=0": TB3CLK
+        "SEL=01,DIR=1": VSS
+    - pin: "PF5"
       number: 17
       gpio:
-        port: 6
+        port: F
         bit: 5
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3.CCI6A function for the pin.
-        AF1: TB3.CCI6A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB3.6 function for the pin.
-        AF2: TB3.6
-    - pin: "P6.4/TB3.5"
+        "SEL=01,DIR=0": TB3.CCI6A
+        "SEL=01,DIR=1": TB3.6
+    - pin: "PF4"
       number: 18
       gpio:
-        port: 6
+        port: F
         bit: 4
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3.CCI5A function for the pin.
-        AF1: TB3.CCI5A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB3.5 function for the pin.
-        AF2: TB3.5
-    - pin: "P6.3/TB3.4"
+        "SEL=01,DIR=0": TB3.CCI5A
+        "SEL=01,DIR=1": TB3.5
+    - pin: "PF3"
       number: 19
       gpio:
-        port: 6
+        port: F
         bit: 3
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3.CCI4A function for the pin.
-        AF1: TB3.CCI4A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB3.4 function for the pin.
-        AF2: TB3.4
-    - pin: "P6.2/TB3.3"
+        "SEL=01,DIR=0": TB3.CCI4A
+        "SEL=01,DIR=1": TB3.4
+    - pin: "PF2"
       number: 20
       gpio:
-        port: 6
+        port: F
         bit: 2
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3.CCI3A function for the pin.
-        AF1: TB3.CCI3A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB3.3 function for the pin.
-        AF2: TB3.3
-    - pin: "P6.1/TB3.2"
+        "SEL=01,DIR=0": TB3.CCI3A
+        "SEL=01,DIR=1": TB3.3
+    - pin: "PF1"
       number: 21
       gpio:
-        port: 6
+        port: F
         bit: 1
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3.CCI2A function for the pin.
-        AF1: TB3.CCI2A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB3.2 function for the pin.
-        AF2: TB3.2
-    - pin: "P6.0/TB3.1"
+        "SEL=01,DIR=0": TB3.CCI2A
+        "SEL=01,DIR=1": TB3.2
+    - pin: "PF0"
       number: 22
       gpio:
-        port: 6
+        port: F
         bit: 0
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB3.CCI1A function for the pin.
-        AF1: TB3.CCI1A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB3.1 function for the pin.
-        AF2: TB3.1
-    - pin: "P4.3/UCA1TXD/UCA1SIMO"
+        "SEL=01,DIR=0": TB3.CCI1A
+        "SEL=01,DIR=1": TB3.1
+    - pin: "PD3"
       number: 23
       gpio:
-        port: 4
+        port: D
         bit: 3
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA1TXD/UCA1SIMO function for the pin.
-        AF1: UCA1TXD/UCA1SIMO
-        # DIR = x, SEL0 = 0, SEL1 = 1 selects the UCA1TXD function for the pin.
-        AF2: UCA1TXD
-    - pin: "P4.2/UCA1RXD/UCA1SOMI"
+        "SEL=01": UCA1TXD/UCA1SIMO
+        "SEL=10": UCA1TXD
+    - pin: "PD2"
       number: 24
       gpio:
-        port: 4
+        port: D
         bit: 2
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA1RXD/UCA1SOMI function for the pin.
-        AF1: UCA1RXD/UCA1SOMI
-        # DIR = x, SEL0 = 0, SEL1 = 1 selects the UCA1RXD function for the pin.
-        AF2: UCA1RXD
-    - pin: "P4.1/UCA1CLK"
+        "SEL=01": UCA1RXD/UCA1SOMI
+        "SEL=10": UCA1RXD
+    - pin: "PD1"
       number: 25
       gpio:
-        port: 4
+        port: D
         bit: 1
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA1CLK function for the pin.
-        AF1: UCA1CLK
-    - pin: "P4.0/UCA1STE/ISOTXD/ISORXD"
+        "SEL=01": UCA1CLK
+    - pin: "PD0"
       number: 26
       gpio:
-        port: 4
+        port: D
         bit: 0
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA1STE function for the pin.
-        AF1: UCA1STE
-        # DIR = 0, SEL0 = 0, SEL1 = 1 selects the UCA1RXD/TB3.CCI2B function for the pin.
-        AF2: UCA1RXD/TB3.CCI2B
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the UCA1TXD/TB3.2B function for the pin.
-        AF3: UCA1TXD/TB3.2B
-    - pin: "P2.3/TB1TRG"
+        "SEL=01": UCA1STE
+        "SEL=10,DIR=0": UCA1RXD/TB3.CCI2B
+        "SEL=10,DIR=1": UCA1TXD/TB3.2B
+    - pin: "PB3"
       number: 27
       gpio:
-        port: 2
+        port: B
         bit: 3
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB1TRG function for the pin.
-        AF1: TB1TRG
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF2: VSS
-    - pin: "P2.2/TB1CLK"
+        "SEL=01,DIR=0": TB1TRG
+        "SEL=01,DIR=1": VSS
+    - pin: "PB2"
       number: 28
       gpio:
-        port: 2
+        port: B
         bit: 2
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB1CLK function for the pin.
-        AF1: TB1CLK
-    - pin: "P2.1/TB1.2/COMP1.O"
+        "SEL=01,DIR=0": TB1CLK
+    - pin: "PB1"
       number: 29
       gpio:
-        port: 2
+        port: B
         bit: 1
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB1.CCI2A function for the pin.
-        AF1: TB1.CCI2A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB1.2 function for the pin.
-        AF2: TB1.2
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the COMP1.O function for the pin.
-        AF3: COMP1.O
-    - pin: "P2.0/TB1.1/COMP0.O"
+        "SEL=01,DIR=0": TB1.CCI2A
+        "SEL=01,DIR=1": TB1.2
+        "SEL=10,DIR=1": COMP1.O
+    - pin: "PB0"
       number: 30
       gpio:
-        port: 2
+        port: B
         bit: 0
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB1.CCI1A function for the pin.
-        AF1: TB1.CCI1A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB1.1 function for the pin.
-        AF2: TB1.1
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the COMP0.O function for the pin.
-        AF3: COMP0.O
-    - pin: "P1.7/UCA0TXD/UCA0SIMO/TB0.2/TDO/OA1+/A7/VREF+"
+        "SEL=01,DIR=0": TB1.CCI1A
+        "SEL=01,DIR=1": TB1.1
+        "SEL=10,DIR=1": COMP0.O
+    - pin: "PA7"
       number: 31
       gpio:
-        port: 1
+        port: A
         bit: 7
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin (JTAG disabled).
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA0TXD/UCA0SIMO function for the pin (JTAG disabled).
-        AF1: UCA0TXD/UCA0SIMO
-        # DIR = 0, SEL0 = 0, SEL1 = 1 selects the TB0.CCI2A function for the pin (JTAG disabled).
-        AF2: TB0.CCI2A
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the TB0.2 function for the pin (JTAG disabled).
-        AF3: TB0.2
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin (JTAG disabled).
-        AF4: OA1+/A7/VREF+
-        # JTAG enabled overrides pin to TDO regardless of SEL bits.
+        "SEL=01": UCA0TXD/UCA0SIMO
+        "SEL=10,DIR=0": TB0.CCI2A
+        "SEL=10,DIR=1": TB0.2
+        "SEL=11": OA1+/A7/VREF+
         JTAG: TDO
-    - pin: "P1.6/UCA0RXD/UCA0SOMI/TB0.1/TDI/TCLK/OA1-/A6"
+    - pin: "PA6"
       number: 32
       gpio:
-        port: 1
+        port: A
         bit: 6
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin (JTAG disabled).
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA0RXD/UCA0SOMI function for the pin (JTAG disabled).
-        AF1: UCA0RXD/UCA0SOMI
-        # DIR = 0, SEL0 = 0, SEL1 = 1 selects the TB0.CCI1A function for the pin (JTAG disabled).
-        AF2: TB0.CCI1A
-        # DIR = 1, SEL0 = 0, SEL1 = 1 selects the TB0.1 function for the pin (JTAG disabled).
-        AF3: TB0.1
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin (JTAG disabled).
-        AF4: OA1-/A6
-        # JTAG enabled overrides pin to TDI/TCLK regardless of SEL bits.
+        "SEL=01": UCA0RXD/UCA0SOMI
+        "SEL=10,DIR=0": TB0.CCI1A
+        "SEL=10,DIR=1": TB0.1
+        "SEL=11": OA1-/A6
         JTAG: TDI/TCLK
-    - pin: "P1.5/UCA0CLK/TMS/OA1O/A5"
+    - pin: "PA5"
       number: 33
       gpio:
-        port: 1
+        port: A
         bit: 5
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin (JTAG disabled).
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA0CLK function for the pin (JTAG disabled).
-        AF1: UCA0CLK
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin (JTAG disabled).
-        AF2: OA1O/A5
-        # JTAG enabled overrides pin to TMS regardless of SEL bits.
+        "SEL=01": UCA0CLK
+        "SEL=11": OA1O/A5
         JTAG: TMS
-    - pin: "P1.4/UCA0STE/TCK/A4"
+    - pin: "PA4"
       number: 34
       gpio:
-        port: 1
+        port: A
         bit: 4
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin (JTAG disabled).
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCA0STE function for the pin (JTAG disabled).
-        AF1: UCA0STE
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin (JTAG disabled).
-        AF2: A4
-        # JTAG enabled overrides pin to TCK regardless of SEL bits.
+        "SEL=01": UCA0STE
+        "SEL=11": A4
         JTAG: TCK
-    - pin: "P3.7/OA3+"
+    - pin: "PC7"
       number: 35
       gpio:
-        port: 3
+        port: C
         bit: 7
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: OA3+
-    - pin: "P3.6/OA3-"
+        "SEL=11": OA3+
+    - pin: "PC6"
       number: 36
       gpio:
-        port: 3
+        port: C
         bit: 6
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: OA3-
-    - pin: "P3.5/OA3O"
+        "SEL=11": OA3-
+    - pin: "PC5"
       number: 37
       gpio:
-        port: 3
+        port: C
         bit: 5
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: OA3O
-    - pin: "P3.4/SMCLK"
+        "SEL=11": OA3O
+    - pin: "PC4"
       number: 38
       gpio:
-        port: 3
+        port: C
         bit: 4
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF1: VSS
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the SMCLK function for the pin.
-        AF2: SMCLK
-    - pin: "P5.4"
+        "SEL=01,DIR=0": VSS
+        "SEL=01,DIR=1": SMCLK
+    - pin: "PE4"
       number: 39
       gpio:
-        port: 5
+        port: E
         bit: 4
-      functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-    - pin: "P5.3/TB2TRG/A11"
+      # No selectable peripheral functions; this pin is GPIO-only on MSP430FR2355.
+      functions: ~
+    - pin: "PE3"
       number: 40
       gpio:
-        port: 5
+        port: E
         bit: 3
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB2TRG function for the pin.
-        AF1: TB2TRG
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF2: VSS
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF3: A11
-    - pin: "P5.2/TB2CLK/A10"
+        "SEL=01,DIR=0": TB2TRG
+        "SEL=01,DIR=1": VSS
+        "SEL=11": A11
+    - pin: "PE2"
       number: 41
       gpio:
-        port: 5
+        port: E
         bit: 2
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB2CLK function for the pin.
-        AF1: TB2CLK
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF2: VSS
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF3: A10
-    - pin: "P5.1/TB2.2/MFM.TX/A9"
+        "SEL=01,DIR=0": TB2CLK
+        "SEL=01,DIR=1": VSS
+        "SEL=11": A10
+    - pin: "PE1"
       number: 42
       gpio:
-        port: 5
+        port: E
         bit: 1
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB2.CCI2A function for the pin.
-        AF1: TB2.CCI2A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB2.2 function for the pin.
-        AF2: TB2.2
-        # DIR = x, SEL0 = 0, SEL1 = 1 selects the MFM.TX function for the pin.
-        AF3: MFM.TX
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF4: A9
-    - pin: "P5.0/TB2.1/MFM.RX/A8"
+        "SEL=01,DIR=0": TB2.CCI2A
+        "SEL=01,DIR=1": TB2.2
+        "SEL=10": MFM.TX
+        "SEL=11": A9
+    - pin: "PE0"
       number: 43
       gpio:
-        port: 5
+        port: E
         bit: 0
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the TB2.CCI1A function for the pin.
-        AF1: TB2.CCI1A
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the TB2.1 function for the pin.
-        AF2: TB2.1
-        # DIR = x, SEL0 = 0, SEL1 = 1 selects the MFM.RX function for the pin.
-        AF3: MFM.RX
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF4: A8
-    - pin: "P3.3/OA2+"
+        "SEL=01,DIR=0": TB2.CCI1A
+        "SEL=01,DIR=1": TB2.1
+        "SEL=10": MFM.RX
+        "SEL=11": A8
+    - pin: "PC3"
       number: 44
       gpio:
-        port: 3
+        port: C
         bit: 3
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: OA2+
-    - pin: "P3.2/OA2-"
+        "SEL=11": OA2+
+    - pin: "PC2"
       number: 45
       gpio:
-        port: 3
+        port: C
         bit: 2
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: OA2-
-    - pin: "P3.1/OA2O"
+        "SEL=11": OA2-
+    - pin: "PC1"
       number: 46
       gpio:
-        port: 3
+        port: C
         bit: 1
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF1: OA2O
-    - pin: "P3.0/MCLK"
+        "SEL=11": OA2O
+    - pin: "PC0"
       number: 47
       gpio:
-        port: 3
+        port: C
         bit: 0
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = 0, SEL0 = 1, SEL1 = 0 selects the VSS function for the pin.
-        AF1: VSS
-        # DIR = 1, SEL0 = 1, SEL1 = 0 selects the MCLK function for the pin.
-        AF2: MCLK
-    - pin: "P1.3/UCB0SOMI/UCB0SCL/OA0+/A3"
+        "SEL=01,DIR=0": VSS
+        "SEL=01,DIR=1": MCLK
+    - pin: "PA3"
       number: 48
       gpio:
-        port: 1
+        port: A
         bit: 3
       functions:
-        # DIR = x, SEL0 = 0, SEL1 = 0 selects GPIO function for the pin.
-        AF0: GPIO
-        # DIR = x, SEL0 = 1, SEL1 = 0 selects the UCB0SOMI/UCB0SCL function for the pin.
-        AF1: UCB0SOMI/UCB0SCL
-        # DIR = x, SEL0 = 1, SEL1 = 1 selects the analog function for the pin.
-        AF2: OA0+/A3
+        "SEL=01": UCB0SOMI/UCB0SCL
+        "SEL=11": OA0+/A3
