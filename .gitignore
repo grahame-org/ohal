@@ -68,3 +68,6 @@ vcpkg_installed/
 # Node.js (commitlint)
 node_modules/
 package-lock.json
+
+# Visual studio files
+.vs/
