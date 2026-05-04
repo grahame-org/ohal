@@ -3,19 +3,19 @@
 #include <ohal/core/capabilities.hpp>
 #include <ohal/core/field.hpp>
 #include <ohal/gpio.hpp>
-#include <ohal/platforms/stm32u0/models/stm32u083cci/capabilities.hpp>
-#include <ohal/platforms/stm32u0/models/stm32u083cci/gpio.hpp>
+#include <ohal/platforms/stm32u0/models/stm32u083ccu/capabilities.hpp>
+#include <ohal/platforms/stm32u0/models/stm32u083ccu/gpio.hpp>
 
 #include <cstdint>
 
 #include <gtest/gtest.h>
 
 // ---------------------------------------------------------------------------
-// Host-side tests for the STM32U083CCI (48-pin UFQFPN) GPIO model.
+// Host-side tests for the STM32U083CCU (48-pin UFQFPN) GPIO model.
 //
-// The STM32U083CCI shares the same GPIO register map and bonded-out port set
-// (GPIOA, GPIOB, GPIOC, GPIOF) as the STM32U083KCU.  These tests verify:
-//   1. The capability traits report the correct values for the CCI package.
+// The STM32U083CCU shares the same GPIO register map and bonded-out port set
+// (GPIOA, GPIOB, GPIOC, GPIOF) as the STM32U083CCT.  These tests verify:
+//   1. The capability traits report the correct values for the CCU package.
 //   2. The Pin<>/Port<> specialisations resolve to the correct hardware
 //      base addresses (i.e. the wiring through the thin-wrapper header is
 //      correct).
@@ -59,7 +59,7 @@ using MockPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegs>
 // Test fixture
 // ---------------------------------------------------------------------------
 
-class GpioStm32u083CciTest : public ::testing::Test {
+class GpioStm32u083CcuTest : public ::testing::Test {
 protected:
   void SetUp() override {
     mock_moder = 0U;
@@ -80,43 +80,43 @@ protected:
 // Basic behavioural tests
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u083CciTest, Set_WritesBitToBsrr) {
+TEST_F(GpioStm32u083CcuTest, Set_WritesBitToBsrr) {
   MockPin5::set();
   EXPECT_EQ(mock_bsrr, 1U << 5U);
 }
 
-TEST_F(GpioStm32u083CciTest, Clear_WritesBsrrResetBit) {
+TEST_F(GpioStm32u083CcuTest, Clear_WritesBsrrResetBit) {
   MockPin5::clear();
   EXPECT_EQ(mock_bsrr, 1U << 21U);
 }
 
-TEST_F(GpioStm32u083CciTest, SetMode_Output_WritesModerBits) {
+TEST_F(GpioStm32u083CcuTest, SetMode_Output_WritesModerBits) {
   MockPin5::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & (0b11U << 10U), 0b01U << 10U);
 }
 
-TEST_F(GpioStm32u083CciTest, SetMode_Input_WritesModerBits) {
+TEST_F(GpioStm32u083CcuTest, SetMode_Input_WritesModerBits) {
   mock_moder = 0b11U << 10U;
   MockPin5::set_mode(ohal::gpio::PinMode::Input);
   EXPECT_EQ(mock_moder & (0b11U << 10U), 0U);
 }
 
-TEST_F(GpioStm32u083CciTest, ReadInput_ReturnsHigh_WhenIdrBitSet) {
+TEST_F(GpioStm32u083CcuTest, ReadInput_ReturnsHigh_WhenIdrBitSet) {
   mock_idr = 1U << 5U;
   EXPECT_EQ(MockPin5::read_input(), ohal::gpio::Level::High);
 }
 
-TEST_F(GpioStm32u083CciTest, PortSet_WritesMaskToBsrrLow16Bits) {
+TEST_F(GpioStm32u083CcuTest, PortSet_WritesMaskToBsrrLow16Bits) {
   MockPort::set(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FFU);
 }
 
-TEST_F(GpioStm32u083CciTest, PortClear_WritesMaskToBsrrHigh16Bits) {
+TEST_F(GpioStm32u083CcuTest, PortClear_WritesMaskToBsrrHigh16Bits) {
   MockPort::clear(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FF0000U);
 }
 
-TEST_F(GpioStm32u083CciTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
+TEST_F(GpioStm32u083CcuTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
   MockPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(mock_bsrr, 0x00F0000FU);
 }
@@ -126,90 +126,90 @@ TEST_F(GpioStm32u083CciTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite
 // ---------------------------------------------------------------------------
 
 static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 0>::value,
-              "PortA must support output type on CCI");
+              "PortA must support output type on CCU");
 static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 0>::value,
-              "PortA must support output speed on CCI");
+              "PortA must support output speed on CCU");
 static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 0>::value,
-              "PortA must support pull on CCI");
+              "PortA must support pull on CCU");
 static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 0>::value,
-              "PortA must support alternate function on CCI");
+              "PortA must support alternate function on CCU");
 
 static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 3>::value,
-              "PortF must support output type on CCI");
+              "PortF must support output type on CCU");
 static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 3>::value,
-              "PortF must support output speed on CCI");
+              "PortF must support output speed on CCU");
 static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 3>::value,
-              "PortF must support pull on CCI");
+              "PortF must support pull on CCU");
 static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
-              "PortF must support alternate function on CCI");
+              "PortF must support alternate function on CCU");
 
 // Out-of-range pin numbers must report false even on bonded-out ports.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
-              "PortA pin 16 (out of range) must not report supports_output_type on CCI");
+              "PortA pin 16 (out of range) must not report supports_output_type on CCU");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
-              "PortA pin 16 (out of range) must not report supports_output_speed on CCI");
+              "PortA pin 16 (out of range) must not report supports_output_speed on CCU");
 static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
-              "PortA pin 16 (out of range) must not report supports_pull on CCI");
+              "PortA pin 16 (out of range) must not report supports_pull on CCU");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
-              "PortA pin 16 (out of range) must not report supports_alternate_function on CCI");
+              "PortA pin 16 (out of range) must not report supports_alternate_function on CCU");
 
 // PortD and PortE are not bonded out on the 48-pin UFQFPN package.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
-              "PortD must not report supports_output_type (not bonded out on CCI)");
+              "PortD must not report supports_output_type (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 0>::value,
-              "PortD must not report supports_output_speed (not bonded out on CCI)");
+              "PortD must not report supports_output_speed (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 0>::value,
-              "PortD must not report supports_pull (not bonded out on CCI)");
+              "PortD must not report supports_pull (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
-              "PortD must not report supports_alternate_function (not bonded out on CCI)");
+              "PortD must not report supports_alternate_function (not bonded out on CCU)");
 
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
-              "PortE must not report supports_output_type (not bonded out on CCI)");
+              "PortE must not report supports_output_type (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortE, 0>::value,
-              "PortE must not report supports_output_speed (not bonded out on CCI)");
+              "PortE must not report supports_output_speed (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::value,
-              "PortE must not report supports_pull (not bonded out on CCI)");
+              "PortE must not report supports_pull (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
-              "PortE must not report supports_alternate_function (not bonded out on CCI)");
+              "PortE must not report supports_alternate_function (not bonded out on CCU)");
 
 // PortC bits 0–12 are not bonded out on the 48-pin UFQFPN package.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 0>::value,
-              "PortC pin 0 must not report supports_output_type (not bonded out on CCI)");
+              "PortC pin 0 must not report supports_output_type (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 0>::value,
-              "PortC pin 0 must not report supports_output_speed (not bonded out on CCI)");
+              "PortC pin 0 must not report supports_output_speed (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 0>::value,
-              "PortC pin 0 must not report supports_pull (not bonded out on CCI)");
+              "PortC pin 0 must not report supports_pull (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 0>::value,
-              "PortC pin 0 must not report supports_alternate_function (not bonded out on CCI)");
+              "PortC pin 0 must not report supports_alternate_function (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 12>::value,
-              "PortC pin 12 must not report supports_output_type (not bonded out on CCI)");
+              "PortC pin 12 must not report supports_output_type (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 12>::value,
-              "PortC pin 12 must not report supports_output_speed (not bonded out on CCI)");
+              "PortC pin 12 must not report supports_output_speed (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 12>::value,
-              "PortC pin 12 must not report supports_pull (not bonded out on CCI)");
+              "PortC pin 12 must not report supports_pull (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 12>::value,
-              "PortC pin 12 must not report supports_alternate_function (not bonded out on CCI)");
+              "PortC pin 12 must not report supports_alternate_function (not bonded out on CCU)");
 
 // PortF bits 4–15 are not bonded out on the 48-pin UFQFPN package.
 static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
-              "PortF pin 4 must not report supports_output_type (not bonded out on CCI)");
+              "PortF pin 4 must not report supports_output_type (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortF, 4>::value,
-              "PortF pin 4 must not report supports_output_speed (not bonded out on CCI)");
+              "PortF pin 4 must not report supports_output_speed (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_pull<ohal::gpio::PortF, 4>::value,
-              "PortF pin 4 must not report supports_pull (not bonded out on CCI)");
+              "PortF pin 4 must not report supports_pull (not bonded out on CCU)");
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 4>::value,
-              "PortF pin 4 must not report supports_alternate_function (not bonded out on CCI)");
+              "PortF pin 4 must not report supports_alternate_function (not bonded out on CCU)");
 
 struct CapCase {
   bool value;
   const char* name;
 };
 
-class GpioStm32u083CciCapabilityTest : public ::testing::TestWithParam<CapCase> {};
+class GpioStm32u083CcuCapabilityTest : public ::testing::TestWithParam<CapCase> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    BondedPortCapabilities, GpioStm32u083CciCapabilityTest,
+    BondedPortCapabilities, GpioStm32u083CcuCapabilityTest,
     ::testing::Values(
         CapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 0>::value,
                 "PortA_Pin0_OutputType"},
@@ -230,18 +230,18 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioStm32u083CciCapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
+TEST_P(GpioStm32u083CcuCapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
 
 struct InvalidCapCase {
   bool value;
   const char* name;
 };
 
-class GpioStm32u083CciInvalidCapTest : public ::testing::TestWithParam<InvalidCapCase> {};
+class GpioStm32u083CcuInvalidCapTest : public ::testing::TestWithParam<InvalidCapCase> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    UnbondedAndOutOfRangeCapabilities, GpioStm32u083CciInvalidCapTest,
+    UnbondedAndOutOfRangeCapabilities, GpioStm32u083CcuInvalidCapTest,
     ::testing::Values(
         // Out-of-range pin on a bonded port
         InvalidCapCase{
@@ -255,7 +255,7 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
             "PortA_Pin16_AlternateFunction"},
-        // PortD — not bonded out on the CCI 48-pin UFQFPN package
+        // PortD — not bonded out on the CCU 48-pin UFQFPN package
         InvalidCapCase{
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
             "PortD_Pin0_OutputType"},
@@ -267,7 +267,7 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
             "PortD_Pin0_AlternateFunction"},
-        // PortE — not bonded out on the CCI 48-pin UFQFPN package
+        // PortE — not bonded out on the CCU 48-pin UFQFPN package
         InvalidCapCase{
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
             "PortE_Pin0_OutputType"},
@@ -279,7 +279,7 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
             "PortE_Pin0_AlternateFunction"},
-        // PortC bits 0–12 — not bonded out on the CCI 48-pin UFQFPN package
+        // PortC bits 0–12 — not bonded out on the CCU 48-pin UFQFPN package
         InvalidCapCase{
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 0>::value,
             "PortC_Pin0_OutputType"},
@@ -302,7 +302,7 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidCapCase{
             ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortC, 12>::value,
             "PortC_Pin12_AlternateFunction"},
-        // PortF bits 4–15 — not bonded out on the CCI 48-pin UFQFPN package
+        // PortF bits 4–15 — not bonded out on the CCU 48-pin UFQFPN package
         InvalidCapCase{
             ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
             "PortF_Pin4_OutputType"},
@@ -317,46 +317,46 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<InvalidCapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioStm32u083CciInvalidCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
+TEST_P(GpioStm32u083CcuInvalidCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
 
 // ---------------------------------------------------------------------------
 // Port-wiring tests: verify that Pin<PortX, N> resolves to the correct MMIO
-// base address for the STM32U083CCI package.
+// base address for the STM32U083CCU package.
 // ---------------------------------------------------------------------------
 
 namespace wiring = ohal::platforms::stm32u0::stm32u083;
 
 static_assert(ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address ==
                   wiring::kGpioABase + wiring::kBsrrOffset,
-              "Pin<PortA,0> must use GPIOA BSRR address on CCI");
+              "Pin<PortA,0> must use GPIOA BSRR address on CCU");
 
 static_assert(ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address ==
                   wiring::kGpioBBase + wiring::kBsrrOffset,
-              "Pin<PortB,0> must use GPIOB BSRR address on CCI");
+              "Pin<PortB,0> must use GPIOB BSRR address on CCU");
 
 static_assert(ohal::gpio::Pin<ohal::gpio::PortC, 13>::BsrrSet::reg_type::address ==
                   wiring::kGpioCBase + wiring::kBsrrOffset,
-              "Pin<PortC,13> must use GPIOC BSRR address on CCI");
+              "Pin<PortC,13> must use GPIOC BSRR address on CCU");
 
 static_assert(ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
-              "Pin<PortF,0> must use GPIOF BSRR address on CCI");
+              "Pin<PortF,0> must use GPIOF BSRR address on CCU");
 
 static_assert(ohal::gpio::Port<ohal::gpio::PortA>::BsrrReg::address ==
                   wiring::kGpioABase + wiring::kBsrrOffset,
-              "Port<PortA> must use GPIOA BSRR address on CCI");
+              "Port<PortA> must use GPIOA BSRR address on CCU");
 
 static_assert(ohal::gpio::Port<ohal::gpio::PortB>::BsrrReg::address ==
                   wiring::kGpioBBase + wiring::kBsrrOffset,
-              "Port<PortB> must use GPIOB BSRR address on CCI");
+              "Port<PortB> must use GPIOB BSRR address on CCU");
 
 static_assert(ohal::gpio::Port<ohal::gpio::PortC>::BsrrReg::address ==
                   wiring::kGpioCBase + wiring::kBsrrOffset,
-              "Port<PortC> must use GPIOC BSRR address on CCI");
+              "Port<PortC> must use GPIOC BSRR address on CCU");
 
 static_assert(ohal::gpio::Port<ohal::gpio::PortF>::BsrrReg::address ==
                   wiring::kGpioFBase + wiring::kBsrrOffset,
-              "Port<PortF> must use GPIOF BSRR address on CCI");
+              "Port<PortF> must use GPIOF BSRR address on CCU");
 
 struct WiringCase {
   uintptr_t actual;
@@ -364,11 +364,11 @@ struct WiringCase {
   const char* name;
 };
 
-class GpioStm32u083CciWiringTest : public ::testing::TestWithParam<WiringCase> {};
+class GpioStm32u083CcuWiringTest : public ::testing::TestWithParam<WiringCase> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    PortBsrrAddresses, GpioStm32u083CciWiringTest,
+    PortBsrrAddresses, GpioStm32u083CcuWiringTest,
     ::testing::Values(
         WiringCase{ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address,
                    wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
@@ -381,7 +381,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioStm32u083CciWiringTest, BsrrAddressMatchesHardwareBase) {
+TEST_P(GpioStm32u083CcuWiringTest, BsrrAddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 

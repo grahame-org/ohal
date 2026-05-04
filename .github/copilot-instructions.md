@@ -1,0 +1,54 @@
+# Copilot instructions for the `ohal` repository
+
+## Completing work on a PR
+
+**Always run `bash lint.sh` from the repository root before pushing any
+changes to a PR or marking a PR ready for review.**
+
+The lint script checks:
+
+- Prettier formatting on all `*.md`, `*.yml`, `*.yaml`, and `*.json` files
+- `clang-format` on all C++ source and header files
+- `clang-tidy` on all C++ sources (compiled against each test target)
+- `cmake-lint` on CMake files
+- `yamllint` on YAML files
+- JSON schema validation of all model specs
+- `shellcheck` on shell scripts
+- `markdownlint` on Markdown files
+
+Any failure will cause CI to fail. Fix all lint errors before pushing.
+
+> **Note:** `lint.sh` scans all CMake files in the tree, including those
+> generated inside the `build/` directory. Remove `build/` before running
+> `lint.sh`:
+>
+> ```sh
+> rm -rf build/
+> bash lint.sh
+> ```
+
+## Build and test
+
+```sh
+cmake -B build -DOHAL_BUILD_TESTS=ON
+cmake --build build
+ctest --test-dir build
+```
+
+## Adding a new STM32U0 model
+
+1. Add per-package `capabilities.hpp`, `gpio.hpp`, `timer.hpp`, and
+   `uart.hpp` under `include/ohal/platforms/stm32u0/models/<model>/`.
+2. Register the new `OHAL_MODEL_*` macro in
+   `include/ohal/platforms/stm32u0/family.hpp` (conflict-count check **and**
+   the `#include` chain).
+3. Add a model spec YAML under `docs/specs/stm32/models/<model>.yml` and
+   validate it passes `bash lint.sh`.
+4. Add a host test file `tests/host/test_gpio_<model>.cpp` and wire it up in
+   `tests/host/CMakeLists.txt`.
+5. **ODR rule:** each `add_executable` in `tests/host/CMakeLists.txt` must
+   link only test files whose headers provide an identical (or non-conflicting)
+   set of `ohal::gpio::Pin<>` / capability-trait explicit specialisations.
+   Models that introduce different full specialisations for the same
+   `Pin<Port, N>` template instantiation **must** be placed in separate
+   executables.
