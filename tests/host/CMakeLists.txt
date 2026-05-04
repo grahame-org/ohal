@@ -56,6 +56,28 @@ target_link_libraries(ohal_host_tests_mci PRIVATE ohal GTest::gtest_main GTest::
 add_executable(ohal_host_tests_msp430fr2355 main.cpp test_gpio_msp430fr2355.cpp)
 target_link_libraries(ohal_host_tests_msp430fr2355 PRIVATE ohal GTest::gtest_main GTest::gmock)
 
+# MSP430FR2355TPT tests use a separate executable: msp430fr2355tpt/capabilities.hpp
+# provides different partial specialisations for PortE and PortF than
+# msp430fr2355/capabilities.hpp.  Combining them in one binary would cause
+# two conflicting definitions of those specialisations — an ODR violation.
+add_executable(ohal_host_tests_msp430fr2355tpt main.cpp test_gpio_msp430fr2355tpt.cpp)
+target_link_libraries(ohal_host_tests_msp430fr2355tpt PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# MSP430FR2355TDBT tests use a separate executable: msp430fr2355tdbt/capabilities.hpp
+# provides different partial specialisations for PortE and PortF than other packages.
+add_executable(ohal_host_tests_msp430fr2355tdbt main.cpp test_gpio_msp430fr2355tdbt.cpp)
+target_link_libraries(ohal_host_tests_msp430fr2355tdbt PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# MSP430FR2355TRSM tests use a separate executable: msp430fr2355trsm/capabilities.hpp
+# provides different partial specialisations for all ports than other packages.
+add_executable(ohal_host_tests_msp430fr2355trsm main.cpp test_gpio_msp430fr2355trsm.cpp)
+target_link_libraries(ohal_host_tests_msp430fr2355trsm PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# MSP430FR2355TRHA tests use a separate executable: msp430fr2355trha/capabilities.hpp
+# provides different partial specialisations for PortE and PortF than other packages.
+add_executable(ohal_host_tests_msp430fr2355trha main.cpp test_gpio_msp430fr2355trha.cpp)
+target_link_libraries(ohal_host_tests_msp430fr2355trha PRIVATE ohal GTest::gtest_main GTest::gmock)
+
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
 gtest_discover_tests(ohal_host_tests_cc)
@@ -64,3 +86,7 @@ gtest_discover_tests(ohal_host_tests_rci)
 gtest_discover_tests(ohal_host_tests_mct)
 gtest_discover_tests(ohal_host_tests_mci)
 gtest_discover_tests(ohal_host_tests_msp430fr2355)
+gtest_discover_tests(ohal_host_tests_msp430fr2355tpt)
+gtest_discover_tests(ohal_host_tests_msp430fr2355tdbt)
+gtest_discover_tests(ohal_host_tests_msp430fr2355trsm)
+gtest_discover_tests(ohal_host_tests_msp430fr2355trha)

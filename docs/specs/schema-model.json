@@ -187,7 +187,7 @@
           ]
         },
         "functions": {
-          "description": "Mapping from AF code (AF0–AF15) to the peripheral signal assigned to that alternate function on this pin (e.g. 'TIM2_CH1', 'USART1_TX'). Use null for AF slots that are not assigned. Set to null for pins that have no alternate functions (e.g. power pins).",
+          "description": "Mapping from function-select code to the peripheral signal assigned to that function on this pin. The key format is family-specific: STM32 families use AF register codes AF0–AF15 (e.g. 'AF1', 'AF7'); MSP430 families use PxSEL0/PxSEL1 bit-pair encoding (e.g. 'SEL=01') with an optional PxDIR qualifier (e.g. 'SEL=01,DIR=0' for input-only, 'SEL=01,DIR=1' for output-only). GPIO mode (the default when no function is selected) is not listed. Set to null for pins that have no alternate functions (e.g. power or reset pins, or GPIO-only pins with no selectable peripheral function).",
           "oneOf": [
             { "type": "null" },
             {
