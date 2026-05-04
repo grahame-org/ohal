@@ -18,7 +18,7 @@
 #error "ohal: No STM32U0 model defined. "                                                           \
        "Pass -DOHAL_MODEL_STM32U083KCU, -DOHAL_MODEL_STM32U083HCY, "                               \
        "-DOHAL_MODEL_STM32U083CCI, -DOHAL_MODEL_STM32U083CCT, "                                    \
-       "-DOHAL_MODEL_STM32U083RCT, -DOHAL_MODEL_STM32U083RCI "                                     \
+       "-DOHAL_MODEL_STM32U083RCT, -DOHAL_MODEL_STM32U083RCI, "                                    \
        "(or another U0 model) to the compiler."
 #endif
 
