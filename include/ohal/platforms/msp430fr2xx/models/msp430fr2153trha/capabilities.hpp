@@ -1,0 +1,9 @@
+#ifndef OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2153TRHA_CAPABILITIES_HPP
+#define OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2153TRHA_CAPABILITIES_HPP
+
+// The MSP430FR2153TRHA shares the same package footprint and pin-bonding
+// as the MSP430FR2355TRHA; reuse its capability definitions.
+
+#include "ohal/platforms/msp430fr2xx/models/msp430fr2355trha/capabilities.hpp"
+
+#endif // OHAL_PLATFORMS_MSP430FR2XX_MODELS_MSP430FR2153TRHA_CAPABILITIES_HPP
