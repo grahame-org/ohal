@@ -2930,7 +2930,6 @@ peripherals:
                 width: 4
                 access: rw
                 settings: *uart-prescaler
-
   - lpuart:
       reference:
         sections: [35.7]
