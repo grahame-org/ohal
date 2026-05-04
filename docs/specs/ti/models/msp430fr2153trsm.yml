@@ -10,7 +10,7 @@ family-ref: msp430fr2xx4xx
 model: msp430fr2153trsm
 package: VQFN32
 flash-kb: 16
-sram-kb: 4
+sram-kb: 2
 pin-count: 32
 peripheral-availability:
   - peripheral: gpio

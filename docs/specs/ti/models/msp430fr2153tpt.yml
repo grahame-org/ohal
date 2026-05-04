@@ -10,7 +10,7 @@ family-ref: msp430fr2xx4xx
 model: msp430fr2153tpt
 package: LQFP48
 flash-kb: 16
-sram-kb: 4
+sram-kb: 2
 pin-count: 48
 peripheral-availability:
   - peripheral: gpio

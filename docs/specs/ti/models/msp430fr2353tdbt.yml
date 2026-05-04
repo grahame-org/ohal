@@ -10,7 +10,7 @@ family-ref: msp430fr2xx4xx
 model: msp430fr2353tdbt
 package: TSSOP38
 flash-kb: 16
-sram-kb: 4
+sram-kb: 2
 pin-count: 38
 peripheral-availability:
   - peripheral: gpio
