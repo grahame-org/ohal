@@ -17,7 +17,7 @@ peripheral-availability:
     instances: [P1, P2, P3, P4, P5]
     note: >-
       P5 exposes bits 0–1 (2 pins) on the 38-pin TSSOP package.
-      P5.2–P5.4 and all P6 pins are not bonded out. Total 32 GPIO-capable pins.
+      P5.2–P5.4 and all P6 pins are not bonded out. Total 34 GPIO-capable pins.
 alternate-functions:
   reference:
     sections: [4.1, 4.2, 4.3, 6.11]
