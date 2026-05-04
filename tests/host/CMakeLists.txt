@@ -10,10 +10,22 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# KCU and HCY share the same stm32u083/gpio.hpp partial specialisations and
+# introduce no explicit full specialisations for PortC/PortF pins; they are
+# ODR-safe in the same binary.
 add_executable(ohal_host_tests main.cpp test_register.cpp test_bitfield.cpp test_gpio.cpp
-                               test_gpio_stm32u083kcu.cpp test_gpio_stm32u083hcy.cpp
-                               test_gpio_stm32u083ccu.cpp test_gpio_stm32u083cct.cpp)
+                               test_gpio_stm32u083kcu.cpp test_gpio_stm32u083hcy.cpp)
 target_link_libraries(ohal_host_tests PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# CC-model tests use separate executables: stm32u083cc/gpio.hpp introduces
+# explicit full specialisations for non-bonded PortC (bits 0–12) and PortF
+# (bits 4–15) pins.  Linking CCU/CCT with KCU/HCY in the same binary would
+# produce two different definitions for those Pin<> instantiations — an ODR
+# violation.  CCU and CCT share identical specialisations (both delegate to
+# stm32u083cc/gpio.hpp) so they can coexist in a single executable.
+add_executable(ohal_host_tests_cc main.cpp test_gpio_stm32u083ccu.cpp
+                                  test_gpio_stm32u083cct.cpp)
+target_link_libraries(ohal_host_tests_cc PRIVATE ohal GTest::gtest_main GTest::gmock)
 
 # RC-model tests use separate executables: the STM32U083RC packages bond out
 # GPIOD (giving Pin<PortD> a working definition), while the KCU/HCY models
@@ -39,6 +51,7 @@ target_link_libraries(ohal_host_tests_mci PRIVATE ohal GTest::gtest_main GTest::
 
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
+gtest_discover_tests(ohal_host_tests_cc)
 gtest_discover_tests(ohal_host_tests_rct)
 gtest_discover_tests(ohal_host_tests_rci)
 gtest_discover_tests(ohal_host_tests_mct)
