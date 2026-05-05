@@ -29,9 +29,11 @@ or to a second CPU core.
 | `Pin<>::read_input()`               | IDR read (32-bit load)    | ✅ Yes        | ✅ Yes           |
 | `Pin<>::read_output()`              | ODR read (32-bit load)    | ✅ Yes        | ✅ Yes           |
 
-> **Platform note:** The BSRR atomicity guarantee applies to STM32U083. On platforms that do not provide a
-> hardware set/reset register, `Port<>::set()` and `Port<>::clear()` fall back to a read-modify-write on ODR and are
-> **not** atomic. Consult the [GPIO API reference](gpio-api.md) platform-specific notes for your target.
+> **Platform note:** The atomicity guarantees above apply to platforms that implement `set()`, `clear()`, and
+> `write()` using a dedicated write-only set/reset register (such as the STM32 BSRR). On platforms without such a
+> register, `Port<>::set()`, `Port<>::clear()`, and `Port<>::write()` fall back to a read-modify-write on the output
+> register and are **not** atomic with respect to interrupts. Consult the
+> [GPIO API reference](gpio-api.md) platform-specific notes for your target.
 
 ## Which operations are non-atomic (require protection)
 
@@ -154,24 +156,25 @@ irq_unlock(key);
 initialisation) in a critical section whose scope is as narrow as possible — just the single `ohal`
 call — to minimise interrupt latency.
 
-### ✅ Pattern 5 — configuration during initialisation (no protection needed)
+### ✅ Pattern 5 — configuration before interrupt sources are enabled (no protection needed)
 
 The safest approach for configuration is to complete all `set_mode()`, `set_output_type()`, `set_speed()`, and
-`set_pull()` calls before enabling any interrupts or starting the RTOS scheduler. In this window no ISR
-can fire, so there is nothing to race with.
+`set_pull()` calls before any interrupt source (peripheral IRQs, SysTick, timer interrupts, etc.) is configured
+and enabled. No ISR can fire in this window, so there is nothing to race with.
 
 ```cpp
 int main() {
-    // All configuration happens before interrupts are enabled.
+    // All configuration happens before any interrupt source is enabled.
     Led::set_mode(PinMode::Output);
     Led::set_output_type(OutputType::PushPull);
     Led::set_speed(Speed::Low);
     Led::set_pull(Pull::None);
     Led::clear();  // safe initial state
 
-    // Now enable interrupts / start scheduler.
-    HAL_Init();           // vendor HAL, enables SysTick
-    vTaskStartScheduler(); // FreeRTOS scheduler
+    // Enable interrupt sources and start the application.
+    enable_peripheral_irqs();  // application/vendor-specific
+    // bare-metal: enter main loop; RTOS: start scheduler
+    while (true) { /* ... */ }
 }
 ```
 
@@ -199,16 +202,17 @@ __enable_irq();  // ← may break the outer critical section
 
 Use the save/restore form (Pattern 3) instead.
 
-### ❌ Unsafe — configuration after scheduler start without a critical section
+### ❌ Unsafe — configuration after interrupt sources are enabled, without a critical section
 
 ```cpp
-// In a FreeRTOS task, after vTaskStartScheduler() has been called:
-Led::set_mode(PinMode::Output);   // read-modify-write on MODER, no protection
+// Reconfiguring a pin after interrupt sources are already active — no protection:
+Led::set_mode(PinMode::Output);   // read-modify-write on configuration register, unprotected
 ```
 
-If another task or ISR accesses any pin on the same port's configuration registers concurrently, one of the
-writes will be lost. Use `taskENTER_CRITICAL()` / `taskEXIT_CRITICAL()` or move configuration to before
-`vTaskStartScheduler()`.
+If an ISR (or another task on an RTOS) accesses any pin on the same port's configuration registers
+concurrently, one of the writes will be silently lost. Use a critical section — bare-metal:
+save/disable/restore PRIMASK (Pattern 3); RTOS: use the scheduler's critical-section API (Pattern 4) —
+or move all configuration to before any interrupt source is enabled (Pattern 5).
 
 ### ❌ Unsafe — calling `__disable_irq()` from RTOS code
 
@@ -240,13 +244,13 @@ Do I need to call toggle() or a configuration method after interrupts are enable
 
 ## Summary table
 
-| Call site                              | `set()` / `clear()` | `toggle()`                | `set_mode()` / configuration |
-| -------------------------------------- | ------------------- | ------------------------- | ---------------------------- |
-| Main-line only, no ISR touches the pin | ✅ Safe             | ✅ Safe                   | ✅ Safe                      |
-| Main-line + ISR touch the same pin     | ✅ Safe (BSRR)      | ⚠️ Needs critical section | ⚠️ Needs critical section    |
-| Bare-metal critical section            | ✅ Safe             | ✅ Safe (PRIMASK)         | ✅ Safe (PRIMASK)            |
-| RTOS critical section                  | ✅ Safe             | ✅ Safe (BASEPRI)         | ✅ Safe (BASEPRI)            |
-| Two RTOS tasks, no critical section    | ✅ Safe (BSRR)      | ❌ Race condition         | ❌ Race condition            |
+| Call site                                    | `set()` / `clear()`                 | `toggle()`                | `set_mode()` / configuration |
+| -------------------------------------------- | ----------------------------------- | ------------------------- | ---------------------------- |
+| Main-line only, no ISR touches the pin       | ✅ Safe                             | ✅ Safe                   | ✅ Safe                      |
+| Main-line + ISR touch the same pin           | ✅ Safe (BSRR)                      | ⚠️ Needs critical section | ⚠️ Needs critical section    |
+| Bare-metal critical section                  | ✅ Safe                             | ✅ Safe (PRIMASK)         | ✅ Safe (PRIMASK)            |
+| RTOS critical section                        | ✅ Safe                             | ✅ Safe (BASEPRI)         | ✅ Safe (BASEPRI)            |
+| Two concurrent contexts, no critical section | ⚠️ Atomic (non-deterministic order) | ❌ Race condition         | ❌ Race condition            |
 
 ## Further reading
 
