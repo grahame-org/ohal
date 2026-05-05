@@ -19,8 +19,8 @@ Testing)](step-11-unit-testing.md) must be completed so that the peripheral regi
 mock-register infrastructure are already in place. [Step 16 (Additional
 Peripherals)](step-16-additional-peripherals.md) should be in progress in parallel: each new
 peripheral in Step 16 adds interrupt-enable bits that this step documents how to control. [Step 3
-(Conventional Commits)](step-03-conventional-commits-merge-queue.md) must be in place so that each
-sub-step lands via a conventional commit.
+(Conventional Commits and Merge Queue)](step-03-conventional-commits-merge-queue.md) must be in
+place so that each sub-step lands via a conventional commit.
 
 Each sub-step follows the same three-layer pattern used in every other peripheral:
 
@@ -125,19 +125,22 @@ Before implementing, gather from RM0503 Table 67 (vector table):
 
 - IRQ numbers for all peripherals. The following are required for the peripherals already modelled:
 
-| Peripheral | IRQ name                  | IRQ number |
-| ---------- | ------------------------- | ---------- |
-| EXTI 0–1   | `EXTI0_1_IRQn`            | 5          |
-| EXTI 2–3   | `EXTI2_3_IRQn`            | 6          |
-| EXTI 4–15  | `EXTI4_15_IRQn`           | 7          |
-| TIM2       | `TIM2_IRQn`               | 15         |
-| TIM3       | `TIM3_IRQn`               | 16         |
-| USART2     | `USART2_IRQn`             | 28         |
-| LPUART1    | `LPUART1_IRQn`            | 29         |
-| SPI1       | `SPI1_IRQn`               | 25         |
-| I2C1       | `I2C1_IRQn`               | 23         |
-| ADC1       | `ADC1_IRQn`               | 12         |
-| DMA1 Ch1–7 | `DMA1_Channel1_IRQn` etc. | 9–15       |
+| Peripheral | IRQ name                  | IRQ number                 |
+| ---------- | ------------------------- | -------------------------- |
+| EXTI 0–1   | `EXTI0_1_IRQn`            | 5                          |
+| EXTI 2–3   | `EXTI2_3_IRQn`            | 6                          |
+| EXTI 4–15  | `EXTI4_15_IRQn`           | 7                          |
+| TIM2       | `TIM2_IRQn`               | 15                         |
+| TIM3       | `TIM3_IRQn`               | 16                         |
+| USART2     | `USART2_IRQn`             | 28                         |
+| LPUART1    | `LPUART1_IRQn`            | 29                         |
+| SPI1       | `SPI1_IRQn`               | 25                         |
+| I2C1       | `I2C1_IRQn`               | 23                         |
+| ADC1       | `ADC1_IRQn`               | 12                         |
+| DMA1 Ch1–7 | `DMA1_Channel1_IRQn` etc. | 9–15 (one IRQ per channel) |
+
+> **Note:** The IRQ numbers in the table above are indicative values taken from RM0503 Table 67
+> and must be verified against the reference manual before writing any `irq_numbers.hpp` content.
 
 The complete IRQ table from RM0503 must be recorded in a platform-layer header
 (`platforms/stm32u0/models/stm32u083/irq_numbers.hpp`) as a `constexpr` enum before any

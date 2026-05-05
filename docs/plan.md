@@ -850,7 +850,7 @@ int main() {
     ButtonLine::enable_interrupt();
 
     // Enable the shared EXTI4_15 IRQ in the NVIC at priority 1.
-    using Exti4_15 = Controller<STM32U0Family, IrqNumber, IrqNumber::Exti4_15>;
+    using Exti4_15 = Controller<STM32U0Family, IrqNumber::Exti4_15>;
     Exti4_15::enable_irq();
     Exti4_15::set_priority(1);
 
