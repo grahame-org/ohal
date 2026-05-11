@@ -260,7 +260,8 @@ ohal/
 │       ├── step-13-release-automation.md ← release-please
 │       ├── step-14-vcpkg-package.md
 │       ├── step-15-additional-mcu-families.md
-│       └── step-16-additional-peripherals.md
+│       ├── step-16-additional-peripherals.md
+│       └── step-17-interrupt-handling.md
 ├── include/
 │   └── ohal/
 │       ├── ohal.hpp                     ← single top-level include for consumers
@@ -280,7 +281,10 @@ ohal/
 │       ├── dma.hpp                      ← ohal::dma peripheral interface (Step 16)
 │       ├── clock.hpp                    ← ohal::clock peripheral interface (Step 16)
 │       ├── power.hpp                    ← ohal::power peripheral interface (Step 16)
-│       └── mpu.hpp                      ← ohal::mpu peripheral interface (Step 16)
+│       ├── mpu.hpp                      ← ohal::mpu peripheral interface (Step 16)
+│       ├── irq.hpp                      ← ohal::irq global interrupt control (Step 17)
+│       ├── nvic.hpp                     ← ohal::nvic NVIC controller interface (Step 17)
+│       └── exti.hpp                     ← ohal::exti external interrupt lines (Step 17)
 ├── platforms/
 │   ├── stm32u0/
 │   │   ├── family.hpp                   ← STM32U0 family header (validates model)
@@ -296,7 +300,8 @@ ohal/
 │   │           ├── dma.hpp              ← STM32U083 DMA register map (Step 16)
 │   │           ├── clock.hpp            ← STM32U083 RCC register map (Step 16)
 │   │           ├── power.hpp            ← STM32U083 PWR register map (Step 16)
-│   │           └── capabilities.hpp     ← STM32U083 peripheral capability traits
+│   │           ├── capabilities.hpp     ← STM32U083 peripheral capability traits
+│   │           └── irq_numbers.hpp   ← STM32U083 IRQ number constants (Step 17)
 │   ├── msp430fr2xx/                     ← added in Step 9
 │   │   ├── family.hpp
 │   │   └── models/
@@ -369,6 +374,9 @@ graph LR
     S14 --> S15
     S15 --> S16[16. More Peripherals]
     S14 --> S16
+    S16 --> S17[17. Interrupts]
+    S10 --> S17
+    S11 --> S17
 ```
 
 Step 2 (Linting and Formatting) is placed immediately after Build Infrastructure so that every
@@ -414,6 +422,7 @@ expansion steps (15 and 16) so that:
 | 14   | [vcpkg Package](steps/step-14-vcpkg-package.md)                                           | Release pipeline | Step 13          |
 | 15   | [Additional MCU Families and Models](steps/step-15-additional-mcu-families.md)            | Expansion        | Steps 13–14      |
 | 16   | [Additional Peripherals](steps/step-16-additional-peripherals.md)                         | Expansion        | Steps 13–15      |
+| 17   | [Interrupt Handling](steps/step-17-interrupt-handling.md)                                 | Expansion        | Steps 10–11, 16  |
 
 ---
 
@@ -662,6 +671,9 @@ ohal::dma::          ← DMA stream types and enumerations (Step 16)
 ohal::clock::        ← Clock enable/disable peripheral abstraction (Step 16)
 ohal::power::        ← Power and sleep mode types (Step 16)
 ohal::mpu::          ← MPU region types (Step 16, Cortex-M only)
+ohal::irq::          ← Global interrupt enable/disable and RAII guard (Step 17)
+ohal::nvic::         ← NVIC controller interface (Step 17, Cortex-M only)
+ohal::exti::         ← External interrupt line configuration (Step 17, STM32 only)
 ohal::test::         ← Mock infrastructure; only compiled in test builds
 ```
 
@@ -808,6 +820,48 @@ No platform namespace is named in application code. The platform specialisation 
 `Port<PortA>` (provided by the STM32U083 platform header, included automatically) implements
 `write()` as a single BSRR store.
 
+### 12.7 GPIO Edge Interrupt (STM32U083KCU, PA5)
+
+```cpp
+// Compile with: -DOHAL_FAMILY_STM32U0 -DOHAL_MODEL_STM32U083KCU -std=c++17
+#include <ohal/ohal.hpp>
+
+using namespace ohal::gpio;
+using namespace ohal::nvic;
+using namespace ohal::exti;
+
+using Button = Pin<PortA, 5>;
+using ButtonLine = Line<PortA, 5>;
+
+// ISR defined by the application — OHAL provides the IRQ number constant.
+extern "C" void EXTI4_15_IRQHandler() {
+    if (ButtonLine::is_pending_falling()) {
+        ButtonLine::clear_pending_falling();
+        // handle button press
+    }
+}
+
+int main() {
+    Button::set_mode(PinMode::Input);
+    Button::set_pull(Pull::Up);
+
+    // Configure EXTI line 5 for falling-edge trigger on PA5.
+    ButtonLine::configure(Trigger::Falling);
+    // Clear any pending flag that may have been set before configuration.
+    ButtonLine::clear_pending_falling();
+    ButtonLine::enable_interrupt();
+
+    // Enable the shared EXTI4_15 IRQ in the NVIC at priority 1.
+    using Exti4_15 = Controller<STM32U0Family, IrqNumber::Exti4_15>;
+    Exti4_15::enable_irq();
+    Exti4_15::set_priority(1);
+
+    ohal::irq::GlobalController<STM32U0Family>::enable();
+
+    while (true) {}
+}
+```
+
 ---
 
 ## 13. Open Questions and Future Work
@@ -816,7 +870,7 @@ No platform namespace is named in application code. The platform specialisation 
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Clock enabling enforcement   | `clock::Enable<>` is designed in [Step 16](steps/step-16-additional-peripherals.md) and enables peripheral bus clocks. The open question is whether OHAL should enforce at compile time that `clock::Enable<P>::enable()` has been called before any register in peripheral `P` is accessed — e.g. via a wrapper type or tag parameter. |
 | Alternate Function mapping   | Setting AF mode requires knowing which AF number maps to which peripheral on each pin. Needs a per-model AF map table (constexpr array or template traits).                                                                                                                                                                             |
-| Interrupt / EXTI             | GPIO interrupt configuration involves EXTI registers outside the GPIO block. Needs a separate `ohal::exti` abstraction.                                                                                                                                                                                                                 |
+| Interrupt / EXTI             | Addressed in [Step 17](steps/step-17-interrupt-handling.md): `ohal::exti` for GPIO edge interrupts, `ohal::nvic` for NVIC control, and `ohal::irq` for global enable/disable. MSP430 port interrupts are exposed via `ohal::gpio::Pin<>` capability extension.                                                                          |
 | Atomic register access       | On multi-core MCUs (e.g., STM32H7 dual-core) register access may need memory barriers or hardware semaphores. The `Register<>` template could be extended with an `Ordering` template parameter.                                                                                                                                        |
 | C++20 concepts               | Once C++20 is permitted, `requires` clauses can replace `static_assert` chains for cleaner error messages.                                                                                                                                                                                                                              |
 | PIC18 PORTB weak pull-ups    | PORTB has weak pull-up control via `RBPU` in `INTCON2`. This is not per-pin and lives outside the GPIO peripheral — consider a separate `ohal::pull` abstraction if PIC18 is added as an additional family in Step 15.                                                                                                                  |
