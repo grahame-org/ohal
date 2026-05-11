@@ -34,13 +34,13 @@ Each sub-step follows the same three-layer pattern used in every other periphera
 
 Implement sub-steps in this order:
 
-| Order | Sub-step                            | Reason                                                                                                                                  |
-| ----- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | **Global enable / disable**         | Portable foundation. Required by all subsequent sub-steps to guard critical sections during configuration.                              |
-| 2     | **NVIC (Cortex-M interrupt ctrl)**  | Core ARM mechanism for enabling individual IRQs. Required before any peripheral ISR can fire.                                           |
-| 3     | **Peripheral interrupt sources**    | Adds `enable_interrupt()` / `disable_interrupt()` / `clear_flag()` to existing peripheral types. Exercises NVIC configuration in tests. |
-| 4     | **EXTI (STM32 external interrupt)** | Builds on NVIC: EXTI lines are routed to NVIC IRQs. Requires SYSCFG EXTICR register map.                                                |
-| 5     | **MSP430 port interrupts**          | Non-ARM path: no NVIC, per-port IE/IES/IFG registers. Capability-gated behind `has_nvic`.                                               |
+| Order | Sub-step                            | Reason                                                                                                                                               |
+| ----- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | **Global enable / disable**         | Portable foundation. Required by all subsequent sub-steps to guard critical sections during configuration.                                           |
+| 2     | **NVIC (Cortex-M interrupt ctrl)**  | Core ARM mechanism for enabling individual IRQs. Required before any peripheral ISR can fire.                                                        |
+| 3     | **Peripheral interrupt sources**    | Adds `enable_interrupt()` / `disable_interrupt()` / `clear_flag()` to existing peripheral types. Exercises NVIC configuration in tests.              |
+| 4     | **EXTI (STM32 external interrupt)** | Builds on NVIC: EXTI lines are routed to NVIC IRQs. Requires SYSCFG EXTICR register map.                                                             |
+| 5     | **MSP430 port interrupts**          | Non-ARM path: no NVIC, per-port IE/IES/IFG registers. Gated by `supports_interrupt<Port, PinNum>` (only applicable for families without `has_nvic`). |
 
 ---
 
@@ -54,15 +54,18 @@ single instruction on all supported architectures (`CPSIE i` / `CPSID i` on Cort
 
 ### Inputs Required
 
-| Item                   | STM32U083 (Cortex-M0+)                        | MSP430FR2355                                  |
-| ---------------------- | --------------------------------------------- | --------------------------------------------- |
-| Enable all interrupts  | `CPSIE i` intrinsic (ARM CMSIS or `__asm`)    | GIE bit set in SR (`EINT()` / `__eint()`)     |
-| Disable all interrupts | `CPSID i` intrinsic                           | GIE bit clear in SR (`DINT()` / `__dint()`)   |
-| Save/restore state     | `__get_PRIMASK()` / `__set_PRIMASK()` (CMSIS) | `__get_SR_register()` / `__bis_SR_register()` |
-| Architecture define    | `__ARM_ARCH` or `OHAL_FAMILY_STM32U0`         | `OHAL_FAMILY_MSP430FR2XX`                     |
+| Item                   | STM32U083 (Cortex-M0+)                        | MSP430FR2355                                                                              |
+| ---------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Enable all interrupts  | `CPSIE i` intrinsic (ARM CMSIS or `__asm`)    | GIE bit set in SR (`EINT()` / `__eint()`)                                                 |
+| Disable all interrupts | `CPSID i` intrinsic                           | GIE bit clear in SR (`DINT()` / `__dint()`)                                               |
+| Save/restore state     | `__get_PRIMASK()` / `__set_PRIMASK()` (CMSIS) | `__get_SR_register()` to save; `__dint()` or `__eint()` to restore based on saved GIE bit |
+| Architecture define    | `__ARM_ARCH` or `OHAL_FAMILY_STM32U0`         | `OHAL_FAMILY_MSP430FR2XX`                                                                 |
 
-The RAII guard must save the previous interrupt state (PRIMASK on Cortex-M, GIE bit on MSP430)
-and restore it unconditionally on destruction, enabling safe nesting.
+The RAII guard must save the previous interrupt state (PRIMASK on Cortex-M, GIE bit from SR on
+MSP430) and restore it unconditionally on destruction, enabling safe nesting. On MSP430, the GIE
+bit is saved via `__get_SR_register()` and restored by calling `__eint()` or `__dint()` based on
+whether the bit was set in the saved value — `__bis_SR_register()` alone is insufficient because
+it always enables interrupts regardless of the previous state.
 
 ### Generic Interface Sketch
 
@@ -111,9 +114,9 @@ and other non-ARM families do not have an NVIC; use `has_nvic<Family>` to guard 
 | Register   | Address      | Description                                                               |
 | ---------- | ------------ | ------------------------------------------------------------------------- |
 | `ISER[0]`  | `0xE000E100` | Interrupt Set Enable Register (RW)                                        |
-| `ICER[0]`  | `0xE000E180` | Interrupt Clear Enable Register (WO)                                      |
+| `ICER[0]`  | `0xE000E180` | Interrupt Clear Enable Register (RW)                                      |
 | `ISPR[0]`  | `0xE000E200` | Interrupt Set Pending Register (RW)                                       |
-| `ICPR[0]`  | `0xE000E280` | Interrupt Clear Pending Register (WO)                                     |
+| `ICPR[0]`  | `0xE000E280` | Interrupt Clear Pending Register (RW)                                     |
 | `IPR[0–7]` | `0xE000E400` | Interrupt Priority Registers (RW; 4 IRQs per 32-bit word, 8 bits per IRQ) |
 
 **Cortex-M0+ priority resolution:** Only bits `[7:6]` of each 8-bit priority field are implemented.
@@ -156,10 +159,11 @@ namespace ohal::nvic {
 template <typename Family>
 struct has_nvic : std::false_type {};
 
-// IrqNumber is a platform-provided enum (e.g. ohal::stm32u0::IrqNumber::Tim2).
+// IrqNumber is a platform-provided enum value (e.g. ohal::stm32u0::IrqNumber::Tim2).
+// Using C++17 auto NTTP: the enum type is deduced automatically.
 // All nvic:: functions static_assert has_nvic<Family> to prevent use on non-NVIC platforms.
 
-template <typename Family, typename IrqNumber, IrqNumber Irq>
+template <typename Family, auto Irq>
 struct Controller {
     static_assert(sizeof(Family) == 0,
         "ohal: nvic::Controller is not implemented for the selected MCU family.");
@@ -279,7 +283,7 @@ provides the individual pending check inside the ISR.
 
 ## 17.5 MSP430 Port Interrupts (MSP430FR2XX only)
 
-### Namespace: `ohal::irq` (via `ohal::gpio::Pin<>` extension)
+### Namespace: `ohal::gpio::capabilities` / `ohal::gpio::Pin<>` extension
 
 MSP430FR2355 has no NVIC. Individual port pins can trigger interrupts through per-port IE, IES, IFG,
 and IV registers. These are accessible through an extension to the GPIO platform specialisation rather
@@ -300,7 +304,7 @@ Gather from the MSP430FR2355 datasheet and SLAU445I family user's guide:
 | `P2IE`   | P2   | `0x021D` | Interrupt enable register                                    | RW     |
 | `P2IV`   | P2   | `0x021E` | Interrupt vector word (RO)                                   | RO     |
 
-Only ports P1 and P2 (PortA) support interrupts on MSP430FR2355. P3–P6 do not have interrupt
+Only ports P1 (PortA) and P2 (PortB) support interrupts on MSP430FR2355. P3–P6 do not have interrupt
 capability; attempting to configure an interrupt on those ports must produce a `static_assert`.
 
 The exact addresses above must be verified against the MSP430FR2355 datasheet before implementation.

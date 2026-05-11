@@ -847,6 +847,8 @@ int main() {
 
     // Configure EXTI line 5 for falling-edge trigger on PA5.
     ButtonLine::configure(Trigger::Falling);
+    // Clear any pending flag that may have been set before configuration.
+    ButtonLine::clear_pending_falling();
     ButtonLine::enable_interrupt();
 
     // Enable the shared EXTI4_15 IRQ in the NVIC at priority 1.
