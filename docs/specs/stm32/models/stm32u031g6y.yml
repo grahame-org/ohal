@@ -24,13 +24,6 @@ alternate-functions:
     sections: [4.1, 4.3]
     tables: [9, 14]
   pins:
-    - pin: PF3-BOOT0
-      number: "A6"
-      gpio:
-        port: F
-        bit: 3
-      functions:
-        AF15: EVENTOUT
     - pin: PB6
       number: "A2"
       gpio:
@@ -58,6 +51,13 @@ alternate-functions:
         AF8: USART4_CTS
         AF9: TSC_G2_IO4
         AF10: LPUART2_RX
+        AF15: EVENTOUT
+    - pin: PF3-BOOT0
+      number: "A6"
+      gpio:
+        port: F
+        bit: 3
+      functions:
         AF15: EVENTOUT
     - pin: VSS
       number: "A8"

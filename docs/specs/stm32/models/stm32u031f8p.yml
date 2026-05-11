@@ -17,9 +17,9 @@ peripheral-availability:
     instances: [GPIOA, GPIOB, GPIOC, GPIOF]
     note: >-
       GPIOD is not bonded out on the 20-pin TSSOP package. PA15 is also absent.
-      Multiple GPIOs are bonded to the same physical pin (see bonded_pins below);
-      only one bonded GPIO may be active at a time, all others must remain in
-      their reset state (analog input).
+      Multiple GPIOs are bonded to the same physical pin (indicated by duplicated
+      number entries and bonded pin comments); only one bonded GPIO may be active
+      at a time, all others must remain in their reset state (analog input).
 alternate-functions:
   reference:
     sections: [4.1, 4.3]
