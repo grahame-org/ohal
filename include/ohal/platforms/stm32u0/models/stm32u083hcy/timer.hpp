@@ -1,8 +1,8 @@
 #ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U083HCY_TIMER_HPP
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083HCY_TIMER_HPP
 
-// STM32U083HCY timer register map — filled in Step 10 (Timer and UART Peripherals).
+// STM32U083HCY uses the shared STM32U083 timer register map.
 
-namespace ohal::platforms::stm32u0::stm32u083 {} // namespace ohal::platforms::stm32u0::stm32u083
+#include "ohal/platforms/stm32u0/models/stm32u083/timer.hpp"
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083HCY_TIMER_HPP
