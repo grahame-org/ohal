@@ -14,6 +14,9 @@ inline constexpr uintptr_t kTim6Base = 0x4000'1000U;
 inline constexpr uintptr_t kTim7Base = 0x4000'1400U;
 inline constexpr uintptr_t kTim15Base = 0x4001'4000U;
 inline constexpr uintptr_t kTim16Base = 0x4001'4400U;
+inline constexpr uintptr_t kLptim1Base = 0x4000'7C00U;
+inline constexpr uintptr_t kLptim2Base = 0x4000'9400U;
+inline constexpr uintptr_t kLptim3Base = 0x4000'9000U;
 
 inline constexpr uintptr_t kTimCr1Offset = 0x00U;
 inline constexpr uintptr_t kTimCr2Offset = 0x04U;
@@ -42,6 +45,22 @@ inline constexpr uintptr_t kTimCcr6Offset = 0x5CU;
 inline constexpr uintptr_t kTimAf1Offset = 0x60U;
 inline constexpr uintptr_t kTimAf2Offset = 0x64U;
 inline constexpr uintptr_t kTimTiselOffset = 0x68U;
+
+inline constexpr uintptr_t kLptimIsrOffset = 0x00U;
+inline constexpr uintptr_t kLptimIcrOffset = 0x04U;
+inline constexpr uintptr_t kLptimDierOffset = 0x08U;
+inline constexpr uintptr_t kLptimCfgrOffset = 0x0CU;
+inline constexpr uintptr_t kLptimCrOffset = 0x10U;
+inline constexpr uintptr_t kLptimCcr1Offset = 0x14U;
+inline constexpr uintptr_t kLptimArrOffset = 0x18U;
+inline constexpr uintptr_t kLptimCntOffset = 0x1CU;
+inline constexpr uintptr_t kLptimCfgr2Offset = 0x24U;
+inline constexpr uintptr_t kLptimRcrOffset = 0x28U;
+inline constexpr uintptr_t kLptimCcmr1Offset = 0x2CU;
+inline constexpr uintptr_t kLptimCcmr2Offset = 0x30U;
+inline constexpr uintptr_t kLptimCcr2Offset = 0x34U;
+inline constexpr uintptr_t kLptimCcr3Offset = 0x38U;
+inline constexpr uintptr_t kLptimCcr4Offset = 0x3CU;
 
 template <uintptr_t Base>
 struct Tim1Regs {
@@ -155,6 +174,25 @@ struct Tim16Regs {
   using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
 };
 
+template <uintptr_t Base>
+struct LptimRegs {
+  using Isr = ohal::core::Register<Base + kLptimIsrOffset>;
+  using Icr = ohal::core::Register<Base + kLptimIcrOffset>;
+  using Dier = ohal::core::Register<Base + kLptimDierOffset>;
+  using Cfgr = ohal::core::Register<Base + kLptimCfgrOffset>;
+  using Cr = ohal::core::Register<Base + kLptimCrOffset>;
+  using Ccr1 = ohal::core::Register<Base + kLptimCcr1Offset>;
+  using Arr = ohal::core::Register<Base + kLptimArrOffset>;
+  using Cnt = ohal::core::Register<Base + kLptimCntOffset>;
+  using Cfgr2 = ohal::core::Register<Base + kLptimCfgr2Offset>;
+  using Rcr = ohal::core::Register<Base + kLptimRcrOffset>;
+  using Ccmr1 = ohal::core::Register<Base + kLptimCcmr1Offset>;
+  using Ccmr2 = ohal::core::Register<Base + kLptimCcmr2Offset>;
+  using Ccr2 = ohal::core::Register<Base + kLptimCcr2Offset>;
+  using Ccr3 = ohal::core::Register<Base + kLptimCcr3Offset>;
+  using Ccr4 = ohal::core::Register<Base + kLptimCcr4Offset>;
+};
+
 using Tim1 = Tim1Regs<kTim1Base>;
 using Tim2 = Tim23Regs<kTim2Base>;
 using Tim3 = Tim23Regs<kTim3Base>;
@@ -162,6 +200,9 @@ using Tim6 = Tim67Regs<kTim6Base>;
 using Tim7 = Tim67Regs<kTim7Base>;
 using Tim15 = Tim15Regs<kTim15Base>;
 using Tim16 = Tim16Regs<kTim16Base>;
+using Lptim1 = LptimRegs<kLptim1Base>;
+using Lptim2 = LptimRegs<kLptim2Base>;
+using Lptim3 = LptimRegs<kLptim3Base>;
 
 } // namespace ohal::platforms::stm32u0::stm32u083
 
