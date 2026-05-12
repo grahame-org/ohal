@@ -11,10 +11,12 @@
 #include <gtest/gtest.h>
 
 // ---------------------------------------------------------------------------
-// Host-side tests for the STM32U031R8T (64-pin LQFP) GPIO model.
+// Host-side tests for the STM32U031R8T (LQFP64) GPIO model.
 //
-// The STM32U031R8T bonds out GPIOA, GPIOB, GPIOC (0-15), GPIOD (PD2 only),
-// and GPIOF (PF0-PF3); GPIOE is not bonded out.  These tests verify:
+// The STM32U031R8T bonds out
+//   GPIOA, GPIOB, GPIOC (0-15), GPIOD (PD2 only), and GPIOF (PF0-PF3);
+//   GPIOE is not bonded out.
+// These tests verify:
 //   1. Capability traits report the correct values for the R8T package.
 //   2. Pin<>/Port<> specialisations resolve to the correct hardware addresses.
 //   3. Basic behavioural correctness via the mock-register infrastructure.
@@ -57,7 +59,7 @@ using MockPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegs>
 // Test fixture
 // ---------------------------------------------------------------------------
 
-class GpioStm32u031R8tTest : public ::testing::Test {
+class GpioStm32u031R8TTest : public ::testing::Test {
 protected:
   void SetUp() override {
     mock_moder = 0U;
@@ -78,43 +80,43 @@ protected:
 // Basic behavioural tests
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioStm32u031R8tTest, Set_WritesBitToBsrr) {
+TEST_F(GpioStm32u031R8TTest, Set_WritesBitToBsrr) {
   MockPin5::set();
   EXPECT_EQ(mock_bsrr, 1U << 5U);
 }
 
-TEST_F(GpioStm32u031R8tTest, Clear_WritesBsrrResetBit) {
+TEST_F(GpioStm32u031R8TTest, Clear_WritesBsrrResetBit) {
   MockPin5::clear();
   EXPECT_EQ(mock_bsrr, 1U << 21U);
 }
 
-TEST_F(GpioStm32u031R8tTest, SetMode_Output_WritesModerBits) {
+TEST_F(GpioStm32u031R8TTest, SetMode_Output_WritesModerBits) {
   MockPin5::set_mode(ohal::gpio::PinMode::Output);
   EXPECT_EQ(mock_moder & (0b11U << 10U), 0b01U << 10U);
 }
 
-TEST_F(GpioStm32u031R8tTest, SetMode_Input_WritesModerBits) {
+TEST_F(GpioStm32u031R8TTest, SetMode_Input_WritesModerBits) {
   mock_moder = 0b11U << 10U;
   MockPin5::set_mode(ohal::gpio::PinMode::Input);
   EXPECT_EQ(mock_moder & (0b11U << 10U), 0U);
 }
 
-TEST_F(GpioStm32u031R8tTest, ReadInput_ReturnsHigh_WhenIdrBitSet) {
+TEST_F(GpioStm32u031R8TTest, ReadInput_ReturnsHigh_WhenIdrBitSet) {
   mock_idr = 1U << 5U;
   EXPECT_EQ(MockPin5::read_input(), ohal::gpio::Level::High);
 }
 
-TEST_F(GpioStm32u031R8tTest, PortSet_WritesMaskToBsrrLow16Bits) {
+TEST_F(GpioStm32u031R8TTest, PortSet_WritesMaskToBsrrLow16Bits) {
   MockPort::set(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FFU);
 }
 
-TEST_F(GpioStm32u031R8tTest, PortClear_WritesMaskToBsrrHigh16Bits) {
+TEST_F(GpioStm32u031R8TTest, PortClear_WritesMaskToBsrrHigh16Bits) {
   MockPort::clear(0x00FFU);
   EXPECT_EQ(mock_bsrr, 0x00FF0000U);
 }
 
-TEST_F(GpioStm32u031R8tTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
+TEST_F(GpioStm32u031R8TTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
   MockPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(mock_bsrr, 0x00F0000FU);
 }
@@ -123,30 +125,103 @@ TEST_F(GpioStm32u031R8tTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite
 // Capability trait tests
 // ---------------------------------------------------------------------------
 
-static_assert(ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 0>::value,
-              "PortA must support output type on R8T");
-static_assert(ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortB, 7>::value,
-              "PortB must support output speed on R8T");
-static_assert(ohal::gpio::capabilities::supports_pull<ohal::gpio::PortC, 3>::value,
-              "PortC must support pull on R8T");
-static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 2>::value,
-              "PortD must support alternate function (PD2) on R8T");
-static_assert(ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
-              "PortF must support alternate function (PF3) on R8T");
+struct CapCase {
+  bool value;
+  const char* name;
+};
 
-// Out-of-range pins must report false.
-static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
-              "PortA pin 16 must not report supports_output_type on R8T");
+class GpioStm32u031R8TCapabilityTest : public ::testing::TestWithParam<CapCase> {};
 
-// PortE is not bonded out.
-static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
-              "PortE must not report supports_output_type on R8T");
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    BondedPortCapabilities, GpioStm32u031R8TCapabilityTest,
+    ::testing::Values(
+        CapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 0>::value,
+                "PortA_Pin0_OutputType"},
+        CapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 0>::value,
+                "PortA_Pin0_OutputSpeed"},
+        CapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 0>::value,
+                "PortA_Pin0_Pull"},
+        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 0>::value,
+                "PortA_Pin0_AlternateFunction"},
+        CapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortB, 7>::value,
+                "PortB_Pin7_OutputType"},
+        CapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortC, 3>::value,
+                "PortC_Pin3_OutputSpeed"},
+        CapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 2>::value,
+                "PortD_Pin2_Pull"},
+        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 2>::value,
+                "PortD_Pin2_AlternateFunction"},
+        CapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 3>::value,
+                "PortF_Pin3_AlternateFunction"}),
+    [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
+// clang-format on
 
-// Non-bonded PD and PF pins must report false.
-static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
-              "PortD pin 0 must not report supports_output_type on R8T (only PD2 bonded)");
-static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
-              "PortF pin 4 must not report supports_output_type on R8T (only PF0-3 bonded)");
+TEST_P(GpioStm32u031R8TCapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
+
+struct InvalidCapCase {
+  bool value;
+  const char* name;
+};
+
+class GpioStm32u031R8TInvalidCapTest : public ::testing::TestWithParam<InvalidCapCase> {};
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    UnbondedAndOutOfRangeCapabilities, GpioStm32u031R8TInvalidCapTest,
+    ::testing::Values(
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_OutputSpeed"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 16>::value,
+            "PortA_Pin16_AlternateFunction"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 16>::value,
+            "PortD_Pin16_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortD, 16>::value,
+            "PortD_Pin16_OutputSpeed"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_pull<ohal::gpio::PortD, 16>::value,
+            "PortD_Pin16_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 16>::value,
+            "PortD_Pin16_AlternateFunction"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_OutputSpeed"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_pull<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_Pull"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortE, 0>::value,
+            "PortE_Pin0_AlternateFunction"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortD, 0>::value,
+            "PortD_Pin0_AlternateFunction"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_OutputType"},
+        InvalidCapCase{
+            ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortF, 4>::value,
+            "PortF_Pin4_AlternateFunction"}),
+    [](const ::testing::TestParamInfo<InvalidCapCase>& info) { return info.param.name; });
+// clang-format on
+
+TEST_P(GpioStm32u031R8TInvalidCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetParam().value); }
 
 // ---------------------------------------------------------------------------
 // Port-wiring tests
@@ -154,20 +229,33 @@ static_assert(!ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortF,
 
 namespace wiring = ohal::platforms::stm32u0::stm32u083;
 
-static_assert(ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address ==
-                  wiring::kGpioABase + wiring::kBsrrOffset,
-              "Pin<PortA,0> must use GPIOA BSRR address on R8T");
+struct WiringCase {
+  uintptr_t actual;
+  uintptr_t expected;
+  const char* name;
+};
 
-static_assert(ohal::gpio::Pin<ohal::gpio::PortD, 2>::BsrrSet::reg_type::address ==
-                  wiring::kGpioDBase + wiring::kBsrrOffset,
-              "Pin<PortD,2> must use GPIOD BSRR address on R8T");
+class GpioStm32u031R8TWiringTest : public ::testing::TestWithParam<WiringCase> {};
 
-static_assert(ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address ==
-                  wiring::kGpioFBase + wiring::kBsrrOffset,
-              "Pin<PortF,0> must use GPIOF BSRR address on R8T");
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    PortBsrrAddresses, GpioStm32u031R8TWiringTest,
+    ::testing::Values(
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortA, 0>::BsrrSet::reg_type::address,
+                   wiring::kGpioABase + wiring::kBsrrOffset, "PortA"},
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortB, 0>::BsrrSet::reg_type::address,
+                   wiring::kGpioBBase + wiring::kBsrrOffset, "PortB"},
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortC, 0>::BsrrSet::reg_type::address,
+                   wiring::kGpioCBase + wiring::kBsrrOffset, "PortC"},
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortD, 2>::BsrrSet::reg_type::address,
+                   wiring::kGpioDBase + wiring::kBsrrOffset, "PortD"},
+        WiringCase{ohal::gpio::Pin<ohal::gpio::PortF, 0>::BsrrSet::reg_type::address,
+                   wiring::kGpioFBase + wiring::kBsrrOffset, "PortF"}),
+    [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
+// clang-format on
 
-static_assert(ohal::gpio::Port<ohal::gpio::PortA>::BsrrReg::address ==
-                  wiring::kGpioABase + wiring::kBsrrOffset,
-              "Port<PortA> must use GPIOA BSRR address on R8T");
+TEST_P(GpioStm32u031R8TWiringTest, BsrrAddressMatchesHardwareBase) {
+  EXPECT_EQ(GetParam().actual, GetParam().expected);
+}
 
 } // namespace
