@@ -1,0 +1,8 @@
+#ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U031C6U_TIMER_HPP
+#define OHAL_PLATFORMS_STM32U0_MODELS_STM32U031C6U_TIMER_HPP
+
+// stm32u031c6u uses the shared STM32U0 timer register map.
+
+#include "ohal/platforms/stm32u0/models/stm32u083/timer.hpp"
+
+#endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U031C6U_TIMER_HPP

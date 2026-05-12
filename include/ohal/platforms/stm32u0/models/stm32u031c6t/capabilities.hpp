@@ -1,0 +1,10 @@
+#ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U031C6T_CAPABILITIES_HPP
+#define OHAL_PLATFORMS_STM32U0_MODELS_STM32U031C6T_CAPABILITIES_HPP
+
+// The STM32U031C6T (LQFP48) bonds out the same GPIO ports as the
+// STM32U083CC 48-pin packages: GPIOA, GPIOB (0-15), GPIOC (bits 13-15),
+// GPIOF (bits 0-3); GPIOD and GPIOE are not bonded out (DS14581, §4.1).
+
+#include "ohal/platforms/stm32u0/models/stm32u083cc/capabilities.hpp"
+
+#endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U031C6T_CAPABILITIES_HPP

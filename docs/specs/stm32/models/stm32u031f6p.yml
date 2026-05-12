@@ -1,0 +1,383 @@
+---
+spec-version: "1.0.0"
+vendor: STMicroelectronics
+reference:
+  source: DS14581
+  title: "STM32U031x4/6/8 Datasheet"
+  revision: 2
+  last-modified: "2024-03"
+family-ref: stm32u0
+model: stm32u031f6p
+package: TSSOP20
+flash-kb: 32
+sram-kb: 12
+pin-count: 20
+peripheral-availability:
+  - peripheral: gpio
+    instances: [GPIOA, GPIOB, GPIOC, GPIOF]
+    note: >-
+      GPIOD is not bonded out on the 20-pin TSSOP package. PA15 is also absent.
+      Multiple GPIOs are bonded to the same physical pin (indicated by duplicated
+      number entries and bonded pin comments); only one bonded GPIO may be active
+      at a time, all others must remain in their reset state (analog input).
+alternate-functions:
+  reference:
+    sections: [4.1, 4.3]
+    tables: [9, 14]
+  pins:
+    # ── Pin 1 ── bonded: PB8, PB9
+    - pin: PB8
+      number: 1
+      gpio:
+        port: B
+        bit: 8
+      functions:
+        AF1: LPTIM1_IN2
+        AF3: I2C2_SCL
+        AF4: I2C1_SCL
+        AF7: USART3_TX
+        AF14: TIM16_CH1
+        AF15: EVENTOUT
+    - pin: PB9
+      number: 1
+      gpio:
+        port: B
+        bit: 9
+      functions:
+        AF1: IR_OUT
+        AF3: I2C2_SDA
+        AF4: I2C1_SDA
+        AF5: SPI2_NSS
+        AF7: USART3_RX
+        AF14: LPTIM1_CH4
+        AF15: EVENTOUT
+    # ── Pin 2 ── VSS
+    - pin: VSS
+      number: 2
+      gpio: ~
+      functions: ~
+    # ── Pin 3 ── VDD
+    - pin: VDD
+      number: 3
+      gpio: ~
+      functions: ~
+    # ── Pin 4 ── PC14-OSC32_IN
+    - pin: PC14-OSC32_IN
+      number: 4
+      gpio:
+        port: C
+        bit: 14
+      functions:
+        AF15: EVENTOUT
+    # ── Pin 5 ── PC15-OSC32_OUT
+    - pin: PC15-OSC32_OUT
+      number: 5
+      gpio:
+        port: C
+        bit: 15
+      functions:
+        AF0: OSC32_EN
+        AF1: OSC_EN
+        AF15: EVENTOUT
+    # ── Pin 6 ── PF2-NRST
+    - pin: PF2-NRST
+      number: 6
+      gpio:
+        port: F
+        bit: 2
+      functions:
+        AF0: MCO
+    # ── Pin 7 ── VDDA/VREF+
+    - pin: "VDDA/VREF+"
+      number: 7
+      gpio: ~
+      functions: ~
+    # ── Pin 8 ── PA0
+    - pin: PA0
+      number: 8
+      gpio:
+        port: A
+        bit: 0
+      functions:
+        AF1: TIM2_CH1
+        AF7: USART2_CTS
+        AF8: USART4_TX
+        AF12: COMP1_OUT
+        AF14: TIM2_ETR
+        AF15: EVENTOUT
+    # ── Pin 9 ── bonded: PA1, PA2
+    - pin: PA1
+      number: 9
+      gpio:
+        port: A
+        bit: 1
+      functions:
+        AF1: TIM2_CH2
+        AF2: LPTIM1_CH2
+        AF5: SPI1_SCK
+        AF6: SPI2_SCK
+        AF7: USART2_RTS_DE
+        AF8: USART4_RX
+        AF14: TIM15_CH1N
+        AF15: EVENTOUT
+    - pin: PA2
+      number: 9
+      gpio:
+        port: A
+        bit: 2
+      functions:
+        AF1: TIM2_CH3
+        AF7: USART2_TX
+        AF8: LPUART1_TX
+        AF14: TIM15_CH1
+        AF15: EVENTOUT
+    # ── Pin 10 ── bonded: PA3, PA4
+    - pin: PA3
+      number: 10
+      gpio:
+        port: A
+        bit: 3
+      functions:
+        AF1: TIM2_CH4
+        AF7: USART2_RX
+        AF8: LPUART1_RX
+        AF14: TIM15_CH2
+        AF15: EVENTOUT
+    - pin: PA4
+      number: 10
+      gpio:
+        port: A
+        bit: 4
+      functions:
+        AF5: SPI1_NSS
+        AF7: USART2_CK
+        AF14: LPTIM2_CH1
+        AF15: EVENTOUT
+    # ── Pin 11 ── bonded: PA5, PA6
+    - pin: PA5
+      number: 11
+      gpio:
+        port: A
+        bit: 5
+      functions:
+        AF1: TIM2_CH1
+        AF2: TIM2_ETR
+        AF5: SPI1_SCK
+        AF7: USART3_TX
+        AF14: LPTIM2_ETR
+        AF15: EVENTOUT
+    - pin: PA6
+      number: 11
+      gpio:
+        port: A
+        bit: 6
+      functions:
+        AF1: TIM1_BKIN
+        AF2: TIM3_CH1
+        AF3: I2C2_SDA
+        AF4: I2C3_SDA
+        AF5: SPI1_MISO
+        AF6: COMP1_OUT
+        AF7: USART3_CTS
+        AF8: LPUART1_CTS
+        AF9: TSC_G5_IO1
+        AF14: TIM16_CH1
+        AF15: EVENTOUT
+    # ── Pin 12 ── bonded: PA7, PB0
+    - pin: PA7
+      number: 12
+      gpio:
+        port: A
+        bit: 7
+      functions:
+        AF1: TIM1_CH1N
+        AF2: TIM3_CH2
+        AF3: I2C2_SCL
+        AF4: I2C3_SCL
+        AF5: SPI1_MOSI
+        AF7: USART3_RX
+        AF14: LPTIM2_CH2
+        AF15: EVENTOUT
+    - pin: PB0
+      number: 12
+      gpio:
+        port: B
+        bit: 0
+      functions:
+        AF1: TIM1_CH2N
+        AF2: TIM3_CH3
+        AF5: SPI1_NSS
+        AF7: USART3_CK
+        AF8: LPUART2_CTS
+        AF9: TSC_G5_IO2
+        AF12: COMP1_OUT
+        AF15: EVENTOUT
+    # ── Pin 13 ── PB1
+    - pin: PB1
+      number: 13
+      gpio:
+        port: B
+        bit: 1
+      functions:
+        AF1: TIM1_CH3N
+        AF2: TIM3_CH4
+        AF7: USART3_RTS_DE
+        AF8: LPUART1_RTS_DE
+        AF9: TSC_SYNC
+        AF10: LPUART2_RTS_DE
+        AF14: LPTIM2_IN1
+        AF15: EVENTOUT
+    # ── Pin 14 ── bonded: PA8, PA9, PA10
+    - pin: PA8
+      number: 14
+      gpio:
+        port: A
+        bit: 8
+      functions:
+        AF0: MCO
+        AF1: TIM1_CH1
+        AF3: MCO2
+        AF7: USART1_CK
+        AF9: TSC_G7_IO1
+        AF14: LPTIM2_CH1
+        AF15: EVENTOUT
+    - pin: PA9
+      number: 14
+      gpio:
+        port: A
+        bit: 9
+      functions:
+        AF0: MCO
+        AF1: TIM1_CH2
+        AF4: I2C1_SCL
+        AF5: I2C2_SCL
+        AF7: USART1_TX
+        AF9: TSC_G7_IO2
+        AF14: TIM15_BKIN
+        AF15: EVENTOUT
+    - pin: PA10
+      number: 14
+      gpio:
+        port: A
+        bit: 10
+      functions:
+        AF1: TIM1_CH3
+        AF3: MCO2
+        AF4: I2C1_SDA
+        AF5: I2C2_SDA
+        AF6: SPI2_NSS
+        AF7: USART1_RX
+        AF9: TSC_G7_IO3
+        AF15: EVENTOUT
+    # ── Pin 15 ── PA11 [PA9]
+    - pin: "PA11 [PA9]"
+      number: 15
+      gpio:
+        port: A
+        bit: 11
+      functions:
+        AF1: TIM1_CH4
+        AF2: TIM1_BKIN2
+        AF5: SPI1_MISO
+        AF6: SPI2_MISO
+        AF7: USART1_CTS
+        AF12: COMP1_OUT
+        AF15: EVENTOUT
+    # ── Pin 16 ── PA12 [PA10]
+    - pin: "PA12 [PA10]"
+      number: 16
+      gpio:
+        port: A
+        bit: 12
+      functions:
+        AF1: TIM1_ETR
+        AF5: SPI1_MOSI
+        AF6: SPI2_MOSI
+        AF7: USART1_RTS_DE
+        AF15: EVENTOUT
+    # ── Pin 17 ── PA13
+    - pin: PA13
+      number: 17
+      gpio:
+        port: A
+        bit: 13
+      functions:
+        AF0: SWDIO
+        AF1: IR_OUT
+        AF9: TSC_G7_IO4
+        AF15: EVENTOUT
+    # ── Pin 18 ── bonded: PA14, PB4, PB5, PB6
+    - pin: PA14
+      number: 18
+      gpio:
+        port: A
+        bit: 14
+      functions:
+        AF0: SWCLK
+        AF1: LPTIM1_CH1
+        AF9: TSC_G3_IO4
+        AF15: EVENTOUT
+    - pin: PB4
+      number: 18
+      gpio:
+        port: B
+        bit: 4
+      functions:
+        AF1: LPTIM1_CH4
+        AF2: TIM3_CH1
+        AF3: I2C2_SDA
+        AF4: I2C3_SDA
+        AF5: SPI1_MISO
+        AF7: USART1_CTS
+        AF9: TSC_G2_IO1
+        AF15: EVENTOUT
+    - pin: PB5
+      number: 18
+      gpio:
+        port: B
+        bit: 5
+      functions:
+        AF1: LPTIM1_IN1
+        AF2: TIM3_CH2
+        AF5: SPI1_MOSI
+        AF7: USART1_CK
+        AF9: TSC_G2_IO2
+        AF14: TIM16_BKIN
+        AF15: EVENTOUT
+    - pin: PB6
+      number: 18
+      gpio:
+        port: B
+        bit: 6
+      functions:
+        AF1: LPTIM1_ETR
+        AF4: I2C1_SCL
+        AF5: I2C2_SCL
+        AF7: USART1_TX
+        AF9: TSC_G2_IO3
+        AF10: LPUART2_TX
+        AF14: TIM16_CH1N
+        AF15: EVENTOUT
+    # ── Pin 19 ── PB7
+    - pin: PB7
+      number: 19
+      gpio:
+        port: B
+        bit: 7
+      functions:
+        AF1: LPTIM1_IN2
+        AF4: I2C1_SDA
+        AF5: I2C2_SDA
+        AF7: USART1_RX
+        AF8: USART4_CTS
+        AF9: TSC_G2_IO4
+        AF10: LPUART2_RX
+        AF15: EVENTOUT
+    # ── Pin 20 ── PF3-BOOT0
+    - pin: PF3-BOOT0
+      number: 20
+      gpio:
+        port: F
+        bit: 3
+      functions:
+        AF15: EVENTOUT
