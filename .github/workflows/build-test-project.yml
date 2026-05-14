@@ -35,7 +35,8 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y --no-install-recommends \
             -o dir::cache::archives="$HOME/apt-archives" \
-            gcc-arm-none-eabi binutils-arm-none-eabi
+            gcc-arm-none-eabi binutils-arm-none-eabi \
+            libstdc++-arm-none-eabi-newlib
 
       - name: Configure
         working-directory: test_project
