@@ -56,6 +56,8 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_NUCLEO_64
         -DUSE_HAL_DRIVER
         -DSTM32U083xx
+        -DOHAL_FAMILY_STM32U0
+        -DOHAL_MODEL_STM32U083RCT
 )
 
 # Includes paths are searched in the order they are specified.
@@ -69,6 +71,7 @@ target_include_directories(${EXECUTABLE} PRIVATE
         BSP/Drivers/STM32U0xx_HAL_Driver/Inc
         BSP/Drivers/STM32U0xx_HAL_Driver/Inc/Legacy
         BSP/Inc
+        ${CMAKE_SOURCE_DIR}/../include
 )
 
 # The compiler options have been ordered as per CubeIDE's invokation of the
