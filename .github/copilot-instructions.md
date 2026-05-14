@@ -35,6 +35,21 @@ cmake --build build
 ctest --test-dir build
 ```
 
+## Build test_project (cross-compiled firmware)
+
+The `test_project` directory contains an STM32U083 firmware project. Build it
+with the Ubuntu-packaged ARM bare-metal cross-compiler (`gcc-arm-none-eabi`).
+
+The cross-compiler is pre-installed in the Copilot dev environment. To build:
+
+```sh
+cd test_project
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=arm-none-eabi-gcc.cmake -G "Unix Makefiles"
+cmake --build build -j "$(nproc)"
+```
+
+The resulting ELF, HEX, and BIN files are written into `test_project/build/`.
+
 ## Adding a new STM32U0 model
 
 1. Add per-package `capabilities.hpp`, `gpio.hpp`, `timer.hpp`, and
