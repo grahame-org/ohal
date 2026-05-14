@@ -317,6 +317,29 @@
         }
       }
     },
+    "peripheral-feature-profile": {
+      "description": "Structured feature profile for a peripheral family tier (for example 'full', 'basic', or 'low-power').",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "description": "Optional free-text annotation for this feature profile.",
+          "type": "string"
+        },
+        "includes": {
+          "description": "Features that are supported by this profile.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "excludes": {
+          "description": "Features that are explicitly not supported by this profile.",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
     "peripheral": {
       "description": "A peripheral block containing registers.",
       "type": "object",
@@ -327,6 +350,12 @@
         "note": {
           "description": "Optional free-text annotation for this peripheral, e.g. to document the port-pair mapping or address layout conventions.",
           "type": "string"
+        },
+        "feature-profiles": {
+          "description": "Optional named feature profiles shared by instances of this peripheral. Instances can reference one of these names via peripheral-instance.feature-profile.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/peripheral-feature-profile" }
         },
         "instances": {
           "description": "Concrete instances of this peripheral in the device memory map, each binding the register layout to a named base address.",
@@ -360,6 +389,10 @@
           "description": "Sub-families for which this instance is present. Omit if the instance is present in all sub-families.",
           "type": "array",
           "items": { "type": "string" }
+        },
+        "feature-profile": {
+          "description": "Name of the feature profile from peripheral.feature-profiles that applies to this instance.",
+          "type": "string"
         }
       }
     },

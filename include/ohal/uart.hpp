@@ -2,6 +2,7 @@
 #define OHAL_UART_HPP
 
 #include <cstdint>
+#include <type_traits>
 
 namespace ohal::uart {
 
@@ -47,6 +48,43 @@ struct Port {
                 "ohal: uart::Port is not implemented for the selected MCU. "
                 "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
 };
+
+namespace capabilities {
+
+template <typename Instance>
+struct supports_synchronous_mode : std::false_type {};
+
+template <typename Instance>
+struct supports_smartcard_mode : std::false_type {};
+
+template <typename Instance>
+struct supports_irda_mode : std::false_type {};
+
+template <typename Instance>
+struct supports_lin_mode : std::false_type {};
+
+template <typename Instance>
+struct supports_receiver_timeout : std::false_type {};
+
+template <typename Instance>
+struct supports_modbus_mode : std::false_type {};
+
+template <typename Instance>
+struct supports_auto_baud_rate_detection : std::false_type {};
+
+template <typename Instance>
+struct supports_fifo : std::false_type {};
+
+template <typename Instance>
+struct supports_prescaler : std::false_type {};
+
+template <typename Instance>
+struct supports_wakeup_from_stop_0_1 : std::false_type {};
+
+template <typename Instance>
+struct supports_dual_clock_domain : std::false_type {};
+
+} // namespace capabilities
 
 } // namespace ohal::uart
 

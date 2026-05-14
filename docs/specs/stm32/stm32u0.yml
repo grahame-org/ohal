@@ -2012,30 +2012,55 @@ peripherals:
                 access: wo
                 settings: *brr
   - usart:
+      reference:
         sections: [34.4, 34.8]
         tables: [199, 200, 209]
       note: >-
         Instance feature tiers are defined in Table 199 (RM0503 §34.4).
-        USART1 and USART2 implement the Full feature set: synchronous mode, smartcard,
-        IrDA, LIN, receiver timeout, Modbus, auto baud rate, Tx/Rx FIFO (8 bytes),
-        prescaler, and wake-up from Stop 0/1.
-        USART3 and USART4 implement the Basic feature set: hardware flow control, DMA,
-        multiprocessor communication, synchronous mode (master/slave), single-wire
-        half-duplex, and driver enable; no FIFO, no prescaler, no LIN/IrDA/smartcard.
-        Feature set details are defined in Table 200 (RM0503 §34.4).
+        Feature profile details are defined in Table 200 (RM0503 §34.4).
+      feature-profiles:
+        full:
+          includes:
+            [
+              synchronous-mode,
+              smartcard,
+              irda,
+              lin,
+              receiver-timeout,
+              modbus,
+              auto-baud-rate-detection,
+              tx-rx-fifo-8-bytes,
+              prescaler,
+              wake-up-stop0-stop1,
+            ]
+        basic:
+          includes:
+            [
+              hardware-flow-control,
+              dma,
+              multiprocessor-communication,
+              synchronous-mode-master-slave,
+              single-wire-half-duplex,
+              driver-enable,
+            ]
+          excludes: [tx-rx-fifo-8-bytes, prescaler, lin, irda, smartcard]
       instances:
         - name: USART1
           base: 0x40013800
           sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-profile: full
         - name: USART2
           base: 0x40004400
           sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-profile: full
         - name: USART3
           base: 0x40004800
           sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-profile: basic
         - name: USART4
           base: 0x40004C00
           sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-profile: basic
       registers:
         - CR1:
             reference:
@@ -3093,16 +3118,34 @@ peripherals:
         wake-up from Stop 0/1, driver enable, Tx/Rx FIFO (8 bytes), and prescaler.
         No synchronous mode, smartcard, IrDA, LIN, receiver timeout, Modbus, or
         auto baud rate detection. Feature set details are defined in Table 200 (RM0503 §34.4).
+      feature-profiles:
+        low-power:
+          includes:
+            [
+              hardware-flow-control,
+              dma,
+              multiprocessor-communication,
+              single-wire-half-duplex,
+              dual-clock-domain,
+              wake-up-stop0-stop1,
+              driver-enable,
+              tx-rx-fifo-8-bytes,
+              prescaler,
+            ]
+          excludes: [synchronous-mode, smartcard, irda, lin, receiver-timeout, modbus, auto-baud-rate-detection]
       instances:
         - name: LPUART1
           base: 0x40008000
           sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-profile: low-power
         - name: LPUART2
           base: 0x40008400
           sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-profile: low-power
         - name: LPUART3
           base: 0x40008C00
           sub-families: [stm32u073, stm32u083]
+          feature-profile: low-power
       registers:
         - CR1:
             reference:

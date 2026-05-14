@@ -110,9 +110,126 @@ template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
     : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart2> {};
 
+#if !defined(OHAL_MODEL_STM32U031R6T) && !defined(OHAL_MODEL_STM32U031R6I) &&                      \
+    !defined(OHAL_MODEL_STM32U031R8T) && !defined(OHAL_MODEL_STM32U031R8I) &&                      \
+    !defined(OHAL_MODEL_STM32U031C6U) && !defined(OHAL_MODEL_STM32U031C6T) &&                      \
+    !defined(OHAL_MODEL_STM32U031C8U) && !defined(OHAL_MODEL_STM32U031C8T) &&                      \
+    !defined(OHAL_MODEL_STM32U031K4U) && !defined(OHAL_MODEL_STM32U031K6U) &&                      \
+    !defined(OHAL_MODEL_STM32U031K8U) && !defined(OHAL_MODEL_STM32U031G6Y) &&                      \
+    !defined(OHAL_MODEL_STM32U031G8Y) && !defined(OHAL_MODEL_STM32U031F4P) &&                      \
+    !defined(OHAL_MODEL_STM32U031F6P) && !defined(OHAL_MODEL_STM32U031F8P)
 template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
     : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart3> {};
+#endif
+
+namespace capabilities {
+
+template <>
+struct supports_synchronous_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {
+};
+template <>
+struct supports_synchronous_mode<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {
+};
+template <>
+struct supports_synchronous_mode<ohal::platforms::stm32u0::stm32u083::Usart3Tag> : std::true_type {
+};
+template <>
+struct supports_synchronous_mode<ohal::platforms::stm32u0::stm32u083::Usart4Tag> : std::true_type {
+};
+
+template <>
+struct supports_smartcard_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_smartcard_mode<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+
+template <>
+struct supports_irda_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_irda_mode<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+
+template <>
+struct supports_lin_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_lin_mode<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+
+template <>
+struct supports_receiver_timeout<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {
+};
+template <>
+struct supports_receiver_timeout<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {
+};
+
+template <>
+struct supports_modbus_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_modbus_mode<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+
+template <>
+struct supports_auto_baud_rate_detection<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::true_type {};
+template <>
+struct supports_auto_baud_rate_detection<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::true_type {};
+
+template <>
+struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+template <>
+struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag> : std::true_type {};
+template <>
+struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag> : std::true_type {};
+
+template <>
+struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+template <>
+struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag> : std::true_type {};
+template <>
+struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag> : std::true_type {};
+
+template <>
+struct supports_wakeup_from_stop_0_1<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::true_type {};
+template <>
+struct supports_wakeup_from_stop_0_1<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::true_type {};
+template <>
+struct supports_wakeup_from_stop_0_1<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::true_type {};
+template <>
+struct supports_wakeup_from_stop_0_1<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::true_type {};
+
+template <>
+struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::true_type {};
+template <>
+struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::true_type {};
+#if !defined(OHAL_MODEL_STM32U031R6T) && !defined(OHAL_MODEL_STM32U031R6I) &&                      \
+    !defined(OHAL_MODEL_STM32U031R8T) && !defined(OHAL_MODEL_STM32U031R8I) &&                      \
+    !defined(OHAL_MODEL_STM32U031C6U) && !defined(OHAL_MODEL_STM32U031C6T) &&                      \
+    !defined(OHAL_MODEL_STM32U031C8U) && !defined(OHAL_MODEL_STM32U031C8T) &&                      \
+    !defined(OHAL_MODEL_STM32U031K4U) && !defined(OHAL_MODEL_STM32U031K6U) &&                      \
+    !defined(OHAL_MODEL_STM32U031K8U) && !defined(OHAL_MODEL_STM32U031G6Y) &&                      \
+    !defined(OHAL_MODEL_STM32U031G8Y) && !defined(OHAL_MODEL_STM32U031F4P) &&                      \
+    !defined(OHAL_MODEL_STM32U031F6P) && !defined(OHAL_MODEL_STM32U031F8P)
+template <>
+struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
+template <>
+struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
+template <>
+struct supports_wakeup_from_stop_0_1<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::true_type {};
+template <>
+struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::true_type {};
+#endif
+
+} // namespace capabilities
 
 } // namespace ohal::uart
 
