@@ -122,6 +122,12 @@ add_executable(ohal_host_tests_stm32u031f main.cpp test_gpio_stm32u031f4p.cpp
                                            test_gpio_stm32u031f6p.cpp test_gpio_stm32u031f8p.cpp)
 target_link_libraries(ohal_host_tests_stm32u031f PRIVATE ohal GTest::gtest_main GTest::gmock)
 
+# Timer register-map wiring tests use a separate executable.  The timer
+# register map (timer_impl.hpp) is shared across all STM32U083 and STM32U031
+# package variants; a single binary is sufficient.
+add_executable(ohal_host_tests_timer main.cpp test_timer_stm32u083.cpp)
+target_link_libraries(ohal_host_tests_timer PRIVATE ohal GTest::gtest_main GTest::gmock)
+
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
 gtest_discover_tests(ohal_host_tests_cc)
@@ -138,4 +144,5 @@ gtest_discover_tests(ohal_host_tests_stm32u031r)
 gtest_discover_tests(ohal_host_tests_stm32u031c)
 gtest_discover_tests(ohal_host_tests_stm32u031k)
 gtest_discover_tests(ohal_host_tests_stm32u031g)
+gtest_discover_tests(ohal_host_tests_timer)
 gtest_discover_tests(ohal_host_tests_stm32u031f)
