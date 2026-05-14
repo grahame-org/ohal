@@ -22,10 +22,20 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/build-test-project.yml') }}
+          restore-keys: ${{ runner.os }}-apt-
+
       - name: Install cross-compiler
         run: |
+          mkdir -p ~/apt-archives
           sudo apt-get update -y
-          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+          sudo apt-get install -y --no-install-recommends \
+            -o dir::cache::archives="$HOME/apt-archives" \
+            gcc-arm-none-eabi binutils-arm-none-eabi
 
       - name: Configure
         working-directory: test_project
