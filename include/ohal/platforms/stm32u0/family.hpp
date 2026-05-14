@@ -49,48 +49,80 @@
 #endif
 
 #if defined(OHAL_MODEL_STM32U083KCU)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083HCY)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083CCU)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083CCT)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083cct/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083RCT)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083rct/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083RCI)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083rci/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083MCT)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083mct/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/uart.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083MCI)
+// STM32U083 includes LPUART3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083mci/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mci/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mci/timer.hpp"

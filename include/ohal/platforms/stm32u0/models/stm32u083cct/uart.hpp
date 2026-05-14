@@ -3,6 +3,11 @@
 
 // stm32u083cct uses the shared STM32U083 UART register map.
 
+// LPUART3 is present on all STM32U083 packages.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+
 #include "ohal/platforms/stm32u0/models/stm32u083/uart.hpp"
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083CCT_UART_HPP

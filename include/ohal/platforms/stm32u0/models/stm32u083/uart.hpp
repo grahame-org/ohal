@@ -15,7 +15,9 @@ inline constexpr uintptr_t kUsart3Base = 0x4000'4800U;
 inline constexpr uintptr_t kUsart4Base = 0x4000'4C00U;
 inline constexpr uintptr_t kLpuart1Base = 0x4000'8000U;
 inline constexpr uintptr_t kLpuart2Base = 0x4000'8400U;
+#ifdef OHAL_STM32U0_ENABLE_LPUART3
 inline constexpr uintptr_t kLpuart3Base = 0x4000'8C00U;
+#endif
 
 inline constexpr uintptr_t kUsartCr1Offset = 0x00U;
 inline constexpr uintptr_t kUsartCr2Offset = 0x04U;
@@ -35,7 +37,9 @@ struct Usart3Tag {};
 struct Usart4Tag {};
 struct Lpuart1Tag {};
 struct Lpuart2Tag {};
+#ifdef OHAL_STM32U0_ENABLE_LPUART3
 struct Lpuart3Tag {};
+#endif
 
 template <uintptr_t Base>
 struct UsartRegs {
@@ -55,20 +59,11 @@ using Usart3 = UsartRegs<kUsart3Base>;
 using Usart4 = UsartRegs<kUsart4Base>;
 using Lpuart1 = UsartRegs<kLpuart1Base>;
 using Lpuart2 = UsartRegs<kLpuart2Base>;
+#ifdef OHAL_STM32U0_ENABLE_LPUART3
 using Lpuart3 = UsartRegs<kLpuart3Base>;
+#endif
 
 } // namespace ohal::platforms::stm32u0::stm32u083
-
-#if !defined(OHAL_MODEL_STM32U031R6T) && !defined(OHAL_MODEL_STM32U031R6I) &&                      \
-    !defined(OHAL_MODEL_STM32U031R8T) && !defined(OHAL_MODEL_STM32U031R8I) &&                      \
-    !defined(OHAL_MODEL_STM32U031C6U) && !defined(OHAL_MODEL_STM32U031C6T) &&                      \
-    !defined(OHAL_MODEL_STM32U031C8U) && !defined(OHAL_MODEL_STM32U031C8T) &&                      \
-    !defined(OHAL_MODEL_STM32U031K4U) && !defined(OHAL_MODEL_STM32U031K6U) &&                      \
-    !defined(OHAL_MODEL_STM32U031K8U) && !defined(OHAL_MODEL_STM32U031G6Y) &&                      \
-    !defined(OHAL_MODEL_STM32U031G8Y) && !defined(OHAL_MODEL_STM32U031F4P) &&                      \
-    !defined(OHAL_MODEL_STM32U031F6P) && !defined(OHAL_MODEL_STM32U031F8P)
-#define OHAL_STM32U0_ENABLE_LPUART3
-#endif
 
 namespace ohal::uart {
 
@@ -133,9 +128,5 @@ struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
 // stm32u031/uart_capabilities.hpp), following the same pattern as GPIO
 // capabilities (ohal/core/capabilities.hpp + stm32u083/capabilities.hpp).
 } // namespace ohal::uart
-
-#ifdef OHAL_STM32U0_ENABLE_LPUART3
-#undef OHAL_STM32U0_ENABLE_LPUART3
-#endif
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_UART_HPP

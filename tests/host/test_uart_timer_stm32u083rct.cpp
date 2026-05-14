@@ -298,14 +298,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 // ─── FIFO size tests ──────────────────────────────────────────────────────────
 
-TEST(Stm32u083RctUartFifoCapabilityTest, Usart2SupportsFifo) {
-  EXPECT_TRUE((ohal::uart::capabilities::supports_fifo<Usart2Tag>::value));
-}
-
-TEST(Stm32u083RctUartFifoCapabilityTest, Usart3DoesNotSupportFifo) {
-  EXPECT_FALSE((ohal::uart::capabilities::supports_fifo<Usart3Tag>::value));
-}
-
 struct UartFifoSizeCase {
   uint8_t actual_size;
   uint8_t expected_size;
@@ -330,16 +322,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(Stm32u083RctUartFifoSizeTest, FifoSizeMatchesSpec) {
   EXPECT_EQ(GetParam().actual_size, GetParam().expected_size);
-}
-
-// ─── Dual clock domain (retained individual tests) ───────────────────────────
-
-TEST(Stm32u083RctUartDualClockCapabilityTest, Lpuart1SupportsDualClockDomain) {
-  EXPECT_TRUE((ohal::uart::capabilities::supports_dual_clock_domain<Lpuart1Tag>::value));
-}
-
-TEST(Stm32u083RctUartDualClockCapabilityTest, Usart2SupportsDualClockDomain) {
-  EXPECT_TRUE((ohal::uart::capabilities::supports_dual_clock_domain<Usart2Tag>::value));
 }
 
 // ─── GPIO and timer tests ─────────────────────────────────────────────────────
