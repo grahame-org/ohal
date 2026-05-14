@@ -21,8 +21,9 @@ enum class CounterMode : uint8_t {
 
 template <typename Instance, uint8_t ChannelNum>
 struct Channel {
-  static_assert(sizeof(Instance) == 0, "ohal: timer::Channel is not implemented for the selected MCU. "
-                                        "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
+  static_assert(sizeof(Instance) == 0,
+                "ohal: timer::Channel is not implemented for the selected MCU. "
+                "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
 };
 
 } // namespace ohal::timer

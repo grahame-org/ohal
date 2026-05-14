@@ -63,6 +63,7 @@ inline constexpr uintptr_t kLptimCcmr2Offset = 0x30U;
 inline constexpr uintptr_t kLptimCcr2Offset = 0x34U;
 inline constexpr uintptr_t kLptimCcr3Offset = 0x38U;
 inline constexpr uintptr_t kLptimCcr4Offset = 0x3CU;
+inline constexpr uint8_t kTimRegisterWidthBits = 32U;
 
 template <uintptr_t Base>
 struct Tim1Regs {
@@ -227,7 +228,9 @@ struct Channel<ohal::platforms::stm32u0::stm32u083::Tim2, ChannelNum> {
   using Psc = typename Regs::Psc;
   using Arr = typename Regs::Arr;
 
-  using Egr = ohal::core::BitField<typename Regs::Egr, 0U, 32U, ohal::core::Access::WriteOnly>;
+  using Egr = ohal::core::BitField<typename Regs::Egr, 0U,
+                                   ohal::platforms::stm32u0::stm32u083::kTimRegisterWidthBits,
+                                   ohal::core::Access::WriteOnly>;
 };
 
 } // namespace ohal::timer

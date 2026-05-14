@@ -19,6 +19,8 @@ inline constexpr uintptr_t kUsartIsrOffset = 0x1CU;
 inline constexpr uintptr_t kUsartIcrOffset = 0x20U;
 inline constexpr uintptr_t kUsartRdrOffset = 0x24U;
 inline constexpr uintptr_t kUsartTdrOffset = 0x28U;
+inline constexpr uint8_t kUsartRegisterWidthBits = 32U;
+inline constexpr uint8_t kUsartDataBits = 9U;
 
 struct Usart2Tag {};
 
@@ -48,12 +50,18 @@ struct Port<ohal::platforms::stm32u0::stm32u083::Usart2Tag> {
   using Cr2 = typename Regs::Cr2;
   using Cr3 = typename Regs::Cr3;
   using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U, 32U, ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U, 32U, ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U, 9U, ohal::core::Access::ReadOnly,
-                                   uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U, 9U, ohal::core::Access::WriteOnly,
-                                   uint16_t>;
+  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
+                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
+                                   ohal::core::Access::ReadOnly>;
+  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
+                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
+                                   ohal::core::Access::WriteOnly>;
+  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
+                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
+                                   ohal::core::Access::ReadOnly, uint16_t>;
+  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
+                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
+                                   ohal::core::Access::WriteOnly, uint16_t>;
 };
 
 } // namespace ohal::uart

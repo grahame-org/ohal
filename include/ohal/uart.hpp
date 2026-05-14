@@ -5,6 +5,8 @@
 
 namespace ohal::uart {
 
+inline constexpr uint32_t kDefaultBaudRate = 115'200U;
+
 enum class WordLength : uint8_t {
   Bits7 = 0,
   Bits8 = 1,
@@ -32,7 +34,7 @@ enum class HwFlowCtl : uint8_t {
 };
 
 struct Config {
-  uint32_t baud_rate = 115'200U;
+  uint32_t baud_rate = kDefaultBaudRate;
   WordLength word_length = WordLength::Bits8;
   StopBits stop_bits = StopBits::One;
   Parity parity = Parity::None;
@@ -41,8 +43,9 @@ struct Config {
 
 template <typename Instance>
 struct Port {
-  static_assert(sizeof(Instance) == 0, "ohal: uart::Port is not implemented for the selected MCU. "
-                                        "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
+  static_assert(sizeof(Instance) == 0,
+                "ohal: uart::Port is not implemented for the selected MCU. "
+                "Ensure -DOHAL_FAMILY_* and -DOHAL_MODEL_* are set correctly.");
 };
 
 } // namespace ohal::uart
