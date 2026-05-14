@@ -3,7 +3,9 @@
 
 #include <cstdint>
 
+#include "ohal/core/field.hpp"
 #include "ohal/core/register.hpp"
+#include "ohal/timer.hpp"
 
 namespace ohal::platforms::stm32u0::stm32u083 {
 
@@ -205,5 +207,29 @@ using Lptim2 = LptimRegs<kLptim2Base>;
 using Lptim3 = LptimRegs<kLptim3Base>;
 
 } // namespace ohal::platforms::stm32u0::stm32u083
+
+namespace ohal::timer {
+
+template <uint8_t ChannelNum>
+struct Channel<ohal::platforms::stm32u0::stm32u083::Tim2, ChannelNum> {
+  static_assert(ChannelNum < 4U, "ohal: STM32U083 TIM2 has channels 0-3 only.");
+
+  using Regs = ohal::platforms::stm32u0::stm32u083::Tim2;
+
+  using Cr1 = typename Regs::Cr1;
+  using Cr2 = typename Regs::Cr2;
+  using Dier = typename Regs::Dier;
+  using Sr = typename Regs::Sr;
+  using Ccmr1 = typename Regs::Ccmr1;
+  using Ccmr2 = typename Regs::Ccmr2;
+  using Ccer = typename Regs::Ccer;
+  using Cnt = typename Regs::Cnt;
+  using Psc = typename Regs::Psc;
+  using Arr = typename Regs::Arr;
+
+  using Egr = ohal::core::BitField<typename Regs::Egr, 0U, 32U, ohal::core::Access::WriteOnly>;
+};
+
+} // namespace ohal::timer
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_TIMER_HPP

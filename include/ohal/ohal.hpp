@@ -6,6 +6,8 @@
 #include <ohal/core/field.hpp>
 #include <ohal/core/register.hpp>
 #include <ohal/gpio.hpp>
+#include <ohal/timer.hpp>
+#include <ohal/uart.hpp>
 
 // Include platform selection when a target MCU family is defined.
 // This pulls in the MCU-specific Pin<> specialisations and triggers the
