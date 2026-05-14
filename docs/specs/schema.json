@@ -341,8 +341,8 @@
       }
     },
     "peripheral-feature-set-value": {
-      "description": "Feature value for a feature set column. Uses a string for symbolic values (for example 'X', '-', or notes), and an integer for numeric quantities (for example FIFO size in bytes).",
-      "oneOf": [{ "type": "string" }, { "type": "integer" }]
+      "description": "Feature value for a feature set column. Uses booleans for supported/unsupported features, strings for descriptive/noted values, and integers for numeric quantities (for example FIFO size in bytes).",
+      "oneOf": [{ "type": "boolean" }, { "type": "string" }, { "type": "integer" }]
     },
     "peripheral-feature-set-row": {
       "description": "A single feature row from a peripheral feature-set table.",

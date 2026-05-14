@@ -2024,76 +2024,76 @@ peripherals:
         page: 1018
         features:
           - name: Hardware flow control for modem
-            full-feature-set: X
-            basic-feature-set: X
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
           - name: Continuous communication using DMA
-            full-feature-set: X
-            basic-feature-set: X
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
           - name: Multiprocessor communication
-            full-feature-set: X
-            basic-feature-set: X
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
           - name: Synchronous mode (master/slave)
-            full-feature-set: X
-            basic-feature-set: X
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: false
           - name: Smartcard mode
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
           - name: Single-wire half-duplex communication
-            full-feature-set: X
-            basic-feature-set: X
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
           - name: IrDA SIR ENDEC block
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
           - name: LIN mode
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
           - name: Dual clock domain and wake-up from low-power mode
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
           - name: Receiver timeout interrupt
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
           - name: Modbus communication
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
           - name: Auto baud rate detection
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: "-"
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
           - name: Driver enable
-            full-feature-set: X
-            basic-feature-set: X
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
           - name: USART data length
             full-feature-set: 7, 8 and 9 bits
             basic-feature-set: 7, 8 and 9 bits
             low-power-feature-set: 7, 8 and 9 bits
           - name: Tx/Rx FIFO
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
           - name: Tx/Rx FIFO size (bytes)
             full-feature-set: 8
-            basic-feature-set: "-"
+            basic-feature-set: false
             low-power-feature-set: 8
           - name: Prescaler
-            full-feature-set: X
-            basic-feature-set: "-"
-            low-power-feature-set: X
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
           - name: Wake-up from low-power mode
             full-feature-set: X (note 2)
-            basic-feature-set: "-"
+            basic-feature-set: false
             low-power-feature-set: X (note 2)
       instances:
         - name: USART1
