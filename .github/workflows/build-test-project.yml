@@ -1,0 +1,39 @@
+---
+# .github/workflows/build-test-project.yml
+name: Build test_project
+
+on:
+  pull_request:
+  merge_group:
+
+permissions: {}
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install cross-compiler
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+      - name: Configure
+        working-directory: test_project
+        run: >
+          cmake -B build
+          -DCMAKE_TOOLCHAIN_FILE=arm-none-eabi-gcc.cmake
+          -G "Unix Makefiles"
+
+      - name: Build
+        working-directory: test_project
+        run: cmake --build build -j "$(nproc)"
