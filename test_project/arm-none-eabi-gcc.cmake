@@ -2,10 +2,13 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
 
 set(TOOLCHAIN_PREFIX arm-none-eabi-)
-find_program(BINUTILS_PATH ${TOOLCHAIN_PREFIX}gcc HINTS "C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin" NO_CACHE)
+find_program(
+  BINUTILS_PATH
+  ${TOOLCHAIN_PREFIX}gcc
+  NO_CACHE)
 
 if (NOT BINUTILS_PATH)
-    message(FATAL_ERROR "ARM GCC toolchain not found")
+  message(FATAL_ERROR "ARM GCC toolchain not found")
 endif ()
 
 get_filename_component(ARM_TOOLCHAIN_DIR ${BINUTILS_PATH} DIRECTORY)
@@ -22,9 +25,9 @@ execute_process(COMMAND ${CMAKE_C_COMPILER} -print-sysroot
     OUTPUT_VARIABLE ARM_GCC_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 if (CMAKE_HOST_WIN32)
-    set(EXE_SUFFIX ".exe")
+  set(EXE_SUFFIX ".exe")
 else ()
-    set(EXE_SUFFIX "")
+  set(EXE_SUFFIX "")
 endif ()
 
 set(CMAKE_C_COMPILER ${ARM_TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc${EXE_SUFFIX})
@@ -33,7 +36,9 @@ set(CMAKE_CXX_COMPILER ${ARM_TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}g++${EXE_SUFFIX})
 set(CMAKE_AR ${ARM_TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc-ar)
 set(CMAKE_RANLIB ${ARM_TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}gcc-ranlib)
 
+# cmake-lint: disable=C0103
 set(CMAKE_OBJCOPY ${ARM_TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}objcopy CACHE INTERNAL "objcopy tool")
+# cmake-lint: disable=C0103
 set(CMAKE_SIZE_UTIL ${ARM_TOOLCHAIN_DIR}/${TOOLCHAIN_PREFIX}size CACHE INTERNAL "size tool")
 
 set(CMAKE_SYSROOT ${ARM_GCC_SYSROOT})

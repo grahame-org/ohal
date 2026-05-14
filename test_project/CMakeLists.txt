@@ -40,7 +40,7 @@ set(STM32CUBEMX_GENERATED_FILES
         BSP/Src/syscalls.c
         BSP/Src/sysmem.c
         BSP/Src/system_stm32u0xx.c
-        
+
         BSP/startup_stm32u083xx.s)
 
 set(EXECUTABLE ${PROJECT_NAME}.elf)
@@ -53,7 +53,7 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
         -DUSE_NUCLEO_64
         -DUSE_HAL_DRIVER
         -DSTM32U083xx
-        )
+)
 
 # Includes paths are searched in the order they are specified.
 # This can impact the resulting pre-processed source files and
@@ -66,7 +66,7 @@ target_include_directories(${EXECUTABLE} PRIVATE
         BSP/Drivers/STM32U0xx_HAL_Driver/Inc
         BSP/Drivers/STM32U0xx_HAL_Driver/Inc/Legacy
         BSP/Inc
-        )
+)
 
 # The compiler options have been ordered as per CubeIDE's invokation of the
 # compiler.
@@ -80,12 +80,12 @@ target_compile_options(${EXECUTABLE} PRIVATE
         -Wextra
         -fstack-usage
         -MMD
-        -MP        
+        -MP
         --specs=nano.specs
         -mfloat-abi=soft
         -mthumb
         $<$<CONFIG:Debug>:-Og>
-        )
+)
 
 # When linking object files into a binary, the order of options is significant.
 # The options need to be specified in the same order that CubeIDE passes them
@@ -105,7 +105,7 @@ target_link_libraries(${EXECUTABLE} PRIVATE
         -Wl,--gc-sections
         -static
         -specs=nano.specs
-        -mfloat-abi=soft 
+        -mfloat-abi=soft
         -mthumb
         -Wl,--start-group
         -lc
@@ -116,10 +116,12 @@ target_link_libraries(${EXECUTABLE} PRIVATE
 # Print executable size
 add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD
-        COMMAND arm-none-eabi-size ${EXECUTABLE})
+        COMMAND arm-none-eabi-size ${EXECUTABLE}
+        COMMENT "Printing executable size")
 
 # Create hex file
 add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD
         COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE} ${PROJECT_NAME}.hex
-        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin)
+        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin
+        COMMENT "Creating hex and binary files")
