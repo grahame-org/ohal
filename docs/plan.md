@@ -261,7 +261,12 @@ ohal/
 │       ├── step-14-vcpkg-package.md
 │       ├── step-15-additional-mcu-families.md
 │       ├── step-16-additional-peripherals.md
-│       └── step-17-interrupt-handling.md
+│       ├── step-17-interrupt-handling.md
+│       ├── step-18-gpio-alternate-function.md ← GPIO AFR selection (Step 18)
+│       ├── step-19-clock-enable.md            ← ohal::clock::Enable (Step 19)
+│       ├── step-20-uart-implementation.md     ← USART2 full impl (Step 20)
+│       ├── step-21-exti-nvic.md               ← ohal::exti + nvic + irq (Step 21)
+│       └── step-22-rcc-clock-tree-systick.md  ← clock tree + SysTick (Step 22)
 ├── include/
 │   └── ohal/
 │       ├── ohal.hpp                     ← single top-level include for consumers
@@ -279,29 +284,36 @@ ohal/
 │       ├── adc.hpp                      ← ohal::adc peripheral interface (Step 16)
 │       ├── dac.hpp                      ← ohal::dac peripheral interface (Step 16)
 │       ├── dma.hpp                      ← ohal::dma peripheral interface (Step 16)
-│       ├── clock.hpp                    ← ohal::clock peripheral interface (Step 16)
-│       ├── power.hpp                    ← ohal::power peripheral interface (Step 16)
+│       ├── clock.hpp                    ← ohal::clock peripheral interface (Steps 16, 19)
+│       ├── flash.hpp                    ← ohal::flash access control (Step 22)
+│       ├── power.hpp                    ← ohal::power peripheral interface (Steps 16, 22)
 │       ├── mpu.hpp                      ← ohal::mpu peripheral interface (Step 16)
-│       ├── irq.hpp                      ← ohal::irq global interrupt control (Step 17)
-│       ├── nvic.hpp                     ← ohal::nvic NVIC controller interface (Step 17)
-│       └── exti.hpp                     ← ohal::exti external interrupt lines (Step 17)
+│       ├── irq.hpp                      ← ohal::irq global interrupt control (Steps 17, 21)
+│       ├── nvic.hpp                     ← ohal::nvic NVIC controller interface (Steps 17, 21)
+│       └── exti.hpp                     ← ohal::exti external interrupt lines (Steps 17, 21)
 ├── platforms/
 │   ├── stm32u0/
 │   │   ├── family.hpp                   ← STM32U0 family header (validates model)
 │   │   └── models/
 │   │       └── stm32u083/
 │   │           ├── gpio.hpp             ← STM32U083 GPIO register map
+│   │           ├── gpio_impl.hpp        ← STM32U083 GpioPortPinImpl / GpioPortImpl (incl. AF — Step 18)
 │   │           ├── timer.hpp            ← STM32U083 Timer register map
-│   │           ├── uart.hpp             ← STM32U083 UART/USART register map
+│   │           ├── uart.hpp             ← STM32U083 UART/USART register map (Step 20)
 │   │           ├── spi.hpp              ← STM32U083 SPI register map (Step 16)
 │   │           ├── i2c.hpp              ← STM32U083 I2C register map (Step 16)
 │   │           ├── adc.hpp              ← STM32U083 ADC register map (Step 16)
 │   │           ├── dac.hpp              ← STM32U083 DAC register map (Step 16)
 │   │           ├── dma.hpp              ← STM32U083 DMA register map (Step 16)
-│   │           ├── clock.hpp            ← STM32U083 RCC register map (Step 16)
-│   │           ├── power.hpp            ← STM32U083 PWR register map (Step 16)
+│   │           ├── clock.hpp            ← STM32U083 RCC clock-enable register map (Steps 16, 19)
+│   │           ├── flash.hpp            ← STM32U083 FLASH ACR register map (Step 22)
+│   │           ├── power.hpp            ← STM32U083 PWR register map (Steps 16, 22)
+│   │           ├── irq.hpp              ← STM32U083 global interrupt control (Steps 17, 21)
+│   │           ├── exti.hpp             ← STM32U083 EXTI register map (Steps 17, 21)
+│   │           ├── nvic.hpp             ← STM32U083 NVIC register map (Steps 17, 21)
+│   │           ├── peripherals.hpp      ← STM32U083 peripheral instance tag types (Step 19)
 │   │           ├── capabilities.hpp     ← STM32U083 peripheral capability traits
-│   │           └── irq_numbers.hpp   ← STM32U083 IRQ number constants (Step 17)
+│   │           └── irq_numbers.hpp      ← STM32U083 IRQ number constants (Steps 17, 21)
 │   ├── msp430fr2xx/                     ← added in Step 9
 │   │   ├── family.hpp
 │   │   └── models/
@@ -377,6 +389,14 @@ graph LR
     S16 --> S17[17. Interrupts]
     S10 --> S17
     S11 --> S17
+    S8 --> S18[18. GPIO AF]
+    S18 --> S20[20. UART Impl]
+    S19[19. Clock Enable] --> S20
+    S19 --> S21[21. EXTI / NVIC]
+    S10 --> S20
+    S17 --> S21
+    S20 --> S22[22. RCC + SysTick]
+    S21 --> S22
 ```
 
 Step 2 (Linting and Formatting) is placed immediately after Build Infrastructure so that every
@@ -404,25 +424,38 @@ expansion steps (15 and 16) so that:
 - Contributors adding new families (Step 15) or new peripherals (Step 16) can immediately open
   PRs that flow through the full release pipeline.
 
-| Step | File                                                                                      | Phase            | Key Prerequisite |
-| ---- | ----------------------------------------------------------------------------------------- | ---------------- | ---------------- |
-| 1    | [Build Infrastructure](steps/step-01-build-infrastructure.md)                             | Core             | None             |
-| 2    | [Linting and Formatting](steps/step-02-linting-formatting.md)                             | Core             | Step 1           |
-| 3    | [Conventional Commits and Merge Queue](steps/step-03-conventional-commits-merge-queue.md) | Core             | Step 2           |
-| 4    | [Core Register Abstraction](steps/step-04-register-abstraction.md)                        | Core             | Step 3           |
-| 5    | [BitField and Access Control](steps/step-05-bitfield-access-control.md)                   | Core             | Step 4           |
-| 6    | [MCU Family/Model Selection](steps/step-06-mcu-selection.md)                              | First platform   | Step 5           |
-| 7    | [GPIO Peripheral Interface](steps/step-07-gpio-interface.md)                              | First platform   | Step 6           |
-| 8    | [STM32U0 GPIO Implementation](steps/step-08-stm32u0-gpio.md)                              | First platform   | Step 7           |
-| 9    | [MSP430FR2355 GPIO (non-ARM)](steps/step-09-msp430fr2355-gpio.md)                         | Second platform  | Step 7           |
-| 10   | [Timer and UART Peripherals](steps/step-10-timer-uart.md)                                 | First platform   | Step 8           |
-| 11   | [Host and Target Unit Testing](steps/step-11-unit-testing.md)                             | Validation       | Steps 8–10       |
-| 12   | [CI / Continuous Integration](steps/step-12-ci.md)                                        | Validation       | Step 11          |
-| 13   | [Release Automation](steps/step-13-release-automation.md)                                 | Release pipeline | Steps 3, 12      |
-| 14   | [vcpkg Package](steps/step-14-vcpkg-package.md)                                           | Release pipeline | Step 13          |
-| 15   | [Additional MCU Families and Models](steps/step-15-additional-mcu-families.md)            | Expansion        | Steps 13–14      |
-| 16   | [Additional Peripherals](steps/step-16-additional-peripherals.md)                         | Expansion        | Steps 13–15      |
-| 17   | [Interrupt Handling](steps/step-17-interrupt-handling.md)                                 | Expansion        | Steps 10–11, 16  |
+Steps 18–22 form a focused "test_project conversion" track that runs in parallel with the
+broader expansion steps (16–17). They are sequenced so that each step has a concrete,
+buildable output: GPIO AF (Step 18) before UART pin config (Step 20); clock enable (Step 19)
+before any peripheral register access; the EXTI/NVIC layer (Step 21) after the interrupt
+design in Step 17; and the clock tree plus SysTick (Step 22) last, because it is the most
+reference-manual-intensive and depends on every earlier piece being in place. Each step file
+explicitly identifies the RM0503 sections that must be read before implementation begins.
+
+| Step | File                                                                                      | Phase                   | Key Prerequisite |
+| ---- | ----------------------------------------------------------------------------------------- | ----------------------- | ---------------- |
+| 1    | [Build Infrastructure](steps/step-01-build-infrastructure.md)                             | Core                    | None             |
+| 2    | [Linting and Formatting](steps/step-02-linting-formatting.md)                             | Core                    | Step 1           |
+| 3    | [Conventional Commits and Merge Queue](steps/step-03-conventional-commits-merge-queue.md) | Core                    | Step 2           |
+| 4    | [Core Register Abstraction](steps/step-04-register-abstraction.md)                        | Core                    | Step 3           |
+| 5    | [BitField and Access Control](steps/step-05-bitfield-access-control.md)                   | Core                    | Step 4           |
+| 6    | [MCU Family/Model Selection](steps/step-06-mcu-selection.md)                              | First platform          | Step 5           |
+| 7    | [GPIO Peripheral Interface](steps/step-07-gpio-interface.md)                              | First platform          | Step 6           |
+| 8    | [STM32U0 GPIO Implementation](steps/step-08-stm32u0-gpio.md)                              | First platform          | Step 7           |
+| 9    | [MSP430FR2355 GPIO (non-ARM)](steps/step-09-msp430fr2355-gpio.md)                         | Second platform         | Step 7           |
+| 10   | [Timer and UART Peripherals](steps/step-10-timer-uart.md)                                 | First platform          | Step 8           |
+| 11   | [Host and Target Unit Testing](steps/step-11-unit-testing.md)                             | Validation              | Steps 8–10       |
+| 12   | [CI / Continuous Integration](steps/step-12-ci.md)                                        | Validation              | Step 11          |
+| 13   | [Release Automation](steps/step-13-release-automation.md)                                 | Release pipeline        | Steps 3, 12      |
+| 14   | [vcpkg Package](steps/step-14-vcpkg-package.md)                                           | Release pipeline        | Step 13          |
+| 15   | [Additional MCU Families and Models](steps/step-15-additional-mcu-families.md)            | Expansion               | Steps 13–14      |
+| 16   | [Additional Peripherals](steps/step-16-additional-peripherals.md)                         | Expansion               | Steps 13–15      |
+| 17   | [Interrupt Handling](steps/step-17-interrupt-handling.md)                                 | Expansion               | Steps 10–11, 16  |
+| 18   | [GPIO Alternate Function Selection](steps/step-18-gpio-alternate-function.md)             | test_project conversion | Step 8           |
+| 19   | [Peripheral Clock Enable](steps/step-19-clock-enable.md)                                  | test_project conversion | Step 8           |
+| 20   | [UART Implementation](steps/step-20-uart-implementation.md)                               | test_project conversion | Steps 10, 18, 19 |
+| 21   | [External Interrupts and NVIC](steps/step-21-exti-nvic.md)                                | test_project conversion | Steps 17, 19     |
+| 22   | [RCC Clock Tree and SysTick](steps/step-22-rcc-clock-tree-systick.md)                     | test_project conversion | Steps 20, 21     |
 
 ---
 
