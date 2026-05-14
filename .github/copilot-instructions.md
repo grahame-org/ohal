@@ -29,8 +29,9 @@ Any failure will cause CI to fail. Fix all lint errors before pushing.
 
 ## Commit messages
 
-All commit messages and PR titles **must** follow the
-[Conventional Commits](https://www.conventionalcommits.org/) format:
+PR titles **must** follow the
+[Conventional Commits](https://www.conventionalcommits.org/) format,
+since the PR title becomes the squash-merge commit message:
 
 ```
 <type>(<scope>): <short summary>
