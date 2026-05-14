@@ -2,10 +2,16 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR ARM)
 
 set(TOOLCHAIN_PREFIX arm-none-eabi-)
+set(_arm_hint_1 "C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/")
+set(_arm_hint_2 "com.st.stm32cube.ide.mcu.externaltools.")
+set(_arm_hint_3 "gnu-tools-for-stm32.13.3.rel1.win32_1.0.0.202411081344/tools/bin")
+string(CONCAT _arm_toolchain_hint "${_arm_hint_1}" "${_arm_hint_2}" "${_arm_hint_3}")
 find_program(
   BINUTILS_PATH
   ${TOOLCHAIN_PREFIX}gcc
-  NO_CACHE)
+  HINTS "${_arm_toolchain_hint}"
+  NO_CACHE
+)
 
 if (NOT BINUTILS_PATH)
   message(FATAL_ERROR "ARM GCC toolchain not found")
