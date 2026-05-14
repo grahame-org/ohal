@@ -3,6 +3,5 @@
 
 #define OHAL_STM32U0_NO_LPUART3
 #include "ohal/platforms/stm32u0/models/stm32u083/uart.hpp"
-#undef OHAL_STM32U0_NO_LPUART3
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U031_UART_HPP
