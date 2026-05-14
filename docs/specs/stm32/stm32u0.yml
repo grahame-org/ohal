@@ -2012,18 +2012,30 @@ peripherals:
                 access: wo
                 settings: *brr
   - usart:
-      reference:
-        sections: [34.8]
-        tables: [209]
+        sections: [34.4, 34.8]
+        tables: [199, 200, 209]
+      note: >-
+        Instance feature tiers are defined in Table 199 (RM0503 §34.4).
+        USART1 and USART2 implement the Full feature set: synchronous mode, smartcard,
+        IrDA, LIN, receiver timeout, Modbus, auto baud rate, Tx/Rx FIFO (8 bytes),
+        prescaler, and wake-up from Stop 0/1.
+        USART3 and USART4 implement the Basic feature set: hardware flow control, DMA,
+        multiprocessor communication, synchronous mode (master/slave), single-wire
+        half-duplex, and driver enable; no FIFO, no prescaler, no LIN/IrDA/smartcard.
+        Feature set details are defined in Table 200 (RM0503 §34.4).
       instances:
         - name: USART1
           base: 0x40013800
+          sub-families: [stm32u031, stm32u073, stm32u083]
         - name: USART2
           base: 0x40004400
+          sub-families: [stm32u031, stm32u073, stm32u083]
         - name: USART3
           base: 0x40004800
+          sub-families: [stm32u031, stm32u073, stm32u083]
         - name: USART4
           base: 0x40004C00
+          sub-families: [stm32u031, stm32u073, stm32u083]
       registers:
         - CR1:
             reference:
@@ -3070,15 +3082,27 @@ peripherals:
                 settings: *uart-prescaler
   - lpuart:
       reference:
-        sections: [35.7]
-        tables: [214]
+        sections: [34.4, 35.7]
+        tables: [199, 200, 214]
+      note: >-
+        Instance availability is defined in Table 199 (RM0503 §34.4).
+        LPUART1 and LPUART2 are present on all sub-families (stm32u031, stm32u073, stm32u083).
+        LPUART3 is present only on stm32u073 and stm32u083; it is absent on stm32u031.
+        All LPUART instances implement the Low-power feature set: hardware flow control,
+        DMA, multiprocessor communication, single-wire half-duplex, dual clock domain,
+        wake-up from Stop 0/1, driver enable, Tx/Rx FIFO (8 bytes), and prescaler.
+        No synchronous mode, smartcard, IrDA, LIN, receiver timeout, Modbus, or
+        auto baud rate detection. Feature set details are defined in Table 200 (RM0503 §34.4).
       instances:
         - name: LPUART1
           base: 0x40008000
+          sub-families: [stm32u031, stm32u073, stm32u083]
         - name: LPUART2
           base: 0x40008400
+          sub-families: [stm32u031, stm32u073, stm32u083]
         - name: LPUART3
           base: 0x40008C00
+          sub-families: [stm32u073, stm32u083]
       registers:
         - CR1:
             reference:
