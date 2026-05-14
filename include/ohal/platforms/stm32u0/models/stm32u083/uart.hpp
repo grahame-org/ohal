@@ -42,6 +42,11 @@ using Usart2 = UsartRegs<kUsart2Base>;
 
 namespace ohal::uart {
 
+// TODO(step-10): Port is currently only specialised for Usart2Tag.
+// The STM32U083 also has USART1 (0x40013800), USART3 (0x40004800), USART4 (0x40004C00),
+// LPUART1 (0x40008000), LPUART2 (0x40008400), and LPUART3 (0x40008C00).
+// These instances will be added in a future step; until then they hit the primary
+// template's static_assert.
 template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Usart2Tag> {
   using Regs = ohal::platforms::stm32u0::stm32u083::Usart2;

@@ -2,6 +2,7 @@
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_TIMER_HPP
 
 #include <cstdint>
+#include <type_traits>
 
 #include "ohal/core/field.hpp"
 #include "ohal/core/register.hpp"
@@ -231,6 +232,13 @@ struct Channel<ohal::platforms::stm32u0::stm32u083::Tim2, ChannelNum> {
   using Egr = ohal::core::BitField<typename Regs::Egr, 0U,
                                    ohal::platforms::stm32u0::stm32u083::kTimRegisterWidthBits,
                                    ohal::core::Access::WriteOnly>;
+
+  // Capture/compare register for this channel (ChannelNum 0→CCR1, 1→CCR2, 2→CCR3, 3→CCR4).
+  using Ccr = std::conditional_t<
+      ChannelNum == 0U, typename Regs::Ccr1,
+      std::conditional_t<
+          ChannelNum == 1U, typename Regs::Ccr2,
+          std::conditional_t<ChannelNum == 2U, typename Regs::Ccr3, typename Regs::Ccr4>>>;
 };
 
 } // namespace ohal::timer
