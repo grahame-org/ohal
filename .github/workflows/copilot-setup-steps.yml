@@ -22,20 +22,38 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
     steps:
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/copilot-setup-steps.yml') }}
+          restore-keys: ${{ runner.os }}-apt-
+
       - name: Install apt tools
         run: |
+          mkdir -p ~/apt-archives
           sudo apt-get update -y
-          sudo apt-get install -y clang-format clang-tidy cmake shellcheck \
+          sudo apt-get install -y --no-install-recommends \
+            -o dir::cache::archives="$HOME/apt-archives" \
+            clang-format clang-tidy cmake shellcheck \
             gcc-arm-none-eabi binutils-arm-none-eabi
 
       - name: Cache pip packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-cmakelang-yamllint-check-jsonschema
+          key: ${{ runner.os }}-pip-${{ hashFiles('.github/workflows/copilot-setup-steps.yml') }}
+          restore-keys: ${{ runner.os }}-pip-
 
       - name: Install pip tools
         run: pip3 install cmakelang yamllint check-jsonschema
+
+      - name: Cache npm packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('.github/workflows/copilot-setup-steps.yml') }}
+          restore-keys: ${{ runner.os }}-npm-
 
       - name: Install npm tools
         run: npm install -g markdownlint-cli2 prettier
