@@ -29,6 +29,7 @@ echo "=== cmake-lint ==="
 find "${REPO_ROOT}" \
     -path "${REPO_ROOT}/build" -prune -o \
     -path "${REPO_ROOT}/test_project/BSP" -prune -o \
+    -path "${REPO_ROOT}/test_project/build" -prune -o \
     \( -name 'CMakeLists.txt' -o -name '*.cmake' -o -name '*.cmake.in' \) \
     -print0 | xargs -0 cmake-lint
 
