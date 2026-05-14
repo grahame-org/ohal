@@ -46,7 +46,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<BoolCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(Stm32u083RctUartCoverageTest, ValueIsTrue) { EXPECT_TRUE(GetParam().value); }
+TEST_P(Stm32u083RctUartCoverageTest, MappingOrCapability_IsTrue) { EXPECT_TRUE(GetParam().value); }
 
 class Stm32u083RctTimerCoverageTest : public ::testing::TestWithParam<BoolCase> {};
 
@@ -72,6 +72,6 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<BoolCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(Stm32u083RctTimerCoverageTest, ValueIsTrue) { EXPECT_TRUE(GetParam().value); }
+TEST_P(Stm32u083RctTimerCoverageTest, MappingOrAccess_IsTrue) { EXPECT_TRUE(GetParam().value); }
 
 } // namespace
