@@ -2092,9 +2092,10 @@ peripherals:
             basic-feature-set: false
             low-power-feature-set: true
           - name: Wake-up from low-power mode
-            full-feature-set: X (note 2)
+            note: Note 2 applies to full-feature-set and low-power-feature-set.
+            full-feature-set: true
             basic-feature-set: false
-            low-power-feature-set: X (note 2)
+            low-power-feature-set: true
       instances:
         - name: USART1
           base: 0x40013800

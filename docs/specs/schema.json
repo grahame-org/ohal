@@ -351,6 +351,10 @@
       "additionalProperties": false,
       "properties": {
         "name": { "type": "string" },
+        "note": {
+          "description": "Optional annotation for this feature row (for example reference-manual notes such as 'note 2').",
+          "type": "string"
+        },
         "full-feature-set": { "$ref": "#/$defs/peripheral-feature-set-value" },
         "basic-feature-set": { "$ref": "#/$defs/peripheral-feature-set-value" },
         "low-power-feature-set": { "$ref": "#/$defs/peripheral-feature-set-value" }
