@@ -14,6 +14,8 @@ namespace {
 
 using namespace ohal::platforms::stm32u0::stm32u083;
 
+// ─── Port base address tests ──────────────────────────────────────────────────
+
 TEST(Stm32u083RctUartPortMappingTest, Usart2PortMapsToUsart2Base) {
   EXPECT_EQ(ohal::uart::Port<Usart2Tag>::Cr1::address, kUsart2Base + kUsartCr1Offset);
 }
@@ -21,6 +23,279 @@ TEST(Stm32u083RctUartPortMappingTest, Usart2PortMapsToUsart2Base) {
 TEST(Stm32u083RctUartPortMappingTest, Lpuart3PortAvailableForStm32u083) {
   EXPECT_EQ(ohal::uart::Port<Lpuart3Tag>::Cr1::address, kLpuart3Base + kUsartCr1Offset);
 }
+
+struct UartPortBaseCase {
+  uintptr_t actual_address;
+  uintptr_t expected_address;
+  const char* name;
+};
+
+class Stm32u083RctUartPortBaseAddressTest : public ::testing::TestWithParam<UartPortBaseCase> {};
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    PortBaseAddresses, Stm32u083RctUartPortBaseAddressTest,
+    ::testing::Values(
+        UartPortBaseCase{ohal::uart::Port<Usart1Tag>::Cr1::address,
+                         kUsart1Base + kUsartCr1Offset, "Usart1Cr1"},
+        UartPortBaseCase{ohal::uart::Port<Usart3Tag>::Cr1::address,
+                         kUsart3Base + kUsartCr1Offset, "Usart3Cr1"},
+        UartPortBaseCase{ohal::uart::Port<Usart4Tag>::Cr1::address,
+                         kUsart4Base + kUsartCr1Offset, "Usart4Cr1"},
+        UartPortBaseCase{ohal::uart::Port<Lpuart1Tag>::Cr1::address,
+                         kLpuart1Base + kUsartCr1Offset, "Lpuart1Cr1"},
+        UartPortBaseCase{ohal::uart::Port<Lpuart2Tag>::Cr1::address,
+                         kLpuart2Base + kUsartCr1Offset, "Lpuart2Cr1"}),
+    [](const ::testing::TestParamInfo<UartPortBaseCase>& info) {
+      return info.param.name;
+    });
+// clang-format on
+
+TEST_P(Stm32u083RctUartPortBaseAddressTest, Cr1AddressMatchesExpected) {
+  EXPECT_EQ(GetParam().actual_address, GetParam().expected_address);
+}
+
+// ─── Capability tests ─────────────────────────────────────────────────────────
+//
+// Each INSTANTIATE_TEST_SUITE_P block covers one capability from Table 200
+// (RM0503 §34.4).  Values encode both positive and negative assertions as a
+// bool so that a single EXPECT_TRUE drives every case uniformly.
+
+struct UartCapCase {
+  bool value;
+  const char* name;
+};
+
+class Stm32u083RctUartCapabilityTest : public ::testing::TestWithParam<UartCapCase> {};
+
+TEST_P(Stm32u083RctUartCapabilityTest, CapabilityMatchesExpected) { EXPECT_TRUE(GetParam().value); }
+
+// clang-format off
+
+// Hardware flow control — supported by all tiers (full / basic / low-power).
+INSTANTIATE_TEST_SUITE_P(
+    HardwareFlowControl, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Usart1Tag>::value,  "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Usart2Tag>::value,  "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Usart3Tag>::value,  "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Usart4Tag>::value,  "Usart4Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Lpuart1Tag>::value, "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Lpuart2Tag>::value, "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_hardware_flow_control<Lpuart3Tag>::value, "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// DMA — supported by all tiers.
+INSTANTIATE_TEST_SUITE_P(
+    Dma, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_dma<Usart1Tag>::value,  "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dma<Usart2Tag>::value,  "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dma<Usart3Tag>::value,  "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dma<Usart4Tag>::value,  "Usart4Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dma<Lpuart1Tag>::value, "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dma<Lpuart2Tag>::value, "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dma<Lpuart3Tag>::value, "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Multiprocessor communication — supported by all tiers.
+INSTANTIATE_TEST_SUITE_P(
+    MultiprocessorCommunication, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Usart1Tag>::value,  "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Usart2Tag>::value,  "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Usart3Tag>::value,  "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Usart4Tag>::value,  "Usart4Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Lpuart1Tag>::value, "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Lpuart2Tag>::value, "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_multiprocessor_communication<Lpuart3Tag>::value, "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Synchronous mode — full and basic tiers only; low-power instances do not support it.
+INSTANTIATE_TEST_SUITE_P(
+    SynchronousMode, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_synchronous_mode<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_synchronous_mode<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_synchronous_mode<Usart3Tag>::value,   "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_synchronous_mode<Usart4Tag>::value,   "Usart4Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_synchronous_mode<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_synchronous_mode<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_synchronous_mode<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Smartcard mode — full tier only (USART1/2); absent on basic and low-power.
+INSTANTIATE_TEST_SUITE_P(
+    SmartcardMode, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_smartcard_mode<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_smartcard_mode<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_smartcard_mode<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_smartcard_mode<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_smartcard_mode<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_smartcard_mode<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_smartcard_mode<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Single-wire half-duplex — supported by all tiers.
+INSTANTIATE_TEST_SUITE_P(
+    SingleWireHalfDuplex, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Usart1Tag>::value,  "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Usart2Tag>::value,  "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Usart3Tag>::value,  "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Usart4Tag>::value,  "Usart4Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Lpuart1Tag>::value, "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Lpuart2Tag>::value, "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_single_wire_half_duplex<Lpuart3Tag>::value, "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// IrDA SIR ENDEC — full tier only (USART1/2); absent on basic and low-power.
+INSTANTIATE_TEST_SUITE_P(
+    IrdaMode, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_irda_mode<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_irda_mode<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_irda_mode<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_irda_mode<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_irda_mode<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_irda_mode<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_irda_mode<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// LIN mode — full tier only (USART1/2); absent on basic and low-power.
+INSTANTIATE_TEST_SUITE_P(
+    LinMode, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_lin_mode<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_lin_mode<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_lin_mode<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_lin_mode<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_lin_mode<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_lin_mode<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_lin_mode<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Receiver timeout interrupt — full tier only (USART1/2); absent on basic and low-power.
+INSTANTIATE_TEST_SUITE_P(
+    ReceiverTimeout, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_receiver_timeout<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_receiver_timeout<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_receiver_timeout<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_receiver_timeout<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_receiver_timeout<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_receiver_timeout<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_receiver_timeout<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Modbus communication — full tier only (USART1/2); absent on basic and low-power.
+INSTANTIATE_TEST_SUITE_P(
+    ModbusMode, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_modbus_mode<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_modbus_mode<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_modbus_mode<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_modbus_mode<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_modbus_mode<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_modbus_mode<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_modbus_mode<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Auto baud rate detection — full tier only (USART1/2); absent on basic and low-power.
+INSTANTIATE_TEST_SUITE_P(
+    AutoBaudRateDetection, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_auto_baud_rate_detection<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_auto_baud_rate_detection<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_auto_baud_rate_detection<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_auto_baud_rate_detection<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_auto_baud_rate_detection<Lpuart1Tag>::value, "Lpuart1DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_auto_baud_rate_detection<Lpuart2Tag>::value, "Lpuart2DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_auto_baud_rate_detection<Lpuart3Tag>::value, "Lpuart3DoesNotSupport"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Driver enable — supported by all tiers.
+INSTANTIATE_TEST_SUITE_P(
+    DriverEnable, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Usart1Tag>::value,  "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Usart2Tag>::value,  "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Usart3Tag>::value,  "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Usart4Tag>::value,  "Usart4Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Lpuart1Tag>::value, "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Lpuart2Tag>::value, "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_driver_enable<Lpuart3Tag>::value, "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Data length 7/8/9 bits — supported by all tiers.
+INSTANTIATE_TEST_SUITE_P(
+    DataLength789Bits, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Usart1Tag>::value,  "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Usart2Tag>::value,  "Usart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Usart3Tag>::value,  "Usart3Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Usart4Tag>::value,  "Usart4Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Lpuart1Tag>::value, "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Lpuart2Tag>::value, "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_data_length_7_8_9_bits<Lpuart3Tag>::value, "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Tx/Rx FIFO — full and low-power tiers; absent on basic (USART3/4).
+INSTANTIATE_TEST_SUITE_P(
+    Fifo, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_fifo<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_fifo<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_fifo<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_fifo<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{ohal::uart::capabilities::supports_fifo<Lpuart1Tag>::value,  "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_fifo<Lpuart2Tag>::value,  "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_fifo<Lpuart3Tag>::value,  "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Prescaler — full and low-power tiers; absent on basic (USART3/4).
+INSTANTIATE_TEST_SUITE_P(
+    Prescaler, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_prescaler<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_prescaler<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_prescaler<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_prescaler<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{ohal::uart::capabilities::supports_prescaler<Lpuart1Tag>::value,  "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_prescaler<Lpuart2Tag>::value,  "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_prescaler<Lpuart3Tag>::value,  "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Wake-up from low-power mode — full and low-power tiers; absent on basic (USART3/4).
+INSTANTIATE_TEST_SUITE_P(
+    WakeupFromStop, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Lpuart1Tag>::value,  "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Lpuart2Tag>::value,  "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_wakeup_from_stop_0_1<Lpuart3Tag>::value,  "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// Dual clock domain / wake-up — full and low-power tiers; absent on basic (USART3/4).
+INSTANTIATE_TEST_SUITE_P(
+    DualClockDomain, Stm32u083RctUartCapabilityTest,
+    ::testing::Values(
+        UartCapCase{ohal::uart::capabilities::supports_dual_clock_domain<Usart1Tag>::value,   "Usart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dual_clock_domain<Usart2Tag>::value,   "Usart2Supports"},
+        UartCapCase{!ohal::uart::capabilities::supports_dual_clock_domain<Usart3Tag>::value,  "Usart3DoesNotSupport"},
+        UartCapCase{!ohal::uart::capabilities::supports_dual_clock_domain<Usart4Tag>::value,  "Usart4DoesNotSupport"},
+        UartCapCase{ohal::uart::capabilities::supports_dual_clock_domain<Lpuart1Tag>::value,  "Lpuart1Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dual_clock_domain<Lpuart2Tag>::value,  "Lpuart2Supports"},
+        UartCapCase{ohal::uart::capabilities::supports_dual_clock_domain<Lpuart3Tag>::value,  "Lpuart3Supports"}),
+    [](const ::testing::TestParamInfo<UartCapCase>& info) { return info.param.name; });
+
+// clang-format on
+
+// ─── FIFO size tests ──────────────────────────────────────────────────────────
 
 TEST(Stm32u083RctUartFifoCapabilityTest, Usart2SupportsFifo) {
   EXPECT_TRUE((ohal::uart::capabilities::supports_fifo<Usart2Tag>::value));
@@ -30,9 +305,33 @@ TEST(Stm32u083RctUartFifoCapabilityTest, Usart3DoesNotSupportFifo) {
   EXPECT_FALSE((ohal::uart::capabilities::supports_fifo<Usart3Tag>::value));
 }
 
-TEST(Stm32u083RctUartFifoCapabilityTest, Usart2FifoSizeMatchesSpec) {
-  EXPECT_EQ(ohal::uart::capabilities::tx_rx_fifo_size_bytes<Usart2Tag>::value, kUsartFifoSizeBytes);
+struct UartFifoSizeCase {
+  uint8_t actual_size;
+  uint8_t expected_size;
+  const char* name;
+};
+
+class Stm32u083RctUartFifoSizeTest : public ::testing::TestWithParam<UartFifoSizeCase> {};
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    FifoSizes, Stm32u083RctUartFifoSizeTest,
+    ::testing::Values(
+        UartFifoSizeCase{ohal::uart::capabilities::tx_rx_fifo_size_bytes<Usart1Tag>::value,  kUsartFifoSizeBytes, "Usart1"},
+        UartFifoSizeCase{ohal::uart::capabilities::tx_rx_fifo_size_bytes<Usart2Tag>::value,  kUsartFifoSizeBytes, "Usart2"},
+        UartFifoSizeCase{ohal::uart::capabilities::tx_rx_fifo_size_bytes<Lpuart1Tag>::value, kUsartFifoSizeBytes, "Lpuart1"},
+        UartFifoSizeCase{ohal::uart::capabilities::tx_rx_fifo_size_bytes<Lpuart2Tag>::value, kUsartFifoSizeBytes, "Lpuart2"},
+        UartFifoSizeCase{ohal::uart::capabilities::tx_rx_fifo_size_bytes<Lpuart3Tag>::value, kUsartFifoSizeBytes, "Lpuart3"}),
+    [](const ::testing::TestParamInfo<UartFifoSizeCase>& info) {
+      return info.param.name;
+    });
+// clang-format on
+
+TEST_P(Stm32u083RctUartFifoSizeTest, FifoSizeMatchesSpec) {
+  EXPECT_EQ(GetParam().actual_size, GetParam().expected_size);
 }
+
+// ─── Dual clock domain (retained individual tests) ───────────────────────────
 
 TEST(Stm32u083RctUartDualClockCapabilityTest, Lpuart1SupportsDualClockDomain) {
   EXPECT_TRUE((ohal::uart::capabilities::supports_dual_clock_domain<Lpuart1Tag>::value));
@@ -41,6 +340,8 @@ TEST(Stm32u083RctUartDualClockCapabilityTest, Lpuart1SupportsDualClockDomain) {
 TEST(Stm32u083RctUartDualClockCapabilityTest, Usart2SupportsDualClockDomain) {
   EXPECT_TRUE((ohal::uart::capabilities::supports_dual_clock_domain<Usart2Tag>::value));
 }
+
+// ─── GPIO and timer tests ─────────────────────────────────────────────────────
 
 TEST(Stm32u083RctGpioCoverageTest, TestProjectLedPinOutputCapabilityMatchesExpected) {
   EXPECT_TRUE((ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 5>::value));
