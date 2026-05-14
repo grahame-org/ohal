@@ -7,6 +7,17 @@
 #include "ohal/core/register.hpp"
 #include "ohal/uart.hpp"
 
+#if defined(OHAL_MODEL_STM32U031R6T) || defined(OHAL_MODEL_STM32U031R6I) ||                        \
+    defined(OHAL_MODEL_STM32U031R8T) || defined(OHAL_MODEL_STM32U031R8I) ||                        \
+    defined(OHAL_MODEL_STM32U031C6U) || defined(OHAL_MODEL_STM32U031C6T) ||                        \
+    defined(OHAL_MODEL_STM32U031C8U) || defined(OHAL_MODEL_STM32U031C8T) ||                        \
+    defined(OHAL_MODEL_STM32U031K4U) || defined(OHAL_MODEL_STM32U031K6U) ||                        \
+    defined(OHAL_MODEL_STM32U031K8U) || defined(OHAL_MODEL_STM32U031G6Y) ||                        \
+    defined(OHAL_MODEL_STM32U031G8Y) || defined(OHAL_MODEL_STM32U031F4P) ||                        \
+    defined(OHAL_MODEL_STM32U031F6P) || defined(OHAL_MODEL_STM32U031F8P)
+#define OHAL_STM32U0_NO_LPUART3
+#endif
+
 namespace ohal::platforms::stm32u0::stm32u083 {
 
 inline constexpr uintptr_t kUsart1Base = 0x4001'3800U;
@@ -110,14 +121,7 @@ template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
     : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart2> {};
 
-#if !defined(OHAL_MODEL_STM32U031R6T) && !defined(OHAL_MODEL_STM32U031R6I) &&                      \
-    !defined(OHAL_MODEL_STM32U031R8T) && !defined(OHAL_MODEL_STM32U031R8I) &&                      \
-    !defined(OHAL_MODEL_STM32U031C6U) && !defined(OHAL_MODEL_STM32U031C6T) &&                      \
-    !defined(OHAL_MODEL_STM32U031C8U) && !defined(OHAL_MODEL_STM32U031C8T) &&                      \
-    !defined(OHAL_MODEL_STM32U031K4U) && !defined(OHAL_MODEL_STM32U031K6U) &&                      \
-    !defined(OHAL_MODEL_STM32U031K8U) && !defined(OHAL_MODEL_STM32U031G6Y) &&                      \
-    !defined(OHAL_MODEL_STM32U031G8Y) && !defined(OHAL_MODEL_STM32U031F4P) &&                      \
-    !defined(OHAL_MODEL_STM32U031F6P) && !defined(OHAL_MODEL_STM32U031F8P)
+#ifndef OHAL_STM32U0_NO_LPUART3
 template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
     : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart3> {};
@@ -209,14 +213,7 @@ struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart1Ta
 template <>
 struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
     : std::true_type {};
-#if !defined(OHAL_MODEL_STM32U031R6T) && !defined(OHAL_MODEL_STM32U031R6I) &&                      \
-    !defined(OHAL_MODEL_STM32U031R8T) && !defined(OHAL_MODEL_STM32U031R8I) &&                      \
-    !defined(OHAL_MODEL_STM32U031C6U) && !defined(OHAL_MODEL_STM32U031C6T) &&                      \
-    !defined(OHAL_MODEL_STM32U031C8U) && !defined(OHAL_MODEL_STM32U031C8T) &&                      \
-    !defined(OHAL_MODEL_STM32U031K4U) && !defined(OHAL_MODEL_STM32U031K6U) &&                      \
-    !defined(OHAL_MODEL_STM32U031K8U) && !defined(OHAL_MODEL_STM32U031G6Y) &&                      \
-    !defined(OHAL_MODEL_STM32U031G8Y) && !defined(OHAL_MODEL_STM32U031F4P) &&                      \
-    !defined(OHAL_MODEL_STM32U031F6P) && !defined(OHAL_MODEL_STM32U031F8P)
+#ifndef OHAL_STM32U0_NO_LPUART3
 template <>
 struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
 template <>
@@ -232,5 +229,9 @@ struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart3Ta
 } // namespace capabilities
 
 } // namespace ohal::uart
+
+#ifdef OHAL_STM32U0_NO_LPUART3
+#undef OHAL_STM32U0_NO_LPUART3
+#endif
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_UART_HPP

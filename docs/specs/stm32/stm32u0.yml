@@ -2031,7 +2031,7 @@ peripherals:
               auto-baud-rate-detection,
               tx-rx-fifo-8-bytes,
               prescaler,
-              wake-up-stop0-stop1,
+              wake-up-from-stop-0-1,
             ]
         basic:
           includes:
@@ -3127,7 +3127,7 @@ peripherals:
               multiprocessor-communication,
               single-wire-half-duplex,
               dual-clock-domain,
-              wake-up-stop0-stop1,
+              wake-up-from-stop-0-1,
               driver-enable,
               tx-rx-fifo-8-bytes,
               prescaler,
