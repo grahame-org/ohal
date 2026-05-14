@@ -46,24 +46,30 @@ TEST(Stm32u083RctGpioCoverageTest, TestProjectLedPinOutputCapabilityMatchesExpec
   EXPECT_TRUE((ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 5>::value));
 }
 
-TEST(Stm32u083RctTimerChannelMappingTest, Channel0MapsToCcr1) {
-  EXPECT_TRUE((std::is_same_v<ohal::timer::Channel<Tim2, 0>::Ccr, Tim2::Ccr1>));
-}
-
-TEST(Stm32u083RctTimerChannelMappingTest, Channel1MapsToCcr2) {
-  EXPECT_TRUE((std::is_same_v<ohal::timer::Channel<Tim2, 1>::Ccr, Tim2::Ccr2>));
-}
-
-TEST(Stm32u083RctTimerChannelMappingTest, Channel2MapsToCcr3) {
-  EXPECT_TRUE((std::is_same_v<ohal::timer::Channel<Tim2, 2>::Ccr, Tim2::Ccr3>));
-}
-
-TEST(Stm32u083RctTimerChannelMappingTest, Channel3MapsToCcr4) {
-  EXPECT_TRUE((std::is_same_v<ohal::timer::Channel<Tim2, 3>::Ccr, Tim2::Ccr4>));
-}
-
 TEST(Stm32u083RctTimerAccessTest, Tim2EgrAccessModeMatchesExpected) {
   EXPECT_EQ((ohal::timer::Channel<Tim2, 0>::Egr::access), ohal::core::Access::WriteOnly);
+}
+
+struct Tim2ChannelMapCase {
+  bool value;
+  const char* name;
+};
+
+class Stm32u083RctTimerChannelMappingTest : public ::testing::TestWithParam<Tim2ChannelMapCase> {};
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    Tim2ChannelMappingChecks, Stm32u083RctTimerChannelMappingTest,
+    ::testing::Values(
+        Tim2ChannelMapCase{std::is_same_v<ohal::timer::Channel<Tim2, 0>::Ccr, Tim2::Ccr1>, "Channel0MapsToCcr1"},
+        Tim2ChannelMapCase{std::is_same_v<ohal::timer::Channel<Tim2, 1>::Ccr, Tim2::Ccr2>, "Channel1MapsToCcr2"},
+        Tim2ChannelMapCase{std::is_same_v<ohal::timer::Channel<Tim2, 2>::Ccr, Tim2::Ccr3>, "Channel2MapsToCcr3"},
+        Tim2ChannelMapCase{std::is_same_v<ohal::timer::Channel<Tim2, 3>::Ccr, Tim2::Ccr4>, "Channel3MapsToCcr4"}),
+    [](const ::testing::TestParamInfo<Tim2ChannelMapCase>& info) { return info.param.name; });
+// clang-format on
+
+TEST_P(Stm32u083RctTimerChannelMappingTest, ChannelToCcrMappingMatchesExpected) {
+  EXPECT_TRUE(GetParam().value);
 }
 
 } // namespace

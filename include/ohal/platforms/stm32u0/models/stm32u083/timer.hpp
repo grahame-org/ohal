@@ -218,6 +218,8 @@ struct Channel<ohal::platforms::stm32u0::stm32u083::Tim2, ChannelNum> {
 
   using Regs = ohal::platforms::stm32u0::stm32u083::Tim2;
 
+  // Timer-wide registers are exposed here for convenience, while Ccr is the
+  // channel-specific register selected by ChannelNum.
   using Cr1 = typename Regs::Cr1;
   using Cr2 = typename Regs::Cr2;
   using Dier = typename Regs::Dier;

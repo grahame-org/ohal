@@ -59,6 +59,17 @@ using Lpuart3 = UsartRegs<kLpuart3Base>;
 
 } // namespace ohal::platforms::stm32u0::stm32u083
 
+#if !defined(OHAL_MODEL_STM32U031R6T) && !defined(OHAL_MODEL_STM32U031R6I) &&                      \
+    !defined(OHAL_MODEL_STM32U031R8T) && !defined(OHAL_MODEL_STM32U031R8I) &&                      \
+    !defined(OHAL_MODEL_STM32U031C6U) && !defined(OHAL_MODEL_STM32U031C6T) &&                      \
+    !defined(OHAL_MODEL_STM32U031C8U) && !defined(OHAL_MODEL_STM32U031C8T) &&                      \
+    !defined(OHAL_MODEL_STM32U031K4U) && !defined(OHAL_MODEL_STM32U031K6U) &&                      \
+    !defined(OHAL_MODEL_STM32U031K8U) && !defined(OHAL_MODEL_STM32U031G6Y) &&                      \
+    !defined(OHAL_MODEL_STM32U031G8Y) && !defined(OHAL_MODEL_STM32U031F4P) &&                      \
+    !defined(OHAL_MODEL_STM32U031F6P) && !defined(OHAL_MODEL_STM32U031F8P)
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+
 namespace ohal::uart {
 
 namespace detail {
@@ -111,7 +122,7 @@ template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
     : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart2> {};
 
-#ifndef OHAL_STM32U0_NO_LPUART3
+#ifdef OHAL_STM32U0_ENABLE_LPUART3
 template <>
 struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
     : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart3> {};
@@ -324,7 +335,7 @@ struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Usart1Tag
 template <>
 struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {
 };
-#ifndef OHAL_STM32U0_NO_LPUART3
+#ifdef OHAL_STM32U0_ENABLE_LPUART3
 template <>
 struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
     : std::true_type {};
@@ -360,8 +371,8 @@ struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart3Ta
 
 } // namespace ohal::uart
 
-#ifdef OHAL_STM32U0_NO_LPUART3
-#undef OHAL_STM32U0_NO_LPUART3
+#ifdef OHAL_STM32U0_ENABLE_LPUART3
+#undef OHAL_STM32U0_ENABLE_LPUART3
 #endif
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_UART_HPP
