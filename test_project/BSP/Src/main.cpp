@@ -67,6 +67,8 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+using LedPin = ohal::gpio::Pin<ohal::gpio::PortA, 5U>;
+
 /* USER CODE END 0 */
 
 /**
@@ -102,7 +104,6 @@ int main(void) {
     /* USER CODE END 2 */
 
     /* Initialize leds */
-    using LedPin = ohal::gpio::Pin<ohal::gpio::PortA, 5U>;
     LedPin::set_mode(ohal::gpio::PinMode::Output);
     LedPin::set_output_type(ohal::gpio::OutputType::PushPull);
     LedPin::set_speed(ohal::gpio::Speed::VeryHigh);
