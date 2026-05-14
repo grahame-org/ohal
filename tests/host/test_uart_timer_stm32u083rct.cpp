@@ -342,9 +342,61 @@ TEST(Stm32u083RctUartDualClockCapabilityTest, Usart2SupportsDualClockDomain) {
 }
 
 // ─── GPIO and timer tests ─────────────────────────────────────────────────────
+//
+// These tests guard the exact GPIO pins used by the test_project firmware
+// (main.cpp on the NUCLEO-U083RC board) to catch regressions as the firmware
+// is progressively refactored to use ohal directly.
+//
+// Pins in scope:
+//   PA5  — LED (Output/PushPull/VeryHigh speed/NoPull, Toggle)
+//   PC13 — User button (EXTI input)
+//   PA2  — COM1/USART2 TX (GPIO_AF7_USART2)
+//   PA3  — COM1/USART2 RX (GPIO_AF7_USART2)
+//   PB8  — I2C1 SCL (GPIO_AF4_I2C1)
+//   PB9  — I2C1 SDA (GPIO_AF4_I2C1)
 
 TEST(Stm32u083RctGpioCoverageTest, TestProjectLedPinOutputCapabilityMatchesExpected) {
   EXPECT_TRUE((ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 5>::value));
+}
+
+struct GpioPinCapCase {
+  bool value;
+  const char* name;
+};
+
+class Stm32u083RctTestProjectGpioCapabilityTest : public ::testing::TestWithParam<GpioPinCapCase> {
+};
+
+// clang-format off
+INSTANTIATE_TEST_SUITE_P(
+    TestProjectPinCapabilities, Stm32u083RctTestProjectGpioCapabilityTest,
+    ::testing::Values(
+        // LED pin PA5: output speed (used by set_speed(Speed::VeryHigh))
+        GpioPinCapCase{ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA, 5>::value,
+                       "PA5_LedPin_SupportsOutputSpeed"},
+        // LED pin PA5: pull resistor (used by set_pull(Pull::None))
+        GpioPinCapCase{ohal::gpio::capabilities::supports_pull<ohal::gpio::PortA, 5>::value,
+                       "PA5_LedPin_SupportsPull"},
+        // User button PC13: confirm it is a bonded GPIO pin on this package
+        GpioPinCapCase{ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortC, 13>::value,
+                       "PC13_ButtonPin_IsBonded"},
+        // COM1/USART2 TX: PA2 must support alternate function (GPIO_AF7_USART2)
+        GpioPinCapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 2>::value,
+                       "PA2_Usart2TxPin_SupportsAlternateFunction"},
+        // COM1/USART2 RX: PA3 must support alternate function (GPIO_AF7_USART2)
+        GpioPinCapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortA, 3>::value,
+                       "PA3_Usart2RxPin_SupportsAlternateFunction"},
+        // I2C1 SCL: PB8 must support alternate function (GPIO_AF4_I2C1)
+        GpioPinCapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortB, 8>::value,
+                       "PB8_I2c1SclPin_SupportsAlternateFunction"},
+        // I2C1 SDA: PB9 must support alternate function (GPIO_AF4_I2C1)
+        GpioPinCapCase{ohal::gpio::capabilities::supports_alternate_function<ohal::gpio::PortB, 9>::value,
+                       "PB9_I2c1SdaPin_SupportsAlternateFunction"}),
+    [](const ::testing::TestParamInfo<GpioPinCapCase>& info) { return info.param.name; });
+// clang-format on
+
+TEST_P(Stm32u083RctTestProjectGpioCapabilityTest, CapabilityMatchesExpected) {
+  EXPECT_TRUE(GetParam().value);
 }
 
 TEST(Stm32u083RctTimerAccessTest, Tim2EgrAccessModeMatchesExpected) {
