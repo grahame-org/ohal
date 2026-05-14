@@ -60,9 +60,11 @@ using Lpuart3 = UsartRegs<kLpuart3Base>;
 
 namespace ohal::uart {
 
-template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Usart1Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Usart1;
+namespace detail {
+
+template <typename RegsType>
+struct UsartPortBase {
+  using Regs = RegsType;
 
   using Cr1 = typename Regs::Cr1;
   using Cr2 = typename Regs::Cr2;
@@ -82,137 +84,35 @@ struct Port<ohal::platforms::stm32u0::stm32u083::Usart1Tag> {
                                    ohal::core::Access::WriteOnly, uint16_t>;
 };
 
-template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Usart2Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Usart2;
-
-  using Cr1 = typename Regs::Cr1;
-  using Cr2 = typename Regs::Cr2;
-  using Cr3 = typename Regs::Cr3;
-  using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::ReadOnly, uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::WriteOnly, uint16_t>;
-};
+} // namespace detail
 
 template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Usart3Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Usart3;
-
-  using Cr1 = typename Regs::Cr1;
-  using Cr2 = typename Regs::Cr2;
-  using Cr3 = typename Regs::Cr3;
-  using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::ReadOnly, uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::WriteOnly, uint16_t>;
-};
+struct Port<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Usart1> {};
 
 template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Usart4Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Usart4;
-
-  using Cr1 = typename Regs::Cr1;
-  using Cr2 = typename Regs::Cr2;
-  using Cr3 = typename Regs::Cr3;
-  using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::ReadOnly, uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::WriteOnly, uint16_t>;
-};
+struct Port<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Usart2> {};
 
 template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Lpuart1;
-
-  using Cr1 = typename Regs::Cr1;
-  using Cr2 = typename Regs::Cr2;
-  using Cr3 = typename Regs::Cr3;
-  using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::ReadOnly, uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::WriteOnly, uint16_t>;
-};
+struct Port<ohal::platforms::stm32u0::stm32u083::Usart3Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Usart3> {};
 
 template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Lpuart2;
-
-  using Cr1 = typename Regs::Cr1;
-  using Cr2 = typename Regs::Cr2;
-  using Cr3 = typename Regs::Cr3;
-  using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::ReadOnly, uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::WriteOnly, uint16_t>;
-};
+struct Port<ohal::platforms::stm32u0::stm32u083::Usart4Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Usart4> {};
 
 template <>
-struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> {
-  using Regs = ohal::platforms::stm32u0::stm32u083::Lpuart3;
+struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart1> {};
 
-  using Cr1 = typename Regs::Cr1;
-  using Cr2 = typename Regs::Cr2;
-  using Cr3 = typename Regs::Cr3;
-  using Brr = typename Regs::Brr;
-  using Isr = ohal::core::BitField<typename Regs::Isr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::ReadOnly>;
-  using Icr = ohal::core::BitField<typename Regs::Icr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartRegisterWidthBits,
-                                   ohal::core::Access::WriteOnly>;
-  using Rdr = ohal::core::BitField<typename Regs::Rdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::ReadOnly, uint16_t>;
-  using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
-                                   ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                   ohal::core::Access::WriteOnly, uint16_t>;
-};
+template <>
+struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart2> {};
+
+template <>
+struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : detail::UsartPortBase<ohal::platforms::stm32u0::stm32u083::Lpuart3> {};
 
 } // namespace ohal::uart
 
