@@ -15,9 +15,6 @@ inline constexpr uintptr_t kUsart3Base = 0x4000'4800U;
 inline constexpr uintptr_t kUsart4Base = 0x4000'4C00U;
 inline constexpr uintptr_t kLpuart1Base = 0x4000'8000U;
 inline constexpr uintptr_t kLpuart2Base = 0x4000'8400U;
-#ifdef OHAL_STM32U0_ENABLE_LPUART3
-inline constexpr uintptr_t kLpuart3Base = 0x4000'8C00U;
-#endif
 
 inline constexpr uintptr_t kUsartCr1Offset = 0x00U;
 inline constexpr uintptr_t kUsartCr2Offset = 0x04U;
@@ -37,9 +34,6 @@ struct Usart3Tag {};
 struct Usart4Tag {};
 struct Lpuart1Tag {};
 struct Lpuart2Tag {};
-#ifdef OHAL_STM32U0_ENABLE_LPUART3
-struct Lpuart3Tag {};
-#endif
 
 template <uintptr_t Base>
 struct UsartRegs {
@@ -59,7 +53,12 @@ using Usart3 = UsartRegs<kUsart3Base>;
 using Usart4 = UsartRegs<kUsart4Base>;
 using Lpuart1 = UsartRegs<kLpuart1Base>;
 using Lpuart2 = UsartRegs<kLpuart2Base>;
+
+// LPUART3 is present on STM32U083 but not on STM32U031.  All three
+// definitions are grouped here so it is clear what depends on the macro.
 #ifdef OHAL_STM32U0_ENABLE_LPUART3
+inline constexpr uintptr_t kLpuart3Base = 0x4000'8C00U;
+struct Lpuart3Tag {};
 using Lpuart3 = UsartRegs<kLpuart3Base>;
 #endif
 
