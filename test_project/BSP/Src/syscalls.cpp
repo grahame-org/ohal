@@ -30,6 +30,7 @@
 #include <sys/time.h>
 #include <sys/times.h>
 
+extern "C" {
 
 /* Variables */
 extern int __io_putchar(int ch) __attribute__((weak));
@@ -152,10 +153,10 @@ int _stat(char *file, struct stat *st)
   return 0;
 }
 
-int _link(char *old, char *new)
+int _link(char *old, char *newpath)
 {
   (void)old;
-  (void)new;
+  (void)newpath;
   errno = EMLINK;
   return -1;
 }
@@ -174,3 +175,5 @@ int _execve(char *name, char **argv, char **env)
   errno = ENOMEM;
   return -1;
 }
+
+} // extern "C"
