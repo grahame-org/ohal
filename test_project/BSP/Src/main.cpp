@@ -30,6 +30,8 @@
 //
 // #include "app_main.h"
 
+#include <ohal/ohal.hpp>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,7 +102,11 @@ int main(void) {
     /* USER CODE END 2 */
 
     /* Initialize leds */
-    BSP_LED_Init(LED_GREEN);
+    using LedPin = ohal::gpio::Pin<ohal::gpio::PortA, 5U>;
+    LedPin::set_mode(ohal::gpio::PinMode::Output);
+    LedPin::set_output_type(ohal::gpio::OutputType::PushPull);
+    LedPin::set_speed(ohal::gpio::Speed::VeryHigh);
+    LedPin::set_pull(ohal::gpio::Pull::None);
 
     /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
     BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
@@ -129,7 +135,7 @@ int main(void) {
         // No further changes will be required.
 
         // loop();
-        HAL_GPIO_TogglePin(GPIOA, (1U << 5U));
+        LedPin::toggle();
         for (volatile uint32_t i = 0; i < 1000000; ++i) {
             // do nowt
         }
