@@ -5,6 +5,7 @@
 #include <ohal/platforms/stm32u0/models/stm32u083rct/gpio.hpp>
 #include <ohal/platforms/stm32u0/models/stm32u083rct/timer.hpp>
 #include <ohal/platforms/stm32u0/models/stm32u083rct/uart.hpp>
+#include <ohal/platforms/stm32u0/models/stm32u083rct/uart_capabilities.hpp>
 
 #include <type_traits>
 
