@@ -38,6 +38,7 @@ inline constexpr uintptr_t kUsartRdrOffset = 0x24U;
 inline constexpr uintptr_t kUsartTdrOffset = 0x28U;
 inline constexpr uint8_t kUsartRegisterWidthBits = 32U;
 inline constexpr uint8_t kUsartDataBits = 9U;
+inline constexpr uint8_t kUsartFifoSizeBytes = 8U;
 
 struct Usart1Tag {};
 struct Usart2Tag {};
@@ -130,6 +131,57 @@ struct Port<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
 namespace capabilities {
 
 template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::true_type {};
+template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::true_type {};
+template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Usart3Tag>
+    : std::true_type {};
+template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Usart4Tag>
+    : std::true_type {};
+template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::true_type {};
+template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::true_type {};
+
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Usart3Tag> : std::true_type {};
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Usart4Tag> : std::true_type {};
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag> : std::true_type {};
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag> : std::true_type {};
+
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::true_type {};
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::true_type {};
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Usart3Tag>
+    : std::true_type {};
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Usart4Tag>
+    : std::true_type {};
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::true_type {};
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::true_type {};
+
+template <>
 struct supports_synchronous_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {
 };
 template <>
@@ -146,6 +198,25 @@ template <>
 struct supports_smartcard_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
 template <>
 struct supports_smartcard_mode<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::true_type {};
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::true_type {};
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Usart3Tag>
+    : std::true_type {};
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Usart4Tag>
+    : std::true_type {};
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::true_type {};
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::true_type {};
 
 template <>
 struct supports_irda_mode<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
@@ -177,6 +248,38 @@ struct supports_auto_baud_rate_detection<ohal::platforms::stm32u0::stm32u083::Us
     : std::true_type {};
 
 template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
+template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
+template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Usart3Tag> : std::true_type {};
+template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Usart4Tag> : std::true_type {};
+template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag> : std::true_type {};
+template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag> : std::true_type {};
+
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::true_type {};
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::true_type {};
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Usart3Tag>
+    : std::true_type {};
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Usart4Tag>
+    : std::true_type {};
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::true_type {};
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::true_type {};
+
+template <>
 struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
 template <>
 struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {};
@@ -184,6 +287,19 @@ template <>
 struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag> : std::true_type {};
 template <>
 struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag> : std::true_type {};
+
+template <>
+struct tx_rx_fifo_size_bytes<ohal::platforms::stm32u0::stm32u083::Usart1Tag>
+    : std::integral_constant<uint8_t, ohal::platforms::stm32u0::stm32u083::kUsartFifoSizeBytes> {};
+template <>
+struct tx_rx_fifo_size_bytes<ohal::platforms::stm32u0::stm32u083::Usart2Tag>
+    : std::integral_constant<uint8_t, ohal::platforms::stm32u0::stm32u083::kUsartFifoSizeBytes> {};
+template <>
+struct tx_rx_fifo_size_bytes<ohal::platforms::stm32u0::stm32u083::Lpuart1Tag>
+    : std::integral_constant<uint8_t, ohal::platforms::stm32u0::stm32u083::kUsartFifoSizeBytes> {};
+template <>
+struct tx_rx_fifo_size_bytes<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
+    : std::integral_constant<uint8_t, ohal::platforms::stm32u0::stm32u083::kUsartFifoSizeBytes> {};
 
 template <>
 struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {};
@@ -213,9 +329,34 @@ struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart1Ta
 template <>
 struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Lpuart2Tag>
     : std::true_type {};
+template <>
+struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Usart1Tag> : std::true_type {
+};
+template <>
+struct supports_dual_clock_domain<ohal::platforms::stm32u0::stm32u083::Usart2Tag> : std::true_type {
+};
 #ifndef OHAL_STM32U0_NO_LPUART3
 template <>
+struct supports_hardware_flow_control<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::true_type {};
+template <>
+struct supports_dma<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
+template <>
+struct supports_multiprocessor_communication<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::true_type {};
+template <>
+struct supports_single_wire_half_duplex<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::true_type {};
+template <>
+struct supports_driver_enable<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
+template <>
+struct supports_data_length_7_8_9_bits<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::true_type {};
+template <>
 struct supports_fifo<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
+template <>
+struct tx_rx_fifo_size_bytes<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag>
+    : std::integral_constant<uint8_t, ohal::platforms::stm32u0::stm32u083::kUsartFifoSizeBytes> {};
 template <>
 struct supports_prescaler<ohal::platforms::stm32u0::stm32u083::Lpuart3Tag> : std::true_type {};
 template <>

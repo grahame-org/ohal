@@ -52,10 +52,22 @@ struct Port {
 namespace capabilities {
 
 template <typename Instance>
+struct supports_hardware_flow_control : std::false_type {};
+
+template <typename Instance>
+struct supports_dma : std::false_type {};
+
+template <typename Instance>
+struct supports_multiprocessor_communication : std::false_type {};
+
+template <typename Instance>
 struct supports_synchronous_mode : std::false_type {};
 
 template <typename Instance>
 struct supports_smartcard_mode : std::false_type {};
+
+template <typename Instance>
+struct supports_single_wire_half_duplex : std::false_type {};
 
 template <typename Instance>
 struct supports_irda_mode : std::false_type {};
@@ -73,7 +85,16 @@ template <typename Instance>
 struct supports_auto_baud_rate_detection : std::false_type {};
 
 template <typename Instance>
+struct supports_driver_enable : std::false_type {};
+
+template <typename Instance>
+struct supports_data_length_7_8_9_bits : std::false_type {};
+
+template <typename Instance>
 struct supports_fifo : std::false_type {};
+
+template <typename Instance>
+struct tx_rx_fifo_size_bytes : std::integral_constant<uint8_t, 0U> {};
 
 template <typename Instance>
 struct supports_prescaler : std::false_type {};

@@ -340,6 +340,49 @@
         }
       }
     },
+    "peripheral-feature-set-value": {
+      "description": "Feature value for a feature set column. Uses a string for symbolic values (for example 'X', '-', or notes), and an integer for numeric quantities (for example FIFO size in bytes).",
+      "oneOf": [{ "type": "string" }, { "type": "integer" }]
+    },
+    "peripheral-feature-set-row": {
+      "description": "A single feature row from a peripheral feature-set table.",
+      "type": "object",
+      "required": ["name", "full-feature-set", "basic-feature-set", "low-power-feature-set"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "full-feature-set": { "$ref": "#/$defs/peripheral-feature-set-value" },
+        "basic-feature-set": { "$ref": "#/$defs/peripheral-feature-set-value" },
+        "low-power-feature-set": { "$ref": "#/$defs/peripheral-feature-set-value" }
+      }
+    },
+    "peripheral-feature-sets": {
+      "description": "Structured feature-set table metadata and rows for peripherals that define Full/Basic/Low-power tiers (for example STM32 USART/LPUART feature tables).",
+      "type": "object",
+      "required": ["source", "section", "page", "features"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "description": "Source identifier of the feature-set table, e.g. 'Table 200'.",
+          "type": "string"
+        },
+        "section": {
+          "description": "Reference-manual section where the feature-set table is documented, e.g. '34.4'.",
+          "type": ["string", "number"]
+        },
+        "page": {
+          "description": "Reference-manual page number where the feature-set table appears.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "features": {
+          "description": "Ordered feature rows from the feature-set table.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/peripheral-feature-set-row" },
+          "minItems": 1
+        }
+      }
+    },
     "peripheral": {
       "description": "A peripheral block containing registers.",
       "type": "object",
@@ -356,6 +399,10 @@
           "type": "object",
           "minProperties": 1,
           "additionalProperties": { "$ref": "#/$defs/peripheral-feature-profile" }
+        },
+        "feature-sets": {
+          "description": "Optional structured feature-set table data for this peripheral.",
+          "$ref": "#/$defs/peripheral-feature-sets"
         },
         "instances": {
           "description": "Concrete instances of this peripheral in the device memory map, each binding the register layout to a named base address.",
@@ -392,6 +439,10 @@
         },
         "feature-profile": {
           "description": "Name of the feature profile from peripheral.feature-profiles that applies to this instance.",
+          "type": "string"
+        },
+        "feature-set": {
+          "description": "Feature-set tier for this instance (for example 'full-feature-set', 'basic-feature-set', or 'low-power-feature-set').",
           "type": "string"
         }
       }

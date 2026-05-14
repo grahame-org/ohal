@@ -2017,50 +2017,101 @@ peripherals:
         tables: [199, 200, 209]
       note: >-
         Instance feature tiers are defined in Table 199 (RM0503 §34.4).
-        Feature profile details are defined in Table 200 (RM0503 §34.4).
-      feature-profiles:
-        full:
-          includes:
-            [
-              synchronous-mode,
-              smartcard,
-              irda,
-              lin,
-              receiver-timeout,
-              modbus,
-              auto-baud-rate-detection,
-              tx-rx-fifo-8-bytes,
-              prescaler,
-              wake-up-from-stop-0-1,
-            ]
-        basic:
-          includes:
-            [
-              hardware-flow-control,
-              dma,
-              multiprocessor-communication,
-              synchronous-mode-master-slave,
-              single-wire-half-duplex,
-              driver-enable,
-            ]
-          excludes: [tx-rx-fifo-8-bytes, prescaler, lin, irda, smartcard]
+        Feature set details are defined in Table 200 (RM0503 §34.4).
+      feature-sets:
+        source: "Table 200"
+        section: "34.4"
+        page: 1018
+        features:
+          - name: Hardware flow control for modem
+            full-feature-set: X
+            basic-feature-set: X
+            low-power-feature-set: X
+          - name: Continuous communication using DMA
+            full-feature-set: X
+            basic-feature-set: X
+            low-power-feature-set: X
+          - name: Multiprocessor communication
+            full-feature-set: X
+            basic-feature-set: X
+            low-power-feature-set: X
+          - name: Synchronous mode (master/slave)
+            full-feature-set: X
+            basic-feature-set: X
+            low-power-feature-set: "-"
+          - name: Smartcard mode
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: "-"
+          - name: Single-wire half-duplex communication
+            full-feature-set: X
+            basic-feature-set: X
+            low-power-feature-set: X
+          - name: IrDA SIR ENDEC block
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: "-"
+          - name: LIN mode
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: "-"
+          - name: Dual clock domain and wake-up from low-power mode
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: X
+          - name: Receiver timeout interrupt
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: "-"
+          - name: Modbus communication
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: "-"
+          - name: Auto baud rate detection
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: "-"
+          - name: Driver enable
+            full-feature-set: X
+            basic-feature-set: X
+            low-power-feature-set: X
+          - name: USART data length
+            full-feature-set: 7, 8 and 9 bits
+            basic-feature-set: 7, 8 and 9 bits
+            low-power-feature-set: 7, 8 and 9 bits
+          - name: Tx/Rx FIFO
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: X
+          - name: Tx/Rx FIFO size (bytes)
+            full-feature-set: 8
+            basic-feature-set: "-"
+            low-power-feature-set: 8
+          - name: Prescaler
+            full-feature-set: X
+            basic-feature-set: "-"
+            low-power-feature-set: X
+          - name: Wake-up from low-power mode
+            full-feature-set: X (note 2)
+            basic-feature-set: "-"
+            low-power-feature-set: X (note 2)
       instances:
         - name: USART1
           base: 0x40013800
           sub-families: [stm32u031, stm32u073, stm32u083]
-          feature-profile: full
+          feature-set: full-feature-set
         - name: USART2
           base: 0x40004400
           sub-families: [stm32u031, stm32u073, stm32u083]
-          feature-profile: full
+          feature-set: full-feature-set
         - name: USART3
           base: 0x40004800
           sub-families: [stm32u031, stm32u073, stm32u083]
-          feature-profile: basic
+          feature-set: basic-feature-set
         - name: USART4
           base: 0x40004C00
           sub-families: [stm32u031, stm32u073, stm32u083]
-          feature-profile: basic
+          feature-set: basic-feature-set
       registers:
         - CR1:
             reference:
@@ -3113,39 +3164,21 @@ peripherals:
         Instance availability is defined in Table 199 (RM0503 §34.4).
         LPUART1 and LPUART2 are present on all sub-families (stm32u031, stm32u073, stm32u083).
         LPUART3 is present only on stm32u073 and stm32u083; it is absent on stm32u031.
-        All LPUART instances implement the Low-power feature set: hardware flow control,
-        DMA, multiprocessor communication, single-wire half-duplex, dual clock domain,
-        wake-up from Stop 0/1, driver enable, Tx/Rx FIFO (8 bytes), and prescaler.
-        No synchronous mode, smartcard, IrDA, LIN, receiver timeout, Modbus, or
-        auto baud rate detection. Feature set details are defined in Table 200 (RM0503 §34.4).
-      feature-profiles:
-        low-power:
-          includes:
-            [
-              hardware-flow-control,
-              dma,
-              multiprocessor-communication,
-              single-wire-half-duplex,
-              dual-clock-domain,
-              wake-up-from-stop-0-1,
-              driver-enable,
-              tx-rx-fifo-8-bytes,
-              prescaler,
-            ]
-          excludes: [synchronous-mode, smartcard, irda, lin, receiver-timeout, modbus, auto-baud-rate-detection]
+        All LPUART instances implement the Low-power feature set column from
+        the USART feature set table (Table 200, RM0503 §34.4).
       instances:
         - name: LPUART1
           base: 0x40008000
           sub-families: [stm32u031, stm32u073, stm32u083]
-          feature-profile: low-power
+          feature-set: low-power-feature-set
         - name: LPUART2
           base: 0x40008400
           sub-families: [stm32u031, stm32u073, stm32u083]
-          feature-profile: low-power
+          feature-set: low-power-feature-set
         - name: LPUART3
           base: 0x40008C00
           sub-families: [stm32u073, stm32u083]
-          feature-profile: low-power
+          feature-set: low-power-feature-set
       registers:
         - CR1:
             reference:
