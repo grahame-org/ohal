@@ -2085,7 +2085,7 @@ peripherals:
             low-power-feature-set: true
           - name: Tx/Rx FIFO size (bytes)
             full-feature-set: 8
-            basic-feature-set: false
+            basic-feature-set: "-"
             low-power-feature-set: 8
           - name: Prescaler
             full-feature-set: true
