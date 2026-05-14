@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 3.15.3)
 
 project(nucleo-u083rc)
 
-enable_language(C ASM)
+enable_language(C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # These source files are compiled in the same order as they are listed.
 # This ordering was determined by reviewing the order that CubeIDE's
@@ -34,12 +37,12 @@ set(STM32CUBEMX_GENERATED_FILES
         BSP/Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_usart.c
         BSP/Drivers/STM32U0xx_HAL_Driver/Src/stm32u0xx_hal_usart_ex.c
 
-        BSP/Src/main.c
-        BSP/Src/stm32u0xx_hal_msp.c
-        BSP/Src/stm32u0xx_it.c
-        BSP/Src/syscalls.c
-        BSP/Src/sysmem.c
-        BSP/Src/system_stm32u0xx.c
+        BSP/Src/main.cpp
+        BSP/Src/stm32u0xx_hal_msp.cpp
+        BSP/Src/stm32u0xx_it.cpp
+        BSP/Src/syscalls.cpp
+        BSP/Src/sysmem.cpp
+        BSP/Src/system_stm32u0xx.cpp
         
         BSP/startup_stm32u083xx.s)
 
@@ -85,6 +88,8 @@ target_compile_options(${EXECUTABLE} PRIVATE
         -mfloat-abi=soft
         -mthumb
         $<$<CONFIG:Debug>:-Og>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
         )
 
 # When linking object files into a binary, the order of options is significant.
