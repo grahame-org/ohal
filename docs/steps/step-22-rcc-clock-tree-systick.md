@@ -249,9 +249,10 @@ abstraction needs:
 
 ### Acceptance criteria (22d)
 
-1. `SysTick::configure(16'000 - 1)` (for 1 ms ticks at 16 MHz) writes `15999` to `LOAD` at
-   `0xE000E014`, clears `VAL` at `0xE000E018`, and sets `CTRL` = `0x7` (ENABLE=1,
-   TICKINT=1, CLKSOURCE=1) at `0xE000E010`.
+1. `SysTick::configure(16'000'000U / 1'000U - 1U)` (= 15999, for 1 ms ticks at 16 MHz
+   processor clock) writes `15999` to `LOAD` at `0xE000E014`, clears `VAL` at
+   `0xE000E018`, and sets `CTRL` = `0x7` (ENABLE=1, TICKINT=1, CLKSOURCE=1) at
+   `0xE000E010`.
 2. `SysTick::tick()` increments an internal counter; `SysTick::now()` returns its value.
 3. `SysTick::delay_ms(10)` returns after `SysTick::tick()` has been called 10 times in the
    mock (test with mock tick injection).
@@ -282,7 +283,7 @@ ohal::clock::OscillatorController<STM32U0Family>::set_sysclk(
     {.source  = ohal::clock::OscillatorSource::Hsi,
      .ahb_pre = ohal::clock::AhbPrescaler::Div1,
      .apb_pre = ohal::clock::ApbPrescaler::Div1});
-ohal::SysTick::configure(16'000U - 1U); // 1 ms tick at 16 MHz
+ohal::SysTick::configure(16'000'000U / 1'000U - 1U); // 1 ms tick at 16 MHz (reload = 15999)
 ```
 
 In `stm32u0xx_it.cpp`:

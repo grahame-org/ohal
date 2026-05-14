@@ -303,7 +303,7 @@ ButtonLine::configure(ohal::exti::Trigger::Falling);
 ButtonLine::clear_pending_falling();
 ButtonLine::enable_interrupt();
 Exti4_15::enable_irq();
-Exti4_15::set_priority(/* priority value */);
+Exti4_15::set_priority(1U); // priority 1 of 3 (Cortex-M0+: 0=highest, 3=lowest; only bits [7:6] implemented)
 ohal::irq::GlobalController<ohal::platforms::stm32u0::STM32U0Family>::enable();
 ```
 
