@@ -36,7 +36,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             -o dir::cache::archives="$HOME/apt-archives" \
             clang-format clang-tidy cmake shellcheck \
-            gcc-arm-none-eabi binutils-arm-none-eabi
+            gcc-arm-none-eabi binutils-arm-none-eabi \
+            libstdc++-arm-none-eabi-newlib
 
       - name: Cache pip packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
