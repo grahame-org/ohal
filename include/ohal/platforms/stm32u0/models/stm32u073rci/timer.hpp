@@ -1,0 +1,13 @@
+#ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U073RCI_TIMER_HPP
+#define OHAL_PLATFORMS_STM32U0_MODELS_STM32U073RCI_TIMER_HPP
+
+// STM32U073RCI uses the shared STM32U083 timer register map.
+
+// LPTIM3 is present on all STM32U073 packages.
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
+
+#include "ohal/platforms/stm32u0/models/stm32u083/timer.hpp"
+
+#endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U073RCI_TIMER_HPP
