@@ -636,7 +636,7 @@ TEST_P(GpioStm32u083RctWiringTest, BsrrAddressMatchesHardwareBase) {
 
 // Runtime test: verify that Pin<PortA, 5> derives from the expected concrete type so
 // the consumer API above uses the real STM32U083 implementation.
-TEST(Stm32u083RctConsumerApiTest, LedPin_DerivesFromStm32u083GpioPortPinImpl) {
+TEST(Stm32u083RctConsumerApiTest, PinPortA5_DerivesFromStm32u083GpioPortPinImpl) {
   EXPECT_TRUE((std::is_base_of_v<ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
                                      5U, ohal::platforms::stm32u0::stm32u083::GpioA>,
                                  ohal::gpio::Pin<ohal::gpio::PortA, 5>>));
