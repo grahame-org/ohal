@@ -19,7 +19,9 @@ inline constexpr uintptr_t kTim15Base = 0x4001'4000U;
 inline constexpr uintptr_t kTim16Base = 0x4001'4400U;
 inline constexpr uintptr_t kLptim1Base = 0x4000'7C00U;
 inline constexpr uintptr_t kLptim2Base = 0x4000'9400U;
+#ifdef OHAL_STM32U0_ENABLE_LPTIM3
 inline constexpr uintptr_t kLptim3Base = 0x4000'9000U;
+#endif
 
 inline constexpr uintptr_t kTimCr1Offset = 0x00U;
 inline constexpr uintptr_t kTimCr2Offset = 0x04U;
@@ -206,7 +208,9 @@ using Tim15 = Tim15Regs<kTim15Base>;
 using Tim16 = Tim16Regs<kTim16Base>;
 using Lptim1 = LptimRegs<kLptim1Base>;
 using Lptim2 = LptimRegs<kLptim2Base>;
+#ifdef OHAL_STM32U0_ENABLE_LPTIM3
 using Lptim3 = LptimRegs<kLptim3Base>;
+#endif
 
 } // namespace ohal::platforms::stm32u0::stm32u083
 

@@ -3,6 +3,11 @@
 
 // STM32U083MCI uses the shared STM32U083 timer register map.
 
+// LPTIM3 is present on all STM32U083 packages.
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
+
 #include "ohal/platforms/stm32u0/models/stm32u083/timer.hpp"
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083MCI_TIMER_HPP
