@@ -1,0 +1,214 @@
+---
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+  merge_group:
+
+permissions: {}
+
+jobs:
+  host-test:
+    name: host-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-host-test
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-apt-host-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: ${{ runner.os }}-apt-host-
+
+      - name: Install build tools
+        run: |
+          mkdir -p ~/apt-archives
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            -o dir::cache::archives="$HOME/apt-archives" \
+            cmake g++
+
+      - name: Configure
+        run: cmake -B build -DOHAL_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel "$(nproc)"
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  arm-cross-compile:
+    name: arm-cross-compile
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-arm-cross
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-apt-arm-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: ${{ runner.os }}-apt-arm-
+
+      - name: Install ARM cross-compiler
+        run: |
+          mkdir -p ~/apt-archives
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            -o dir::cache::archives="$HOME/apt-archives" \
+            gcc-arm-none-eabi binutils-arm-none-eabi \
+            libstdc++-arm-none-eabi-newlib
+
+      - name: Configure
+        working-directory: tests/target/stm32u083
+        run: >
+          cmake -B build
+          -DCMAKE_TOOLCHAIN_FILE=arm-none-eabi-gcc.cmake
+          -G "Unix Makefiles"
+
+      - name: Build
+        working-directory: tests/target/stm32u083
+        run: cmake --build build --parallel "$(nproc)"
+
+      - name: Check binary size
+        working-directory: tests/target/stm32u083/build
+        run: |
+          arm-none-eabi-size libblink.a
+          text_size=$(arm-none-eabi-size libblink.a | awk 'NR>1 {sum += $1} END {print sum}')
+          echo "Total .text size: ${text_size} bytes (budget: 512)"
+          if [ "${text_size}" -gt 512 ]; then
+            echo "ERROR: .text size ${text_size} B exceeds zero-overhead budget of 512 B"
+            exit 1
+          fi
+
+  msp430-cross-compile:
+    name: msp430-cross-compile
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-msp430-cross
+      cancel-in-progress: true
+    env:
+      # SHA-256 of msp430-gcc-9.3.1.11_linux64.tar.bz2.
+      # "9.3.1.2" in the URL is TI's release-package version; "9.3.1.11" in the
+      # filename is the GCC compiler version — both refer to the same download.
+      # To bootstrap: run with an empty cache (cache key includes a version suffix
+      # so bumping it forces a fresh download), then copy the
+      # "SHA-256 (downloaded):" value from the step log into this variable.
+      MSP430_GCC_SHA256: ""
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Cache MSP430 GCC toolchain
+        id: cache-msp430-gcc
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: /opt/msp430-gcc
+          # Version-pinned cache key; bump the key suffix when upgrading the toolchain.
+          key: msp430-gcc-9.3.1.11-linux64-v1
+
+      - name: Download MSP430 GCC toolchain
+        if: steps.cache-msp430-gcc.outputs.cache-hit != 'true'
+        run: |
+          curl --proto '=https' --tlsv1.2 -fLo /tmp/msp430-gcc.tar.bz2 \
+            "https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-LlCjWuAbzH/9.3.1.2/msp430-gcc-9.3.1.11_linux64.tar.bz2"
+          computed=$(sha256sum /tmp/msp430-gcc.tar.bz2 | awk '{print $1}')
+          echo "SHA-256 (downloaded): ${computed}"
+          if [ -n "${MSP430_GCC_SHA256}" ]; then
+            if [ "${computed}" != "${MSP430_GCC_SHA256}" ]; then
+              echo "ERROR: SHA-256 mismatch — expected ${MSP430_GCC_SHA256}, got ${computed}"
+              rm -f /tmp/msp430-gcc.tar.bz2
+              exit 1
+            fi
+            echo "SHA-256 verification passed."
+          else
+            echo "WARNING: MSP430_GCC_SHA256 is not set; skipping integrity check."
+            echo "Set MSP430_GCC_SHA256 in ci.yml to pin the toolchain hash."
+          fi
+          sudo mkdir -p /opt/msp430-gcc
+          sudo tar -xjf /tmp/msp430-gcc.tar.bz2 --strip-components=1 -C /opt/msp430-gcc
+          rm /tmp/msp430-gcc.tar.bz2
+
+      - name: Add toolchain to PATH
+        run: echo "/opt/msp430-gcc/bin" >> "$GITHUB_PATH"
+
+      - name: Configure
+        working-directory: tests/target/msp430fr2355
+        run: >
+          cmake -B build
+          -DCMAKE_TOOLCHAIN_FILE=msp430-elf-g++.cmake
+          -G "Unix Makefiles"
+
+      - name: Build
+        working-directory: tests/target/msp430fr2355
+        run: cmake --build build --parallel "$(nproc)"
+
+      - name: Check binary size
+        working-directory: tests/target/msp430fr2355/build
+        run: |
+          msp430-elf-size libblink.a
+          text_size=$(msp430-elf-size libblink.a | awk 'NR>1 {sum += $1} END {print sum}')
+          echo "Total .text size: ${text_size} bytes (budget: 256)"
+          if [ "${text_size}" -gt 256 ]; then
+            echo "ERROR: .text size ${text_size} B exceeds zero-overhead budget of 256 B"
+            exit 1
+          fi
+
+  negative-tests:
+    name: negative-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-negative
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Cache apt packages
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/apt-archives/*.deb
+          key: ${{ runner.os }}-apt-neg-${{ hashFiles('.github/workflows/ci.yml') }}
+          restore-keys: ${{ runner.os }}-apt-neg-
+
+      - name: Install build tools
+        run: |
+          mkdir -p ~/apt-archives
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            -o dir::cache::archives="$HOME/apt-archives" \
+            cmake g++
+
+      - name: Configure
+        run: cmake -B build -DOHAL_BUILD_TESTS=ON
+
+      - name: Run negative-compile tests
+        run: |
+          neg_tests="write_to_readonly_field|read_from_writeonly_field"
+          neg_tests="${neg_tests}|overflow_bitfield|no_family_defined"
+          neg_tests="${neg_tests}|wrong_model_for_family"
+          neg_tests="${neg_tests}|msp430_unsupported_speed"
+          neg_tests="${neg_tests}|msp430_unsupported_output_type"
+          ctest --test-dir build --output-on-failure -R "^(${neg_tests})$"
