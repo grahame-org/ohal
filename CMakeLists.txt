@@ -100,3 +100,12 @@ if(OHAL_BUILD_TESTS)
     OHAL_MODEL_MSP430FR2355
   )
 endif()
+
+option(
+  OHAL_BUILD_TARGET_TESTS
+  "Build bare-metal on-target tests (requires a cross-compiler toolchain)"
+  OFF
+)
+if(OHAL_BUILD_TARGET_TESTS)
+  add_subdirectory(tests/target)
+endif()

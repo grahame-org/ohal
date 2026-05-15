@@ -10,6 +10,36 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+# ---------------------------------------------------------------------------
+# ohal_expect_compile_failure(test_name source_file expected_error)
+#
+# Registers a CTest test that:
+#   1. Compiles SOURCE with the ohal include path and the tests/host directory.
+#   2. Expects compilation to FAIL (non-zero exit status).
+#   3. Verifies that the compiler output contains EXPECTED_ERROR.
+#
+# Include directories are passed to the helper cmake script as a
+# pipe-separated list so that semicolons in CMake lists are not confused with
+# argument separators.
+# ---------------------------------------------------------------------------
+function(ohal_expect_compile_failure test_name source_file expected_error)
+  set(_ohal_include_dir "${CMAKE_SOURCE_DIR}/include")
+  set(_test_include_dir "${CMAKE_CURRENT_SOURCE_DIR}")
+  set(_all_includes "${_ohal_include_dir}|${_test_include_dir}")
+
+  add_test(
+    NAME ${test_name}
+    COMMAND
+      ${CMAKE_COMMAND}
+      "-DSOURCE=${source_file}"
+      "-DEXPECTED_ERROR=${expected_error}"
+      "-DCXX_COMPILER=${CMAKE_CXX_COMPILER}"
+      "-DCXX_STANDARD=${CMAKE_CXX_STANDARD}"
+      "-DINCLUDES=${_all_includes}"
+      -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/expect_compile_failure.cmake"
+  )
+endfunction()
+
 # KCU and HCY share the same stm32u083/gpio.hpp partial specialisations and
 # introduce no explicit full specialisations for PortC/PortF pins; they are
 # ODR-safe in the same binary.
@@ -155,3 +185,54 @@ gtest_discover_tests(ohal_host_tests_stm32u031g)
 gtest_discover_tests(ohal_host_tests_timer)
 gtest_discover_tests(ohal_host_tests_timer_stm32u031)
 gtest_discover_tests(ohal_host_tests_stm32u031f)
+
+# ---------------------------------------------------------------------------
+# Negative-compile tests (§11.3)
+#
+# Each test tries to compile a source file that contains an intentional error
+# and verifies the compiler rejects it with the expected diagnostic message.
+# ---------------------------------------------------------------------------
+
+set(_neg_src "${CMAKE_CURRENT_SOURCE_DIR}/negative")
+
+ohal_expect_compile_failure(
+  NegativeCompile_WriteToReadOnlyField
+  "${_neg_src}/write_to_readonly_field.cpp"
+  "ohal: cannot write to a read-only field"
+)
+
+ohal_expect_compile_failure(
+  NegativeCompile_ReadFromWriteOnlyField
+  "${_neg_src}/read_from_writeonly_field.cpp"
+  "ohal: cannot read from a write-only field"
+)
+
+ohal_expect_compile_failure(
+  NegativeCompile_OverflowBitField
+  "${_neg_src}/overflow_bitfield.cpp"
+  "ohal: BitField \\(Offset \\+ Width\\) exceeds register width"
+)
+
+ohal_expect_compile_failure(
+  NegativeCompile_NoFamilyDefined
+  "${_neg_src}/no_family_defined.cpp"
+  "ohal: No MCU family defined"
+)
+
+ohal_expect_compile_failure(
+  NegativeCompile_WrongModelForFamily
+  "${_neg_src}/wrong_model_for_family.cpp"
+  "ohal: No STM32U0 model defined"
+)
+
+ohal_expect_compile_failure(
+  NegativeCompile_Msp430UnsupportedSpeed
+  "${_neg_src}/msp430_unsupported_speed.cpp"
+  "ohal: MSP430FR2355 GPIO does not support configurable output speed"
+)
+
+ohal_expect_compile_failure(
+  NegativeCompile_Msp430UnsupportedOutputType
+  "${_neg_src}/msp430_unsupported_output_type.cpp"
+  "ohal: MSP430FR2355 GPIO does not support configurable output type"
+)
