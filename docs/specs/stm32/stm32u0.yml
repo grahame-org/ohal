@@ -138,7 +138,7 @@ memory:
       start: 0x40001800
       end: 0x400023FF
     - name: LCD
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40002400
       end: 0x400027FF
     - name: RTC
@@ -162,7 +162,7 @@ memory:
       start: 0x40003800
       end: 0x40003BFF
     - name: SPI3
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40003C00
       end: 0x40003FFF
     - name: reserved
@@ -194,7 +194,7 @@ memory:
       start: 0x40005800
       end: 0x40005BFF
     - name: USB
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40005C00
       end: 0x40005FFF
     - name: reserved
@@ -202,7 +202,7 @@ memory:
       start: 0x40006000
       end: 0x40006BFF
     - name: CRS
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40006C00
       end: 0x40006FFF
     - name: PWR
@@ -234,11 +234,11 @@ memory:
       start: 0x40008800
       end: 0x40008BFF
     - name: LPUART3
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40008C00
       end: 0x40008FFF
     - name: LPTIM3
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40009000
       end: 0x400093FF
     - name: LPTIM2
@@ -246,7 +246,7 @@ memory:
       start: 0x40009400
       end: 0x400097FF
     - name: USB RAM1
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x40009800
       end: 0x40009BFF
     - name: reserved
@@ -254,7 +254,7 @@ memory:
       start: 0x40009C00
       end: 0x40009FFF
     - name: I2C4
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u073, stm32u083]
       start: 0x4000A000
       end: 0x4000A3FF
     - name: reserved
@@ -416,7 +416,7 @@ memory:
       start: 0x40025400
       end: 0x40025FFF
     - name: AES
-      sub-families: [stm32u031, stm32u073, stm32u083]
+      sub-families: [stm32u083]
       start: 0x40026000
       end: 0x400263FF
     - name: reserved
@@ -489,6 +489,49 @@ memory:
       end: 0xFFFFFFFF
       # Cortex-M0+ internal peripherals (0xE0000000–0xE00FFFFF) are defined in
       # docs/specs/common/arch/cortex-m0plus.yml and are not repeated here.
+
+features:
+  references:
+    section: "1.5"
+    tables: [1]
+  data:
+    AES:
+      stm32u031: false
+      stm32u073: false
+      stm32u083: true
+    USB:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    HSI48-CRS:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    LCD:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    LPTIM3:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    LPUART3:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    COMP2:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    SPI3:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+    I2C4:
+      stm32u031: false
+      stm32u073: true
+      stm32u083: true
+
 definitions:
   settings:
     # Architecture-generic: canonical definition lives in docs/specs/common/arch/cortex-m0plus.yml.
@@ -2013,17 +2056,106 @@ peripherals:
                 settings: *brr
   - usart:
       reference:
-        sections: [34.8]
-        tables: [209]
+        sections: [34.4, 34.8]
+        tables: [199, 200, 209]
+      note: >-
+        Instance feature tiers are defined in Table 199 (RM0503 §34.4).
+        Feature set details are defined in Table 200 (RM0503 §34.4).
+      feature-sets:
+        source: "Table 200"
+        section: "34.4"
+        page: 1018
+        features:
+          - name: Hardware flow control for modem
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
+          - name: Continuous communication using DMA
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
+          - name: Multiprocessor communication
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
+          - name: Synchronous mode (master/slave)
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: false
+          - name: Smartcard mode
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
+          - name: Single-wire half-duplex communication
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
+          - name: IrDA SIR ENDEC block
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
+          - name: LIN mode
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
+          - name: Dual clock domain and wake-up from low-power mode
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
+          - name: Receiver timeout interrupt
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
+          - name: Modbus communication
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
+          - name: Auto baud rate detection
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: false
+          - name: Driver enable
+            full-feature-set: true
+            basic-feature-set: true
+            low-power-feature-set: true
+          - name: USART data length
+            full-feature-set: 7, 8 and 9 bits
+            basic-feature-set: 7, 8 and 9 bits
+            low-power-feature-set: 7, 8 and 9 bits
+          - name: Tx/Rx FIFO
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
+          - name: Tx/Rx FIFO size (bytes)
+            full-feature-set: 8
+            basic-feature-set: "-"
+            low-power-feature-set: 8
+          - name: Prescaler
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
+          - name: Wake-up from low-power mode
+            note: Note 2 applies to full-feature-set and low-power-feature-set.
+            full-feature-set: true
+            basic-feature-set: false
+            low-power-feature-set: true
       instances:
         - name: USART1
           base: 0x40013800
+          sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-set: full-feature-set
         - name: USART2
           base: 0x40004400
+          sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-set: full-feature-set
         - name: USART3
           base: 0x40004800
+          sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-set: basic-feature-set
         - name: USART4
           base: 0x40004C00
+          sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-set: basic-feature-set
       registers:
         - CR1:
             reference:
@@ -3070,15 +3202,27 @@ peripherals:
                 settings: *uart-prescaler
   - lpuart:
       reference:
-        sections: [35.7]
-        tables: [214]
+        sections: [34.4, 35.7]
+        tables: [199, 200, 214]
+      note: >-
+        Instance availability is defined in Table 199 (RM0503 §34.4).
+        LPUART1 and LPUART2 are present on all sub-families (stm32u031, stm32u073, stm32u083).
+        LPUART3 is present only on stm32u073 and stm32u083; it is absent on stm32u031.
+        All LPUART instances implement the Low-power feature set column from
+        the USART feature set table (Table 200, RM0503 §34.4).
       instances:
         - name: LPUART1
           base: 0x40008000
+          sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-set: low-power-feature-set
         - name: LPUART2
           base: 0x40008400
+          sub-families: [stm32u031, stm32u073, stm32u083]
+          feature-set: low-power-feature-set
         - name: LPUART3
           base: 0x40008C00
+          sub-families: [stm32u073, stm32u083]
+          feature-set: low-power-feature-set
       registers:
         - CR1:
             reference:

@@ -2,8 +2,11 @@
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_TIMER_HPP
 
 #include <cstdint>
+#include <type_traits>
 
+#include "ohal/core/field.hpp"
 #include "ohal/core/register.hpp"
+#include "ohal/timer.hpp"
 
 namespace ohal::platforms::stm32u0::stm32u083 {
 
@@ -16,7 +19,9 @@ inline constexpr uintptr_t kTim15Base = 0x4001'4000U;
 inline constexpr uintptr_t kTim16Base = 0x4001'4400U;
 inline constexpr uintptr_t kLptim1Base = 0x4000'7C00U;
 inline constexpr uintptr_t kLptim2Base = 0x4000'9400U;
+#ifdef OHAL_STM32U0_ENABLE_LPTIM3
 inline constexpr uintptr_t kLptim3Base = 0x4000'9000U;
+#endif
 
 inline constexpr uintptr_t kTimCr1Offset = 0x00U;
 inline constexpr uintptr_t kTimCr2Offset = 0x04U;
@@ -61,6 +66,7 @@ inline constexpr uintptr_t kLptimCcmr2Offset = 0x30U;
 inline constexpr uintptr_t kLptimCcr2Offset = 0x34U;
 inline constexpr uintptr_t kLptimCcr3Offset = 0x38U;
 inline constexpr uintptr_t kLptimCcr4Offset = 0x3CU;
+inline constexpr uint8_t kTimRegisterWidthBits = 32U;
 
 template <uintptr_t Base>
 struct Tim1Regs {
@@ -202,8 +208,45 @@ using Tim15 = Tim15Regs<kTim15Base>;
 using Tim16 = Tim16Regs<kTim16Base>;
 using Lptim1 = LptimRegs<kLptim1Base>;
 using Lptim2 = LptimRegs<kLptim2Base>;
+#ifdef OHAL_STM32U0_ENABLE_LPTIM3
 using Lptim3 = LptimRegs<kLptim3Base>;
+#endif
 
 } // namespace ohal::platforms::stm32u0::stm32u083
+
+namespace ohal::timer {
+
+template <uint8_t ChannelNum>
+struct Channel<ohal::platforms::stm32u0::stm32u083::Tim2, ChannelNum> {
+  static_assert(ChannelNum < 4U, "ohal: STM32U083 TIM2 has channels 0-3 only.");
+
+  using Regs = ohal::platforms::stm32u0::stm32u083::Tim2;
+
+  // Timer-wide registers are exposed here for convenience, while Ccr is the
+  // channel-specific register selected by ChannelNum.
+  using Cr1 = typename Regs::Cr1;
+  using Cr2 = typename Regs::Cr2;
+  using Dier = typename Regs::Dier;
+  using Sr = typename Regs::Sr;
+  using Ccmr1 = typename Regs::Ccmr1;
+  using Ccmr2 = typename Regs::Ccmr2;
+  using Ccer = typename Regs::Ccer;
+  using Cnt = typename Regs::Cnt;
+  using Psc = typename Regs::Psc;
+  using Arr = typename Regs::Arr;
+
+  using Egr = ohal::core::BitField<typename Regs::Egr, 0U,
+                                   ohal::platforms::stm32u0::stm32u083::kTimRegisterWidthBits,
+                                   ohal::core::Access::WriteOnly>;
+
+  // Capture/compare register for this channel (ChannelNum 0→CCR1, 1→CCR2, 2→CCR3, 3→CCR4).
+  using Ccr = std::conditional_t<
+      ChannelNum == 0U, typename Regs::Ccr1,
+      std::conditional_t<
+          ChannelNum == 1U, typename Regs::Ccr2,
+          std::conditional_t<ChannelNum == 2U, typename Regs::Ccr3, typename Regs::Ccr4>>>;
+};
+
+} // namespace ohal::timer
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_TIMER_HPP

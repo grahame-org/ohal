@@ -1,8 +1,13 @@
 #ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U083CCU_UART_HPP
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083CCU_UART_HPP
 
-// STM32U083CCU UART/USART register map — filled in Step 10 (Timer and UART Peripherals).
+// stm32u083ccu uses the shared STM32U083 UART register map.
 
-namespace ohal::platforms::stm32u0::stm32u083 {} // namespace ohal::platforms::stm32u0::stm32u083
+// LPUART3 is present on all STM32U083 packages.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+
+#include "ohal/platforms/stm32u0/models/stm32u083/uart.hpp"
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083CCU_UART_HPP
