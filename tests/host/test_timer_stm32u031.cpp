@@ -1,20 +1,21 @@
-// Exercises the include chain: stm32u083rct/timer.hpp → stm32u083/timer.hpp
-// → timer_impl.hpp.  The package header defines OHAL_STM32U0_ENABLE_LPTIM3
-// before pulling in the shared implementation, so LPTIM3 is present here.
-#include <ohal/platforms/stm32u0/models/stm32u083rct/timer.hpp>
+// Exercises the include chain: stm32u031r8t/timer.hpp → stm32u083/timer.hpp
+// → timer_impl.hpp.  The STM32U031 package header does NOT define
+// OHAL_STM32U0_ENABLE_LPTIM3, so kLptim3Base and Lptim3 are absent.
+#include <ohal/platforms/stm32u0/models/stm32u031r8t/timer.hpp>
 
 #include <cstdint>
 
 #include <gtest/gtest.h>
 
 // ---------------------------------------------------------------------------
-// Host-side register-address wiring tests for the STM32U083 timer peripherals.
+// Host-side register-address wiring tests for the STM32U031 timer peripherals.
 //
-// Exercises the include chain stm32u083rct/timer.hpp → stm32u083/timer.hpp
-// → timer_impl.hpp.  STM32U083 packages expose TIM1/2/3/6/7/15/16 plus
-// LPTIM1, LPTIM2, and LPTIM3 (the latter enabled by OHAL_STM32U0_ENABLE_LPTIM3
-// which is defined by the package header above).  See test_timer_stm32u031.cpp
-// for the STM32U031 path where LPTIM3 is absent.
+// Exercises the include chain stm32u031r8t/timer.hpp → stm32u083/timer.hpp
+// → timer_impl.hpp.  STM32U031 packages expose TIM1/2/3/6/7/15/16 plus
+// LPTIM1 and LPTIM2.  LPTIM3 is absent: OHAL_STM32U0_ENABLE_LPTIM3 is not
+// defined for STM32U031, so kLptim3Base and Lptim3 do not exist in this
+// translation unit.  See test_timer_stm32u083.cpp for the STM32U083 path
+// where LPTIM3 is present.
 //
 // Each test checks that the compile-time ::address constant exposed by every
 // ohal::core::Register instantiation resolves to the correct MMIO address.
@@ -97,13 +98,8 @@ static_assert(tim::Lptim2::Arr::address == tim::kLptim2Base + tim::kLptimArrOffs
 static_assert(tim::Lptim2::Ccr4::address == tim::kLptim2Base + tim::kLptimCcr4Offset,
               "Lptim2::Ccr4 must map to LPTIM2_CCR4 address");
 
-// LPTIM3 — base 0x4000'9000
-static_assert(tim::Lptim3::Isr::address == tim::kLptim3Base + tim::kLptimIsrOffset,
-              "Lptim3::Isr must map to LPTIM3_ISR address");
-static_assert(tim::Lptim3::Arr::address == tim::kLptim3Base + tim::kLptimArrOffset,
-              "Lptim3::Arr must map to LPTIM3_ARR address");
-static_assert(tim::Lptim3::Ccr4::address == tim::kLptim3Base + tim::kLptimCcr4Offset,
-              "Lptim3::Ccr4 must map to LPTIM3_CCR4 address");
+// LPTIM3 is absent on STM32U031 — kLptim3Base and Lptim3 are not defined when
+// OHAL_STM32U0_ENABLE_LPTIM3 is not set, so no static_asserts for LPTIM3 here.
 
 // ---------------------------------------------------------------------------
 // Runtime parameterised wiring tests: each case checks that one register's
@@ -116,11 +112,11 @@ struct WiringCase {
   const char* name;
 };
 
-class TimerStm32u083WiringTest : public ::testing::TestWithParam<WiringCase> {};
+class TimerStm32u031WiringTest : public ::testing::TestWithParam<WiringCase> {};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
-    RegisterAddresses, TimerStm32u083WiringTest,
+    RegisterAddresses, TimerStm32u031WiringTest,
     ::testing::Values(
         // TIM1 — advanced-control timer
         WiringCase{tim::Tim1::Cr1::address,   tim::kTim1Base + tim::kTimCr1Offset,    "Tim1_Cr1"},
@@ -158,15 +154,12 @@ INSTANTIATE_TEST_SUITE_P(
         // LPTIM2 — low-power timer
         WiringCase{tim::Lptim2::Isr::address,  tim::kLptim2Base + tim::kLptimIsrOffset,  "Lptim2_Isr"},
         WiringCase{tim::Lptim2::Arr::address,  tim::kLptim2Base + tim::kLptimArrOffset,  "Lptim2_Arr"},
-        WiringCase{tim::Lptim2::Ccr4::address, tim::kLptim2Base + tim::kLptimCcr4Offset, "Lptim2_Ccr4"},
-        // LPTIM3 — low-power timer
-        WiringCase{tim::Lptim3::Isr::address,  tim::kLptim3Base + tim::kLptimIsrOffset,  "Lptim3_Isr"},
-        WiringCase{tim::Lptim3::Arr::address,  tim::kLptim3Base + tim::kLptimArrOffset,  "Lptim3_Arr"},
-        WiringCase{tim::Lptim3::Ccr4::address, tim::kLptim3Base + tim::kLptimCcr4Offset, "Lptim3_Ccr4"}),
+        WiringCase{tim::Lptim2::Ccr4::address, tim::kLptim2Base + tim::kLptimCcr4Offset, "Lptim2_Ccr4"}),
+        // LPTIM3 is absent on STM32U031 — no test cases for it here.
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(TimerStm32u083WiringTest, AddressMatchesHardwareBase) {
+TEST_P(TimerStm32u031WiringTest, AddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 

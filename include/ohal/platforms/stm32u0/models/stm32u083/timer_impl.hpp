@@ -1,17 +1,23 @@
 #ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_TIMER_IMPL_HPP
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_TIMER_IMPL_HPP
 
-// Shared STM32U083 timer register map.
+// Shared STM32U0 timer register map.
 //
 // This header provides the register address constants, register-struct templates
 // (Tim1Regs, Tim23Regs, Tim67Regs, Tim15Regs, Tim16Regs, LptimRegs) and the
-// concrete type aliases (Tim1…Tim16, Lptim1…Lptim3) that are common across
-// every STM32U083 (and STM32U031) package variant.
+// concrete type aliases (Tim1…Tim16, Lptim1, Lptim2) that are common across
+// every STM32U083 and STM32U031 package variant.
 //
-// It does NOT provide any higher-level Timer<N> API or template specialisations;
-// those belong in the public timer.hpp header once a timer abstraction layer is
-// defined.  Package-specific timer.hpp headers include timer.hpp (which in turn
-// includes this file) and may add their own specialisations at that point.
+// Lptim3 (and kLptim3Base) are additionally defined when
+// OHAL_STM32U0_ENABLE_LPTIM3 is defined — this macro is set by STM32U083
+// package timer.hpp wrappers but is absent for STM32U031 packages, which do
+// not have a LPTIM3 peripheral.
+//
+// This header does NOT provide any higher-level Timer<N> API or template
+// specialisations; those belong in the public timer.hpp header once a timer
+// abstraction layer is defined.  Package-specific timer.hpp headers include
+// timer.hpp (which in turn includes this file) and may add their own
+// specialisations at that point.
 
 #include <cstdint>
 
