@@ -50,6 +50,7 @@ if(OHAL_BUILD_TESTS)
         "-DEXTRA_DEFINES=${extra_defines_str}"
         -DSOURCE=${source_file}
         "-DEXPECTED_ERROR=${expected_error}"
+        "-DOUTPUT_OBJECT=${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/${test_name}.o"
         -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/expect_compile_failure.cmake
     )
   endfunction()

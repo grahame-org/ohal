@@ -105,6 +105,14 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-msp430-cross
       cancel-in-progress: true
+    env:
+      # SHA-256 of msp430-gcc-9.3.1.11_linux64.tar.bz2.
+      # "9.3.1.2" in the URL is TI's release-package version; "9.3.1.11" in the
+      # filename is the GCC compiler version — both refer to the same download.
+      # To bootstrap: run with an empty cache (cache key includes a version suffix
+      # so bumping it forces a fresh download), then copy the
+      # "SHA-256 (downloaded):" value from the step log into this variable.
+      MSP430_GCC_SHA256: ""
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -115,13 +123,27 @@ jobs:
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: /opt/msp430-gcc
-          key: msp430-gcc-9.3.1.11-linux64
+          # Version-pinned cache key; bump the key suffix when upgrading the toolchain.
+          key: msp430-gcc-9.3.1.11-linux64-v1
 
       - name: Download MSP430 GCC toolchain
         if: steps.cache-msp430-gcc.outputs.cache-hit != 'true'
         run: |
-          curl -fLo /tmp/msp430-gcc.tar.bz2 \
+          curl --proto '=https' --tlsv1.2 -fLo /tmp/msp430-gcc.tar.bz2 \
             "https://dr-download.ti.com/software-development/ide-configuration-compiler-or-debugger/MD-LlCjWuAbzH/9.3.1.2/msp430-gcc-9.3.1.11_linux64.tar.bz2"
+          computed=$(sha256sum /tmp/msp430-gcc.tar.bz2 | awk '{print $1}')
+          echo "SHA-256 (downloaded): ${computed}"
+          if [ -n "${MSP430_GCC_SHA256}" ]; then
+            if [ "${computed}" != "${MSP430_GCC_SHA256}" ]; then
+              echo "ERROR: SHA-256 mismatch — expected ${MSP430_GCC_SHA256}, got ${computed}"
+              rm -f /tmp/msp430-gcc.tar.bz2
+              exit 1
+            fi
+            echo "SHA-256 verification passed."
+          else
+            echo "WARNING: MSP430_GCC_SHA256 is not set; skipping integrity check."
+            echo "Set MSP430_GCC_SHA256 in ci.yml to pin the toolchain hash."
+          fi
           sudo mkdir -p /opt/msp430-gcc
           sudo tar -xjf /tmp/msp430-gcc.tar.bz2 --strip-components=1 -C /opt/msp430-gcc
           rm /tmp/msp430-gcc.tar.bz2

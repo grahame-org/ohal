@@ -9,6 +9,9 @@
 #   INCLUDE_DIR    Top-level OHAL include directory (-I path).
 #   SOURCE         Absolute path to the source file to compile.
 #   EXPECTED_ERROR Substring expected to appear in the compiler output.
+#   OUTPUT_OBJECT  Path for the compiler output object file (use a build-dir
+#                  temp path; on POSIX this is discarded, but naming it
+#                  explicitly keeps the script portable to non-POSIX hosts).
 #
 # Optional variables:
 #   EXTRA_DEFINES  Pipe-separated list of preprocessor definitions to add
@@ -18,13 +21,13 @@
 
 cmake_minimum_required(VERSION 3.21)
 
-foreach(var CXX_COMPILER INCLUDE_DIR SOURCE EXPECTED_ERROR)
+foreach(var CXX_COMPILER INCLUDE_DIR SOURCE EXPECTED_ERROR OUTPUT_OBJECT)
   if(NOT DEFINED ${var})
     message(FATAL_ERROR "expect_compile_failure.cmake: ${var} is not defined")
   endif()
 endforeach()
 
-set(COMPILE_ARGS "-std=c++17" "-I${INCLUDE_DIR}" "-c" "${SOURCE}" "-o" "/dev/null")
+set(COMPILE_ARGS "-std=c++17" "-I${INCLUDE_DIR}" "-c" "${SOURCE}" "-o" "${OUTPUT_OBJECT}")
 
 if(DEFINED EXTRA_DEFINES AND NOT EXTRA_DEFINES STREQUAL "")
   string(REPLACE "|" ";" extra_define_list "${EXTRA_DEFINES}")
