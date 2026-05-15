@@ -115,6 +115,26 @@
       "description": "List of peripheral blocks documented in this spec.",
       "type": "array",
       "items": { "$ref": "#/$defs/peripheral-item" }
+    },
+    "features": {
+      "description": "Per-sub-family feature/peripheral availability table extracted from the reference manual.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "references": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the features table as a whole.",
+          "type": "string"
+        },
+        "data": {
+          "description": "Feature availability map. Keys are feature or peripheral names (e.g. 'AES', 'USB'). Values are mappings from sub-family identifier (e.g. 'stm32u031') to a boolean indicating whether that feature is present in that sub-family.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": { "type": "boolean" }
+          }
+        }
+      }
     }
   },
   "$defs": {
