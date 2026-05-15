@@ -1,0 +1,740 @@
+---
+spec-version: "1.0.0"
+vendor: STMicroelectronics
+reference:
+  source: DS14548
+  title: "STM32U073x8/B/C Datasheet"
+  revision: 2
+family-ref: stm32u0
+model: stm32u073rci
+package: UFBGA64
+flash-kb: 256
+sram-kb: 40
+pin-count: 64
+peripheral-availability:
+  - peripheral: gpio
+    instances: [GPIOA, GPIOB, GPIOC, GPIOD, GPIOF]
+    note: GPIOE is not bonded out on the 64-ball UFBGA package. GPIOD is limited to PD2 only.
+alternate-functions:
+  reference:
+    sections: [4.1, 4.3]
+    figures: [8]
+    tables: [13, 14, 15, 16, 18]
+  pins:
+    - pin: "PC14-OSC32_IN"
+      number: A1
+      gpio:
+        port: C
+        bit: 14
+      functions:
+        AF15: EVENTOUT
+    - pin: "PC13"
+      number: A2
+      gpio:
+        port: C
+        bit: 13
+      functions:
+        AF2: LPTIM1_CH3
+        AF4: LPTIM3_CH3
+        AF15: EVENTOUT
+    - pin: "PB9"
+      number: A3
+      gpio:
+        port: B
+        bit: 9
+      functions:
+        AF1: IR_OUT
+        AF2: LPTIM3_CH4
+        AF4: "I2C2_SDA / I2C1_SDA"
+        AF5: SPI2_NSS
+        AF7: USART3_RX
+        AF11: LCD_COM3
+        AF14: LPTIM1_CH4
+        AF15: EVENTOUT
+    - pin: "PB4"
+      number: A4
+      gpio:
+        port: B
+        bit: 4
+      functions:
+        AF1: LPTIM1_CH4
+        AF2: TIM3_CH1
+        AF3: I2C2_SDA
+        AF4: I2C3_SDA
+        AF5: SPI1_MISO
+        AF6: SPI3_MISO
+        AF7: USART1_CTS
+        AF8: LPUART3_RTS_DE
+        AF9: TSC_G2_IO1
+        AF11: LCD_SEG8
+        AF15: EVENTOUT
+    - pin: "PB3"
+      number: A5
+      gpio:
+        port: B
+        bit: 3
+      functions:
+        AF1: TIM2_CH2
+        AF2: LPTIM1_CH3
+        AF3: I2C2_SCL
+        AF4: I2C3_SCL
+        AF5: SPI1_SCK
+        AF6: SPI3_SCK
+        AF7: USART1_RTS_DE
+        AF11: LCD_SEG7
+        AF15: EVENTOUT
+    - pin: "PA15"
+      number: A6
+      gpio:
+        port: A
+        bit: 15
+      functions:
+        AF1: TIM2_CH1
+        AF2: TIM2_ETR
+        AF3: USART2_RX
+        AF4: LPTIM3_IN2
+        AF5: SPI1_NSS
+        AF6: SPI3_NSS
+        AF7: USART3_RTS_DE
+        AF8: USART4_RTS_DE
+        AF9: TSC_G3_IO1
+        AF11: LCD_SEG17
+        AF14: LPTIM3_CH3
+        AF15: EVENTOUT
+    - pin: "PA14"
+      number: A7
+      gpio:
+        port: A
+        bit: 14
+      functions:
+        AF0: SWCLK
+        AF1: LPTIM1_CH1
+        AF9: TSC_G3_IO4
+        AF11: LCD_SEG41
+        AF15: EVENTOUT
+    - pin: "PA13"
+      number: A8
+      gpio:
+        port: A
+        bit: 13
+      functions:
+        AF0: SWDIO
+        AF1: IR_OUT
+        AF9: TSC_G7_IO4
+        AF10: USB_NOE
+        AF11: LCD_SEG40
+        AF15: EVENTOUT
+    - pin: "PC15-OSC32_OUT"
+      number: B1
+      gpio:
+        port: C
+        bit: 15
+      functions:
+        AF0: OSC32_EN
+        AF1: OSC_EN
+        AF15: EVENTOUT
+    - pin: "VBAT"
+      number: B2
+      gpio: ~
+      functions: ~
+    - pin: "PB8"
+      number: B3
+      gpio:
+        port: B
+        bit: 8
+      functions:
+        AF1: LPTIM1_IN2
+        AF2: LPTIM3_IN2
+        AF4: "I2C2_SCL / I2C1_SCL"
+        AF7: USART3_TX
+        AF11: LCD_SEG16
+        AF14: TIM16_CH1
+        AF15: EVENTOUT
+    - pin: "PF3-BOOT0"
+      number: B4
+      gpio:
+        port: F
+        bit: 3
+      functions:
+        AF15: EVENTOUT
+    - pin: "PD2"
+      number: B5
+      gpio:
+        port: D
+        bit: 2
+      functions:
+        AF2: TIM3_ETR
+        AF7: USART3_RTS_DE
+        AF9: TSC_SYNC
+        AF11: LCD_COM7/LCD_SEG31/LCD_SEG51
+        AF15: EVENTOUT
+    - pin: "PC11"
+      number: B6
+      gpio:
+        port: C
+        bit: 11
+      functions:
+        AF2: LPTIM3_IN1
+        AF6: SPI3_MISO
+        AF7: USART3_RX
+        AF8: USART4_RX
+        AF9: TSC_G3_IO3
+        AF11: LCD_COM5/LCD_SEG29/LCD_SEG49
+        AF15: EVENTOUT
+    - pin: "PC10"
+      number: B7
+      gpio:
+        port: C
+        bit: 10
+      functions:
+        AF2: LPTIM3_ETR
+        AF6: SPI3_SCK
+        AF7: USART3_TX
+        AF8: USART4_TX
+        AF9: TSC_G3_IO2
+        AF11: LCD_COM4/LCD_SEG28/LCD_SEG48
+        AF15: EVENTOUT
+    - pin: "PA12 [PA10]"
+      number: B8
+      gpio:
+        port: A
+        bit: 12
+      functions:
+        AF1: TIM1_ETR
+        AF5: "SPI1_MOSI / SPI2_MOSI"
+        AF7: USART1_RTS_DE
+        AF15: EVENTOUT
+    - pin: "PF0-OSC_IN"
+      number: C1
+      gpio:
+        port: F
+        bit: 0
+      functions:
+        AF15: EVENTOUT
+    - pin: "VSS"
+      number: C2
+      gpio: ~
+      functions: ~
+    - pin: "PB7"
+      number: C3
+      gpio:
+        port: B
+        bit: 7
+      functions:
+        AF1: LPTIM1_IN2
+        AF4: "I2C4_SDA / I2C1_SDA / I2C2_SDA"
+        AF6: LPUART3_RX
+        AF7: USART1_RX
+        AF8: "USART4_CTS / LPUART2_RX"
+        AF9: TSC_G2_IO4
+        AF11: LCD_SEG21
+        AF15: EVENTOUT
+    - pin: "PB5"
+      number: C4
+      gpio:
+        port: B
+        bit: 5
+      functions:
+        AF1: LPTIM1_IN1
+        AF2: TIM3_CH2
+        AF5: SPI1_MOSI
+        AF6: SPI3_MOSI
+        AF7: USART1_CK
+        AF8: LPUART3_CTS
+        AF9: TSC_G2_IO2
+        AF11: LCD_SEG9
+        AF12: COMP2_OUT
+        AF14: TIM16_BKIN
+        AF15: EVENTOUT
+    - pin: "PC12"
+      number: C5
+      gpio:
+        port: C
+        bit: 12
+      functions:
+        AF4: LPTIM3_CH3
+        AF6: SPI3_MOSI
+        AF7: USART3_CK
+        AF8: USART4_CK
+        AF11: LCD_COM6/LCD_SEG30/LCD_SEG50
+        AF15: EVENTOUT
+    - pin: "PA10"
+      number: C6
+      gpio:
+        port: A
+        bit: 10
+      functions:
+        AF1: TIM1_CH3
+        AF3: MCO2
+        AF4: "I2C1_SDA / I2C2_SDA"
+        AF5: SPI2_NSS
+        AF7: USART1_RX
+        AF9: TSC_G7_IO3
+        AF10: CRS_SYNC
+        AF11: LCD_COM2
+        AF15: EVENTOUT
+    - pin: "PA9"
+      number: C7
+      gpio:
+        port: A
+        bit: 9
+      functions:
+        AF0: MCO
+        AF1: TIM1_CH2
+        AF4: I2C1_SCL
+        AF5: I2C2_SCL
+        AF7: USART1_TX
+        AF9: TSC_G7_IO2
+        AF11: LCD_COM1
+        AF14: TIM15_BKIN
+        AF15: EVENTOUT
+    - pin: "PA11 [PA9]"
+      number: C8
+      gpio:
+        port: A
+        bit: 11
+      functions:
+        AF1: TIM1_CH4
+        AF2: TIM1_BKIN2
+        AF5: "SPI1_MISO / SPI2_MISO"
+        AF7: USART1_CTS
+        AF12: COMP1_OUT
+        AF15: EVENTOUT
+    - pin: "PF1-OSC_OUT"
+      number: D1
+      gpio:
+        port: F
+        bit: 1
+      functions:
+        AF0: OSC_EN
+        AF15: EVENTOUT
+    - pin: "VDD"
+      number: D2
+      gpio: ~
+      functions: ~
+    - pin: "PB6"
+      number: D3
+      gpio:
+        port: B
+        bit: 6
+      functions:
+        AF1: LPTIM1_ETR
+        AF4: "I2C4_SCL / I2C1_SCL / I2C2_SCL"
+        AF6: LPUART3_TX
+        AF7: USART1_TX
+        AF8: LPUART2_TX
+        AF9: TSC_G2_IO3
+        AF14: TIM16_CH1N
+        AF15: EVENTOUT
+    - pin: "VSS"
+      number: D4
+      gpio: ~
+      functions: ~
+    - pin: "VSS"
+      number: D5
+      gpio: ~
+      functions: ~
+    - pin: "VSS"
+      number: D6
+      gpio: ~
+      functions: ~
+    - pin: "PA8"
+      number: D7
+      gpio:
+        port: A
+        bit: 8
+      functions:
+        AF0: MCO
+        AF1: TIM1_CH1
+        AF3: MCO2
+        AF7: USART1_CK
+        AF9: TSC_G7_IO1
+        AF11: LCD_COM0
+        AF14: LPTIM2_CH1
+        AF15: EVENTOUT
+    - pin: "PC9"
+      number: D8
+      gpio:
+        port: C
+        bit: 9
+      functions:
+        AF2: TIM3_CH4
+        AF4: LPTIM3_CH2
+        AF9: TSC_G4_IO4
+        AF10: USB_NOE
+        AF11: LCD_SEG27
+        AF15: EVENTOUT
+    - pin: "PF2-NRST"
+      number: E1
+      gpio:
+        port: F
+        bit: 2
+      functions:
+        AF0: MCO
+    - pin: "PC1"
+      number: E2
+      gpio:
+        port: C
+        bit: 1
+      functions:
+        AF1: LPTIM1_CH1
+        AF4: "I2C4_SDA / I2C3_SDA"
+        AF8: LPUART1_TX
+        AF10: LPUART2_RX
+        AF11: "LCD_SEG19 / LCD_BIAS2"
+        AF15: EVENTOUT
+    - pin: "PC0"
+      number: E3
+      gpio:
+        port: C
+        bit: 0
+      functions:
+        AF1: LPTIM1_IN1
+        AF4: "I2C4_SCL / I2C3_SCL"
+        AF8: LPUART1_RX
+        AF10: LPUART2_TX
+        AF11: "LCD_SEG18 / LCD_BIAS1"
+        AF14: LPTIM2_IN1
+        AF15: EVENTOUT
+    - pin: "VDD"
+      number: E4
+      gpio: ~
+      functions: ~
+    - pin: "VDDUSB"
+      number: E5
+      gpio: ~
+      functions: ~
+    - pin: "VDD"
+      number: E6
+      gpio: ~
+      functions: ~
+    - pin: "PC7"
+      number: E7
+      gpio:
+        port: C
+        bit: 7
+      functions:
+        AF2: TIM3_CH2
+        AF4: LPTIM3_CH4
+        AF8: LPUART2_RX
+        AF9: TSC_G4_IO2
+        AF11: LCD_SEG25
+        AF14: LPTIM2_CH2
+        AF15: EVENTOUT
+    - pin: "PC8"
+      number: E8
+      gpio:
+        port: C
+        bit: 8
+      functions:
+        AF2: TIM3_CH3
+        AF4: LPTIM3_CH1
+        AF9: TSC_G4_IO3
+        AF11: LCD_SEG26
+        AF15: EVENTOUT
+    - pin: "VSSA/VREF-"
+      number: F1
+      gpio: ~
+      functions: ~
+    - pin: "PC2"
+      number: F2
+      gpio:
+        port: C
+        bit: 2
+      functions:
+        AF0: MCO2
+        AF1: LPTIM1_IN2
+        AF5: SPI2_MISO
+        AF11: "LCD_SEG20 / LCD_BIAS3"
+        AF15: EVENTOUT
+    - pin: "PA2"
+      number: F3
+      gpio:
+        port: A
+        bit: 2
+      functions:
+        AF1: TIM2_CH3
+        AF7: USART2_TX
+        AF8: LPUART1_TX
+        AF11: LCD_SEG1
+        AF12: COMP2_OUT
+        AF14: TIM15_CH1
+        AF15: EVENTOUT
+    - pin: "PA5"
+      number: F4
+      gpio:
+        port: A
+        bit: 5
+      functions:
+        AF1: TIM2_CH1
+        AF2: TIM2_ETR
+        AF5: SPI1_SCK
+        AF7: USART3_TX
+        AF8: LPUART3_RX
+        AF11: LCD_SEG44
+        AF14: LPTIM2_ETR
+        AF15: EVENTOUT
+    - pin: "PB0"
+      number: F5
+      gpio:
+        port: B
+        bit: 0
+      functions:
+        AF1: TIM1_CH2N
+        AF2: TIM3_CH3
+        AF4: LPTIM3_CH1
+        AF5: SPI1_NSS
+        AF7: USART3_CK
+        AF8: LPUART2_CTS
+        AF9: TSC_G5_IO2
+        AF11: LCD_SEG5
+        AF12: COMP1_OUT
+        AF15: EVENTOUT
+    - pin: "PC6"
+      number: F6
+      gpio:
+        port: C
+        bit: 6
+      functions:
+        AF2: TIM3_CH1
+        AF8: LPUART2_TX
+        AF9: TSC_G4_IO1
+        AF11: LCD_SEG24
+        AF15: EVENTOUT
+    - pin: "PB15"
+      number: F7
+      gpio:
+        port: B
+        bit: 15
+      functions:
+        AF0: RTC_REFIN
+        AF1: TIM1_CH3N
+        AF5: SPI2_MOSI
+        AF9: TSC_G1_IO4
+        AF11: LCD_SEG15
+        AF14: TIM15_CH2
+        AF15: EVENTOUT
+    - pin: "PB14"
+      number: F8
+      gpio:
+        port: B
+        bit: 14
+      functions:
+        AF1: TIM1_CH2N
+        AF2: LPTIM3_ETR
+        AF4: I2C2_SDA
+        AF5: SPI2_MISO
+        AF7: USART3_RTS_DE
+        AF9: TSC_G1_IO3
+        AF11: LCD_SEG14
+        AF14: TIM15_CH1
+        AF15: EVENTOUT
+    - pin: "PC3"
+      number: G1
+      gpio:
+        port: C
+        bit: 3
+      functions:
+        AF1: LPTIM1_ETR
+        AF2: LPTIM3_CH1
+        AF5: SPI2_MOSI
+        AF8: USART4_CK
+        AF11: LCD_VLCD
+        AF14: LPTIM2_ETR
+        AF15: EVENTOUT
+    - pin: "PA0"
+      number: G2
+      gpio:
+        port: A
+        bit: 0
+      functions:
+        AF1: TIM2_CH1
+        AF7: USART2_CTS
+        AF8: USART4_TX
+        AF11: LCD_SEG42
+        AF12: COMP1_OUT
+        AF14: TIM2_ETR
+        AF15: EVENTOUT
+    - pin: "PA3"
+      number: G3
+      gpio:
+        port: A
+        bit: 3
+      functions:
+        AF1: TIM2_CH4
+        AF7: USART2_RX
+        AF8: LPUART1_RX
+        AF11: LCD_SEG2
+        AF14: TIM15_CH2
+        AF15: EVENTOUT
+    - pin: "PA6"
+      number: G4
+      gpio:
+        port: A
+        bit: 6
+      functions:
+        AF1: TIM1_BKIN
+        AF2: TIM3_CH1
+        AF3: I2C2_SDA
+        AF4: I2C3_SDA
+        AF5: SPI1_MISO
+        AF6: COMP1_OUT
+        AF7: USART3_CTS
+        AF8: LPUART1_CTS
+        AF9: TSC_G5_IO1
+        AF11: LCD_SEG3
+        AF14: TIM16_CH1
+        AF15: EVENTOUT
+    - pin: "PB1"
+      number: G5
+      gpio:
+        port: B
+        bit: 1
+      functions:
+        AF1: TIM1_CH3N
+        AF2: TIM3_CH4
+        AF4: LPTIM3_CH2
+        AF7: USART3_RTS_DE
+        AF8: "LPUART1_RTS_DE / LPUART2_RTS_DE"
+        AF9: TSC_SYNC
+        AF11: LCD_SEG6
+        AF14: LPTIM2_IN1
+        AF15: EVENTOUT
+    - pin: "PB2"
+      number: G6
+      gpio:
+        port: B
+        bit: 2
+      functions:
+        AF0: RTC_OUT2
+        AF1: LPTIM1_CH1
+        AF11: LCD_VLCD
+        AF15: EVENTOUT
+    - pin: "PB10"
+      number: G7
+      gpio:
+        port: B
+        bit: 10
+      functions:
+        AF1: TIM2_CH3
+        AF2: LPTIM3_CH1
+        AF4: "I2C4_SCL / I2C2_SCL"
+        AF5: SPI2_SCK
+        AF7: USART3_TX
+        AF8: "LPUART1_RX / LPUART2_RX"
+        AF9: TSC_G5_IO3
+        AF11: LCD_SEG10
+        AF12: COMP1_OUT
+        AF15: EVENTOUT
+    - pin: "PB13"
+      number: G8
+      gpio:
+        port: B
+        bit: 13
+      functions:
+        AF1: TIM1_CH1N
+        AF2: LPTIM3_IN1
+        AF4: I2C2_SCL
+        AF5: SPI2_SCK
+        AF7: USART3_CTS
+        AF8: LPUART1_CTS
+        AF9: TSC_G1_IO2
+        AF11: LCD_SEG13
+        AF14: TIM15_CH1N
+        AF15: EVENTOUT
+    - pin: "VDDA/VREF+"
+      number: H1
+      gpio: ~
+      functions: ~
+    - pin: "PA1"
+      number: H2
+      gpio:
+        port: A
+        bit: 1
+      functions:
+        AF1: TIM2_CH2
+        AF2: LPTIM1_CH2
+        AF5: "SPI1_SCK / SPI2_SCK"
+        AF7: USART2_RTS_DE
+        AF8: USART4_RX
+        AF11: LCD_SEG0
+        AF14: TIM15_CH1N
+        AF15: EVENTOUT
+    - pin: "PA4"
+      number: H3
+      gpio:
+        port: A
+        bit: 4
+      functions:
+        AF5: SPI1_NSS
+        AF6: SPI3_NSS
+        AF7: USART2_CK
+        AF8: LPUART3_TX
+        AF11: LCD_SEG43
+        AF14: LPTIM2_CH1
+        AF15: EVENTOUT
+    - pin: "PA7"
+      number: H4
+      gpio:
+        port: A
+        bit: 7
+      functions:
+        AF1: TIM1_CH1N
+        AF2: TIM3_CH2
+        AF3: I2C2_SCL
+        AF4: I2C3_SCL
+        AF5: SPI1_MOSI
+        AF7: USART3_RX
+        AF11: LCD_SEG4
+        AF12: COMP2_OUT
+        AF14: LPTIM2_CH2
+        AF15: EVENTOUT
+    - pin: "PC4"
+      number: H5
+      gpio:
+        port: C
+        bit: 4
+      functions:
+        AF7: USART3_TX
+        AF8: LPUART3_TX
+        AF11: LCD_SEG22
+        AF15: EVENTOUT
+    - pin: "PC5"
+      number: H6
+      gpio:
+        port: C
+        bit: 5
+      functions:
+        AF2: LPTIM3_CH3
+        AF7: USART3_RX
+        AF8: LPUART3_RX
+        AF11: LCD_SEG23
+        AF15: EVENTOUT
+    - pin: "PB11"
+      number: H7
+      gpio:
+        port: B
+        bit: 11
+      functions:
+        AF1: TIM2_CH4
+        AF4: "I2C4_SDA / I2C2_SDA"
+        AF7: USART3_RX
+        AF8: "LPUART1_TX / LPUART2_TX"
+        AF9: TSC_G5_IO4
+        AF11: LCD_SEG11
+        AF12: COMP2_OUT
+        AF15: EVENTOUT
+    - pin: "PB12"
+      number: H8
+      gpio:
+        port: B
+        bit: 12
+      functions:
+        AF1: TIM1_BKIN
+        AF5: SPI2_NSS
+        AF7: USART3_CK
+        AF8: LPUART1_RTS_DE
+        AF9: TSC_G1_IO1
+        AF11: LCD_SEG12
+        AF14: TIM15_BKIN
+        AF15: EVENTOUT
