@@ -1,7 +1,6 @@
 #include "mock/mock_register.hpp"
 
 #include <ohal/core/capabilities.hpp>
-#include <ohal/core/field.hpp>
 #include <ohal/gpio.hpp>
 #include <ohal/platforms/stm32u0/models/stm32u073rct/capabilities.hpp>
 #include <ohal/platforms/stm32u0/models/stm32u073rct/gpio.hpp>
