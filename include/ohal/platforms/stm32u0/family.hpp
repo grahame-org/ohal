@@ -49,45 +49,109 @@
 #endif
 
 #if defined(OHAL_MODEL_STM32U083KCU)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083kcu/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083kcu/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083HCY)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083hcy/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083hcy/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083CCU)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083ccu/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083ccu/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083CCT)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083cct/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083cct/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083cct/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083RCT)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083rct/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rct/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rct/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083RCI)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083rci/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083rci/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083rci/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083MCT)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083mct/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mct/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083mct/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U083MCI)
+// STM32U083 includes LPUART3 and LPTIM3.
+#ifndef OHAL_STM32U0_ENABLE_LPUART3
+#define OHAL_STM32U0_ENABLE_LPUART3
+#endif
+#ifndef OHAL_STM32U0_ENABLE_LPTIM3
+#define OHAL_STM32U0_ENABLE_LPTIM3
+#endif
 #include "ohal/platforms/stm32u0/models/stm32u083mci/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mci/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mci/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083mci/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083mci/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U073)
 // STM32U073 register maps and capabilities are not yet implemented.
 // Remove this #error and add a models/stm32u073/ directory when implementing
@@ -99,81 +163,97 @@
 #include "ohal/platforms/stm32u0/models/stm32u031r8t/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r8t/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r8t/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031r8t/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031R8I)
 #include "ohal/platforms/stm32u0/models/stm32u031r8i/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r8i/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r8i/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r8i/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031r8i/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031R6T)
 #include "ohal/platforms/stm32u0/models/stm32u031r6t/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r6t/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r6t/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r6t/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031r6t/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031R6I)
 #include "ohal/platforms/stm32u0/models/stm32u031r6i/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r6i/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r6i/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031r6i/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031r6i/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031C8U)
 #include "ohal/platforms/stm32u0/models/stm32u031c8u/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c8u/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c8u/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c8u/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031c8u/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031C8T)
 #include "ohal/platforms/stm32u0/models/stm32u031c8t/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c8t/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c8t/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c8t/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031c8t/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031C6U)
 #include "ohal/platforms/stm32u0/models/stm32u031c6u/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c6u/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c6u/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c6u/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031c6u/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031C6T)
 #include "ohal/platforms/stm32u0/models/stm32u031c6t/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c6t/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c6t/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031c6t/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031c6t/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031K8U)
 #include "ohal/platforms/stm32u0/models/stm32u031k8u/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k8u/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k8u/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k8u/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031k8u/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031K6U)
 #include "ohal/platforms/stm32u0/models/stm32u031k6u/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k6u/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k6u/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k6u/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031k6u/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031K4U)
 #include "ohal/platforms/stm32u0/models/stm32u031k4u/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k4u/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k4u/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031k4u/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031k4u/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031G8Y)
 #include "ohal/platforms/stm32u0/models/stm32u031g8y/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031g8y/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031g8y/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031g8y/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031g8y/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031G6Y)
 #include "ohal/platforms/stm32u0/models/stm32u031g6y/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031g6y/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031g6y/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031g6y/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031g6y/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031F8P)
 #include "ohal/platforms/stm32u0/models/stm32u031f8p/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f8p/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f8p/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f8p/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031f8p/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031F6P)
 #include "ohal/platforms/stm32u0/models/stm32u031f6p/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f6p/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f6p/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f6p/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031f6p/uart_capabilities.hpp"
 #elif defined(OHAL_MODEL_STM32U031F4P)
 #include "ohal/platforms/stm32u0/models/stm32u031f4p/capabilities.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f4p/gpio.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f4p/timer.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u031f4p/uart.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u031f4p/uart_capabilities.hpp"
 #endif
 
 #endif // OHAL_PLATFORMS_STM32U0_FAMILY_HPP

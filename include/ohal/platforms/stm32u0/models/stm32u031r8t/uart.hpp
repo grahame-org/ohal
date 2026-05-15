@@ -1,8 +1,8 @@
 #ifndef OHAL_PLATFORMS_STM32U0_MODELS_STM32U031R8T_UART_HPP
 #define OHAL_PLATFORMS_STM32U0_MODELS_STM32U031R8T_UART_HPP
 
-// STM32U031R8T UART/USART register map — filled in Step 10 (Timer and UART Peripherals).
+// stm32u031r8t uses the shared STM32U031 UART register map.
 
-namespace ohal::platforms::stm32u0::stm32u083 {} // namespace ohal::platforms::stm32u0::stm32u083
+#include "ohal/platforms/stm32u0/models/stm32u031/uart.hpp"
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U031R8T_UART_HPP

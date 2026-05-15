@@ -1,3 +1,8 @@
+// STM32U083 has all three LPTIM instances (LPTIM1, LPTIM2, LPTIM3).
+// Define the enable macro before including timer_impl.hpp so that kLptim3Base
+// and the Lptim3 type alias are visible in this translation unit.
+#define OHAL_STM32U0_ENABLE_LPTIM3
+
 #include <ohal/platforms/stm32u0/models/stm32u083/timer_impl.hpp>
 
 #include <cstdint>
