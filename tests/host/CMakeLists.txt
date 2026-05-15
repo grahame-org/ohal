@@ -32,7 +32,8 @@ target_link_libraries(ohal_host_tests_cc PRIVATE ohal GTest::gtest_main GTest::g
 # provide a static_assert for Pin<PortD>.  Mixing those in one executable would
 # be an ODR violation.  RCT and RCI are kept separate so each binary contains
 # only one set of explicit template specialisations.
-add_executable(ohal_host_tests_rct main.cpp test_gpio_stm32u083rct.cpp)
+add_executable(ohal_host_tests_rct main.cpp test_gpio_stm32u083rct.cpp
+                                   test_uart_timer_stm32u083rct.cpp)
 target_link_libraries(ohal_host_tests_rct PRIVATE ohal GTest::gtest_main GTest::gmock)
 
 add_executable(ohal_host_tests_rci main.cpp test_gpio_stm32u083rci.cpp)
