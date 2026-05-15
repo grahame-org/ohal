@@ -141,7 +141,7 @@ target_link_libraries(ohal_host_tests_timer_stm32u031 PRIVATE ohal GTest::gtest_
 # identical Pin<> specialisations.  Kept separate from the STM32U083 KCU/HCY
 # executable because those two targets include different sets of model headers,
 # and combining them would link two TUs that each define the same partial
-# specialisations at different include paths (a clang-tidy / IFNDR hazard).
+# specialisations at different include paths (an ODR hazard).
 add_executable(ohal_host_tests_stm32u073khc
     main.cpp
     test_gpio_stm32u073kcu.cpp
