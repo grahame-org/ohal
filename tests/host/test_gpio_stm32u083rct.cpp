@@ -7,6 +7,7 @@
 #include <ohal/platforms/stm32u0/models/stm32u083rct/gpio.hpp>
 
 #include <cstdint>
+#include <type_traits>
 
 #include <gtest/gtest.h>
 
@@ -51,8 +52,42 @@ struct MockGpioRegs {
   using Brr = ohal::test::MockRegister<uint32_t, &mock_brr>;
 };
 
+using MockPin0 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<0U, MockGpioRegs>;
 using MockPin5 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<5U, MockGpioRegs>;
+using MockPin15 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<15U, MockGpioRegs>;
 using MockPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegs>;
+
+// Second mock register set — used for PortB behavioural tests.  Having
+// separate storage ensures the PortB template instantiation is exercised
+// independently of PortA and that no register state leaks between the two.
+static uint32_t mock_b_moder{0U};
+static uint32_t mock_b_otyper{0U};
+static uint32_t mock_b_ospeedr{0U};
+static uint32_t mock_b_pupdr{0U};
+static uint32_t mock_b_idr{0U};
+static uint32_t mock_b_odr{0U};
+static uint32_t mock_b_bsrr{0U};
+static uint32_t mock_b_lckr{0U};
+static uint32_t mock_b_afrl{0U};
+static uint32_t mock_b_afrh{0U};
+static uint32_t mock_b_brr{0U};
+
+struct MockGpioBRegs {
+  using Moder = ohal::test::MockRegister<uint32_t, &mock_b_moder>;
+  using Otyper = ohal::test::MockRegister<uint32_t, &mock_b_otyper>;
+  using Ospeedr = ohal::test::MockRegister<uint32_t, &mock_b_ospeedr>;
+  using Pupdr = ohal::test::MockRegister<uint32_t, &mock_b_pupdr>;
+  using Idr = ohal::test::MockRegister<uint32_t, &mock_b_idr>;
+  using Odr = ohal::test::MockRegister<uint32_t, &mock_b_odr>;
+  using Bsrr = ohal::test::MockRegister<uint32_t, &mock_b_bsrr>;
+  using Lckr = ohal::test::MockRegister<uint32_t, &mock_b_lckr>;
+  using Afrl = ohal::test::MockRegister<uint32_t, &mock_b_afrl>;
+  using Afrh = ohal::test::MockRegister<uint32_t, &mock_b_afrh>;
+  using Brr = ohal::test::MockRegister<uint32_t, &mock_b_brr>;
+};
+
+using MockPortBPin0 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<0U, MockGpioBRegs>;
+using MockPortBPin15 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<15U, MockGpioBRegs>;
 
 // ---------------------------------------------------------------------------
 // Test fixture
@@ -72,6 +107,17 @@ protected:
     mock_afrl = 0U;
     mock_afrh = 0U;
     mock_brr = 0U;
+    mock_b_moder = 0U;
+    mock_b_otyper = 0U;
+    mock_b_ospeedr = 0U;
+    mock_b_pupdr = 0U;
+    mock_b_idr = 0U;
+    mock_b_odr = 0U;
+    mock_b_bsrr = 0U;
+    mock_b_lckr = 0U;
+    mock_b_afrl = 0U;
+    mock_b_afrh = 0U;
+    mock_b_brr = 0U;
   }
 };
 
@@ -118,6 +164,203 @@ TEST_F(GpioStm32u083RctTest, PortClear_WritesMaskToBsrrHigh16Bits) {
 TEST_F(GpioStm32u083RctTest, PortWrite_CombinesSetAndClearMasksInSingleBsrrWrite) {
   MockPort::write(0x000FU, 0x00F0U);
   EXPECT_EQ(mock_bsrr, 0x00F0000FU);
+}
+
+// ---------------------------------------------------------------------------
+// Behavioural tests: remaining GPIO methods on pin 5
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083RctTest, SetMode_AlternateFunction_WritesModerBits) {
+  MockPin5::set_mode(ohal::gpio::PinMode::AlternateFunction);
+  EXPECT_EQ(mock_moder & (0b11U << 10U), 0b10U << 10U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetMode_Analog_WritesModerBits) {
+  MockPin5::set_mode(ohal::gpio::PinMode::Analog);
+  EXPECT_EQ(mock_moder & (0b11U << 10U), 0b11U << 10U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetOutputType_PushPull_ClearsOtyperBit) {
+  mock_otyper = 1U << 5U; // pre-load OpenDrain
+  MockPin5::set_output_type(ohal::gpio::OutputType::PushPull);
+  EXPECT_EQ((mock_otyper >> 5U) & 1U, 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetOutputType_OpenDrain_SetsOtyperBit) {
+  MockPin5::set_output_type(ohal::gpio::OutputType::OpenDrain);
+  EXPECT_EQ((mock_otyper >> 5U) & 1U, 1U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetOutputType_PreservesOtherOtyperBits) {
+  mock_otyper = ~(1U << 5U); // all bits set except pin 5
+  MockPin5::set_output_type(ohal::gpio::OutputType::OpenDrain);
+  EXPECT_EQ(mock_otyper & ~(1U << 5U), ~(1U << 5U));
+}
+
+TEST_F(GpioStm32u083RctTest, SetSpeed_Low_WritesOspeedrBits) {
+  mock_ospeedr = 0b11U << 10U; // pre-load VeryHigh
+  MockPin5::set_speed(ohal::gpio::Speed::Low);
+  EXPECT_EQ(mock_ospeedr & (0b11U << 10U), 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetSpeed_VeryHigh_WritesOspeedrBits) {
+  MockPin5::set_speed(ohal::gpio::Speed::VeryHigh);
+  EXPECT_EQ(mock_ospeedr & (0b11U << 10U), 0b11U << 10U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetSpeed_PreservesOtherOspeedrBits) {
+  mock_ospeedr = ~(0b11U << 10U); // all bits set except pin 5's field
+  MockPin5::set_speed(ohal::gpio::Speed::VeryHigh);
+  EXPECT_EQ(mock_ospeedr & ~(0b11U << 10U), ~(0b11U << 10U));
+}
+
+TEST_F(GpioStm32u083RctTest, SetPull_None_WritesPupdrBits) {
+  mock_pupdr = 0b11U << 10U; // pre-load PullDown
+  MockPin5::set_pull(ohal::gpio::Pull::None);
+  EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetPull_Up_WritesPupdrBits) {
+  MockPin5::set_pull(ohal::gpio::Pull::Up);
+  EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0b01U << 10U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetPull_Down_WritesPupdrBits) {
+  MockPin5::set_pull(ohal::gpio::Pull::Down);
+  EXPECT_EQ(mock_pupdr & (0b11U << 10U), 0b10U << 10U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetPull_PreservesOtherPupdrBits) {
+  mock_pupdr = ~(0b11U << 10U); // all bits set except pin 5's field
+  MockPin5::set_pull(ohal::gpio::Pull::Up);
+  EXPECT_EQ(mock_pupdr & ~(0b11U << 10U), ~(0b11U << 10U));
+}
+
+TEST_F(GpioStm32u083RctTest, ReadOutput_ReturnsHigh_WhenOdrBitSet) {
+  mock_odr = 1U << 5U;
+  EXPECT_EQ(MockPin5::read_output(), ohal::gpio::Level::High);
+}
+
+TEST_F(GpioStm32u083RctTest, ReadOutput_ReturnsLow_WhenOdrBitClear) {
+  mock_odr = 0U;
+  EXPECT_EQ(MockPin5::read_output(), ohal::gpio::Level::Low);
+}
+
+TEST_F(GpioStm32u083RctTest, Toggle_SetsBsrrSetBit_WhenOutputWasLow) {
+  mock_odr = 0U; // pin 5 output is Low
+  MockPin5::toggle();
+  EXPECT_EQ(mock_bsrr, 1U << 5U); // BSRR set bit written
+}
+
+TEST_F(GpioStm32u083RctTest, Toggle_SetsBsrrResetBit_WhenOutputWasHigh) {
+  mock_odr = 1U << 5U; // pin 5 output is High
+  MockPin5::toggle();
+  EXPECT_EQ(mock_bsrr, 1U << 21U); // BSRR reset bit written
+}
+
+// ---------------------------------------------------------------------------
+// Boundary pin 0: verify bit-0 position in each register field
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083RctTest, Pin0_Set_WritesBit0ToBsrr) {
+  MockPin0::set();
+  EXPECT_EQ(mock_bsrr, 1U);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin0_Clear_WritesBit16ToBsrr) {
+  MockPin0::clear();
+  EXPECT_EQ(mock_bsrr, 1U << 16U);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin0_ReadInput_ReturnsHigh_WhenIdrBit0Set) {
+  mock_idr = 1U;
+  EXPECT_EQ(MockPin0::read_input(), ohal::gpio::Level::High);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin0_ReadOutput_ReturnsHigh_WhenOdrBit0Set) {
+  mock_odr = 1U;
+  EXPECT_EQ(MockPin0::read_output(), ohal::gpio::Level::High);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin0_SetMode_Output_WritesBits1To0InModer) {
+  MockPin0::set_mode(ohal::gpio::PinMode::Output);
+  EXPECT_EQ(mock_moder & 0b11U, 0b01U);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin0_Toggle_SetsBsrrSetBit_WhenOutputWasLow) {
+  mock_odr = 0U;
+  MockPin0::toggle();
+  EXPECT_EQ(mock_bsrr, 1U);
+}
+
+// ---------------------------------------------------------------------------
+// Boundary pin 15: verify bit-15 position in each register field
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083RctTest, Pin15_Set_WritesBit15ToBsrr) {
+  MockPin15::set();
+  EXPECT_EQ(mock_bsrr, 1U << 15U);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin15_Clear_WritesBit31ToBsrr) {
+  MockPin15::clear();
+  EXPECT_EQ(mock_bsrr, 1U << 31U);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin15_ReadInput_ReturnsHigh_WhenIdrBit15Set) {
+  mock_idr = 1U << 15U;
+  EXPECT_EQ(MockPin15::read_input(), ohal::gpio::Level::High);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin15_ReadOutput_ReturnsHigh_WhenOdrBit15Set) {
+  mock_odr = 1U << 15U;
+  EXPECT_EQ(MockPin15::read_output(), ohal::gpio::Level::High);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin15_SetMode_Output_WritesBits31To30InModer) {
+  MockPin15::set_mode(ohal::gpio::PinMode::Output);
+  EXPECT_EQ(mock_moder & (0b11U << 30U), 0b01U << 30U);
+}
+
+TEST_F(GpioStm32u083RctTest, Pin15_Toggle_SetsBsrrSetBit_WhenOutputWasLow) {
+  mock_odr = 0U;
+  MockPin15::toggle();
+  EXPECT_EQ(mock_bsrr, 1U << 15U);
+}
+
+// ---------------------------------------------------------------------------
+// PortB behavioural tests: exercise the same template with MockGpioBRegs
+// (separate backing storage confirms there is no cross-port state sharing).
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083RctTest, PortBPin0_Set_WritesBit0ToBBsrr) {
+  MockPortBPin0::set();
+  EXPECT_EQ(mock_b_bsrr, 1U);
+}
+
+TEST_F(GpioStm32u083RctTest, PortBPin0_Clear_WritesBit16ToBBsrr) {
+  MockPortBPin0::clear();
+  EXPECT_EQ(mock_b_bsrr, 1U << 16U);
+}
+
+TEST_F(GpioStm32u083RctTest, PortBPin0_SetMode_Output_WritesBitsToB) {
+  MockPortBPin0::set_mode(ohal::gpio::PinMode::Output);
+  EXPECT_EQ(mock_b_moder & 0b11U, 0b01U);
+}
+
+TEST_F(GpioStm32u083RctTest, PortBPin0_SetMode_DoesNotAffectPortA) {
+  MockPortBPin0::set_mode(ohal::gpio::PinMode::Output);
+  EXPECT_EQ(mock_moder, 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, PortBPin15_Set_WritesBit15ToBBsrr) {
+  MockPortBPin15::set();
+  EXPECT_EQ(mock_b_bsrr, 1U << 15U);
+}
+
+TEST_F(GpioStm32u083RctTest, PortBPin15_ReadOutput_ReturnsHigh_WhenOdrBit15Set) {
+  mock_b_odr = 1U << 15U;
+  EXPECT_EQ(MockPortBPin15::read_output(), ohal::gpio::Level::High);
 }
 
 // ---------------------------------------------------------------------------
@@ -365,6 +608,38 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(GpioStm32u083RctWiringTest, BsrrAddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
+}
+
+// ---------------------------------------------------------------------------
+// Consumer API integration: typical GPIO init + toggle sequence.
+//
+// consumer_api_init_toggle_never_called() demonstrates that the canonical
+// usage pattern — configure a pin then toggle it — compiles correctly through
+// the public ohal::gpio::Pin<> interface when the STM32U083RCT platform
+// headers are active.  The function is never invoked at run time (it would
+// write to real hardware MMIO addresses), but the compiler fully instantiates
+// it, so any type-level or static_assert errors would be caught at build time.
+// ---------------------------------------------------------------------------
+
+[[maybe_unused]] static void consumer_api_init_toggle_never_called() {
+  using namespace ohal::gpio;
+  Pin<PortA, 5>::set_mode(PinMode::Output);
+  Pin<PortA, 5>::set_output_type(OutputType::PushPull);
+  Pin<PortA, 5>::set_speed(Speed::VeryHigh);
+  Pin<PortA, 5>::set_pull(Pull::None);
+  Pin<PortA, 5>::set();
+  Pin<PortA, 5>::toggle();
+  Pin<PortA, 5>::clear();
+  (void)Pin<PortA, 5>::read_input();
+  (void)Pin<PortA, 5>::read_output();
+}
+
+// Runtime test: verify that Pin<PortA, 5> derives from the expected concrete type so
+// the consumer API above uses the real STM32U083 implementation.
+TEST(Stm32u083RctConsumerApiTest, PinPortA5_DerivesFromStm32u083GpioPortPinImpl) {
+  EXPECT_TRUE((std::is_base_of_v<ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
+                                     5U, ohal::platforms::stm32u0::stm32u083::GpioA>,
+                                 ohal::gpio::Pin<ohal::gpio::PortA, 5>>));
 }
 
 } // namespace
