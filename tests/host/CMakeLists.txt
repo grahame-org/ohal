@@ -153,6 +153,19 @@ add_executable(ohal_host_tests_stm32u031f main.cpp test_gpio_stm32u031f4p.cpp
                                            test_gpio_stm32u031f6p.cpp test_gpio_stm32u031f8p.cpp)
 target_link_libraries(ohal_host_tests_stm32u031f PRIVATE ohal GTest::gtest_main GTest::gmock)
 
+# STM32U083 timer register-map wiring tests.  The package header
+# (stm32u083rct/timer.hpp) defines OHAL_STM32U0_ENABLE_LPTIM3 before
+# including the shared implementation, exercising the full include chain
+# including the LPTIM3 peripheral present on all STM32U083 packages.
+add_executable(ohal_host_tests_timer main.cpp test_timer_stm32u083.cpp)
+target_link_libraries(ohal_host_tests_timer PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# STM32U031 timer register-map wiring tests.  The package header
+# (stm32u031r8t/timer.hpp) does NOT define OHAL_STM32U0_ENABLE_LPTIM3,
+# validating the LPTIM3-absent path (kLptim3Base and Lptim3 are not defined).
+add_executable(ohal_host_tests_timer_stm32u031 main.cpp test_timer_stm32u031.cpp)
+target_link_libraries(ohal_host_tests_timer_stm32u031 PRIVATE ohal GTest::gtest_main GTest::gmock)
+
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
 gtest_discover_tests(ohal_host_tests_cc)
@@ -169,6 +182,8 @@ gtest_discover_tests(ohal_host_tests_stm32u031r)
 gtest_discover_tests(ohal_host_tests_stm32u031c)
 gtest_discover_tests(ohal_host_tests_stm32u031k)
 gtest_discover_tests(ohal_host_tests_stm32u031g)
+gtest_discover_tests(ohal_host_tests_timer)
+gtest_discover_tests(ohal_host_tests_timer_stm32u031)
 gtest_discover_tests(ohal_host_tests_stm32u031f)
 
 # ---------------------------------------------------------------------------
