@@ -1,17 +1,70 @@
 ---
-spec-version: "1.0.0"
+spec-version: "1.1.0"
 architecture:
   name: ARM Cortex-M0+
   word-size: 32
   endianness: little
+  instruction-set: ARMv6-M Thumb/Thumb-2
+  pipeline-stages: 2
+  pipeline-type: Von Neumann
+  multiplier: single-cycle 32-bit
+  address-space: 32
 memory:
   note: >-
-    Private Peripheral Bus (PPB) address regions defined by the ARM Cortex-M0+ architecture. These
-    regions are identical on every Cortex-M0+ implementation regardless of vendor or device family.
+    Architectural memory map defined by the ARM Cortex-M0+ / ARMv6-M architecture (PM0223 Table 4).
+    All eight regions and the PPB sub-range are identical on every Cortex-M0+ implementation
+    regardless of vendor or device family.
   map:
+    - name: Code
+      start: 0x00000000
+      end: 0x1FFFFFFF
+      memory-type: Normal
+      xn: false
+      cache-policy: WT
+    - name: SRAM
+      start: 0x20000000
+      end: 0x3FFFFFFF
+      memory-type: Normal
+      xn: false
+      cache-policy: WBWA
+    - name: Peripheral
+      start: 0x40000000
+      end: 0x5FFFFFFF
+      memory-type: Device
+      xn: true
+    - name: External RAM (write-back)
+      start: 0x60000000
+      end: 0x7FFFFFFF
+      memory-type: Normal
+      xn: false
+      cache-policy: WBWA
+    - name: External RAM (write-through)
+      start: 0x80000000
+      end: 0x9FFFFFFF
+      memory-type: Normal
+      xn: false
+      cache-policy: WT
+    - name: External Device (shareable)
+      start: 0xA0000000
+      end: 0xBFFFFFFF
+      memory-type: Device
+      xn: true
+      shareability: Shareable
+    - name: External Device (non-shareable)
+      start: 0xC0000000
+      end: 0xDFFFFFFF
+      memory-type: Device
+      xn: true
+      shareability: Non-shareable
     - name: Cortex-M0+ internal peripherals
       start: 0xE0000000
       end: 0xE00FFFFF
+      memory-type: Strongly-ordered
+      xn: true
+      shareability: Shareable
+      note: >-
+        Private Peripheral Bus (PPB). Includes NVIC, SysTick, SCB, MPU, and Debug Access Port.
+        Only word-aligned word accesses permitted.
 definitions:
   settings:
     # Standard GPIO mode encoding shared by all ARM Cortex-M GPIO controllers.
@@ -24,3 +77,186 @@ definitions:
     bit-value:
       "0": reset
       "1": set
+    # MPU AP[2:0] access-permission encoding (PM0223 Table 37).
+    mpu-ap:
+      "000": no access (privileged and unprivileged)
+      "001": privileged read/write; unprivileged no access
+      "010": privileged read/write; unprivileged read-only
+      "011": full access (privileged and unprivileged read/write)
+      "100": reserved (unpredictable)
+      "101": privileged read-only; unprivileged no access
+      "110": privileged and unprivileged read-only
+      "111": privileged and unprivileged read-only
+    # MPU memory-type encoding derived from C (cacheable) and B (bufferable) bits (PM0223 Table 36).
+    mpu-cb:
+      "00": strongly-ordered (all accesses in program order)
+      "01": device (shared; preserves transaction order relative to other device accesses)
+      "10": normal; outer and inner write-through, no write-allocate
+      "11": normal; outer and inner write-back, write-allocate
+    # NVIC configurable-priority encoding for bits[7:6] of each IPR byte (PM0223 §4.3.7).
+    # Only the two most-significant bits of each priority byte are implemented on Cortex-M0+.
+    nvic-priority:
+      "00": priority 0 (highest configurable)
+      "01": priority 64
+      "10": priority 128
+      "11": priority 192 (lowest configurable)
+    # CONTROL.SPSEL – active stack pointer selection in thread mode (PM0223 §2.1.3).
+    control-spsel:
+      "0": MSP is active stack pointer
+      "1": PSP is active stack pointer
+    # CONTROL.nPRIV – thread mode privilege level (PM0223 §2.1.3).
+    control-npriv:
+      "0": privileged
+      "1": unprivileged
+    # PRIMASK.PM – configurable-exception priority mask (PM0223 §2.1.3).
+    primask-pm:
+      "0": no effect; all configurable-priority exceptions enabled
+      "1": all configurable-priority exceptions masked
+    # SCR.SLEEPDEEP – selects sleep mode depth (PM0223 §4.4.6).
+    scr-sleepdeep:
+      "0": sleep mode (stop processor clock)
+      "1": deep sleep mode (ultra low-power stop or standby)
+    # SCR.SLEEPONEXIT – sleep on return from exception handler to thread mode (PM0223 §4.4.6).
+    scr-sleeponexit:
+      "0": do not sleep on return to thread mode
+      "1": enter sleep on ISR return to thread mode
+    # SCR.SEVONPEND – event generation from new pending interrupts for WFE (PM0223 §4.4.6).
+    scr-sevonpend:
+      "0": only enabled interrupts or events wake processor from WFE
+      "1": any new pending interrupt triggers an event and wakes processor from WFE
+    # AIRCR.ENDIANNESS – data memory endianness reported by hardware (PM0223 §4.4.8).
+    aircr-endianness:
+      "0": little-endian
+      "1": big-endian
+    # SysTick CSR.CLKSOURCE – timer clock source selection (PM0223 §4.5.1).
+    systick-clksource:
+      "0": external reference clock
+      "1": processor (AHB) clock
+    # MPU_RASR SIZE[4:0] – region size = 2^(SIZE+1) bytes; minimum SIZE=7 (256B) (PM0223 Table 35).
+    mpu-size:
+      "00111": 256B
+      "01000": 512B
+      "01001": 1KB
+      "01010": 2KB
+      "01011": 4KB
+      "01100": 8KB
+      "01101": 16KB
+      "01110": 32KB
+      "01111": 64KB
+      "10000": 128KB
+      "10001": 256KB
+      "10010": 512KB
+      "10011": 1MB
+      "10100": 2MB
+      "10101": 4MB
+      "10110": 8MB
+      "10111": 16MB
+      "11000": 32MB
+      "11001": 64MB
+      "11010": 128MB
+      "11011": 256MB
+      "11100": 512MB
+      "11101": 1GB
+      "11110": 2GB
+      "11111": 4GB
+exceptions:
+  vector-table:
+    reset-address: 0x00000000
+    alignment-bytes: 128
+    entry-size-bytes: 4
+    lsb-must-be-set: true
+  stack-frame:
+    words: 8
+    alignment-bytes: 8
+    layout:
+      - offset: "0x00"
+        field: R0
+      - offset: "0x04"
+        field: R1
+      - offset: "0x08"
+        field: R2
+      - offset: "0x0C"
+        field: R3
+      - offset: "0x10"
+        field: R12
+      - offset: "0x14"
+        field: LR
+      - offset: "0x18"
+        field: PC
+      - offset: "0x1C"
+        field: xPSR
+  exc-return:
+    - value: 0xFFFFFFF1
+      return-to: Handler mode
+      stack: MSP
+    - value: 0xFFFFFFF9
+      return-to: Thread mode
+      stack: MSP
+    - value: 0xFFFFFFFD
+      return-to: Thread mode
+      stack: PSP
+  entries:
+    - number: 1
+      name: Reset
+      irq: null
+      vector-offset: "0x00000004"
+      fixed-priority: -3
+      configurable-priority: false
+      activation: asynchronous
+    - number: 2
+      name: NMI
+      irq: -14
+      vector-offset: "0x00000008"
+      fixed-priority: -2
+      configurable-priority: false
+      activation: asynchronous
+    - number: 3
+      name: HardFault
+      irq: -13
+      vector-offset: "0x0000000C"
+      fixed-priority: -1
+      configurable-priority: false
+      activation: synchronous
+    - number: "4-10"
+      name: Reserved
+      irq: null
+      vector-offset: "0x00000010-0x00000028"
+      fixed-priority: null
+      configurable-priority: false
+      note: Architecturally reserved; vector table slots must not be used by application software.
+    - number: 11
+      name: SVCall
+      irq: -5
+      vector-offset: "0x0000002C"
+      fixed-priority: null
+      configurable-priority: true
+      activation: synchronous
+    - number: "12-13"
+      name: Reserved
+      irq: null
+      vector-offset: "0x00000030-0x00000034"
+      fixed-priority: null
+      configurable-priority: false
+      note: Architecturally reserved; vector table slots must not be used by application software.
+    - number: 14
+      name: PendSV
+      irq: -2
+      vector-offset: "0x00000038"
+      fixed-priority: null
+      configurable-priority: true
+      activation: asynchronous
+    - number: 15
+      name: SysTick
+      irq: -1
+      vector-offset: "0x0000003C"
+      fixed-priority: null
+      configurable-priority: true
+      activation: asynchronous
+    - number: "16-47"
+      name: IRQ0-IRQ31
+      irq: "0-31"
+      vector-offset: "0x00000040-0x000000BC"
+      fixed-priority: null
+      configurable-priority: true
+      activation: asynchronous
+      note: "32 external interrupts; priority configurable via NVIC_IPR0-7 bits[7:6] of each byte (4 levels: 0, 64, 128, 192)."
