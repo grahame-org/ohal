@@ -13,6 +13,7 @@ find "${REPO_ROOT}" \
 
 echo "=== clang-format ==="
 find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" "${REPO_ROOT}/test_project" \
+    -path "*/build" -prune -o \
     \( -name '*.hpp' -o -name '*.cpp' \) \
     -print0 | xargs -0 clang-format --dry-run --Werror
 
