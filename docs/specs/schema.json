@@ -135,6 +135,18 @@
           }
         }
       }
+    },
+    "nvic": {
+      "description": "Nested Vectored Interrupt Controller configuration and vector table.",
+      "$ref": "#/$defs/nvic"
+    },
+    "exti": {
+      "description": "Extended Interrupt and Event Controller line connections.",
+      "$ref": "#/$defs/exti"
+    },
+    "gpio-exti": {
+      "description": "GPIO external interrupt and wake-up line capability metadata.",
+      "$ref": "#/$defs/gpio-exti"
     }
   },
   "$defs": {
@@ -439,6 +451,10 @@
           "type": "array",
           "items": { "$ref": "#/$defs/register-item" },
           "minItems": 1
+        },
+        "interrupt-events": {
+          "description": "Structured interrupt event metadata for this peripheral, including per-event flag/enable/clear information and low-power mode behaviour.",
+          "$ref": "#/$defs/peripheral-interrupt-events"
         }
       }
     },
@@ -484,6 +500,276 @@
       "minProperties": 1,
       "maxProperties": 1,
       "additionalProperties": { "$ref": "#/$defs/peripheral" }
+    },
+    "peripheral-interrupt-events": {
+      "description": "Structured interrupt event metadata for a peripheral, extracted from the reference manual interrupt-request table.",
+      "type": "object",
+      "required": ["events"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the interrupt event table.",
+          "type": "string"
+        },
+        "events": {
+          "description": "List of interrupt event descriptors.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/interrupt-event" },
+          "minItems": 1
+        },
+        "low-power-modes": { "$ref": "#/$defs/interrupt-low-power-modes" }
+      }
+    },
+    "interrupt-event": {
+      "description": "A single interrupt event with its status flag, enable bit, clear method, and low-power mode exit behaviour.",
+      "type": "object",
+      "required": ["event", "flag", "enable-bit", "clear-method"],
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "description": "Human-readable name of the interrupt event.",
+          "type": "string"
+        },
+        "flag": {
+          "description": "Status flag name in the ISR register.",
+          "type": "string"
+        },
+        "enable-bit": {
+          "description": "Interrupt enable bit or bit-group name in the control register.",
+          "type": "string"
+        },
+        "clear-method": {
+          "description": "How to clear the interrupt flag.",
+          "type": "string"
+        },
+        "exit-sleep": {
+          "description": "Whether this interrupt can wake the MCU from Sleep mode.",
+          "type": "boolean"
+        },
+        "exit-stop": {
+          "description": "Whether this interrupt can wake the MCU from Stop mode.",
+          "type": "boolean"
+        },
+        "exit-standby": {
+          "description": "Whether this interrupt can wake the MCU from Standby mode.",
+          "type": "boolean"
+        },
+        "notes": {
+          "description": "Optional free-text annotation for this interrupt event.",
+          "type": "string"
+        }
+      }
+    },
+    "interrupt-low-power-modes": {
+      "description": "Describes peripheral interrupt behaviour in each low-power mode.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sleep": {
+          "description": "Interrupt behaviour in Sleep mode.",
+          "type": "string"
+        },
+        "stop": {
+          "description": "Interrupt behaviour in Stop mode.",
+          "type": "string"
+        },
+        "standby": {
+          "description": "Interrupt behaviour in Standby mode.",
+          "type": "string"
+        }
+      }
+    },
+    "nvic": {
+      "description": "Nested Vectored Interrupt Controller configuration and vector table.",
+      "type": "object",
+      "required": ["priority-bits", "priority-levels", "maskable-channels", "vectors"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the NVIC.",
+          "type": "string"
+        },
+        "priority-bits": {
+          "description": "Number of priority bits implemented in hardware.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority-levels": {
+          "description": "Number of programmable priority levels (2^priority-bits).",
+          "type": "integer",
+          "minimum": 2
+        },
+        "maskable-channels": {
+          "description": "Number of maskable (peripheral) interrupt channels.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "systick-calibration": {
+          "description": "SysTick TENMS calibration value: the number of SysTick ticks for 10 ms at the SysTick reference clock frequency.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "system-exceptions": {
+          "description": "Cortex-M system exceptions (non-maskable and fixed-priority entries).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/nvic-system-exception" }
+        },
+        "vectors": {
+          "description": "Peripheral (maskable) interrupt vectors ordered by IRQ position number.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/nvic-vector" },
+          "minItems": 1
+        }
+      }
+    },
+    "nvic-system-exception": {
+      "description": "A Cortex-M system exception entry.",
+      "type": "object",
+      "required": ["acronym", "priority", "priority-type", "address"],
+      "additionalProperties": false,
+      "properties": {
+        "acronym": {
+          "description": "Exception handler name as used in startup code (e.g. 'HardFault_Handler').",
+          "type": "string"
+        },
+        "priority": {
+          "description": "Exception priority value. Negative for fixed-priority exceptions (e.g. -3 = Reset); non-negative for settable ones.",
+          "type": "integer"
+        },
+        "priority-type": {
+          "description": "Whether the priority is fixed by hardware or configurable in software.",
+          "type": "string",
+          "enum": ["fixed", "settable"]
+        },
+        "description": {
+          "description": "Human-readable description of the exception.",
+          "type": "string"
+        },
+        "address": {
+          "description": "Vector table address of this exception.",
+          "type": "string"
+        }
+      }
+    },
+    "nvic-vector": {
+      "description": "A peripheral (maskable) interrupt vector entry.",
+      "type": "object",
+      "required": ["position", "acronym", "description", "address"],
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "IRQ number — 0-based position in the vector table after the system exceptions.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "acronym": {
+          "description": "Interrupt handler name as used in startup code.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Human-readable description of what triggers this interrupt.",
+          "type": "string"
+        },
+        "exti-lines": {
+          "description": "EXTI line numbers that are combined into this interrupt vector, if any.",
+          "type": "array",
+          "items": { "type": "integer", "minimum": 0 }
+        },
+        "sub-families": {
+          "description": "Sub-families for which this vector is present. Omit if present on all sub-families.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "address": {
+          "description": "Vector table address of this interrupt.",
+          "type": "string"
+        }
+      }
+    },
+    "exti": {
+      "description": "Extended Interrupt and Event Controller line connection table.",
+      "type": "object",
+      "required": ["lines"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the EXTI line table.",
+          "type": "string"
+        },
+        "lines": {
+          "description": "EXTI line definitions ordered by line number.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/exti-line" },
+          "minItems": 1
+        }
+      }
+    },
+    "exti-line": {
+      "description": "A single EXTI line connection entry.",
+      "type": "object",
+      "required": ["line", "source", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "description": "EXTI line number.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "source": {
+          "description": "Peripheral or signal connected to this EXTI line.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Configurable lines have EXTI pending bits cleared by writing 1 to EXTI_RPR1/EXTI_FPR1. Direct lines have no EXTI pending bit and are cleared in the peripheral.",
+          "type": "string",
+          "enum": ["configurable", "direct"]
+        },
+        "notes": {
+          "description": "Optional free-text annotation for this EXTI line.",
+          "type": "string"
+        },
+        "reserved-on": {
+          "description": "Device identifiers (e.g. 'STM32U031xx') on which this EXTI line is reserved and not implemented.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "gpio-exti": {
+      "description": "GPIO external interrupt and wake-up capability metadata.",
+      "type": "object",
+      "required": ["exti-lines", "supported-ports"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation.",
+          "type": "string"
+        },
+        "exti-lines": {
+          "description": "EXTI line range used for GPIO interrupts, expressed as an inclusive range string (e.g. '0-15').",
+          "type": "string"
+        },
+        "supported-ports": {
+          "description": "GPIO port identifiers that support external interrupt via EXTI (e.g. 'PA', 'PB').",
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "pin-modes-allowed": {
+          "description": "GPIO modes in which external interrupt capability is supported.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "pin-modes-forbidden": {
+          "description": "GPIO modes in which external interrupt capability is not supported.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
     }
   }
 }

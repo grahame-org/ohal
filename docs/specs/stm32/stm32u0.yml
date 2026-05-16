@@ -1,4 +1,4 @@
-spec-version: "1.0.0"
+spec-version: "1.1.0"
 
 vendor: STMicroelectronics
 
@@ -3200,6 +3200,140 @@ peripherals:
                 width: 4
                 access: rw
                 settings: *uart-prescaler
+      interrupt-events:
+        reference:
+          section: 34.7
+          tables: [208]
+        note: >-
+          Applies to USART and UART instances.
+          Stop-mode wake-up requires the instance to support it (see §34.4).
+          All DMA requests must be disabled before entering Sleep/Stop/Standby.
+        events:
+          - event: Transmit data register empty
+            flag: TXE
+            enable-bit: TXEIE
+            clear-method: Write TDR
+            exit-sleep: true
+            exit-stop: false
+          - event: Transmit FIFO not full
+            flag: TXFNF
+            enable-bit: TXFNFIE
+            clear-method: TXFIFO full
+            exit-stop: false
+          - event: Transmit FIFO empty
+            flag: TXFE
+            enable-bit: TXFEIE
+            clear-method: Write TDR or write 1 in TXFRQ
+            exit-sleep: true
+          - event: Transmit FIFO threshold reached
+            flag: TXFT
+            enable-bit: TXFTIE
+            clear-method: Write TDR
+            exit-sleep: true
+            notes: Writing TDR clears TXFT only if empty locations < TXFTCFG[2:0]
+          - event: CTS interrupt
+            flag: CTSIF
+            enable-bit: CTSIE
+            clear-method: Write 1 in CTSCF
+            exit-stop: false
+          - event: Transmission complete
+            flag: TC
+            enable-bit: TCIE
+            clear-method: Write TDR or write 1 in TCCF
+            exit-stop: false
+          - event: Transmission complete before guard time
+            flag: TCBGT
+            enable-bit: TCBGTIE
+            clear-method: Write TDR or write 1 in TCBGT
+            exit-stop: false
+          - event: Receive data register not empty
+            flag: RXNE
+            enable-bit: RXNEIE
+            clear-method: Read RDR or write 1 in RXFRQ
+            exit-sleep: true
+            exit-stop: true
+          - event: Receive FIFO not empty
+            flag: RXFNE
+            enable-bit: RXFNEIE
+            clear-method: Read RDR until RXFIFO empty or write 1 in RXFRQ
+            exit-sleep: true
+          - event: Receive FIFO full
+            flag: RXFF
+            enable-bit: RXFFIE
+            clear-method: Read RDR
+            exit-sleep: true
+          - event: Receive FIFO threshold reached
+            flag: RXFT
+            enable-bit: RXFTIE
+            clear-method: Read RDR
+            exit-sleep: true
+          - event: Overrun error detected
+            flag: ORE
+            enable-bit: RXNEIE_or_RXFNEIE
+            clear-method: Write 1 in ORECF
+            exit-stop: false
+          - event: Idle line detected
+            flag: IDLE
+            enable-bit: IDLEIE
+            clear-method: Write 1 in IDLECF
+            exit-stop: false
+          - event: Parity error
+            flag: PE
+            enable-bit: PEIE
+            clear-method: Write 1 in PECF
+            exit-stop: false
+          - event: LIN break
+            flag: LBDF
+            enable-bit: LBDIE
+            clear-method: Write 1 in LBDCF
+            exit-stop: false
+          - event: Noise error (multibuffer communication)
+            flag: NE
+            enable-bit: EIE
+            clear-method: Write 1 in NFCF
+            exit-stop: false
+          - event: Overrun error (multibuffer communication)
+            flag: ORE
+            enable-bit: EIE
+            clear-method: Write 1 in ORECF
+            notes: When OVRDIS = 0
+          - event: Framing error (multibuffer communication)
+            flag: FE
+            enable-bit: EIE
+            clear-method: Write 1 in FECF
+          - event: Character match
+            flag: CMF
+            enable-bit: CMIE
+            clear-method: Write 1 in CMCF
+            exit-stop: false
+          - event: Receiver timeout
+            flag: RTOF
+            enable-bit: RTOFIE
+            clear-method: Write 1 in RTOCCF
+            exit-stop: false
+          - event: End of Block
+            flag: EOBF
+            enable-bit: EOBIE
+            clear-method: Write 1 in EOBCF
+            exit-stop: false
+          - event: Wake-up from low-power mode
+            flag: WUF
+            enable-bit: WUFIE
+            clear-method: Write 1 in WUC
+            exit-sleep: true
+          - event: SPI slave underrun error
+            flag: UDR
+            enable-bit: EIE
+            clear-method: Write 1 in UDRCF
+        low-power-modes:
+          sleep: No effect. USART interrupts cause the device to exit Sleep mode.
+          stop: >-
+            USART content is kept. Can wake the MCU from Stop mode when clocked by
+            an oscillator available in Stop mode. Instances not functional in a given
+            Stop mode must be disabled before entering it.
+          standby: >-
+            USART peripheral is powered down and must be reinitialized after exiting
+            Standby mode.
   - lpuart:
       reference:
         sections: [34.4, 35.7]
@@ -4022,6 +4156,113 @@ peripherals:
                 width: 4
                 access: rw
                 settings: *uart-prescaler
+      interrupt-events:
+        reference:
+          section: 35.6
+          tables: [218]
+        note: >-
+          Stop-mode wake-up requires the instance to support it (see §35.3).
+        events:
+          - event: Transmit data register empty
+            flag: TXE
+            enable-bit: TXEIE
+            clear-method: Write TDR
+            exit-sleep: true
+            exit-stop: false
+          - event: Transmit FIFO not full
+            flag: TXFNF
+            enable-bit: TXFNFIE
+            clear-method: TXFIFO full
+            exit-stop: false
+          - event: Transmit FIFO empty
+            flag: TXFE
+            enable-bit: TXFEIE
+            clear-method: Write TDR or write 1 in TXFRQ
+            exit-sleep: true
+          - event: Transmit FIFO threshold reached
+            flag: TXFT
+            enable-bit: TXFTIE
+            clear-method: Write TDR
+            exit-sleep: true
+          - event: CTS interrupt
+            flag: CTSIF
+            enable-bit: CTSIE
+            clear-method: Write 1 in CTSCF
+            exit-stop: false
+          - event: Transmission complete
+            flag: TC
+            enable-bit: TCIE
+            clear-method: Write TDR or write 1 in TCCF
+            exit-stop: false
+          - event: Receive data register not empty
+            flag: RXNE
+            enable-bit: RXNEIE
+            clear-method: Read RDR or write 1 in RXFRQ
+            exit-sleep: true
+            exit-stop: true
+          - event: Receive FIFO not empty
+            flag: RXFNE
+            enable-bit: RXFNEIE
+            clear-method: Read RDR until RXFIFO empty or write 1 in RXFRQ
+            exit-sleep: true
+          - event: Receive FIFO full
+            flag: RXFF
+            enable-bit: RXFFIE
+            clear-method: Read RDR
+            exit-sleep: true
+          - event: Receive FIFO threshold reached
+            flag: RXFT
+            enable-bit: RXFTIE
+            clear-method: Read RDR
+            exit-sleep: true
+          - event: Overrun error detected
+            flag: ORE
+            enable-bit: RXNEIE_or_RXFNEIE
+            clear-method: Write 1 in ORECF
+            exit-stop: false
+          - event: Idle line detected
+            flag: IDLE
+            enable-bit: IDLEIE
+            clear-method: Write 1 in IDLECF
+            exit-stop: false
+          - event: Parity error
+            flag: PE
+            enable-bit: PEIE
+            clear-method: Write 1 in PECF
+            exit-stop: false
+          - event: Noise error (multibuffer communication)
+            flag: NE
+            enable-bit: EIE
+            clear-method: Write 1 in NFCF
+            exit-stop: false
+          - event: Overrun error (multibuffer communication)
+            flag: ORE
+            enable-bit: EIE
+            clear-method: Write 1 in ORECF
+            notes: When OVRDIS = 0
+          - event: Framing error (multibuffer communication)
+            flag: FE
+            enable-bit: EIE
+            clear-method: Write 1 in FECF
+          - event: Character match
+            flag: CMF
+            enable-bit: CMIE
+            clear-method: Write 1 in CMCF
+            exit-stop: false
+          - event: Wake-up from low-power mode
+            flag: WUF
+            enable-bit: WUFIE
+            clear-method: Write 1 in WUC
+            exit-sleep: true
+        low-power-modes:
+          sleep: No effect. LPUART interrupts cause the device to exit Sleep mode.
+          stop: >-
+            LPUART content is kept. Can wake the MCU from Stop mode when clocked by
+            an oscillator available in Stop mode. Instances not functional in a given
+            Stop mode must be disabled before entering it.
+          standby: >-
+            LPUART peripheral is powered down and must be reinitialized after exiting
+            Standby mode.
   - tim1:
       reference:
         sections: [23.4]
@@ -10789,3 +11030,426 @@ peripherals:
                 access: rw
                 note: Capture/compare 4 value
                 settings: ~
+      interrupt-events:
+        reference:
+          section: 27.6
+          tables: [159]
+        note: >-
+          All events are enabled via the LPTIM_DIER register.
+          An interrupt is not asserted if the enable bit is set after the flag is already set.
+          Direction-change events (UP/DOWN) only exist on LPTIM instances with encoder mode.
+          Stop-mode wake-up is only available on LPTIM instances supporting that feature (§27.3).
+        events:
+          - event: Compare match
+            flag: CCxIF
+            enable-bit: CCxIE
+            clear-method: Write 1 to CCxCF
+            exit-sleep: true
+            exit-stop: true
+          - event: Input capture
+            flag: CCxIF
+            enable-bit: CCxIE
+            clear-method: Write 1 to CCxCF
+            exit-sleep: true
+            exit-stop: true
+          - event: Over-capture
+            flag: CCxOF
+            enable-bit: CCxOIE
+            clear-method: Write 1 to CCxOCF
+            exit-sleep: true
+            exit-stop: true
+          - event: Auto-reload match
+            flag: ARRM
+            enable-bit: ARRMIE
+            clear-method: Write 1 to ARRMCF
+            exit-sleep: true
+            exit-stop: true
+          - event: External trigger event
+            flag: EXTTRIG
+            enable-bit: EXTTRIGIE
+            clear-method: Write 1 to EXTTRIGCF
+            exit-sleep: true
+            exit-stop: true
+          - event: Auto-reload register update OK
+            flag: ARROK
+            enable-bit: ARROKIE
+            clear-method: Write 1 to ARROKCF
+            exit-sleep: true
+            exit-stop: true
+          - event: Capture/compare register update OK
+            flag: CMPxOK
+            enable-bit: CMPxOKIE
+            clear-method: Write 1 to CMPxOKCF
+            exit-sleep: true
+            exit-stop: true
+          - event: Direction change to up
+            flag: UP
+            enable-bit: UPIE
+            clear-method: Write 1 to UPCF
+            exit-sleep: true
+            exit-stop: true
+            notes: Only on LPTIM instances with encoder mode support
+          - event: Direction change to down
+            flag: DOWN
+            enable-bit: DOWNIE
+            clear-method: Write 1 to DOWNCF
+            exit-sleep: true
+            exit-stop: true
+            notes: Only on LPTIM instances with encoder mode support
+          - event: Update event
+            flag: UE
+            enable-bit: UEIE
+            clear-method: Write 1 to UECF
+            exit-sleep: true
+            exit-stop: true
+          - event: Repetition register update OK
+            flag: REPOK
+            enable-bit: REPOKIE
+            clear-method: Write 1 to REPOKCF
+            exit-sleep: true
+            exit-stop: true
+        low-power-modes:
+          sleep: No effect. LPTIM interrupts cause the device to exit Sleep mode.
+          stop: >-
+            If the LPTIM is clocked by an oscillator available in Stop mode, LPTIM is
+            functional and the interrupts cause the device to exit Stop mode.
+          standby: >-
+            The LPTIM peripheral is powered down and must be reinitialized after
+            exiting Standby mode.
+
+nvic:
+  reference:
+    section: "11"
+    tables: [55]
+  priority-bits: 2
+  priority-levels: 4
+  maskable-channels: 32
+  systick-calibration: 1000
+  system-exceptions:
+    - acronym: Reset
+      priority: -3
+      priority-type: fixed
+      address: "0x0000_0004"
+    - acronym: NMI_Handler
+      priority: -2
+      priority-type: fixed
+      description: >-
+        Non-maskable interrupt. SRAM parity error, flash ECC double error,
+        HSE CSS and LSE CSS are linked to the NMI vector.
+      address: "0x0000_0008"
+    - acronym: HardFault_Handler
+      priority: -1
+      priority-type: fixed
+      description: All class of fault
+      address: "0x0000_000C"
+    - acronym: SVC_Handler
+      priority: 3
+      priority-type: settable
+      description: System service call via SVC instruction
+      address: "0x0000_002C"
+    - acronym: PendSV_Handler
+      priority: 5
+      priority-type: settable
+      description: Pendable request for system service
+      address: "0x0000_0038"
+    - acronym: SysTick_Handler
+      priority: 6
+      priority-type: settable
+      description: System tick timer
+      address: "0x0000_003C"
+  vectors:
+    - position: 0
+      acronym: WWDG_IWDG
+      description: Window watchdog and independent watchdog interrupt
+      address: "0x0000_0040"
+    - position: 1
+      acronym: PVD_PVM
+      description: PVD/PVM1/PVM2/PVM4 interrupt (combined with EXTI lines 16, 19, 20, 21)
+      exti-lines: [16, 19, 20, 21]
+      address: "0x0000_0044"
+    - position: 2
+      acronym: RTC_TAMP
+      description: RTC and TAMP interrupts (combined EXTI lines 19 & 21)
+      exti-lines: [19, 21]
+      address: "0x0000_0048"
+    - position: 3
+      acronym: FLASH
+      description: Flash global interrupt
+      address: "0x0000_004C"
+    - position: 4
+      acronym: RCC_CRS
+      description: RCC and CRS global interrupt
+      address: "0x0000_0050"
+    - position: 5
+      acronym: EXTI0_1
+      description: EXTI lines 0 & 1 interrupt
+      exti-lines: [0, 1]
+      address: "0x0000_0054"
+    - position: 6
+      acronym: EXTI2_3
+      description: EXTI lines 2 & 3 interrupt
+      exti-lines: [2, 3]
+      address: "0x0000_0058"
+    - position: 7
+      acronym: EXTI4_15
+      description: EXTI lines 4 to 15 interrupt
+      exti-lines: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      address: "0x0000_005C"
+    - position: 8
+      acronym: USB
+      description: USB global interrupt (combined with EXTI line 33)
+      exti-lines: [33]
+      sub-families: [stm32u073, stm32u083]
+      address: "0x0000_0060"
+    - position: 9
+      acronym: DMA1_Channel1
+      description: DMA1 channel 1 interrupt
+      address: "0x0000_0064"
+    - position: 10
+      acronym: DMA1_Channel2_3
+      description: DMA1 channel 2 & 3 interrupts
+      address: "0x0000_0068"
+    - position: 11
+      acronym: DMA1_Channel4_5_6_7_DMAMUX_DMA2_Channel1_2_3_4_5
+      description: >-
+        DMA1 channel 4, 5, 6, 7, DMAMUX, DMA2 channel 1, 2, 3, 4, 5 interrupts
+      address: "0x0000_006C"
+    - position: 12
+      acronym: ADC_COMP
+      description: ADC and COMP interrupts (ADC combined with EXTI lines 17 & 18)
+      exti-lines: [17, 18]
+      address: "0x0000_0070"
+    - position: 13
+      acronym: TIM1_BRK_UP_TRG_COM
+      description: TIM1 break, update, trigger and commutation interrupts
+      address: "0x0000_0074"
+    - position: 14
+      acronym: TIM1_CC
+      description: TIM1 Capture Compare interrupt
+      address: "0x0000_0078"
+    - position: 15
+      acronym: TIM2
+      description: TIM2 global interrupt
+      address: "0x0000_007C"
+    - position: 16
+      acronym: TIM3
+      description: TIM3 global interrupt
+      address: "0x0000_0080"
+    - position: 17
+      acronym: TIM6_DAC_LPTIM1
+      description: TIM6, LPTIM1 and DAC global interrupt (combined with EXTI line 29)
+      exti-lines: [29]
+      address: "0x0000_0084"
+    - position: 18
+      acronym: TIM7_LPTIM2
+      description: TIM7 and LPTIM2 global interrupt (combined with EXTI line 30)
+      exti-lines: [30]
+      address: "0x0000_0088"
+    - position: 19
+      acronym: TIM15_LPTIM3
+      description: TIM15 and LPTIM3 global interrupt (combined with EXTI line 29)
+      exti-lines: [29]
+      sub-families: [stm32u073, stm32u083]
+      address: "0x0000_008C"
+    - position: 20
+      acronym: TIM16
+      description: TIM16 global interrupt
+      address: "0x0000_0090"
+    - position: 21
+      acronym: TSC
+      description: TSC global interrupt
+      address: "0x0000_0094"
+    - position: 22
+      acronym: LCD
+      description: LCD global interrupt (combined with EXTI line 32)
+      exti-lines: [32]
+      sub-families: [stm32u073, stm32u083]
+      address: "0x0000_0098"
+    - position: 23
+      acronym: I2C1
+      description: I2C1 global interrupt (combined with EXTI line 23)
+      exti-lines: [23]
+      address: "0x0000_009C"
+    - position: 24
+      acronym: I2C2_I2C3_I2C4
+      description: I2C2/3/4 global interrupt
+      address: "0x0000_00A0"
+    - position: 25
+      acronym: SPI1
+      description: SPI1 global interrupt
+      address: "0x0000_00A4"
+    - position: 26
+      acronym: SPI2_SPI3
+      description: SPI2/3 global interrupt
+      address: "0x0000_00A8"
+    - position: 27
+      acronym: USART1
+      description: USART1 global interrupt (combined with EXTI line 25)
+      exti-lines: [25]
+      address: "0x0000_00AC"
+    - position: 28
+      acronym: USART2_LPUART2
+      description: USART2 and LPUART2 global interrupt (combined with EXTI lines 26 & 35)
+      exti-lines: [26, 35]
+      address: "0x0000_00B0"
+    - position: 29
+      acronym: USART3_LPUART1
+      description: USART3 and LPUART1 global interrupt (combined with EXTI lines 24 & 28)
+      exti-lines: [24, 28]
+      address: "0x0000_00B4"
+    - position: 30
+      acronym: USART4_LPUART3
+      description: USART4 and LPUART3 global interrupt (combined with EXTI lines 20 & 34)
+      exti-lines: [20, 34]
+      address: "0x0000_00B8"
+    - position: 31
+      acronym: AES_RNG
+      description: AES and RNG global interrupts
+      address: "0x0000_00BC"
+
+exti:
+  reference:
+    section: "12"
+    tables: [59]
+  note: >-
+    Lines 18, 19, 22, 26, 32, 36 are reserved on STM32U031xx devices.
+    Lines 0-15 are GPIO configurable events; source port selected via EXTI_EXTICRx.
+    Configurable lines have pending bits in EXTI_RPR1/EXTI_FPR1 (cleared by writing 1).
+    Direct lines have no EXTI pending bit; cleared in the peripheral.
+  lines:
+    - line: 0
+      source: GPIO
+      type: configurable
+      notes: Port selected via EXTI_EXTICR1.EXTI0
+    - line: 1
+      source: GPIO
+      type: configurable
+      notes: Port selected via EXTI_EXTICR1.EXTI1
+    - line: 2
+      source: GPIO
+      type: configurable
+      notes: Port selected via EXTI_EXTICR1.EXTI2
+    - line: 3
+      source: GPIO
+      type: configurable
+      notes: Port selected via EXTI_EXTICR1.EXTI3
+    - line: 4
+      source: GPIO
+      type: configurable
+    - line: 5
+      source: GPIO
+      type: configurable
+    - line: 6
+      source: GPIO
+      type: configurable
+    - line: 7
+      source: GPIO
+      type: configurable
+    - line: 8
+      source: GPIO
+      type: configurable
+    - line: 9
+      source: GPIO
+      type: configurable
+    - line: 10
+      source: GPIO
+      type: configurable
+    - line: 11
+      source: GPIO
+      type: configurable
+    - line: 12
+      source: GPIO
+      type: configurable
+    - line: 13
+      source: GPIO
+      type: configurable
+    - line: 14
+      source: GPIO
+      type: configurable
+    - line: 15
+      source: GPIO
+      type: configurable
+    - line: 16
+      source: PVD output
+      type: configurable
+    - line: 17
+      source: COMP1 output
+      type: configurable
+    - line: 18
+      source: COMP2 output
+      type: configurable
+      reserved-on: [stm32u031]
+    - line: 19
+      source: VDDUSB monitoring
+      type: configurable
+      reserved-on: [stm32u031]
+    - line: 20
+      source: ADC supply monitoring
+      type: configurable
+    - line: 21
+      source: DAC supply monitoring
+      type: configurable
+    - line: 22
+      source: LCD wake-up
+      type: direct
+      reserved-on: [stm32u031]
+    - line: 23
+      source: I2C3 wake-up
+      type: direct
+    - line: 24
+      source: LPTIM1 wake-up
+      type: direct
+    - line: 25
+      source: LPTIM2 wake-up
+      type: direct
+    - line: 26
+      source: LPTIM3 wake-up
+      type: direct
+      reserved-on: [stm32u031]
+    - line: 27
+      source: LSE_CSS
+      type: direct
+    - line: 28
+      source: RTC
+      type: direct
+    - line: 29
+      source: TAMP
+      type: direct
+    - line: 30
+      source: LPUART1 wake-up
+      type: direct
+    - line: 31
+      source: LPUART2 wake-up
+      type: direct
+    - line: 32
+      source: LPUART3 wake-up
+      type: direct
+      reserved-on: [stm32u031]
+    - line: 33
+      source: I2C1 wake-up
+      type: direct
+    - line: 34
+      source: USART1 wake-up
+      type: direct
+    - line: 35
+      source: USART2 wake-up
+      type: direct
+    - line: 36
+      source: USB
+      type: direct
+      reserved-on: [stm32u031]
+    - line: 37
+      source: WWDG
+      type: direct
+
+gpio-exti:
+  reference:
+    section: "7.3.9"
+  note: >-
+    All GPIO ports (PA–PF) support external interrupt via EXTI lines 0-15.
+    The pin must NOT be configured in analog mode to use interrupt capability.
+    Port/pin routing to EXTI line is controlled by EXTI_EXTICRx registers.
+  exti-lines: "0-15"
+  supported-ports: [PA, PB, PC, PD, PE, PF]
+  pin-modes-allowed: [input, output, alternate_function]
+  pin-modes-forbidden: [analog]
