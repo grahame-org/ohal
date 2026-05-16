@@ -3244,7 +3244,7 @@ peripherals:
           - event: Transmission complete before guard time
             flag: TCBGT
             enable-bit: TCBGTIE
-            clear-method: Write TDR or write 1 in TCBGT
+            clear-method: Write TDR or write 1 in TCBGTCF
             exit-stop: false
           - event: Receive data register not empty
             flag: RXNE
@@ -3290,7 +3290,7 @@ peripherals:
           - event: Noise error (multibuffer communication)
             flag: NE
             enable-bit: EIE
-            clear-method: Write 1 in NFCF
+            clear-method: Write 1 in NECF
             exit-stop: false
           - event: Overrun error (multibuffer communication)
             flag: ORE
@@ -3309,7 +3309,7 @@ peripherals:
           - event: Receiver timeout
             flag: RTOF
             enable-bit: RTOFIE
-            clear-method: Write 1 in RTOCCF
+            clear-method: Write 1 in RTOCF
             exit-stop: false
           - event: End of Block
             flag: EOBF
@@ -3319,7 +3319,7 @@ peripherals:
           - event: Wake-up from low-power mode
             flag: WUF
             enable-bit: WUFIE
-            clear-method: Write 1 in WUC
+            clear-method: Write 1 in WUCF
             exit-sleep: true
           - event: SPI slave underrun error
             flag: UDR
@@ -4233,7 +4233,7 @@ peripherals:
           - event: Noise error (multibuffer communication)
             flag: NE
             enable-bit: EIE
-            clear-method: Write 1 in NFCF
+            clear-method: Write 1 in NECF
             exit-stop: false
           - event: Overrun error (multibuffer communication)
             flag: ORE
@@ -4252,7 +4252,7 @@ peripherals:
           - event: Wake-up from low-power mode
             flag: WUF
             enable-bit: WUFIE
-            clear-method: Write 1 in WUC
+            clear-method: Write 1 in WUCF
             exit-sleep: true
         low-power-modes:
           sleep: No effect. LPUART interrupts cause the device to exit Sleep mode.
@@ -11121,12 +11121,15 @@ nvic:
   reference:
     section: "11"
     tables: [55]
+  note: >-
+    System-exception priority numbers below are the architectural priority values
+    as listed in RM0503 table 55.
   priority-bits: 2
   priority-levels: 4
   maskable-channels: 32
   systick-calibration: 1000
   system-exceptions:
-    - acronym: Reset
+    - acronym: Reset_Handler
       priority: -3
       priority-type: fixed
       address: "0x0000_0004"
@@ -11169,8 +11172,8 @@ nvic:
       address: "0x0000_0044"
     - position: 2
       acronym: RTC_TAMP
-      description: RTC and TAMP interrupts (combined EXTI lines 19 & 21)
-      exti-lines: [19, 21]
+      description: RTC and TAMP interrupts (combined EXTI lines 28 & 29)
+      exti-lines: [28, 29]
       address: "0x0000_0048"
     - position: 3
       acronym: FLASH
@@ -11197,8 +11200,8 @@ nvic:
       address: "0x0000_005C"
     - position: 8
       acronym: USB
-      description: USB global interrupt (combined with EXTI line 33)
-      exti-lines: [33]
+      description: USB global interrupt (combined with EXTI line 36)
+      exti-lines: [36]
       sub-families: [stm32u073, stm32u083]
       address: "0x0000_0060"
     - position: 9
@@ -11237,18 +11240,23 @@ nvic:
       address: "0x0000_0080"
     - position: 17
       acronym: TIM6_DAC_LPTIM1
-      description: TIM6, LPTIM1 and DAC global interrupt (combined with EXTI line 29)
-      exti-lines: [29]
+      description: TIM6, LPTIM1 and DAC global interrupt (combined with EXTI line 24 for LPTIM1 wake-up)
+      exti-lines: [24]
       address: "0x0000_0084"
     - position: 18
       acronym: TIM7_LPTIM2
-      description: TIM7 and LPTIM2 global interrupt (combined with EXTI line 30)
-      exti-lines: [30]
+      description: TIM7 and LPTIM2 global interrupt (combined with EXTI line 25 for LPTIM2 wake-up)
+      exti-lines: [25]
       address: "0x0000_0088"
     - position: 19
+      acronym: TIM15
+      description: TIM15 global interrupt
+      sub-families: [stm32u031]
+      address: "0x0000_008C"
+    - position: 19
       acronym: TIM15_LPTIM3
-      description: TIM15 and LPTIM3 global interrupt (combined with EXTI line 29)
-      exti-lines: [29]
+      description: TIM15 and LPTIM3 global interrupt (combined with EXTI line 26 for LPTIM3 wake-up)
+      exti-lines: [26]
       sub-families: [stm32u073, stm32u083]
       address: "0x0000_008C"
     - position: 20
@@ -11261,14 +11269,14 @@ nvic:
       address: "0x0000_0094"
     - position: 22
       acronym: LCD
-      description: LCD global interrupt (combined with EXTI line 32)
-      exti-lines: [32]
+      description: LCD global interrupt (combined with EXTI line 22)
+      exti-lines: [22]
       sub-families: [stm32u073, stm32u083]
       address: "0x0000_0098"
     - position: 23
       acronym: I2C1
-      description: I2C1 global interrupt (combined with EXTI line 23)
-      exti-lines: [23]
+      description: I2C1 global interrupt (combined with EXTI line 33)
+      exti-lines: [33]
       address: "0x0000_009C"
     - position: 24
       acronym: I2C2_I2C3_I2C4
@@ -11284,23 +11292,23 @@ nvic:
       address: "0x0000_00A8"
     - position: 27
       acronym: USART1
-      description: USART1 global interrupt (combined with EXTI line 25)
-      exti-lines: [25]
+      description: USART1 global interrupt (combined with EXTI line 34)
+      exti-lines: [34]
       address: "0x0000_00AC"
     - position: 28
       acronym: USART2_LPUART2
-      description: USART2 and LPUART2 global interrupt (combined with EXTI lines 26 & 35)
-      exti-lines: [26, 35]
+      description: USART2 and LPUART2 global interrupt (combined with EXTI lines 31 & 35)
+      exti-lines: [31, 35]
       address: "0x0000_00B0"
     - position: 29
       acronym: USART3_LPUART1
-      description: USART3 and LPUART1 global interrupt (combined with EXTI lines 24 & 28)
-      exti-lines: [24, 28]
+      description: USART3 and LPUART1 global interrupt (combined with EXTI line 30 for LPUART1 wake-up)
+      exti-lines: [30]
       address: "0x0000_00B4"
     - position: 30
       acronym: USART4_LPUART3
-      description: USART4 and LPUART3 global interrupt (combined with EXTI lines 20 & 34)
-      exti-lines: [20, 34]
+      description: USART4 and LPUART3 global interrupt (combined with EXTI line 32 for LPUART3 wake-up)
+      exti-lines: [32]
       address: "0x0000_00B8"
     - position: 31
       acronym: AES_RNG

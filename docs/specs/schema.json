@@ -665,7 +665,7 @@
           "minimum": 0
         },
         "acronym": {
-          "description": "Interrupt handler name as used in startup code.",
+          "description": "IRQ acronym/stem from the vector table (e.g. 'WWDG_IWDG').",
           "type": "string"
         },
         "description": {
@@ -678,7 +678,7 @@
           "items": { "type": "integer", "minimum": 0 }
         },
         "sub-families": {
-          "description": "Sub-families for which this vector is present. Omit if present on all sub-families.",
+          "description": "Sub-families for which this vector entry is valid. Omit if valid on all sub-families. Use multiple entries with the same position to represent sub-family-specific variants.",
           "type": "array",
           "items": { "type": "string" }
         },
@@ -732,7 +732,7 @@
           "type": "string"
         },
         "reserved-on": {
-          "description": "Device identifiers (e.g. 'STM32U031xx') on which this EXTI line is reserved and not implemented.",
+          "description": "Sub-family identifiers (e.g. 'stm32u031') on which this EXTI line is reserved and not implemented.",
           "type": "array",
           "items": { "type": "string" }
         }
