@@ -2,9 +2,11 @@
 // → timer_impl.hpp.  The STM32U031 package header does NOT define
 // OHAL_STM32U0_ENABLE_LPTIM3, so kLptim3Base and Lptim3 are absent.
 #include <ohal/platforms/stm32u0/models/stm32u031r8t/timer.hpp>
+// STM32U0 family IRQ numbers are currently declared in this shared namespace path.
 #include <ohal/platforms/stm32u0/models/stm32u083/irq_numbers.hpp>
 
 #include <cstdint>
+#include <type_traits>
 
 #include <gtest/gtest.h>
 
@@ -27,6 +29,15 @@ namespace {
 namespace tim = ohal::platforms::stm32u0::stm32u083;
 // STM32U0 IRQ numbering is shared from the stm32u083 namespace implementation.
 namespace irq_wiring = ohal::platforms::stm32u0::stm32u083;
+
+template <typename T, typename = void>
+struct has_tim15_lptim3_irq : std::false_type {};
+
+template <typename T>
+struct has_tim15_lptim3_irq<T, std::void_t<decltype(T::Tim15Lptim3)>> : std::true_type {};
+
+static_assert(!has_tim15_lptim3_irq<irq_wiring::IrqNumber>::value,
+              "STM32U031 IRQ definitions must not expose Tim15Lptim3.");
 
 // ---------------------------------------------------------------------------
 // Static (compile-time) address assertions for a representative register in
