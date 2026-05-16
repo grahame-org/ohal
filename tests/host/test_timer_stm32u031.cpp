@@ -172,7 +172,7 @@ TEST_P(TimerStm32u031WiringTest, AddressMatchesHardwareBase) {
   EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 
-TEST(Stm32u031IrqVectorNumberTest, Tim15UsesIrqPosition19) {
+TEST(Stm32u031IrqVectorNumberTest, IrqNumberTim15_MapsToPosition19) {
   EXPECT_EQ(static_cast<uint8_t>(irq_wiring::IrqNumber::Tim15), 19U);
 }
 
