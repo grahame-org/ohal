@@ -2,19 +2,7 @@
   "release-type": "simple",
   "packages": {
     ".": {
-      "release-type": "simple",
-      "extra-files": [
-        {
-          "type": "json",
-          "path": "vcpkg.json",
-          "jsonpath": "$.version"
-        },
-        {
-          "type": "json",
-          "path": "ports/ohal/vcpkg.json",
-          "jsonpath": "$.version"
-        }
-      ]
+      "release-type": "simple"
     }
   }
 }

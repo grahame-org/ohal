@@ -17,6 +17,7 @@ jobs:
       pull-requests: write # required to open and update Release PRs
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       # Pin GitHub Actions to a full commit SHA; update this SHA intentionally when upgrading.
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
