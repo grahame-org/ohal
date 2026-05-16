@@ -33,7 +33,7 @@ the format manageable and the data reusable, three granularity levels should be 
 
 ```text
 docs/specs/
-├── schema.json                     ← common JSON Schema (family-level)
+├── schema-family.json              ← common JSON Schema (family-level)
 ├── schema-model.json               ← JSON Schema for device-model spec files ✅
 ├── future_improvements.md
 ├── common/
@@ -189,7 +189,7 @@ and adds vendor-specific constraints (e.g. family name prefix patterns, valid pe
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "allOf": [{ "$ref": "../schema.json" }],
+  "allOf": [{ "$ref": "../schema-family.json" }],
   "properties": {
     "vendor": { "const": "STMicroelectronics" },
     "family": {
@@ -202,7 +202,7 @@ and adds vendor-specific constraints (e.g. family name prefix patterns, valid pe
 ```
 
 The `lint.sh` validation step would look for a vendor-specific `schema.json` first and fall back to
-the common `docs/specs/schema.json` when none exists.
+the common `docs/specs/schema-family.json` when none exists.
 
 **Pros:**
 
