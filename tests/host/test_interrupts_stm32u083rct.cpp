@@ -28,6 +28,10 @@ TEST(Stm32u083InterruptTraitsTest, FamilyHasExti) {
   EXPECT_TRUE(ohal::exti::has_exti<Family>::value);
 }
 
+TEST(Stm32u083InterruptTraitsTest, FamilyHasSystemExceptionPriorityControl) {
+  EXPECT_TRUE(ohal::nvic::has_system_exception_priority_control<Family>::value);
+}
+
 TEST(Stm32u083InterruptTraitsTest, NvicPriorityBitsMatchSpecification) {
   EXPECT_EQ(ohal::nvic::nvic_priority_bits<Family>::value, 2U);
 }
@@ -88,6 +92,82 @@ TEST(Stm32u083InterruptWiringTest, ExtiLineFiveUsesExticr2Register) {
 TEST(Stm32u083InterruptWiringTest, ExtiLineThirteenUsesExticr4Register) {
   EXPECT_EQ(Pf13Line::Exticr::address,
             nvic_wiring::kSyscfgBase + nvic_wiring::kSyscfgExticr1Offset + (3U * sizeof(uint32_t)));
+}
+
+// ---------------------------------------------------------------------------
+// EXC_RETURN constants — ARMv6-M exception return magic values (PM0223 §2.3.7).
+// ---------------------------------------------------------------------------
+
+TEST(Stm32u083ExcReturnTest, HandlerMspValueMatchesArchSpec) {
+  EXPECT_EQ(ohal::irq::exc_return::kHandlerMsp, 0xFFFFFFF1U);
+}
+
+TEST(Stm32u083ExcReturnTest, ThreadMspValueMatchesArchSpec) {
+  EXPECT_EQ(ohal::irq::exc_return::kThreadMsp, 0xFFFFFFF9U);
+}
+
+TEST(Stm32u083ExcReturnTest, ThreadPspValueMatchesArchSpec) {
+  EXPECT_EQ(ohal::irq::exc_return::kThreadPsp, 0xFFFFFFFDU);
+}
+
+// ---------------------------------------------------------------------------
+// System exception (SHPR) wiring tests — verify register addresses and shifts.
+// ---------------------------------------------------------------------------
+
+using SVCallCtrl = ohal::nvic::SystemController<Family, nvic_wiring::SystemException::SVCall>;
+using PendSVCtrl = ohal::nvic::SystemController<Family, nvic_wiring::SystemException::PendSV>;
+using SysTickCtrl = ohal::nvic::SystemController<Family, nvic_wiring::SystemException::SysTick>;
+
+TEST(Stm32u083SystemExceptionWiringTest, SVCallUsesShpr2Register) {
+  EXPECT_EQ(SVCallCtrl::Shpr::address, nvic_wiring::kScbBase + nvic_wiring::kScbShpr2Offset);
+}
+
+TEST(Stm32u083SystemExceptionWiringTest, PendSVUsesShpr3Register) {
+  EXPECT_EQ(PendSVCtrl::Shpr::address, nvic_wiring::kScbBase + nvic_wiring::kScbShpr3Offset);
+}
+
+TEST(Stm32u083SystemExceptionWiringTest, SysTickUsesShpr3Register) {
+  EXPECT_EQ(SysTickCtrl::Shpr::address, nvic_wiring::kScbBase + nvic_wiring::kScbShpr3Offset);
+}
+
+TEST(Stm32u083SystemExceptionWiringTest, SVCallPriorityEncodedInBits31To30OfShpr2) {
+  EXPECT_EQ(SVCallCtrl::kPriorityEncodedShift, 30U);
+}
+
+TEST(Stm32u083SystemExceptionWiringTest, PendSVPriorityEncodedInBits23To22OfShpr3) {
+  EXPECT_EQ(PendSVCtrl::kPriorityEncodedShift, 22U);
+}
+
+TEST(Stm32u083SystemExceptionWiringTest, SysTickPriorityEncodedInBits31To30OfShpr3) {
+  EXPECT_EQ(SysTickCtrl::kPriorityEncodedShift, 30U);
+}
+
+TEST(Stm32u083SystemExceptionWiringTest, SystemExceptionPriorityValueMaskIsTwoBits) {
+  EXPECT_EQ(SVCallCtrl::kPriorityValueMask, 0x3U);
+}
+
+// ---------------------------------------------------------------------------
+// SystemException IRQ-number values match the CMSIS convention.
+// ---------------------------------------------------------------------------
+
+struct SysExcCase {
+  int8_t actual;
+  int8_t expected;
+  const char* name;
+};
+
+class Stm32u083SystemExceptionNumberTest : public ::testing::TestWithParam<SysExcCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    CmsisCodes, Stm32u083SystemExceptionNumberTest,
+    ::testing::Values(
+        SysExcCase{static_cast<int8_t>(nvic_wiring::SystemException::SVCall), -5, "SVCall"},
+        SysExcCase{static_cast<int8_t>(nvic_wiring::SystemException::PendSV), -2, "PendSV"},
+        SysExcCase{static_cast<int8_t>(nvic_wiring::SystemException::SysTick), -1, "SysTick"}),
+    [](const ::testing::TestParamInfo<SysExcCase>& info) { return info.param.name; });
+
+TEST_P(Stm32u083SystemExceptionNumberTest, IrqNumberMatchesCmsisCodes) {
+  EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 
 } // namespace

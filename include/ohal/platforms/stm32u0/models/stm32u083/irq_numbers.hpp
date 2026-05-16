@@ -5,6 +5,14 @@
 
 namespace ohal::platforms::stm32u0::stm32u083 {
 
+// System exceptions with configurable priority on Cortex-M0+ (PM0223 Table 26).
+// IRQ numbers follow the CMSIS convention: negative values identify system exceptions.
+enum class SystemException : int8_t {
+  SVCall = -5,
+  PendSV = -2,
+  SysTick = -1,
+};
+
 enum class IrqNumber : uint8_t {
   WwdgIwdg = 0U,
   PvdPvm = 1U,

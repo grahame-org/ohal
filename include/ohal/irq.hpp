@@ -1,9 +1,18 @@
 #ifndef OHAL_IRQ_HPP
 #define OHAL_IRQ_HPP
 
+#include <cstdint>
 #include <type_traits>
 
 namespace ohal::irq {
+
+// EXC_RETURN magic values written to LR on exception entry (ARMv6-M PM0223 §2.3.7).
+// Load one of these values into PC from an exception handler to trigger exception return.
+namespace exc_return {
+inline constexpr uint32_t kHandlerMsp = 0xFFFFFFF1U;
+inline constexpr uint32_t kThreadMsp = 0xFFFFFFF9U;
+inline constexpr uint32_t kThreadPsp = 0xFFFFFFFDU;
+} // namespace exc_return
 
 template <typename Family>
 struct has_global_irq_control : std::false_type {};
