@@ -150,24 +150,16 @@ TEST(Stm32u083SystemExceptionWiringTest, SystemExceptionPriorityValueMaskIsTwoBi
 // SystemException IRQ-number values match the CMSIS convention.
 // ---------------------------------------------------------------------------
 
-struct SysExcCase {
-  int8_t actual;
-  int8_t expected;
-  const char* name;
-};
+TEST(Stm32u083SystemExceptionNumberTest, SVCallIrqNumberMatchesCmsisCodes) {
+  EXPECT_EQ(static_cast<int8_t>(nvic_wiring::SystemException::SVCall), -5);
+}
 
-class Stm32u083SystemExceptionNumberTest : public ::testing::TestWithParam<SysExcCase> {};
+TEST(Stm32u083SystemExceptionNumberTest, PendSVIrqNumberMatchesCmsisCodes) {
+  EXPECT_EQ(static_cast<int8_t>(nvic_wiring::SystemException::PendSV), -2);
+}
 
-INSTANTIATE_TEST_SUITE_P(
-    CmsisCodes, Stm32u083SystemExceptionNumberTest,
-    ::testing::Values(
-        SysExcCase{static_cast<int8_t>(nvic_wiring::SystemException::SVCall), -5, "SVCall"},
-        SysExcCase{static_cast<int8_t>(nvic_wiring::SystemException::PendSV), -2, "PendSV"},
-        SysExcCase{static_cast<int8_t>(nvic_wiring::SystemException::SysTick), -1, "SysTick"}),
-    [](const ::testing::TestParamInfo<SysExcCase>& info) { return info.param.name; });
-
-TEST_P(Stm32u083SystemExceptionNumberTest, IrqNumberMatchesCmsisCodes) {
-  EXPECT_EQ(GetParam().actual, GetParam().expected);
+TEST(Stm32u083SystemExceptionNumberTest, SysTickIrqNumberMatchesCmsisCodes) {
+  EXPECT_EQ(static_cast<int8_t>(nvic_wiring::SystemException::SysTick), -1);
 }
 
 } // namespace
