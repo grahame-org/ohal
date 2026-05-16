@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema.json",
+  "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema-family.json",
   "title": "Microcontroller device-family register specification",
   "description": "Vendor-agnostic schema for microcontroller device-family register-map and peripheral register/field metadata.",
   "type": "object",

@@ -38,7 +38,7 @@ yamllint -c "${REPO_ROOT}/.yamllint.yml" "${REPO_ROOT}/.github/workflows"
 
 echo "=== spec validation ==="
 while IFS= read -r -d '' spec; do
-    check-jsonschema --schemafile "${REPO_ROOT}/docs/specs/schema.json" "${spec}"
+    check-jsonschema --schemafile "${REPO_ROOT}/docs/specs/schema-family.json" "${spec}"
 done < <(find "${REPO_ROOT}/docs/specs" -mindepth 2 -maxdepth 2 -name '*.yml' -print0)
 
 echo "=== model spec validation ==="

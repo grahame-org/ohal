@@ -9,7 +9,7 @@ vendor reference manual.
 ```text
 docs/specs/
 ├── README.md                  ← this file
-├── schema.json                ← JSON Schema for family spec files
+├── schema-family.json         ← JSON Schema for family spec files
 ├── schema-model.json          ← JSON Schema for device-model spec files
 ├── schema-arch.json           ← JSON Schema for architecture spec files
 ├── future_improvements.md     ← options for cross-family/cross-vendor settings sharing
@@ -29,20 +29,20 @@ STMicroelectronics STM32, `nrf` for Nordic nRF, `lpc` for NXP LPC).
 
 There are three distinct spec file types, each with its own JSON Schema:
 
-| Spec type    | Location                                | Schema              | Description                                                |
-| ------------ | --------------------------------------- | ------------------- | ---------------------------------------------------------- |
-| Architecture | `docs/specs/common/arch/{arch}.yml`     | `schema-arch.json`  | Architecture-level metadata shared by all devices of that  |
-|              |                                         |                     | architecture (word size, endianness, PPB regions, common   |
-|              |                                         |                     | settings encodings)                                        |
-| Family       | `docs/specs/{vendor}/{family}.yml`      | `schema.json`       | Device-family register map and peripheral metadata         |
-| Model        | `docs/specs/{vendor}/models/{part}.yml` | `schema-model.json` | Per-part-number details (package, flash/SRAM sizes, pin AF |
-|              |                                         |                     | table, errata)                                             |
+| Spec type    | Location                                | Schema               | Description                                                |
+| ------------ | --------------------------------------- | -------------------- | ---------------------------------------------------------- |
+| Architecture | `docs/specs/common/arch/{arch}.yml`     | `schema-arch.json`   | Architecture-level metadata shared by all devices of that  |
+|              |                                         |                      | architecture (word size, endianness, PPB regions, common   |
+|              |                                         |                      | settings encodings)                                        |
+| Family       | `docs/specs/{vendor}/{family}.yml`      | `schema-family.json` | Device-family register map and peripheral metadata         |
+| Model        | `docs/specs/{vendor}/models/{part}.yml` | `schema-model.json`  | Per-part-number details (package, flash/SRAM sizes, pin AF |
+|              |                                         |                      | table, errata)                                             |
 
 ## Format Overview
 
 ### Family spec top-level keys
 
-Family specs (`docs/specs/{vendor}/{family}.yml`) are validated against `schema.json`:
+Family specs (`docs/specs/{vendor}/{family}.yml`) are validated against `schema-family.json`:
 
 | Key            | Required | Description                                                              |
 | -------------- | -------- | ------------------------------------------------------------------------ |
@@ -464,13 +464,13 @@ alternate-functions:
 
 ## Validation
 
-Family specs are validated against `docs/specs/schema.json` and model specs against
+Family specs are validated against `docs/specs/schema-family.json` and model specs against
 `docs/specs/schema-model.json` as part of CI (see `lint.sh` and the `lint.yml` workflow).
 
 To validate locally:
 
 ```sh
 pip install check-jsonschema
-check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
+check-jsonschema --schemafile docs/specs/schema-family.json docs/specs/stm32/stm32u0.yml
 check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u083kcu.yml
 ```
