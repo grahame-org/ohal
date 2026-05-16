@@ -54,6 +54,7 @@ struct MockGpioRegs {
 
 using MockPin0 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<0U, MockGpioRegs>;
 using MockPin5 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<5U, MockGpioRegs>;
+using MockPin8 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<8U, MockGpioRegs>;
 using MockPin15 = ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<15U, MockGpioRegs>;
 using MockPort = ohal::platforms::stm32u0::stm32u083::GpioPortImpl<MockGpioRegs>;
 
@@ -256,6 +257,58 @@ TEST_F(GpioStm32u083RctTest, Toggle_SetsBsrrResetBit_WhenOutputWasHigh) {
   mock_odr = 1U << 5U; // pin 5 output is High
   MockPin5::toggle();
   EXPECT_EQ(mock_bsrr, 1U << 21U); // BSRR reset bit written
+}
+
+// ---------------------------------------------------------------------------
+// set_alternate_function: verify AFRL/AFRH writes and field isolation
+// ---------------------------------------------------------------------------
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin5_Af4_WritesAfrLow) {
+  MockPin5::set_alternate_function(4U);
+  EXPECT_EQ(mock_afrl & (0xFU << 20U), 4U << 20U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin5_Af4_PreservesOtherAfrLowBits) {
+  mock_afrl = ~(0xFU << 20U); // all bits set except pin 5's AF field
+  MockPin5::set_alternate_function(4U);
+  EXPECT_EQ(mock_afrl & ~(0xFU << 20U), ~(0xFU << 20U));
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin5_Af0_ClearsAfrLowField) {
+  mock_afrl = 0xFU << 20U; // pre-load AF15 for pin 5
+  MockPin5::set_alternate_function(0U);
+  EXPECT_EQ(mock_afrl & (0xFU << 20U), 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin8_Af4_WritesAfrHigh) {
+  MockPin8::set_alternate_function(4U);
+  EXPECT_EQ(mock_afrh & 0xFU, 4U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin8_Af4_PreservesOtherAfrHighBits) {
+  mock_afrh = ~(0xFU); // all bits set except pin 8's AF field
+  MockPin8::set_alternate_function(4U);
+  EXPECT_EQ(mock_afrh & ~(0xFU), ~(0xFU));
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin8_DoesNotWriteAfrLow) {
+  MockPin8::set_alternate_function(4U);
+  EXPECT_EQ(mock_afrl, 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin5_DoesNotWriteAfrHigh) {
+  MockPin5::set_alternate_function(4U);
+  EXPECT_EQ(mock_afrh, 0U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin15_Af7_WritesAfrHighBits31To28) {
+  MockPin15::set_alternate_function(7U);
+  EXPECT_EQ(mock_afrh & (0xFU << 28U), 7U << 28U);
+}
+
+TEST_F(GpioStm32u083RctTest, SetAlternateFunction_Pin0_Af1_WritesAfrLowBits3To0) {
+  MockPin0::set_alternate_function(1U);
+  EXPECT_EQ(mock_afrl & 0xFU, 1U);
 }
 
 // ---------------------------------------------------------------------------

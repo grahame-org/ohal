@@ -116,12 +116,31 @@ struct GpioPortPinImpl {
       ohal::core::BitField<typename Regs::Bsrr, static_cast<uint8_t>(PinNum + kBsrrResetBitStart),
                            1U, ohal::core::Access::WriteOnly>;
 
+  // AFR: 4 bits per pin in AFRL (pins 0–7) or AFRH (pins 8–15).
+  // kAfrHighPinStart: first pin number stored in AFRH (i.e. pins 8–15).
+  // kAfrShift is the bit-offset of the pin's AF field within its AFR register.
+  static constexpr uint8_t kAfrHighPinStart = 8U;
+  static constexpr uint8_t kAfrShift = static_cast<uint8_t>((PinNum % kAfrHighPinStart) * 4U);
+  static constexpr uint32_t kAfrMask = 0xFUL << kAfrShift;
+  static constexpr uint8_t kAfrMaxValue = 15U;
+
   static void set_mode(ohal::gpio::PinMode mode) noexcept { Moder::write(mode); }
   static void set_output_type(ohal::gpio::OutputType output_type) noexcept {
     Otyper::write(output_type);
   }
   static void set_speed(ohal::gpio::Speed speed) noexcept { Ospeedr::write(speed); }
   static void set_pull(ohal::gpio::Pull pull) noexcept { Pupdr::write(pull); }
+
+  /// Selects the alternate function for the pin by writing the 4-bit @p alt_func value
+  /// into AFRL (pins 0–7) or AFRH (pins 8–15). Valid values are 0–15.
+  static void set_alternate_function(uint8_t alt_func) noexcept {
+    const uint32_t encoded = (static_cast<uint32_t>(alt_func) & kAfrMaxValue) << kAfrShift;
+    if constexpr (PinNum < kAfrHighPinStart) {
+      Regs::Afrl::write((Regs::Afrl::read() & ~kAfrMask) | encoded);
+    } else {
+      Regs::Afrh::write((Regs::Afrh::read() & ~kAfrMask) | encoded);
+    }
+  }
 
   /// Drives the pin high via BSRR — a single, atomic 32-bit write with no read.
   static void set() noexcept { BsrrSet::write(1U); }

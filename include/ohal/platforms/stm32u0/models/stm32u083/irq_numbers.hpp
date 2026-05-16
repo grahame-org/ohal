@@ -7,10 +7,12 @@ namespace ohal::platforms::stm32u0::stm32u083 {
 
 // System exceptions with configurable priority on Cortex-M0+ (PM0223 Table 26).
 // IRQ numbers follow the CMSIS convention: negative values identify system exceptions.
+// Note: the name SysTickTimer (not SysTick) is used to avoid a name collision with the
+// CMSIS core_cm0plus.h macro `#define SysTick ((SysTick_Type *) SysTick_BASE)`.
 enum class SystemException : int8_t {
   SVCall = -5,
   PendSV = -2,
-  SysTick = -1,
+  SysTickTimer = -1,
 };
 
 enum class IrqNumber : uint8_t {

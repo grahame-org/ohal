@@ -116,7 +116,8 @@ TEST(Stm32u083ExcReturnTest, ThreadPspValueMatchesArchSpec) {
 
 using SVCallCtrl = ohal::nvic::SystemController<Family, nvic_wiring::SystemException::SVCall>;
 using PendSVCtrl = ohal::nvic::SystemController<Family, nvic_wiring::SystemException::PendSV>;
-using SysTickCtrl = ohal::nvic::SystemController<Family, nvic_wiring::SystemException::SysTick>;
+using SysTickCtrl =
+    ohal::nvic::SystemController<Family, nvic_wiring::SystemException::SysTickTimer>;
 
 TEST(Stm32u083SystemExceptionWiringTest, SVCallUsesShpr2Register) {
   EXPECT_EQ(SVCallCtrl::Shpr::address, nvic_wiring::kScbBase + nvic_wiring::kScbShpr2Offset);
@@ -159,7 +160,7 @@ TEST(Stm32u083SystemExceptionNumberTest, PendSVIrqNumberMatchesCmsisCodes) {
 }
 
 TEST(Stm32u083SystemExceptionNumberTest, SysTickIrqNumberMatchesCmsisCodes) {
-  EXPECT_EQ(static_cast<int8_t>(nvic_wiring::SystemException::SysTick), -1);
+  EXPECT_EQ(static_cast<int8_t>(nvic_wiring::SystemException::SysTickTimer), -1);
 }
 
 } // namespace

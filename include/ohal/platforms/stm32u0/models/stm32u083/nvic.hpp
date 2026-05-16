@@ -108,12 +108,12 @@ namespace ohal::platforms::stm32u0::stm32u083::detail {
 
 // Byte bit-shifts for system exception priority fields within SHPR words (PM0223 §4.4.9).
 // SVCall: byte 3 of SHPR2 (bits[31:24]); PendSV: byte 2 of SHPR3 (bits[23:16]);
-// SysTick: byte 3 of SHPR3 (bits[31:24]).
+// SysTickTimer: byte 3 of SHPR3 (bits[31:24]).
 inline constexpr uint32_t kSysExcByteShiftByte2 = 16U;
 inline constexpr uint32_t kSysExcByteShiftByte3 = 24U;
 
 // Return the SCB SHPR register address for a system exception (PM0223 §4.4.9):
-// SVCall uses SHPR2; PendSV and SysTick use SHPR3.
+// SVCall uses SHPR2; PendSV and SysTickTimer use SHPR3.
 constexpr uintptr_t sys_exc_shpr_address(SystemException exc) noexcept {
   if (exc == SystemException::SVCall) {
     return kScbBase + kScbShpr2Offset;
@@ -123,7 +123,7 @@ constexpr uintptr_t sys_exc_shpr_address(SystemException exc) noexcept {
 
 // Return the byte bit-shift for the priority field within the SHPR word.
 // SVCall occupies byte 3 (bits[31:24]) of SHPR2; PendSV byte 2 (bits[23:16]),
-// SysTick byte 3 (bits[31:24]) of SHPR3.
+// SysTickTimer byte 3 (bits[31:24]) of SHPR3.
 constexpr uint32_t sys_exc_byte_shift(SystemException exc) noexcept {
   if (exc == SystemException::PendSV) {
     return kSysExcByteShiftByte2;
@@ -136,7 +136,7 @@ constexpr uint32_t sys_exc_byte_shift(SystemException exc) noexcept {
 namespace ohal::nvic {
 
 // Cortex-M0+ system exception priority controller via SCB SHPR2/SHPR3 (PM0223 §4.4.9).
-// Only SVCall (exception 11), PendSV (exception 14), and SysTick (exception 15) have
+// Only SVCall (exception 11), PendSV (exception 14), and SysTickTimer (exception 15) have
 // settable priorities; Reset, NMI, and HardFault have fixed priorities.
 template <auto SysExc>
 struct SystemController<ohal::platforms::stm32u0::Family, SysExc> {

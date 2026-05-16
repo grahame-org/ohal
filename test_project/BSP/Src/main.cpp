@@ -68,8 +68,12 @@ static void MX_GPIO_Init(void);
 /* USER CODE BEGIN 0 */
 
 using LedPin = ohal::gpio::Pin<ohal::gpio::PortA, 5U>;
+using ButtonPin = ohal::gpio::Pin<ohal::gpio::PortC, 13U>;
+using ButtonExtiLine = ohal::exti::Line<ohal::gpio::PortC, 13U>;
 using McuFamily = ohal::platforms::stm32u0::Family;
 using GlobalIrqController = ohal::irq::GlobalController<McuFamily>;
+using ButtonNvic =
+    ohal::nvic::Controller<McuFamily, ohal::platforms::stm32u0::stm32u083::IrqNumber::Exti4_15>;
 
 /* USER CODE END 0 */
 
@@ -111,8 +115,12 @@ int main(void) {
   LedPin::set_speed(ohal::gpio::Speed::VeryHigh);
   LedPin::set_pull(ohal::gpio::Pull::None);
 
-  /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
-  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
+  /* Initialize USER push-button (PC13) as falling-edge EXTI via ohal */
+  ButtonPin::set_mode(ohal::gpio::PinMode::Input);
+  ButtonPin::set_pull(ohal::gpio::Pull::None);
+  ButtonExtiLine::configure(ohal::exti::Trigger::Falling);
+  ButtonExtiLine::enable_interrupt();
+  ButtonNvic::enable_irq();
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
   BspCOMInit.BaudRate = 115200;
@@ -190,7 +198,6 @@ void SystemClock_Config(void) {
  * @retval None
  */
 static void MX_GPIO_Init(void) {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
@@ -201,13 +208,21 @@ static void MX_GPIO_Init(void) {
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pins : I2C1_SCL_Pin I2C1_SDA_Pin */
-  GPIO_InitStruct.Pin = I2C1_SCL_Pin | I2C1_SDA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  /* Configure I2C1 SCL (PB8) and SDA (PB9) as AF4 open-drain, low speed, no pull */
+  using I2c1SclPin = ohal::gpio::Pin<ohal::gpio::PortB, 8U>;
+  using I2c1SdaPin = ohal::gpio::Pin<ohal::gpio::PortB, 9U>;
+
+  I2c1SclPin::set_mode(ohal::gpio::PinMode::AlternateFunction);
+  I2c1SclPin::set_output_type(ohal::gpio::OutputType::OpenDrain);
+  I2c1SclPin::set_speed(ohal::gpio::Speed::Low);
+  I2c1SclPin::set_pull(ohal::gpio::Pull::None);
+  I2c1SclPin::set_alternate_function(4U); // AF4 = I2C1
+
+  I2c1SdaPin::set_mode(ohal::gpio::PinMode::AlternateFunction);
+  I2c1SdaPin::set_output_type(ohal::gpio::OutputType::OpenDrain);
+  I2c1SdaPin::set_speed(ohal::gpio::Speed::Low);
+  I2c1SdaPin::set_pull(ohal::gpio::Pull::None);
+  I2c1SdaPin::set_alternate_function(4U); // AF4 = I2C1
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
