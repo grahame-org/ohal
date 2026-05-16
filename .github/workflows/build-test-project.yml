@@ -4,6 +4,11 @@ name: Build test_project
 
 on:
   pull_request:
+  pull_request_target:
+    # Allows release-please (which uses GITHUB_TOKEN) to trigger this workflow.
+    # Runs against the base branch; the job condition below limits execution to
+    # bot-created PRs so regular contributor PRs use the pull_request trigger only.
+    types: [opened, synchronize, reopened]
   merge_group:
 
 permissions: {}
@@ -12,10 +17,13 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    # For pull_request_target events, only run for bot-created PRs (e.g. release-please).
+    # Regular contributor PRs are already handled by the pull_request trigger above.
+    if: github.event_name != 'pull_request_target' || github.event.pull_request.user.login == 'github-actions[bot]'
     permissions:
       contents: read
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
