@@ -1,5 +1,5 @@
 ---
-spec-version: "1.1.0"
+spec-version: "1.2.0"
 architecture:
   name: ARM Cortex-M0+
   word-size: 32
@@ -132,6 +132,19 @@ definitions:
     systick-clksource:
       "0": external reference clock
       "1": processor (AHB) clock
+    # MPU C/B/S three-bit memory-type and shareability encoding (PM0223 Table 36).
+    # C=cacheable, B=bufferable, S=shareable. x denotes don't-care.
+    mpu-cbs:
+      "00x": strongly-ordered; shareable
+      "01x": device; shareable
+      "100": normal; not shareable; outer and inner write-through, no write-allocate
+      "101": normal; shareable; outer and inner write-through, no write-allocate
+      "110": normal; not shareable; outer and inner write-back, write-allocate
+      "111": normal; shareable; outer and inner write-back, write-allocate
+    # EPSR.T – Thumb state bit (PM0223 §2.1.3). Must be 1 during normal execution.
+    epsr-t:
+      "0": processor not in Thumb state; executing with T=0 causes HardFault or lockup
+      "1": processor in Thumb state; normal execution
     # MPU_RASR SIZE[4:0] – region size = 2^(SIZE+1) bytes; minimum SIZE=7 (256B) (PM0223 Table 35).
     mpu-size:
       "00111": 256B
