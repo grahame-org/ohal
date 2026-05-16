@@ -27,7 +27,7 @@
 namespace {
 
 namespace tim = ohal::platforms::stm32u0::stm32u083;
-// STM32U0 IRQ numbering is shared from the stm32u083 namespace implementation.
+// STM32U0 IRQ numbering uses this shared namespace path across sub-families.
 namespace irq_wiring = ohal::platforms::stm32u0::stm32u083;
 
 template <typename T, typename = void>
