@@ -7,10 +7,11 @@
 
 static uint32_t reg_storage{0U};
 
-struct TestReg {
-  using value_type = uint32_t;
-  static uint32_t read() noexcept { return reg_storage; }
-  static void write(uint32_t v) noexcept { reg_storage = v; }
+struct TestReg
+{
+    using value_type = uint32_t;
+    static uint32_t read() noexcept { return reg_storage; }
+    static void write(uint32_t v) noexcept { reg_storage = v; }
 };
 
 // Offset=30, Width=4 → 30+4=34 > 32: overflow.

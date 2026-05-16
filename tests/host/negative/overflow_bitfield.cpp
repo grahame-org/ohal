@@ -7,15 +7,17 @@
 
 #include <cstdint>
 
-namespace {
+namespace
+{
 
 static uint32_t storage{};
 
 template <typename T, T* S>
-struct MockReg {
-  using value_type = T;
-  [[nodiscard]] static T read() noexcept { return *S; }
-  static void write(T v) noexcept { *S = v; }
+struct MockReg
+{
+    using value_type = T;
+    [[nodiscard]] static T read() noexcept { return *S; }
+    static void write(T v) noexcept { *S = v; }
 };
 
 using Reg = MockReg<uint32_t, &storage>;
@@ -25,8 +27,9 @@ using Reg = MockReg<uint32_t, &storage>;
 // NOLINTNEXTLINE — intentional: triggers "BitField (Offset + Width) exceeds register width"
 using OvField = ohal::core::BitField<Reg, 30, 4, ohal::core::Access::ReadWrite>;
 
-void test() {
-  OvField::write(0U); // forces template instantiation → static_assert fires
+void test()
+{
+    OvField::write(0U); // forces template instantiation → static_assert fires
 }
 
 } // namespace

@@ -13,9 +13,11 @@
 #include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 /// MSP430FR2355TRHA (VQFN40) bonded-out pin ranges.
 /// P1-P4: all 8 bits bonded. P5-P6: only bits 0-1 bonded.
 
@@ -33,45 +35,69 @@ using TrhaPortEFCapability = std::bool_constant<(PinNum < kTrhaPortEFBitCount)>;
 
 // PortA (P1) — all bits 0-7 bonded out on the VQFN40.
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 // PortB (P2) — all bits 0-7 bonded out on the VQFN40.
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_pull<PortB, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortB, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 // PortC (P3) — all bits 0-7 bonded out on the VQFN40.
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 // PortD (P4) — all bits 0-7 bonded out on the VQFN40.
 template <uint8_t PinNum>
-struct supports_pull<PortD, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_pull<PortD, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortD, PinNum> : detail::TrhaFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortD, PinNum> : detail::TrhaFullPortCapability<PinNum>
+{
+};
 
 // PortE (P5) — only bits 0-1 bonded out on the VQFN40.
 template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : detail::TrhaPortEFCapability<PinNum> {};
+struct supports_pull<PortE, PinNum> : detail::TrhaPortEFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum> : detail::TrhaPortEFCapability<PinNum> {};
+struct supports_alternate_function<PortE, PinNum> : detail::TrhaPortEFCapability<PinNum>
+{
+};
 
 // PortF (P6) — only bits 0-1 bonded out on the VQFN40.
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : detail::TrhaPortEFCapability<PinNum> {};
+struct supports_pull<PortF, PinNum> : detail::TrhaPortEFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : detail::TrhaPortEFCapability<PinNum> {};
+struct supports_alternate_function<PortF, PinNum> : detail::TrhaPortEFCapability<PinNum>
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

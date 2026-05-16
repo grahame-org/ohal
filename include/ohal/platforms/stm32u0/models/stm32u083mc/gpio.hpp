@@ -19,53 +19,74 @@
 
 #include "ohal/platforms/stm32u0/models/stm32u083/gpio_impl.hpp"
 
-namespace ohal::gpio {
+namespace ohal::gpio
+{
 
 // Bonded-out ports with full pin ranges: GPIOA, GPIOB, GPIOC
 template <uint8_t PinNum>
 struct Pin<PortA, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioA> {};
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioA>
+{
+};
 
 template <uint8_t PinNum>
 struct Pin<PortB, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioB> {};
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioB>
+{
+};
 
 template <uint8_t PinNum>
 struct Pin<PortC, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioC> {};
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioC>
+{
+};
 
 // GPIOD: bits 0–6 and 8–13 are bonded out; PD7, PD14, PD15 are absent.
 // The partial specialisation below covers all PD pins; explicit full specialisations
 // for PD7, PD14, and PD15 below override the non-bonded pins with deleted members.
 template <uint8_t PinNum>
 struct Pin<PortD, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioD> {};
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioD>
+{
+};
 
 // GPIOF: only PF0–PF3 are bonded out on both MC packages.
 // Bits 4–15 are absent; explicit full specialisations below override them.
 template <uint8_t PinNum>
 struct Pin<PortF, PinNum> : ohal::platforms::stm32u0::stm32u083::GpioPortPinImpl<
-                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioF> {};
+                                PinNum, ohal::platforms::stm32u0::stm32u083::GpioF>
+{
+};
 
 template <>
-struct Port<PortA> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioA> {};
+struct Port<PortA>
+    : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<ohal::platforms::stm32u0::stm32u083::GpioA>
+{
+};
 
 template <>
-struct Port<PortB> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioB> {};
+struct Port<PortB>
+    : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<ohal::platforms::stm32u0::stm32u083::GpioB>
+{
+};
 
 template <>
-struct Port<PortC> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioC> {};
+struct Port<PortC>
+    : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<ohal::platforms::stm32u0::stm32u083::GpioC>
+{
+};
 
 template <>
-struct Port<PortD> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioD> {};
+struct Port<PortD>
+    : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<ohal::platforms::stm32u0::stm32u083::GpioD>
+{
+};
 
 template <>
-struct Port<PortF> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
-                         ohal::platforms::stm32u0::stm32u083::GpioF> {};
+struct Port<PortF>
+    : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<ohal::platforms::stm32u0::stm32u083::GpioF>
+{
+};
 
 } // namespace ohal::gpio
 
@@ -80,22 +101,25 @@ struct Port<PortF> : ohal::platforms::stm32u0::stm32u083::GpioPortImpl<
 // that does not exist on these packages.
 // ---------------------------------------------------------------------------
 
-namespace ohal::gpio {
+namespace ohal::gpio
+{
 
-namespace detail {
+namespace detail
+{
 /// Helper base for a GPIO pin that is not bonded out on the STM32U083MC packages.
 /// All member functions are deleted so that any attempt to call them produces
 /// a "call to deleted function" error pointing at the non-bonded pad.
-struct NotBondedMc {
-  static void set_mode(PinMode) noexcept = delete;           ///< pin not bonded out (MC)
-  static void set_output_type(OutputType) noexcept = delete; ///< pin not bonded out (MC)
-  static void set_speed(Speed) noexcept = delete;            ///< pin not bonded out (MC)
-  static void set_pull(Pull) noexcept = delete;              ///< pin not bonded out (MC)
-  static void set() noexcept = delete;                       ///< pin not bonded out (MC)
-  static void clear() noexcept = delete;                     ///< pin not bonded out (MC)
-  static Level read_input() noexcept = delete;               ///< pin not bonded out (MC)
-  static Level read_output() noexcept = delete;              ///< pin not bonded out (MC)
-  static void toggle() noexcept = delete;                    ///< pin not bonded out (MC)
+struct NotBondedMc
+{
+    static void set_mode(PinMode) noexcept = delete;           ///< pin not bonded out (MC)
+    static void set_output_type(OutputType) noexcept = delete; ///< pin not bonded out (MC)
+    static void set_speed(Speed) noexcept = delete;            ///< pin not bonded out (MC)
+    static void set_pull(Pull) noexcept = delete;              ///< pin not bonded out (MC)
+    static void set() noexcept = delete;                       ///< pin not bonded out (MC)
+    static void clear() noexcept = delete;                     ///< pin not bonded out (MC)
+    static Level read_input() noexcept = delete;               ///< pin not bonded out (MC)
+    static Level read_output() noexcept = delete;              ///< pin not bonded out (MC)
+    static void toggle() noexcept = delete;                    ///< pin not bonded out (MC)
 };
 } // namespace detail
 
@@ -104,38 +128,68 @@ struct NotBondedMc {
 // GPIOD: PD7, PD14, and PD15 are not bonded out on the MC packages.
 // Bits 0–6 and 8–13 are bonded; PD7, PD14, PD15 are absent.
 template <>
-struct Pin<PortD, 7> : detail::NotBondedMc {}; ///< PD7  not bonded (MC)
+struct Pin<PortD, 7> : detail::NotBondedMc
+{
+}; ///< PD7  not bonded (MC)
 template <>
-struct Pin<PortD, 14> : detail::NotBondedMc {}; ///< PD14 not bonded (MC)
+struct Pin<PortD, 14> : detail::NotBondedMc
+{
+}; ///< PD14 not bonded (MC)
 template <>
-struct Pin<PortD, 15> : detail::NotBondedMc {}; ///< PD15 not bonded (MC)
+struct Pin<PortD, 15> : detail::NotBondedMc
+{
+}; ///< PD15 not bonded (MC)
 
 // GPIOF: only PF0–PF3 are bonded out on the MC packages.
 // Bits 4–15 are absent on these packages.
 template <>
-struct Pin<PortF, 4> : detail::NotBondedMc {}; ///< PF4  not bonded (MC)
+struct Pin<PortF, 4> : detail::NotBondedMc
+{
+}; ///< PF4  not bonded (MC)
 template <>
-struct Pin<PortF, 5> : detail::NotBondedMc {}; ///< PF5  not bonded (MC)
+struct Pin<PortF, 5> : detail::NotBondedMc
+{
+}; ///< PF5  not bonded (MC)
 template <>
-struct Pin<PortF, 6> : detail::NotBondedMc {}; ///< PF6  not bonded (MC)
+struct Pin<PortF, 6> : detail::NotBondedMc
+{
+}; ///< PF6  not bonded (MC)
 template <>
-struct Pin<PortF, 7> : detail::NotBondedMc {}; ///< PF7  not bonded (MC)
+struct Pin<PortF, 7> : detail::NotBondedMc
+{
+}; ///< PF7  not bonded (MC)
 template <>
-struct Pin<PortF, 8> : detail::NotBondedMc {}; ///< PF8  not bonded (MC)
+struct Pin<PortF, 8> : detail::NotBondedMc
+{
+}; ///< PF8  not bonded (MC)
 template <>
-struct Pin<PortF, 9> : detail::NotBondedMc {}; ///< PF9  not bonded (MC)
+struct Pin<PortF, 9> : detail::NotBondedMc
+{
+}; ///< PF9  not bonded (MC)
 template <>
-struct Pin<PortF, 10> : detail::NotBondedMc {}; ///< PF10 not bonded (MC)
+struct Pin<PortF, 10> : detail::NotBondedMc
+{
+}; ///< PF10 not bonded (MC)
 template <>
-struct Pin<PortF, 11> : detail::NotBondedMc {}; ///< PF11 not bonded (MC)
+struct Pin<PortF, 11> : detail::NotBondedMc
+{
+}; ///< PF11 not bonded (MC)
 template <>
-struct Pin<PortF, 12> : detail::NotBondedMc {}; ///< PF12 not bonded (MC)
+struct Pin<PortF, 12> : detail::NotBondedMc
+{
+}; ///< PF12 not bonded (MC)
 template <>
-struct Pin<PortF, 13> : detail::NotBondedMc {}; ///< PF13 not bonded (MC)
+struct Pin<PortF, 13> : detail::NotBondedMc
+{
+}; ///< PF13 not bonded (MC)
 template <>
-struct Pin<PortF, 14> : detail::NotBondedMc {}; ///< PF14 not bonded (MC)
+struct Pin<PortF, 14> : detail::NotBondedMc
+{
+}; ///< PF14 not bonded (MC)
 template <>
-struct Pin<PortF, 15> : detail::NotBondedMc {}; ///< PF15 not bonded (MC)
+struct Pin<PortF, 15> : detail::NotBondedMc
+{
+}; ///< PF15 not bonded (MC)
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

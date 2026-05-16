@@ -16,9 +16,11 @@
 #include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 // VQFN32 bonded-pin bitmasks.
 inline constexpr uint8_t kTrsmPortBMask = 0xF3U; ///< P2: bits 0,1,4,5,6,7
 inline constexpr uint8_t kTrsmPortDMask = 0xCFU; ///< P4: bits 0,1,2,3,6,7
@@ -37,49 +39,73 @@ using TrsmMaskedPortCapability =
 
 // PortA (P1) — all bits 0-7 bonded out on the VQFN32.
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::TrsmFullPortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::TrsmFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::TrsmFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::TrsmFullPortCapability<PinNum>
+{
+};
 
 // PortB (P2) — bits 0,1,4,5,6,7 bonded (mask 0xF3).
 template <uint8_t PinNum>
 struct supports_pull<PortB, PinNum>
-    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortBMask> {};
+    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortBMask>
+{
+};
 
 template <uint8_t PinNum>
 struct supports_alternate_function<PortB, PinNum>
-    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortBMask> {};
+    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortBMask>
+{
+};
 
 // PortC (P3) — all bits 0-7 bonded out on the VQFN32.
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::TrsmFullPortCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::TrsmFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::TrsmFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::TrsmFullPortCapability<PinNum>
+{
+};
 
 // PortD (P4) — bits 0,1,2,3,6,7 bonded (mask 0xCF).
 template <uint8_t PinNum>
 struct supports_pull<PortD, PinNum>
-    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortDMask> {};
+    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortDMask>
+{
+};
 
 template <uint8_t PinNum>
 struct supports_alternate_function<PortD, PinNum>
-    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortDMask> {};
+    : detail::TrsmMaskedPortCapability<PinNum, detail::kTrsmPortDMask>
+{
+};
 
 // PortE (P5) — not bonded out on the VQFN32.
 template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : std::false_type {};
+struct supports_pull<PortE, PinNum> : std::false_type
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum> : std::false_type {};
+struct supports_alternate_function<PortE, PinNum> : std::false_type
+{
+};
 
 // PortF (P6) — not bonded out on the VQFN32.
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : std::false_type {};
+struct supports_pull<PortF, PinNum> : std::false_type
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : std::false_type {};
+struct supports_alternate_function<PortF, PinNum> : std::false_type
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

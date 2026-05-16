@@ -6,9 +6,11 @@
 #include "ohal/core/capabilities.hpp"
 #include "ohal/gpio.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 // STM32U083MC (80/81-pin MCT LQFP80 and MCI UFBGA81) bonded-out pin ranges.
 // GPIOA, GPIOB, GPIOC: all 16 bits (0–15) bonded out.
 // GPIOD: bits 0–6 and 8–13 bonded out; PD7, PD14, PD15 are absent.
@@ -36,68 +38,108 @@ using McPortFCapability = std::bool_constant<(PinNum < kMcPortFBitCount)>;
 
 // PortA — all bits 0–15 bonded out on both 80/81-pin MC packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortA, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_output_type<PortA, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortA, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_output_speed<PortA, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 // PortB — all bits 0–15 bonded out on both 80/81-pin MC packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortB, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_output_type<PortB, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortB, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_output_speed<PortB, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_pull<PortB, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortB, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 // PortC — all bits 0–15 bonded out on both 80/81-pin MC packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortC, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_output_type<PortC, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortC, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_output_speed<PortC, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::McFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::McFullPortCapability<PinNum>
+{
+};
 
 // PortD — bits 0–6 and 8–13 bonded out; PD7, PD14, PD15 are absent.
 template <uint8_t PinNum>
-struct supports_output_type<PortD, PinNum> : detail::McPortDCapability<PinNum> {};
+struct supports_output_type<PortD, PinNum> : detail::McPortDCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortD, PinNum> : detail::McPortDCapability<PinNum> {};
+struct supports_output_speed<PortD, PinNum> : detail::McPortDCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortD, PinNum> : detail::McPortDCapability<PinNum> {};
+struct supports_pull<PortD, PinNum> : detail::McPortDCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortD, PinNum> : detail::McPortDCapability<PinNum> {};
+struct supports_alternate_function<PortD, PinNum> : detail::McPortDCapability<PinNum>
+{
+};
 
 // PortF — only PF0–PF3 bonded out on both 80/81-pin MC packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortF, PinNum> : detail::McPortFCapability<PinNum> {};
+struct supports_output_type<PortF, PinNum> : detail::McPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortF, PinNum> : detail::McPortFCapability<PinNum> {};
+struct supports_output_speed<PortF, PinNum> : detail::McPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : detail::McPortFCapability<PinNum> {};
+struct supports_pull<PortF, PinNum> : detail::McPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : detail::McPortFCapability<PinNum> {};
+struct supports_alternate_function<PortF, PinNum> : detail::McPortFCapability<PinNum>
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

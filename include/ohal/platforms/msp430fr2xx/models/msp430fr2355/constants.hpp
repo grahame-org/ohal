@@ -3,7 +3,8 @@
 
 #include <cstdint>
 
-namespace ohal::platforms::msp430fr2xx::msp430fr2355 {
+namespace ohal::platforms::msp430fr2xx::msp430fr2355
+{
 
 /// Number of pins per MSP430FR2355 GPIO port (0–7).
 inline constexpr uint8_t kPinCount = 8U;

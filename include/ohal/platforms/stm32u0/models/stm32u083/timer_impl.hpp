@@ -24,7 +24,8 @@
 #include "ohal/core/field.hpp"
 #include "ohal/core/register.hpp"
 
-namespace ohal::platforms::stm32u0::stm32u083 {
+namespace ohal::platforms::stm32u0::stm32u083
+{
 
 // ---------------------------------------------------------------------------
 // Timer peripheral base addresses (RM0503 Rev 4, Table 4)
@@ -109,144 +110,150 @@ inline constexpr uint8_t kTimRegisterWidthBits = 32U;
 /// Register map for TIM1 (advanced-control timer).
 /// @tparam Base  Physical base address of the TIM1 peripheral.
 template <uintptr_t Base>
-struct Tim1Regs {
-  using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
-  using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
-  using Smcr = ohal::core::Register<Base + kTimSmcrOffset>;
-  using Dier = ohal::core::Register<Base + kTimDierOffset>;
-  using Sr = ohal::core::Register<Base + kTimSrOffset>;
-  using Egr = ohal::core::Register<Base + kTimEgrOffset>;
-  using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
-  using Ccmr2 = ohal::core::Register<Base + kTimCcmr2Offset>;
-  using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
-  using Cnt = ohal::core::Register<Base + kTimCntOffset>;
-  using Psc = ohal::core::Register<Base + kTimPscOffset>;
-  using Arr = ohal::core::Register<Base + kTimArrOffset>;
-  using Rcr = ohal::core::Register<Base + kTimRcrOffset>;
-  using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
-  using Ccr2 = ohal::core::Register<Base + kTimCcr2Offset>;
-  using Ccr3 = ohal::core::Register<Base + kTimCcr3Offset>;
-  using Ccr4 = ohal::core::Register<Base + kTimCcr4Offset>;
-  using Bdtr = ohal::core::Register<Base + kTimBdtrOffset>;
-  using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
-  using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
-  using Or1 = ohal::core::Register<Base + kTimOr1Offset>;
-  using Ccmr3 = ohal::core::Register<Base + kTimCcmr3Offset>;
-  using Ccr5 = ohal::core::Register<Base + kTimCcr5Offset>;
-  using Ccr6 = ohal::core::Register<Base + kTimCcr6Offset>;
-  using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
-  using Af2 = ohal::core::Register<Base + kTimAf2Offset>;
-  using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
+struct Tim1Regs
+{
+    using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
+    using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
+    using Smcr = ohal::core::Register<Base + kTimSmcrOffset>;
+    using Dier = ohal::core::Register<Base + kTimDierOffset>;
+    using Sr = ohal::core::Register<Base + kTimSrOffset>;
+    using Egr = ohal::core::Register<Base + kTimEgrOffset>;
+    using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
+    using Ccmr2 = ohal::core::Register<Base + kTimCcmr2Offset>;
+    using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
+    using Cnt = ohal::core::Register<Base + kTimCntOffset>;
+    using Psc = ohal::core::Register<Base + kTimPscOffset>;
+    using Arr = ohal::core::Register<Base + kTimArrOffset>;
+    using Rcr = ohal::core::Register<Base + kTimRcrOffset>;
+    using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
+    using Ccr2 = ohal::core::Register<Base + kTimCcr2Offset>;
+    using Ccr3 = ohal::core::Register<Base + kTimCcr3Offset>;
+    using Ccr4 = ohal::core::Register<Base + kTimCcr4Offset>;
+    using Bdtr = ohal::core::Register<Base + kTimBdtrOffset>;
+    using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
+    using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
+    using Or1 = ohal::core::Register<Base + kTimOr1Offset>;
+    using Ccmr3 = ohal::core::Register<Base + kTimCcmr3Offset>;
+    using Ccr5 = ohal::core::Register<Base + kTimCcr5Offset>;
+    using Ccr6 = ohal::core::Register<Base + kTimCcr6Offset>;
+    using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
+    using Af2 = ohal::core::Register<Base + kTimAf2Offset>;
+    using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
 };
 
 /// Register map for TIM2 and TIM3 (general-purpose 32-bit timers).
 /// @tparam Base  Physical base address of the TIM2 or TIM3 peripheral.
 template <uintptr_t Base>
-struct Tim23Regs {
-  using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
-  using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
-  using Smcr = ohal::core::Register<Base + kTimSmcrOffset>;
-  using Dier = ohal::core::Register<Base + kTimDierOffset>;
-  using Sr = ohal::core::Register<Base + kTimSrOffset>;
-  using Egr = ohal::core::Register<Base + kTimEgrOffset>;
-  using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
-  using Ccmr2 = ohal::core::Register<Base + kTimCcmr2Offset>;
-  using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
-  using Cnt = ohal::core::Register<Base + kTimCntOffset>;
-  using Psc = ohal::core::Register<Base + kTimPscOffset>;
-  using Arr = ohal::core::Register<Base + kTimArrOffset>;
-  using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
-  using Ccr2 = ohal::core::Register<Base + kTimCcr2Offset>;
-  using Ccr3 = ohal::core::Register<Base + kTimCcr3Offset>;
-  using Ccr4 = ohal::core::Register<Base + kTimCcr4Offset>;
-  using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
-  using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
-  using Or1 = ohal::core::Register<Base + kTimOr1Offset>;
-  using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
-  using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
+struct Tim23Regs
+{
+    using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
+    using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
+    using Smcr = ohal::core::Register<Base + kTimSmcrOffset>;
+    using Dier = ohal::core::Register<Base + kTimDierOffset>;
+    using Sr = ohal::core::Register<Base + kTimSrOffset>;
+    using Egr = ohal::core::Register<Base + kTimEgrOffset>;
+    using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
+    using Ccmr2 = ohal::core::Register<Base + kTimCcmr2Offset>;
+    using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
+    using Cnt = ohal::core::Register<Base + kTimCntOffset>;
+    using Psc = ohal::core::Register<Base + kTimPscOffset>;
+    using Arr = ohal::core::Register<Base + kTimArrOffset>;
+    using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
+    using Ccr2 = ohal::core::Register<Base + kTimCcr2Offset>;
+    using Ccr3 = ohal::core::Register<Base + kTimCcr3Offset>;
+    using Ccr4 = ohal::core::Register<Base + kTimCcr4Offset>;
+    using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
+    using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
+    using Or1 = ohal::core::Register<Base + kTimOr1Offset>;
+    using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
+    using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
 };
 
 /// Register map for TIM6 and TIM7 (basic timers — no output-compare channels).
 /// @tparam Base  Physical base address of the TIM6 or TIM7 peripheral.
 template <uintptr_t Base>
-struct Tim67Regs {
-  using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
-  using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
-  using Dier = ohal::core::Register<Base + kTimDierOffset>;
-  using Sr = ohal::core::Register<Base + kTimSrOffset>;
-  using Egr = ohal::core::Register<Base + kTimEgrOffset>;
-  using Cnt = ohal::core::Register<Base + kTimCntOffset>;
-  using Psc = ohal::core::Register<Base + kTimPscOffset>;
-  using Arr = ohal::core::Register<Base + kTimArrOffset>;
+struct Tim67Regs
+{
+    using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
+    using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
+    using Dier = ohal::core::Register<Base + kTimDierOffset>;
+    using Sr = ohal::core::Register<Base + kTimSrOffset>;
+    using Egr = ohal::core::Register<Base + kTimEgrOffset>;
+    using Cnt = ohal::core::Register<Base + kTimCntOffset>;
+    using Psc = ohal::core::Register<Base + kTimPscOffset>;
+    using Arr = ohal::core::Register<Base + kTimArrOffset>;
 };
 
 /// Register map for TIM15 (general-purpose timer with two capture/compare channels).
 /// @tparam Base  Physical base address of the TIM15 peripheral.
 template <uintptr_t Base>
-struct Tim15Regs {
-  using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
-  using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
-  using Smcr = ohal::core::Register<Base + kTimSmcrOffset>;
-  using Dier = ohal::core::Register<Base + kTimDierOffset>;
-  using Sr = ohal::core::Register<Base + kTimSrOffset>;
-  using Egr = ohal::core::Register<Base + kTimEgrOffset>;
-  using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
-  using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
-  using Cnt = ohal::core::Register<Base + kTimCntOffset>;
-  using Psc = ohal::core::Register<Base + kTimPscOffset>;
-  using Arr = ohal::core::Register<Base + kTimArrOffset>;
-  using Rcr = ohal::core::Register<Base + kTimRcrOffset>;
-  using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
-  using Ccr2 = ohal::core::Register<Base + kTimCcr2Offset>;
-  using Bdtr = ohal::core::Register<Base + kTimBdtrOffset>;
-  using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
-  using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
-  using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
-  using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
+struct Tim15Regs
+{
+    using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
+    using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
+    using Smcr = ohal::core::Register<Base + kTimSmcrOffset>;
+    using Dier = ohal::core::Register<Base + kTimDierOffset>;
+    using Sr = ohal::core::Register<Base + kTimSrOffset>;
+    using Egr = ohal::core::Register<Base + kTimEgrOffset>;
+    using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
+    using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
+    using Cnt = ohal::core::Register<Base + kTimCntOffset>;
+    using Psc = ohal::core::Register<Base + kTimPscOffset>;
+    using Arr = ohal::core::Register<Base + kTimArrOffset>;
+    using Rcr = ohal::core::Register<Base + kTimRcrOffset>;
+    using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
+    using Ccr2 = ohal::core::Register<Base + kTimCcr2Offset>;
+    using Bdtr = ohal::core::Register<Base + kTimBdtrOffset>;
+    using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
+    using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
+    using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
+    using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
 };
 
 /// Register map for TIM16 (general-purpose timer with one capture/compare channel).
 /// @tparam Base  Physical base address of the TIM16 peripheral.
 template <uintptr_t Base>
-struct Tim16Regs {
-  using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
-  using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
-  using Dier = ohal::core::Register<Base + kTimDierOffset>;
-  using Sr = ohal::core::Register<Base + kTimSrOffset>;
-  using Egr = ohal::core::Register<Base + kTimEgrOffset>;
-  using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
-  using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
-  using Cnt = ohal::core::Register<Base + kTimCntOffset>;
-  using Psc = ohal::core::Register<Base + kTimPscOffset>;
-  using Arr = ohal::core::Register<Base + kTimArrOffset>;
-  using Rcr = ohal::core::Register<Base + kTimRcrOffset>;
-  using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
-  using Bdtr = ohal::core::Register<Base + kTimBdtrOffset>;
-  using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
-  using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
-  using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
-  using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
+struct Tim16Regs
+{
+    using Cr1 = ohal::core::Register<Base + kTimCr1Offset>;
+    using Cr2 = ohal::core::Register<Base + kTimCr2Offset>;
+    using Dier = ohal::core::Register<Base + kTimDierOffset>;
+    using Sr = ohal::core::Register<Base + kTimSrOffset>;
+    using Egr = ohal::core::Register<Base + kTimEgrOffset>;
+    using Ccmr1 = ohal::core::Register<Base + kTimCcmr1Offset>;
+    using Ccer = ohal::core::Register<Base + kTimCcerOffset>;
+    using Cnt = ohal::core::Register<Base + kTimCntOffset>;
+    using Psc = ohal::core::Register<Base + kTimPscOffset>;
+    using Arr = ohal::core::Register<Base + kTimArrOffset>;
+    using Rcr = ohal::core::Register<Base + kTimRcrOffset>;
+    using Ccr1 = ohal::core::Register<Base + kTimCcr1Offset>;
+    using Bdtr = ohal::core::Register<Base + kTimBdtrOffset>;
+    using Dcr = ohal::core::Register<Base + kTimDcrOffset>;
+    using Dmar = ohal::core::Register<Base + kTimDmarOffset>;
+    using Af1 = ohal::core::Register<Base + kTimAf1Offset>;
+    using Tisel = ohal::core::Register<Base + kTimTiselOffset>;
 };
 
 /// Register map for LPTIM1, LPTIM2, and LPTIM3 (low-power timers).
 /// @tparam Base  Physical base address of the LPTIMx peripheral.
 template <uintptr_t Base>
-struct LptimRegs {
-  using Isr = ohal::core::Register<Base + kLptimIsrOffset>;
-  using Icr = ohal::core::Register<Base + kLptimIcrOffset>;
-  using Dier = ohal::core::Register<Base + kLptimDierOffset>;
-  using Cfgr = ohal::core::Register<Base + kLptimCfgrOffset>;
-  using Cr = ohal::core::Register<Base + kLptimCrOffset>;
-  using Ccr1 = ohal::core::Register<Base + kLptimCcr1Offset>;
-  using Arr = ohal::core::Register<Base + kLptimArrOffset>;
-  using Cnt = ohal::core::Register<Base + kLptimCntOffset>;
-  using Cfgr2 = ohal::core::Register<Base + kLptimCfgr2Offset>;
-  using Rcr = ohal::core::Register<Base + kLptimRcrOffset>;
-  using Ccmr1 = ohal::core::Register<Base + kLptimCcmr1Offset>;
-  using Ccmr2 = ohal::core::Register<Base + kLptimCcmr2Offset>;
-  using Ccr2 = ohal::core::Register<Base + kLptimCcr2Offset>;
-  using Ccr3 = ohal::core::Register<Base + kLptimCcr3Offset>;
-  using Ccr4 = ohal::core::Register<Base + kLptimCcr4Offset>;
+struct LptimRegs
+{
+    using Isr = ohal::core::Register<Base + kLptimIsrOffset>;
+    using Icr = ohal::core::Register<Base + kLptimIcrOffset>;
+    using Dier = ohal::core::Register<Base + kLptimDierOffset>;
+    using Cfgr = ohal::core::Register<Base + kLptimCfgrOffset>;
+    using Cr = ohal::core::Register<Base + kLptimCrOffset>;
+    using Ccr1 = ohal::core::Register<Base + kLptimCcr1Offset>;
+    using Arr = ohal::core::Register<Base + kLptimArrOffset>;
+    using Cnt = ohal::core::Register<Base + kLptimCntOffset>;
+    using Cfgr2 = ohal::core::Register<Base + kLptimCfgr2Offset>;
+    using Rcr = ohal::core::Register<Base + kLptimRcrOffset>;
+    using Ccmr1 = ohal::core::Register<Base + kLptimCcmr1Offset>;
+    using Ccmr2 = ohal::core::Register<Base + kLptimCcmr2Offset>;
+    using Ccr2 = ohal::core::Register<Base + kLptimCcr2Offset>;
+    using Ccr3 = ohal::core::Register<Base + kLptimCcr3Offset>;
+    using Ccr4 = ohal::core::Register<Base + kLptimCcr4Offset>;
 };
 
 // ---------------------------------------------------------------------------

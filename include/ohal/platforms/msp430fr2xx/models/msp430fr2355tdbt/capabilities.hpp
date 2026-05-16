@@ -10,9 +10,11 @@
 #include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 /// MSP430FR2355TDBT (TSSOP38) bonded-out pin ranges.
 /// P1-P4 (PortA-PortD): all 8 bits bonded out.
 /// P5 (PortE):           only bits 0-1 bonded out.
@@ -32,45 +34,69 @@ using TdbtPortECapability = std::bool_constant<(PinNum < kTdbtPortEBitCount)>;
 
 // PortA (P1) — all bits 0-7 bonded out on the TSSOP38.
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 // PortB (P2) — all bits 0-7 bonded out on the TSSOP38.
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_pull<PortB, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortB, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 // PortC (P3) — all bits 0-7 bonded out on the TSSOP38.
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 // PortD (P4) — all bits 0-7 bonded out on the TSSOP38.
 template <uint8_t PinNum>
-struct supports_pull<PortD, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_pull<PortD, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortD, PinNum> : detail::TdbtFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortD, PinNum> : detail::TdbtFullPortCapability<PinNum>
+{
+};
 
 // PortE (P5) — only bits 0-1 bonded out on the TSSOP38.
 template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : detail::TdbtPortECapability<PinNum> {};
+struct supports_pull<PortE, PinNum> : detail::TdbtPortECapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum> : detail::TdbtPortECapability<PinNum> {};
+struct supports_alternate_function<PortE, PinNum> : detail::TdbtPortECapability<PinNum>
+{
+};
 
 // PortF (P6) — not bonded out on the TSSOP38.
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : std::false_type {};
+struct supports_pull<PortF, PinNum> : std::false_type
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : std::false_type {};
+struct supports_alternate_function<PortF, PinNum> : std::false_type
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 
