@@ -11129,7 +11129,7 @@ nvic:
   maskable-channels: 32
   systick-calibration: 1000
   system-exceptions:
-    - acronym: Reset_Handler
+    - acronym: Reset
       priority: -3
       priority-type: fixed
       address: "0x0000_0004"
@@ -11250,12 +11250,12 @@ nvic:
       address: "0x0000_0088"
     - position: 19
       acronym: TIM15
-      description: TIM15 global interrupt
+      description: TIM15 global interrupt (IRQ19 variant on stm32u031)
       sub-families: [stm32u031]
       address: "0x0000_008C"
     - position: 19
       acronym: TIM15_LPTIM3
-      description: TIM15 and LPTIM3 global interrupt (combined with EXTI line 26 for LPTIM3 wake-up)
+      description: TIM15 and LPTIM3 global interrupt (IRQ19 variant on stm32u073/stm32u083; combined with EXTI line 26 for LPTIM3 wake-up)
       exti-lines: [26]
       sub-families: [stm32u073, stm32u083]
       address: "0x0000_008C"

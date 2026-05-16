@@ -631,7 +631,7 @@
       "additionalProperties": false,
       "properties": {
         "acronym": {
-          "description": "Exception handler name as used in startup code (e.g. 'HardFault_Handler').",
+          "description": "System exception acronym/stem from the vector table (e.g. 'Reset', 'HardFault').",
           "type": "string"
         },
         "priority": {
@@ -665,7 +665,7 @@
           "minimum": 0
         },
         "acronym": {
-          "description": "IRQ acronym/stem from the vector table (e.g. 'WWDG_IWDG').",
+          "description": "IRQ acronym/stem from the vector table (e.g. 'WWDG_IWDG'). The startup handler symbol is typically this value with '_IRQHandler' appended.",
           "type": "string"
         },
         "description": {
