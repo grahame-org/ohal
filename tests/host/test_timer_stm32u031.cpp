@@ -25,7 +25,8 @@
 namespace {
 
 namespace tim = ohal::platforms::stm32u0::stm32u083;
-namespace irq = ohal::platforms::stm32u0::stm32u083;
+// STM32U0 IRQ numbering is shared from the stm32u083 namespace implementation.
+namespace irq_wiring = ohal::platforms::stm32u0::stm32u083;
 
 // ---------------------------------------------------------------------------
 // Static (compile-time) address assertions for a representative register in
@@ -166,7 +167,7 @@ TEST_P(TimerStm32u031WiringTest, AddressMatchesHardwareBase) {
 }
 
 TEST(Stm32u031IrqVectorNumberTest, Tim15UsesIrqPosition19) {
-  EXPECT_EQ(static_cast<uint8_t>(irq::IrqNumber::Tim15), 19U);
+  EXPECT_EQ(static_cast<uint8_t>(irq_wiring::IrqNumber::Tim15), 19U);
 }
 
 } // namespace
