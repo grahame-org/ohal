@@ -117,12 +117,12 @@ struct GpioPortPinImpl {
                            1U, ohal::core::Access::WriteOnly>;
 
   // AFR: 4 bits per pin in AFRL (pins 0–7) or AFRH (pins 8–15).
-  // kAfrHighPinStart: first pin number stored in AFRH (i.e. pins 8–15).
+  // kAfrHighPinStart: first pin number stored in AFRH (pins 8–15).
   // kAfrShift is the bit-offset of the pin's AF field within its AFR register.
   static constexpr uint8_t kAfrHighPinStart = 8U;
   static constexpr uint8_t kAfrShift = static_cast<uint8_t>((PinNum % kAfrHighPinStart) * 4U);
   static constexpr uint32_t kAfrMask = 0xFUL << kAfrShift;
-  static constexpr uint8_t kAfrMaxValue = 15U;
+  static constexpr uint8_t kAfrFieldMask = 0xFU; // 4-bit alternate-function field mask
 
   static void set_mode(ohal::gpio::PinMode mode) noexcept { Moder::write(mode); }
   static void set_output_type(ohal::gpio::OutputType output_type) noexcept {
@@ -134,7 +134,7 @@ struct GpioPortPinImpl {
   /// Selects the alternate function for the pin by writing the 4-bit @p alt_func value
   /// into AFRL (pins 0–7) or AFRH (pins 8–15). Valid values are 0–15.
   static void set_alternate_function(uint8_t alt_func) noexcept {
-    const uint32_t encoded = (static_cast<uint32_t>(alt_func) & kAfrMaxValue) << kAfrShift;
+    const uint32_t encoded = (static_cast<uint32_t>(alt_func) & kAfrFieldMask) << kAfrShift;
     if constexpr (PinNum < kAfrHighPinStart) {
       Regs::Afrl::write((Regs::Afrl::read() & ~kAfrMask) | encoded);
     } else {
