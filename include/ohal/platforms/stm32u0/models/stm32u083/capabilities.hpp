@@ -6,9 +6,11 @@
 #include "ohal/core/capabilities.hpp"
 #include "ohal/gpio.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 /// STM32U083 GPIO ports have 16 pins (0–15).  Used as the upper bound in the
 /// capability specialisations below to ensure out-of-range pin numbers return false.
 inline constexpr uint8_t kStm32u083PinCount = 16U;
@@ -32,52 +34,84 @@ using Stm32u083PortCapability = std::bool_constant<(PinNum < kStm32u083PinCount)
 
 // NOLINTBEGIN(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 template <uint8_t PinNum>
-struct supports_output_type<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_type<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_type<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_type<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_type<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_type<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_speed<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_speed<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_speed<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_output_speed<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_pull<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_pull<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_alternate_function<PortB, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum> {};
+struct supports_alternate_function<PortF, PinNum> : detail::Stm32u083PortCapability<PinNum>
+{
+};
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 
 } // namespace ohal::gpio::capabilities

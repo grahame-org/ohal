@@ -17,7 +17,8 @@
 // Bare-metal test API — implemented here, declared in test_runner.hpp.
 // ---------------------------------------------------------------------------
 
-namespace ohal::target_test {
+namespace ohal::target_test
+{
 
 static unsigned pass_count = 0U;
 static unsigned fail_count = 0U;
@@ -32,15 +33,17 @@ void report_fail() noexcept { ++fail_count; }
 // ---------------------------------------------------------------------------
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
-int main() {
-  // TODO: call registered test functions here when they are wired up.
-  // For each test, call ohal::target_test::report_pass() or report_fail().
+int main()
+{
+    // TODO: call registered test functions here when they are wired up.
+    // For each test, call ohal::target_test::report_pass() or report_fail().
 
-  // Signal result via a simple spin-loop.  Replace with UART output once the
-  // BSP provides a UART initialisation routine.
-  while (true) {
-    // A debugger can inspect pass_count / fail_count here.
-    (void)ohal::target_test::pass_count;
-    (void)ohal::target_test::fail_count;
-  }
+    // Signal result via a simple spin-loop.  Replace with UART output once the
+    // BSP provides a UART initialisation routine.
+    while (true)
+    {
+        // A debugger can inspect pass_count / fail_count here.
+        (void)ohal::target_test::pass_count;
+        (void)ohal::target_test::fail_count;
+    }
 }

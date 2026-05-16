@@ -11,9 +11,11 @@
 
 #include "ohal/platforms/stm32u0/models/stm32u083mc/capabilities.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 // STM32U083MCI (UFBGA81) PortE bonding: PE3, PE7, PE8, PE9 are bonded out.
 // PE3 is only bonded on the 81-pin UFBGA package (absent on LQFP80).
 inline constexpr uint8_t kMciPortEPin3 = 3U;
@@ -30,16 +32,24 @@ using MciPortECapability =
 
 // PortE — PE3 and PE7–PE9 bonded out on the STM32U083MCI (UFBGA81).
 template <uint8_t PinNum>
-struct supports_output_type<PortE, PinNum> : detail::MciPortECapability<PinNum> {};
+struct supports_output_type<PortE, PinNum> : detail::MciPortECapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortE, PinNum> : detail::MciPortECapability<PinNum> {};
+struct supports_output_speed<PortE, PinNum> : detail::MciPortECapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : detail::MciPortECapability<PinNum> {};
+struct supports_pull<PortE, PinNum> : detail::MciPortECapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum> : detail::MciPortECapability<PinNum> {};
+struct supports_alternate_function<PortE, PinNum> : detail::MciPortECapability<PinNum>
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

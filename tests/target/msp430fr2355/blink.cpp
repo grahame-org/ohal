@@ -9,16 +9,18 @@ using namespace ohal::gpio;
 using Led = Pin<PortA, 2>;
 using Button = Pin<PortA, 3>;
 
-void blink_init() noexcept {
-  Led::set_mode(PinMode::Output);
-  Led::set();
+void blink_init() noexcept
+{
+    Led::set_mode(PinMode::Output);
+    Led::set();
 }
 
 void blink_toggle() noexcept { Led::toggle(); }
 
-void button_init() noexcept {
-  Button::set_mode(PinMode::Input);
-  Button::set_pull(Pull::Up);
+void button_init() noexcept
+{
+    Button::set_mode(PinMode::Input);
+    Button::set_pull(Pull::Up);
 }
 
 bool button_pressed() noexcept { return Button::read_input() == Level::Low; }

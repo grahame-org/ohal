@@ -23,7 +23,8 @@
 //   3. Basic behavioural correctness (via mock-register infrastructure).
 // ---------------------------------------------------------------------------
 
-namespace {
+namespace
+{
 
 namespace msp430 = ohal::platforms::msp430fr2xx::msp430fr2355;
 
@@ -38,13 +39,14 @@ static uint8_t mock_ren{0U};
 static uint8_t mock_sel0{0U};
 static uint8_t mock_sel1{0U};
 
-struct MockGpioRegs {
-  using In = ohal::test::MockRegister<uint8_t, &mock_in>;
-  using Out = ohal::test::MockRegister<uint8_t, &mock_out>;
-  using Dir = ohal::test::MockRegister<uint8_t, &mock_dir>;
-  using Ren = ohal::test::MockRegister<uint8_t, &mock_ren>;
-  using Sel0 = ohal::test::MockRegister<uint8_t, &mock_sel0>;
-  using Sel1 = ohal::test::MockRegister<uint8_t, &mock_sel1>;
+struct MockGpioRegs
+{
+    using In = ohal::test::MockRegister<uint8_t, &mock_in>;
+    using Out = ohal::test::MockRegister<uint8_t, &mock_out>;
+    using Dir = ohal::test::MockRegister<uint8_t, &mock_dir>;
+    using Ren = ohal::test::MockRegister<uint8_t, &mock_ren>;
+    using Sel0 = ohal::test::MockRegister<uint8_t, &mock_sel0>;
+    using Sel1 = ohal::test::MockRegister<uint8_t, &mock_sel1>;
 };
 
 using MockPin3 = msp430::GpioPortPinImpl<3U, MockGpioRegs>;
@@ -53,63 +55,73 @@ using MockPin3 = msp430::GpioPortPinImpl<3U, MockGpioRegs>;
 // Test fixture
 // ---------------------------------------------------------------------------
 
-class GpioMsp430fr2355TrsmTest : public ::testing::Test {
-protected:
-  void SetUp() override {
-    mock_in = 0U;
-    mock_out = 0U;
-    mock_dir = 0U;
-    mock_ren = 0U;
-    mock_sel0 = 0U;
-    mock_sel1 = 0U;
-  }
+class GpioMsp430fr2355TrsmTest : public ::testing::Test
+{
+  protected:
+    void SetUp() override
+    {
+        mock_in = 0U;
+        mock_out = 0U;
+        mock_dir = 0U;
+        mock_ren = 0U;
+        mock_sel0 = 0U;
+        mock_sel1 = 0U;
+    }
 };
 
 // ---------------------------------------------------------------------------
 // Basic behavioural tests
 // ---------------------------------------------------------------------------
 
-TEST_F(GpioMsp430fr2355TrsmTest, Set_SetsBitInOutRegister) {
-  MockPin3::set();
-  EXPECT_EQ(mock_out, static_cast<uint8_t>(1U << 3U));
+TEST_F(GpioMsp430fr2355TrsmTest, Set_SetsBitInOutRegister)
+{
+    MockPin3::set();
+    EXPECT_EQ(mock_out, static_cast<uint8_t>(1U << 3U));
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, Clear_ClearsBitInOutRegister) {
-  mock_out = static_cast<uint8_t>(1U << 3U);
-  MockPin3::clear();
-  EXPECT_EQ(mock_out, static_cast<uint8_t>(0U));
+TEST_F(GpioMsp430fr2355TrsmTest, Clear_ClearsBitInOutRegister)
+{
+    mock_out = static_cast<uint8_t>(1U << 3U);
+    MockPin3::clear();
+    EXPECT_EQ(mock_out, static_cast<uint8_t>(0U));
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, ReadInput_ReturnsHigh_WhenInBitSet) {
-  mock_in = static_cast<uint8_t>(1U << 3U);
-  EXPECT_EQ(MockPin3::read_input(), ohal::gpio::Level::High);
+TEST_F(GpioMsp430fr2355TrsmTest, ReadInput_ReturnsHigh_WhenInBitSet)
+{
+    mock_in = static_cast<uint8_t>(1U << 3U);
+    EXPECT_EQ(MockPin3::read_input(), ohal::gpio::Level::High);
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, SetMode_Output_SetsDirBit) {
-  MockPin3::set_mode(ohal::gpio::PinMode::Output);
-  EXPECT_EQ(mock_dir, static_cast<uint8_t>(1U << 3U));
+TEST_F(GpioMsp430fr2355TrsmTest, SetMode_Output_SetsDirBit)
+{
+    MockPin3::set_mode(ohal::gpio::PinMode::Output);
+    EXPECT_EQ(mock_dir, static_cast<uint8_t>(1U << 3U));
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, SetMode_Input_ClearsDirBit) {
-  mock_dir = static_cast<uint8_t>(1U << 3U);
-  MockPin3::set_mode(ohal::gpio::PinMode::Input);
-  EXPECT_EQ(mock_dir, static_cast<uint8_t>(0U));
+TEST_F(GpioMsp430fr2355TrsmTest, SetMode_Input_ClearsDirBit)
+{
+    mock_dir = static_cast<uint8_t>(1U << 3U);
+    MockPin3::set_mode(ohal::gpio::PinMode::Input);
+    EXPECT_EQ(mock_dir, static_cast<uint8_t>(0U));
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, SetMode_AlternateFunction_SetsSel0Bit) {
-  MockPin3::set_mode(ohal::gpio::PinMode::AlternateFunction);
-  EXPECT_EQ(mock_sel0, static_cast<uint8_t>(1U << 3U));
+TEST_F(GpioMsp430fr2355TrsmTest, SetMode_AlternateFunction_SetsSel0Bit)
+{
+    MockPin3::set_mode(ohal::gpio::PinMode::AlternateFunction);
+    EXPECT_EQ(mock_sel0, static_cast<uint8_t>(1U << 3U));
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, SetPull_Up_SetsRenBit) {
-  MockPin3::set_pull(ohal::gpio::Pull::Up);
-  EXPECT_EQ(mock_ren, static_cast<uint8_t>(1U << 3U));
+TEST_F(GpioMsp430fr2355TrsmTest, SetPull_Up_SetsRenBit)
+{
+    MockPin3::set_pull(ohal::gpio::Pull::Up);
+    EXPECT_EQ(mock_ren, static_cast<uint8_t>(1U << 3U));
 }
 
-TEST_F(GpioMsp430fr2355TrsmTest, SetPull_Down_ClearsOutBit) {
-  mock_out = static_cast<uint8_t>(1U << 3U);
-  MockPin3::set_pull(ohal::gpio::Pull::Down);
-  EXPECT_EQ(mock_out, static_cast<uint8_t>(0U));
+TEST_F(GpioMsp430fr2355TrsmTest, SetPull_Down_ClearsOutBit)
+{
+    mock_out = static_cast<uint8_t>(1U << 3U);
+    MockPin3::set_pull(ohal::gpio::Pull::Down);
+    EXPECT_EQ(mock_out, static_cast<uint8_t>(0U));
 }
 
 // ---------------------------------------------------------------------------
@@ -136,13 +148,16 @@ static_assert(ohal::gpio::Pin<ohal::gpio::PortD, 0>::OutBit::reg_type::address =
                   msp430::kPortPair34Base + msp430::kOutPairOffset + msp430::kOddPortSub,
               "Pin<PortD,0> must use P4OUT address on TRSM");
 
-struct WiringCase {
-  uintptr_t actual;
-  uintptr_t expected;
-  const char* name;
+struct WiringCase
+{
+    uintptr_t actual;
+    uintptr_t expected;
+    const char* name;
 };
 
-class GpioMsp430fr2355TrsmWiringTest : public ::testing::TestWithParam<WiringCase> {};
+class GpioMsp430fr2355TrsmWiringTest : public ::testing::TestWithParam<WiringCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -167,8 +182,9 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioMsp430fr2355TrsmWiringTest, OutRegisterAddressMatchesHardwareBase) {
-  EXPECT_EQ(GetParam().actual, GetParam().expected);
+TEST_P(GpioMsp430fr2355TrsmWiringTest, OutRegisterAddressMatchesHardwareBase)
+{
+    EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 
 // ---------------------------------------------------------------------------
@@ -233,12 +249,15 @@ static_assert(!ohal::gpio::capabilities::supports_output_speed<ohal::gpio::PortA
 // Capability trait runtime tests — bonded pins (must be true)
 // ---------------------------------------------------------------------------
 
-struct CapCase {
-  bool value;
-  const char* name;
+struct CapCase
+{
+    bool value;
+    const char* name;
 };
 
-class GpioMsp430fr2355TrsmCapabilityTest : public ::testing::TestWithParam<CapCase> {};
+class GpioMsp430fr2355TrsmCapabilityTest : public ::testing::TestWithParam<CapCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -271,20 +290,24 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<CapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioMsp430fr2355TrsmCapabilityTest, BondedPinCapability_ReturnsTrue) {
-  EXPECT_TRUE(GetParam().value);
+TEST_P(GpioMsp430fr2355TrsmCapabilityTest, BondedPinCapability_ReturnsTrue)
+{
+    EXPECT_TRUE(GetParam().value);
 }
 
 // ---------------------------------------------------------------------------
 // Capability trait runtime tests — non-bonded and out-of-range (must be false)
 // ---------------------------------------------------------------------------
 
-struct NegCapCase {
-  bool value;
-  const char* name;
+struct NegCapCase
+{
+    bool value;
+    const char* name;
 };
 
-class GpioMsp430fr2355TrsmNegCapabilityTest : public ::testing::TestWithParam<NegCapCase> {};
+class GpioMsp430fr2355TrsmNegCapabilityTest : public ::testing::TestWithParam<NegCapCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -320,8 +343,9 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<NegCapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioMsp430fr2355TrsmNegCapabilityTest, NonBondedPinCapability_ReturnsFalse) {
-  EXPECT_FALSE(GetParam().value);
+TEST_P(GpioMsp430fr2355TrsmNegCapabilityTest, NonBondedPinCapability_ReturnsFalse)
+{
+    EXPECT_FALSE(GetParam().value);
 }
 
 } // namespace

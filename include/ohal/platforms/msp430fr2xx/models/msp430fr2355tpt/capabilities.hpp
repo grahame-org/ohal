@@ -11,9 +11,11 @@
 #include "ohal/gpio.hpp"
 #include "ohal/platforms/msp430fr2xx/models/msp430fr2355/constants.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 // MSP430FR2355TPT (LQFP48) bonded-out pin ranges.
 // P1–P4 (PortA–PortD): all 8 bits (0–7) bonded out.
 // P5 (PortE):           only bits 0–4 bonded out (5 pins on LQFP48).
@@ -37,45 +39,69 @@ using TptPortFCapability = std::bool_constant<(PinNum < kTptPortFBitCount)>;
 
 // PortA (P1) — all bits 0–7 bonded out on the LQFP48.
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 // PortB (P2) — all bits 0–7 bonded out on the LQFP48.
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_pull<PortB, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortB, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 // PortC (P3) — all bits 0–7 bonded out on the LQFP48.
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 // PortD (P4) — all bits 0–7 bonded out on the LQFP48.
 template <uint8_t PinNum>
-struct supports_pull<PortD, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_pull<PortD, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortD, PinNum> : detail::TptFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortD, PinNum> : detail::TptFullPortCapability<PinNum>
+{
+};
 
 // PortE (P5) — only bits 0–4 bonded out on the LQFP48.
 template <uint8_t PinNum>
-struct supports_pull<PortE, PinNum> : detail::TptPortECapability<PinNum> {};
+struct supports_pull<PortE, PinNum> : detail::TptPortECapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortE, PinNum> : detail::TptPortECapability<PinNum> {};
+struct supports_alternate_function<PortE, PinNum> : detail::TptPortECapability<PinNum>
+{
+};
 
 // PortF (P6) — only bits 0–6 bonded out on the LQFP48.
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : detail::TptPortFCapability<PinNum> {};
+struct supports_pull<PortF, PinNum> : detail::TptPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : detail::TptPortFCapability<PinNum> {};
+struct supports_alternate_function<PortF, PinNum> : detail::TptPortFCapability<PinNum>
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

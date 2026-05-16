@@ -3,12 +3,14 @@
 
 #include <cstdint>
 
-namespace ohal::core {
+namespace ohal::core
+{
 
-enum class Access : uint8_t {
-  ReadOnly = 0,
-  WriteOnly = 1,
-  ReadWrite = 2,
+enum class Access : uint8_t
+{
+    ReadOnly = 0,
+    WriteOnly = 1,
+    ReadWrite = 2,
 };
 
 } // namespace ohal::core

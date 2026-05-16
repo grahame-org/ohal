@@ -11,27 +11,33 @@
 
 #include <gtest/gtest.h>
 
-namespace {
+namespace
+{
 
 using namespace ohal::platforms::stm32u0::stm32u083;
 
 // ─── Port base address tests ──────────────────────────────────────────────────
 
-TEST(Stm32u083RctUartPortMappingTest, Usart2PortMapsToUsart2Base) {
-  EXPECT_EQ(ohal::uart::Port<Usart2Tag>::Cr1::address, kUsart2Base + kUsartCr1Offset);
+TEST(Stm32u083RctUartPortMappingTest, Usart2PortMapsToUsart2Base)
+{
+    EXPECT_EQ(ohal::uart::Port<Usart2Tag>::Cr1::address, kUsart2Base + kUsartCr1Offset);
 }
 
-TEST(Stm32u083RctUartPortMappingTest, Lpuart3PortAvailableForStm32u083) {
-  EXPECT_EQ(ohal::uart::Port<Lpuart3Tag>::Cr1::address, kLpuart3Base + kUsartCr1Offset);
+TEST(Stm32u083RctUartPortMappingTest, Lpuart3PortAvailableForStm32u083)
+{
+    EXPECT_EQ(ohal::uart::Port<Lpuart3Tag>::Cr1::address, kLpuart3Base + kUsartCr1Offset);
 }
 
-struct UartPortBaseCase {
-  uintptr_t actual_address;
-  uintptr_t expected_address;
-  const char* name;
+struct UartPortBaseCase
+{
+    uintptr_t actual_address;
+    uintptr_t expected_address;
+    const char* name;
 };
 
-class Stm32u083RctUartPortBaseAddressTest : public ::testing::TestWithParam<UartPortBaseCase> {};
+class Stm32u083RctUartPortBaseAddressTest : public ::testing::TestWithParam<UartPortBaseCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -52,8 +58,9 @@ INSTANTIATE_TEST_SUITE_P(
     });
 // clang-format on
 
-TEST_P(Stm32u083RctUartPortBaseAddressTest, Cr1AddressMatchesExpected) {
-  EXPECT_EQ(GetParam().actual_address, GetParam().expected_address);
+TEST_P(Stm32u083RctUartPortBaseAddressTest, Cr1AddressMatchesExpected)
+{
+    EXPECT_EQ(GetParam().actual_address, GetParam().expected_address);
 }
 
 // ─── Capability tests ─────────────────────────────────────────────────────────
@@ -62,12 +69,15 @@ TEST_P(Stm32u083RctUartPortBaseAddressTest, Cr1AddressMatchesExpected) {
 // (RM0503 §34.4).  Values encode both positive and negative assertions as a
 // bool so that a single EXPECT_TRUE drives every case uniformly.
 
-struct UartCapCase {
-  bool value;
-  const char* name;
+struct UartCapCase
+{
+    bool value;
+    const char* name;
 };
 
-class Stm32u083RctUartCapabilityTest : public ::testing::TestWithParam<UartCapCase> {};
+class Stm32u083RctUartCapabilityTest : public ::testing::TestWithParam<UartCapCase>
+{
+};
 
 TEST_P(Stm32u083RctUartCapabilityTest, CapabilityMatchesExpected) { EXPECT_TRUE(GetParam().value); }
 
@@ -298,13 +308,16 @@ INSTANTIATE_TEST_SUITE_P(
 
 // ─── FIFO size tests ──────────────────────────────────────────────────────────
 
-struct UartFifoSizeCase {
-  uint8_t actual_size;
-  uint8_t expected_size;
-  const char* name;
+struct UartFifoSizeCase
+{
+    uint8_t actual_size;
+    uint8_t expected_size;
+    const char* name;
 };
 
-class Stm32u083RctUartFifoSizeTest : public ::testing::TestWithParam<UartFifoSizeCase> {};
+class Stm32u083RctUartFifoSizeTest : public ::testing::TestWithParam<UartFifoSizeCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -320,8 +333,9 @@ INSTANTIATE_TEST_SUITE_P(
     });
 // clang-format on
 
-TEST_P(Stm32u083RctUartFifoSizeTest, FifoSizeMatchesSpec) {
-  EXPECT_EQ(GetParam().actual_size, GetParam().expected_size);
+TEST_P(Stm32u083RctUartFifoSizeTest, FifoSizeMatchesSpec)
+{
+    EXPECT_EQ(GetParam().actual_size, GetParam().expected_size);
 }
 
 // ─── GPIO and timer tests ─────────────────────────────────────────────────────
@@ -338,16 +352,19 @@ TEST_P(Stm32u083RctUartFifoSizeTest, FifoSizeMatchesSpec) {
 //   PB8  — I2C1 SCL (GPIO_AF4_I2C1)
 //   PB9  — I2C1 SDA (GPIO_AF4_I2C1)
 
-TEST(Stm32u083RctGpioCoverageTest, TestProjectLedPinOutputCapabilityMatchesExpected) {
-  EXPECT_TRUE((ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 5>::value));
+TEST(Stm32u083RctGpioCoverageTest, TestProjectLedPinOutputCapabilityMatchesExpected)
+{
+    EXPECT_TRUE((ohal::gpio::capabilities::supports_output_type<ohal::gpio::PortA, 5>::value));
 }
 
-struct GpioPinCapCase {
-  bool value;
-  const char* name;
+struct GpioPinCapCase
+{
+    bool value;
+    const char* name;
 };
 
-class Stm32u083RctTestProjectGpioCapabilityTest : public ::testing::TestWithParam<GpioPinCapCase> {
+class Stm32u083RctTestProjectGpioCapabilityTest : public ::testing::TestWithParam<GpioPinCapCase>
+{
 };
 
 // clang-format off
@@ -378,20 +395,25 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<GpioPinCapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(Stm32u083RctTestProjectGpioCapabilityTest, CapabilityMatchesExpected) {
-  EXPECT_TRUE(GetParam().value);
+TEST_P(Stm32u083RctTestProjectGpioCapabilityTest, CapabilityMatchesExpected)
+{
+    EXPECT_TRUE(GetParam().value);
 }
 
-TEST(Stm32u083RctTimerAccessTest, Tim2EgrAccessModeMatchesExpected) {
-  EXPECT_EQ((ohal::timer::Channel<Tim2, 0>::Egr::access), ohal::core::Access::WriteOnly);
+TEST(Stm32u083RctTimerAccessTest, Tim2EgrAccessModeMatchesExpected)
+{
+    EXPECT_EQ((ohal::timer::Channel<Tim2, 0>::Egr::access), ohal::core::Access::WriteOnly);
 }
 
-struct Tim2ChannelMapCase {
-  bool value;
-  const char* name;
+struct Tim2ChannelMapCase
+{
+    bool value;
+    const char* name;
 };
 
-class Stm32u083RctTimerChannelMappingTest : public ::testing::TestWithParam<Tim2ChannelMapCase> {};
+class Stm32u083RctTimerChannelMappingTest : public ::testing::TestWithParam<Tim2ChannelMapCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -404,8 +426,9 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<Tim2ChannelMapCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(Stm32u083RctTimerChannelMappingTest, ChannelToCcrMappingMatchesExpected) {
-  EXPECT_TRUE(GetParam().value);
+TEST_P(Stm32u083RctTimerChannelMappingTest, ChannelToCcrMappingMatchesExpected)
+{
+    EXPECT_TRUE(GetParam().value);
 }
 
 } // namespace

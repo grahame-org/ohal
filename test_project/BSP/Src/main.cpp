@@ -75,7 +75,8 @@ using LedPin = ohal::gpio::Pin<ohal::gpio::PortA, 5U>;
  * @brief  The application entry point.
  * @retval int
  */
-int main(void) {
+int main(void)
+{
 
     /* USER CODE BEGIN 1 */
 
@@ -118,7 +119,8 @@ int main(void) {
     BspCOMInit.StopBits = COM_STOPBITS_1;
     BspCOMInit.Parity = COM_PARITY_NONE;
     BspCOMInit.HwFlowCtl = COM_HWCONTROL_NONE;
-    if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE) {
+    if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
+    {
         Error_Handler();
     }
 
@@ -130,14 +132,16 @@ int main(void) {
     // No further changes will be required.
     // setup();
 
-    while (1) {
+    while (1)
+    {
         // Place all related code in loop() function defined in a app_main.c
         // This ensures that if this file is regenerated due to reconfiguring the BSP
         // No further changes will be required.
 
         // loop();
         LedPin::toggle();
-        for (volatile uint32_t i = 0; i < 1000000; ++i) {
+        for (volatile uint32_t i = 0; i < 1000000; ++i)
+        {
             // do nowt
         }
         /* USER CODE END WHILE */
@@ -151,9 +155,10 @@ int main(void) {
  * @brief System Clock Configuration
  * @retval None
  */
-void SystemClock_Config(void) {
-    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+void SystemClock_Config(void)
+{
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
     /** Configure the main internal regulator output voltage
      */
@@ -166,19 +171,20 @@ void SystemClock_Config(void) {
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
         Error_Handler();
     }
 
     /** Initializes the CPU, AHB and APB buses clocks
      */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-            | RCC_CLOCKTYPE_PCLK1;
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK) {
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+    {
         Error_Handler();
     }
 }
@@ -188,8 +194,9 @@ void SystemClock_Config(void) {
  * @param None
  * @retval None
  */
-static void MX_GPIO_Init(void) {
-    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+static void MX_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
     /* USER CODE BEGIN MX_GPIO_Init_1 */
 
     /* USER CODE END MX_GPIO_Init_1 */
@@ -221,27 +228,29 @@ static void MX_GPIO_Init(void) {
  * @brief  This function is executed in case of error occurrence.
  * @retval None
  */
-void Error_Handler(void) {
+void Error_Handler(void)
+{
     /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     __disable_irq();
-    while (1) {
+    while (1)
+    {
     }
     /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
+void assert_failed(uint8_t* file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+    /* USER CODE BEGIN 6 */
+    /* User can add his own implementation to report the file name and line number,
+       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

@@ -4,7 +4,8 @@
 #include <array>
 #include <cstdint>
 
-namespace ohal::test {
+namespace ohal::test
+{
 
 /// 256 bytes of simulated register space (64 × 32-bit slots, or 256 × 8-bit slots).
 /// Used by host-side tests that redirect Register<> accesses into mock memory
@@ -21,16 +22,18 @@ inline void reset_mock() noexcept { mock_memory.fill(0); }
 ///       This is acceptable for host-side test code on a hosted C++ implementation where the
 ///       goal is to redirect MMIO register accesses into a plain memory array.
 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-inline uintptr_t mock_addr(std::size_t slot) noexcept {
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  return reinterpret_cast<uintptr_t>(mock_memory.data()) + slot * sizeof(uint32_t);
+inline uintptr_t mock_addr(std::size_t slot) noexcept
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    return reinterpret_cast<uintptr_t>(mock_memory.data()) + slot * sizeof(uint32_t);
 }
 
 /// Returns the uintptr_t address of the 8-bit slot at index @p slot in mock_memory.
 /// Used for 8-bit platform tests (e.g. PIC18F4550).
-inline uintptr_t mock_addr8(std::size_t slot) noexcept {
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  return reinterpret_cast<uintptr_t>(reinterpret_cast<uint8_t*>(mock_memory.data()) + slot);
+inline uintptr_t mock_addr8(std::size_t slot) noexcept
+{
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    return reinterpret_cast<uintptr_t>(reinterpret_cast<uint8_t*>(mock_memory.data()) + slot);
 }
 
 /// Test double for ohal::core::Register<Addr, T>.
@@ -46,12 +49,13 @@ inline uintptr_t mock_addr8(std::size_t slot) noexcept {
 /// @tparam Storage  Pointer to a variable with static storage duration that acts as the
 ///                  register's backing store.
 template <typename T, T* Storage>
-struct MockRegister {
-  using value_type = T;
+struct MockRegister
+{
+    using value_type = T;
 
-  [[nodiscard]] static T read() noexcept { return *Storage; }
+    [[nodiscard]] static T read() noexcept { return *Storage; }
 
-  static void write(T value) noexcept { *Storage = value; }
+    static void write(T value) noexcept { *Storage = value; }
 };
 
 /// Variant of MockRegister that counts the number of times read() is called.
@@ -64,23 +68,26 @@ struct MockRegister {
 /// @tparam Storage  Pointer to a variable with static storage duration that acts as the
 ///                  register's backing store.
 template <typename T, T* Storage>
-struct ReadCountingMockRegister {
-  using value_type = T;
+struct ReadCountingMockRegister
+{
+    using value_type = T;
 
-  // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-  static inline unsigned read_count{0U};
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+    static inline unsigned read_count{0U};
 
-  static void reset() noexcept {
-    *Storage = T{};
-    read_count = 0U;
-  }
+    static void reset() noexcept
+    {
+        *Storage = T{};
+        read_count = 0U;
+    }
 
-  [[nodiscard]] static T read() noexcept {
-    ++read_count;
-    return *Storage;
-  }
+    [[nodiscard]] static T read() noexcept
+    {
+        ++read_count;
+        return *Storage;
+    }
 
-  static void write(T value) noexcept { *Storage = value; }
+    static void write(T value) noexcept { *Storage = value; }
 };
 
 } // namespace ohal::test
