@@ -166,6 +166,61 @@ target_link_libraries(ohal_host_tests_timer PRIVATE ohal GTest::gtest_main GTest
 add_executable(ohal_host_tests_timer_stm32u031 main.cpp test_timer_stm32u031.cpp)
 target_link_libraries(ohal_host_tests_timer_stm32u031 PRIVATE ohal GTest::gtest_main GTest::gmock)
 
+# STM32U073 K/C/H-series tests.  All twelve variants (k8u, kbu, kcu, c8t, c8u,
+# cbt, cbu, cct, ccu, h8y, hby, hcy) delegate to stm32u083/gpio.hpp, producing
+# identical Pin<> specialisations.  Kept separate from the STM32U083 KCU/HCY
+# executable because those two targets include different sets of model headers,
+# and combining them would link two TUs that each define the same partial
+# specialisations at different include paths (an ODR hazard).
+add_executable(ohal_host_tests_stm32u073khc
+    main.cpp
+    test_gpio_stm32u073kcu.cpp
+    test_gpio_stm32u073kbu.cpp
+    test_gpio_stm32u073k8u.cpp
+    test_gpio_stm32u073cct.cpp
+    test_gpio_stm32u073ccu.cpp
+    test_gpio_stm32u073cbt.cpp
+    test_gpio_stm32u073cbu.cpp
+    test_gpio_stm32u073c8t.cpp
+    test_gpio_stm32u073c8u.cpp
+    test_gpio_stm32u073hcy.cpp
+    test_gpio_stm32u073hby.cpp
+    test_gpio_stm32u073h8y.cpp)
+target_link_libraries(ohal_host_tests_stm32u073khc PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# STM32U073 R-series tests.  All six variants (r8t, r8i, rbt, rbi, rct, rci)
+# delegate to stm32u083rc/gpio.hpp, producing identical Pin<> specialisations.
+# They are ODR-safe in one executable.
+add_executable(ohal_host_tests_stm32u073r
+    main.cpp
+    test_gpio_stm32u073rct.cpp
+    test_gpio_stm32u073rci.cpp
+    test_gpio_stm32u073rbt.cpp
+    test_gpio_stm32u073rbi.cpp
+    test_gpio_stm32u073r8t.cpp
+    test_gpio_stm32u073r8i.cpp)
+target_link_libraries(ohal_host_tests_stm32u073r PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# STM32U073 M(T)-series tests.  All three LQFP80 variants (m8t, mbt, mct)
+# delegate to stm32u083mct/gpio.hpp, producing identical Pin<> specialisations.
+# Kept separate from the MCI executable: MCT has Pin<PortE, 3> deleted; MCI
+# defines it as a bonded GPIO — different full specialisations cause ODR issues.
+add_executable(ohal_host_tests_stm32u073mt
+    main.cpp
+    test_gpio_stm32u073mct.cpp
+    test_gpio_stm32u073mbt.cpp
+    test_gpio_stm32u073m8t.cpp)
+target_link_libraries(ohal_host_tests_stm32u073mt PRIVATE ohal GTest::gtest_main GTest::gmock)
+
+# STM32U073 M(I)-series tests.  All three UFBGA81 variants (m8i, mbi, mci)
+# delegate to stm32u083mci/gpio.hpp, producing identical Pin<> specialisations.
+add_executable(ohal_host_tests_stm32u073mi
+    main.cpp
+    test_gpio_stm32u073mci.cpp
+    test_gpio_stm32u073mbi.cpp
+    test_gpio_stm32u073m8i.cpp)
+target_link_libraries(ohal_host_tests_stm32u073mi PRIVATE ohal GTest::gtest_main GTest::gmock)
+
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
 gtest_discover_tests(ohal_host_tests_cc)
@@ -185,6 +240,10 @@ gtest_discover_tests(ohal_host_tests_stm32u031g)
 gtest_discover_tests(ohal_host_tests_timer)
 gtest_discover_tests(ohal_host_tests_timer_stm32u031)
 gtest_discover_tests(ohal_host_tests_stm32u031f)
+gtest_discover_tests(ohal_host_tests_stm32u073khc)
+gtest_discover_tests(ohal_host_tests_stm32u073r)
+gtest_discover_tests(ohal_host_tests_stm32u073mt)
+gtest_discover_tests(ohal_host_tests_stm32u073mi)
 
 # ---------------------------------------------------------------------------
 # Negative-compile tests (§11.3)
