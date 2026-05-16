@@ -5,7 +5,10 @@
 #include <ohal/core/capabilities.hpp>
 #include <ohal/core/field.hpp>
 #include <ohal/core/register.hpp>
+#include <ohal/exti.hpp>
 #include <ohal/gpio.hpp>
+#include <ohal/irq.hpp>
+#include <ohal/nvic.hpp>
 #include <ohal/timer.hpp>
 #include <ohal/uart.hpp>
 
