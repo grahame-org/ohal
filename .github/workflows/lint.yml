@@ -25,7 +25,9 @@ jobs:
       - name: Install tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y clang-format clang-tidy cmake shellcheck
+          sudo apt-get install -y clang-format-18 clang-tidy-18 cmake shellcheck
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
           pip3 install cmakelang yamllint check-jsonschema
           npm install -g markdownlint-cli2 prettier
 

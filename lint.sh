@@ -12,7 +12,7 @@ find "${REPO_ROOT}" \
     -print0 | xargs -0 npx prettier --check
 
 echo "=== clang-format ==="
-find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" \
+find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" "${REPO_ROOT}/test_project" \
     \( -name '*.hpp' -o -name '*.cpp' \) \
     -print0 | xargs -0 clang-format --dry-run --Werror
 
