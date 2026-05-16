@@ -1,9 +1,12 @@
 #ifndef OHAL_PLATFORMS_STM32U0_FAMILY_TAG_HPP
 #define OHAL_PLATFORMS_STM32U0_FAMILY_TAG_HPP
 
-namespace ohal::platforms::stm32u0 {
+namespace ohal::platforms::stm32u0
+{
 
-struct Family {};
+struct Family
+{
+};
 
 } // namespace ohal::platforms::stm32u0
 
