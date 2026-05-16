@@ -13,16 +13,32 @@ jobs:
     name: release-please
     runs-on: ubuntu-latest
     permissions:
-      contents: write # required to create tags and GitHub Releases
-      pull-requests: write # required to open and update Release PRs
+      contents: write # required to create tags, releases, and update version files (e.g. CHANGELOG)
+      pull-requests: write # required to create and update release PRs
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      RELEASE_PLEASE_APP_ID: ${{ vars.RELEASE_PLEASE_APP_ID }}
+      RELEASE_PLEASE_APP_KEY: ${{ secrets.RELEASE_PLEASE_APP_KEY }}
     steps:
       # Pin GitHub Actions to a full commit SHA; update this SHA intentionally when upgrading.
+      # When app credentials are configured the app token is used instead of GITHUB_TOKEN
+      # so that the resulting release PR triggers normal pull_request quality-gate workflows.
+      - name: Generate GitHub App token
+        id: app-token
+        if: ${{ env.RELEASE_PLEASE_APP_ID != '' && env.RELEASE_PLEASE_APP_KEY != '' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.RELEASE_PLEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_APP_KEY }}
+          repositories: ${{ github.event.repository.name }} # scope token to this repo only
+          permission-contents: write # required to create tags, releases, and update version files
+          permission-pull-requests: write # required to create and update release PRs
+
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           command: manifest
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token || github.token }}
