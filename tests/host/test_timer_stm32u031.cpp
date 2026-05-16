@@ -28,7 +28,8 @@
 // ohal::core::Register instantiation resolves to the correct MMIO address.
 // ---------------------------------------------------------------------------
 
-namespace {
+namespace
+{
 
 namespace tim = ohal::platforms::stm32u0::stm32u083;
 // STM32U0 IRQ numbering currently shares this stm32u083 namespace path.
@@ -115,13 +116,16 @@ static_assert(tim::Lptim2::Ccr4::address == tim::kLptim2Base + tim::kLptimCcr4Of
 // compile-time address constant matches the expected base + offset formula.
 // ---------------------------------------------------------------------------
 
-struct WiringCase {
-  uintptr_t actual;
-  uintptr_t expected;
-  const char* name;
+struct WiringCase
+{
+    uintptr_t actual;
+    uintptr_t expected;
+    const char* name;
 };
 
-class TimerStm32u031WiringTest : public ::testing::TestWithParam<WiringCase> {};
+class TimerStm32u031WiringTest : public ::testing::TestWithParam<WiringCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -168,12 +172,14 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(TimerStm32u031WiringTest, AddressMatchesHardwareBase) {
-  EXPECT_EQ(GetParam().actual, GetParam().expected);
+TEST_P(TimerStm32u031WiringTest, AddressMatchesHardwareBase)
+{
+    EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 
-TEST(Stm32u031IrqVectorNumberTest, IrqNumberTim15_MapsToPosition19) {
-  EXPECT_EQ(static_cast<uint8_t>(irq_wiring::IrqNumber::Tim15), 19U);
+TEST(Stm32u031IrqVectorNumberTest, IrqNumberTim15_MapsToPosition19)
+{
+    EXPECT_EQ(static_cast<uint8_t>(irq_wiring::IrqNumber::Tim15), 19U);
 }
 
 } // namespace

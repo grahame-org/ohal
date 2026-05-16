@@ -6,9 +6,11 @@
 #include "ohal/core/capabilities.hpp"
 #include "ohal/gpio.hpp"
 
-namespace ohal::gpio::capabilities {
+namespace ohal::gpio::capabilities
+{
 
-namespace detail {
+namespace detail
+{
 // STM32U031K (32-pin UFQFPN) bonded-out pin ranges.
 // GPIOA: all 16 bits (0-15) bonded out.
 // GPIOB: bits 0-1 and 3-7 bonded out (bit 2 and bits 8-15 absent).
@@ -44,55 +46,87 @@ using KPortFCapability =
 
 // PortA — all bits 0-15 bonded out on all 32-pin K packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortA, PinNum> : detail::KFullPortCapability<PinNum> {};
+struct supports_output_type<PortA, PinNum> : detail::KFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortA, PinNum> : detail::KFullPortCapability<PinNum> {};
+struct supports_output_speed<PortA, PinNum> : detail::KFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortA, PinNum> : detail::KFullPortCapability<PinNum> {};
+struct supports_pull<PortA, PinNum> : detail::KFullPortCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortA, PinNum> : detail::KFullPortCapability<PinNum> {};
+struct supports_alternate_function<PortA, PinNum> : detail::KFullPortCapability<PinNum>
+{
+};
 
 // PortB — bits 0-1 and 3-7 bonded out on all 32-pin K packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortB, PinNum> : detail::KPortBCapability<PinNum> {};
+struct supports_output_type<PortB, PinNum> : detail::KPortBCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortB, PinNum> : detail::KPortBCapability<PinNum> {};
+struct supports_output_speed<PortB, PinNum> : detail::KPortBCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortB, PinNum> : detail::KPortBCapability<PinNum> {};
+struct supports_pull<PortB, PinNum> : detail::KPortBCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortB, PinNum> : detail::KPortBCapability<PinNum> {};
+struct supports_alternate_function<PortB, PinNum> : detail::KPortBCapability<PinNum>
+{
+};
 
 // PortC — only bits 14-15 bonded out on all 32-pin K packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortC, PinNum> : detail::KPortCCapability<PinNum> {};
+struct supports_output_type<PortC, PinNum> : detail::KPortCCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortC, PinNum> : detail::KPortCCapability<PinNum> {};
+struct supports_output_speed<PortC, PinNum> : detail::KPortCCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortC, PinNum> : detail::KPortCCapability<PinNum> {};
+struct supports_pull<PortC, PinNum> : detail::KPortCCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortC, PinNum> : detail::KPortCCapability<PinNum> {};
+struct supports_alternate_function<PortC, PinNum> : detail::KPortCCapability<PinNum>
+{
+};
 
 // PortF — only bits 2-3 bonded out on all 32-pin K packages.
 template <uint8_t PinNum>
-struct supports_output_type<PortF, PinNum> : detail::KPortFCapability<PinNum> {};
+struct supports_output_type<PortF, PinNum> : detail::KPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_output_speed<PortF, PinNum> : detail::KPortFCapability<PinNum> {};
+struct supports_output_speed<PortF, PinNum> : detail::KPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_pull<PortF, PinNum> : detail::KPortFCapability<PinNum> {};
+struct supports_pull<PortF, PinNum> : detail::KPortFCapability<PinNum>
+{
+};
 
 template <uint8_t PinNum>
-struct supports_alternate_function<PortF, PinNum> : detail::KPortFCapability<PinNum> {};
+struct supports_alternate_function<PortF, PinNum> : detail::KPortFCapability<PinNum>
+{
+};
 
 // NOLINTEND(readability-magic-numbers,cppcoreguidelines-avoid-magic-numbers)
 

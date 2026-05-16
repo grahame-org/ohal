@@ -17,18 +17,22 @@
 // and wires correctly.
 // ---------------------------------------------------------------------------
 
-namespace {
+namespace
+{
 
 // ---------------------------------------------------------------------------
 // Capability trait tests
 // ---------------------------------------------------------------------------
 
-struct CapCase {
-  bool value;
-  const char* name;
+struct CapCase
+{
+    bool value;
+    const char* name;
 };
 
-class GpioStm32u031C6UCapabilityTest : public ::testing::TestWithParam<CapCase> {};
+class GpioStm32u031C6UCapabilityTest : public ::testing::TestWithParam<CapCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -55,12 +59,15 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(GpioStm32u031C6UCapabilityTest, CapabilityIsTrue) { EXPECT_TRUE(GetParam().value); }
 
-struct InvalidCapCase {
-  bool value;
-  const char* name;
+struct InvalidCapCase
+{
+    bool value;
+    const char* name;
 };
 
-class GpioStm32u031C6UInvalidCapTest : public ::testing::TestWithParam<InvalidCapCase> {};
+class GpioStm32u031C6UInvalidCapTest : public ::testing::TestWithParam<InvalidCapCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -128,13 +135,16 @@ TEST_P(GpioStm32u031C6UInvalidCapTest, CapabilityIsFalse) { EXPECT_FALSE(GetPara
 
 namespace wiring = ohal::platforms::stm32u0::stm32u083;
 
-struct WiringCase {
-  uintptr_t actual;
-  uintptr_t expected;
-  const char* name;
+struct WiringCase
+{
+    uintptr_t actual;
+    uintptr_t expected;
+    const char* name;
 };
 
-class GpioStm32u031C6UWiringTest : public ::testing::TestWithParam<WiringCase> {};
+class GpioStm32u031C6UWiringTest : public ::testing::TestWithParam<WiringCase>
+{
+};
 
 // clang-format off
 INSTANTIATE_TEST_SUITE_P(
@@ -151,8 +161,9 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<WiringCase>& info) { return info.param.name; });
 // clang-format on
 
-TEST_P(GpioStm32u031C6UWiringTest, BsrrAddressMatchesHardwareBase) {
-  EXPECT_EQ(GetParam().actual, GetParam().expected);
+TEST_P(GpioStm32u031C6UWiringTest, BsrrAddressMatchesHardwareBase)
+{
+    EXPECT_EQ(GetParam().actual, GetParam().expected);
 }
 
 } // namespace

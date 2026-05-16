@@ -11,7 +11,8 @@
 // Test fixtures
 // ---------------------------------------------------------------------------
 
-namespace {
+namespace
+{
 
 static uint32_t field32_storage{0U};
 using Reg32 = ohal::test::MockRegister<uint32_t, &field32_storage>;
@@ -19,14 +20,16 @@ using Reg32 = ohal::test::MockRegister<uint32_t, &field32_storage>;
 static uint8_t field8_storage{0U};
 using Reg8 = ohal::test::MockRegister<uint8_t, &field8_storage>;
 
-class BitField32Test : public ::testing::Test {
-protected:
-  void SetUp() override { field32_storage = 0U; }
+class BitField32Test : public ::testing::Test
+{
+  protected:
+    void SetUp() override { field32_storage = 0U; }
 };
 
-class BitField8Test : public ::testing::Test {
-protected:
-  void SetUp() override { field8_storage = 0U; }
+class BitField8Test : public ::testing::Test
+{
+  protected:
+    void SetUp() override { field8_storage = 0U; }
 };
 
 // ---------------------------------------------------------------------------
@@ -36,47 +39,54 @@ protected:
 // A 3-bit ReadWrite field at bits [6:4] in a 32-bit register.
 using RwField = ohal::core::BitField<Reg32, 4, 3, ohal::core::Access::ReadWrite>;
 
-TEST_F(BitField32Test, ReadWriteField_ReadReturnsCorrectBits) {
-  // Bits [6:4] = 0b101 = 5
-  field32_storage = 0b0101'0000U;
-  EXPECT_EQ(static_cast<uint32_t>(RwField::read()), 5U);
+TEST_F(BitField32Test, ReadWriteField_ReadReturnsCorrectBits)
+{
+    // Bits [6:4] = 0b101 = 5
+    field32_storage = 0b0101'0000U;
+    EXPECT_EQ(static_cast<uint32_t>(RwField::read()), 5U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_ReadIgnoresOtherBits) {
-  // Set other bits outside [6:4] to 1 to ensure they are masked out.
-  field32_storage = ~0b0111'0000U;
-  EXPECT_EQ(static_cast<uint32_t>(RwField::read()), 0U);
+TEST_F(BitField32Test, ReadWriteField_ReadIgnoresOtherBits)
+{
+    // Set other bits outside [6:4] to 1 to ensure they are masked out.
+    field32_storage = ~0b0111'0000U;
+    EXPECT_EQ(static_cast<uint32_t>(RwField::read()), 0U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_WriteUpdatesCorrectBits) {
-  RwField::write(static_cast<uint32_t>(0b110U));
-  EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0110'0000U);
+TEST_F(BitField32Test, ReadWriteField_WriteUpdatesCorrectBits)
+{
+    RwField::write(static_cast<uint32_t>(0b110U));
+    EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0110'0000U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_WritePreservesOtherBits) {
-  // Pre-load the register with all-ones outside the field.
-  field32_storage = ~0b0111'0000U;
-  RwField::write(static_cast<uint32_t>(0b101U));
-  EXPECT_EQ(field32_storage & ~0b0111'0000U, ~0b0111'0000U);
+TEST_F(BitField32Test, ReadWriteField_WritePreservesOtherBits)
+{
+    // Pre-load the register with all-ones outside the field.
+    field32_storage = ~0b0111'0000U;
+    RwField::write(static_cast<uint32_t>(0b101U));
+    EXPECT_EQ(field32_storage & ~0b0111'0000U, ~0b0111'0000U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_WriteUpdatesFieldBitsWithPreload) {
-  // Pre-load the register with all-ones outside the field.
-  field32_storage = ~0b0111'0000U;
-  RwField::write(static_cast<uint32_t>(0b101U));
-  EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0101'0000U);
+TEST_F(BitField32Test, ReadWriteField_WriteUpdatesFieldBitsWithPreload)
+{
+    // Pre-load the register with all-ones outside the field.
+    field32_storage = ~0b0111'0000U;
+    RwField::write(static_cast<uint32_t>(0b101U));
+    EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0101'0000U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_FieldBitsAreSet) {
-  // Writing a value with bits set outside the field width should be silently masked.
-  RwField::write(static_cast<uint32_t>(0xFFU)); // only 3 bits wide → 0b111
-  EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0111'0000U);
+TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_FieldBitsAreSet)
+{
+    // Writing a value with bits set outside the field width should be silently masked.
+    RwField::write(static_cast<uint32_t>(0xFFU)); // only 3 bits wide → 0b111
+    EXPECT_EQ(field32_storage & 0b0111'0000U, 0b0111'0000U);
 }
 
-TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_NoBitsOutsideField) {
-  // Writing a value with bits set outside the field width should be silently masked.
-  RwField::write(static_cast<uint32_t>(0xFFU)); // only 3 bits wide → 0b111
-  EXPECT_EQ(field32_storage & ~0b0111'0000U, 0U);
+TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_NoBitsOutsideField)
+{
+    // Writing a value with bits set outside the field width should be silently masked.
+    RwField::write(static_cast<uint32_t>(0xFFU)); // only 3 bits wide → 0b111
+    EXPECT_EQ(field32_storage & ~0b0111'0000U, 0U);
 }
 
 // ---------------------------------------------------------------------------
@@ -85,9 +95,10 @@ TEST_F(BitField32Test, ReadWriteField_WriteTruncatesExtraBits_NoBitsOutsideField
 
 using RoField = ohal::core::BitField<Reg32, 8, 4, ohal::core::Access::ReadOnly>;
 
-TEST_F(BitField32Test, ReadOnlyField_ReadReturnsCorrectBits) {
-  field32_storage = 0x0B00U; // bits [11:8] = 0xB
-  EXPECT_EQ(static_cast<uint32_t>(RoField::read()), 0xBU);
+TEST_F(BitField32Test, ReadOnlyField_ReadReturnsCorrectBits)
+{
+    field32_storage = 0x0B00U; // bits [11:8] = 0xB
+    EXPECT_EQ(static_cast<uint32_t>(RoField::read()), 0xBU);
 }
 
 // ---------------------------------------------------------------------------
@@ -96,17 +107,19 @@ TEST_F(BitField32Test, ReadOnlyField_ReadReturnsCorrectBits) {
 
 using WoField = ohal::core::BitField<Reg32, 16, 8, ohal::core::Access::WriteOnly>;
 
-TEST_F(BitField32Test, WriteOnlyField_WriteUpdatesCorrectBits) {
-  WoField::write(static_cast<uint32_t>(0xABU));
-  EXPECT_EQ(field32_storage & 0x00FF'0000U, 0x00AB'0000U);
+TEST_F(BitField32Test, WriteOnlyField_WriteUpdatesCorrectBits)
+{
+    WoField::write(static_cast<uint32_t>(0xABU));
+    EXPECT_EQ(field32_storage & 0x00FF'0000U, 0x00AB'0000U);
 }
 
-TEST_F(BitField32Test, WriteOnlyField_WriteDoesNotPreserveOtherBits) {
-  // A WriteOnly write must NOT read-modify-write; bits outside the field are
-  // clobbered (set to zero) because only the field bits are written.
-  field32_storage = 0xFFFF'FFFFU;
-  WoField::write(static_cast<uint32_t>(0x12U));
-  EXPECT_EQ(field32_storage, 0x0012'0000U);
+TEST_F(BitField32Test, WriteOnlyField_WriteDoesNotPreserveOtherBits)
+{
+    // A WriteOnly write must NOT read-modify-write; bits outside the field are
+    // clobbered (set to zero) because only the field bits are written.
+    field32_storage = 0xFFFF'FFFFU;
+    WoField::write(static_cast<uint32_t>(0x12U));
+    EXPECT_EQ(field32_storage, 0x0012'0000U);
 }
 
 // Verify that a WriteOnly write never calls read() on the backing register.
@@ -116,14 +129,16 @@ static uint32_t wo_counting_storage{0U};
 using WoCountingReg = ohal::test::ReadCountingMockRegister<uint32_t, &wo_counting_storage>;
 using WoCountingField = ohal::core::BitField<WoCountingReg, 16, 8, ohal::core::Access::WriteOnly>;
 
-class WriteOnlyReadCountTest : public ::testing::Test {
-protected:
-  void SetUp() override { WoCountingReg::reset(); }
+class WriteOnlyReadCountTest : public ::testing::Test
+{
+  protected:
+    void SetUp() override { WoCountingReg::reset(); }
 };
 
-TEST_F(WriteOnlyReadCountTest, WriteOnlyField_WriteNeverCallsRead) {
-  WoCountingField::write(static_cast<uint32_t>(0xABU));
-  EXPECT_EQ(WoCountingReg::read_count, 0U);
+TEST_F(WriteOnlyReadCountTest, WriteOnlyField_WriteNeverCallsRead)
+{
+    WoCountingField::write(static_cast<uint32_t>(0xABU));
+    EXPECT_EQ(WoCountingReg::read_count, 0U);
 }
 
 // ---------------------------------------------------------------------------
@@ -133,59 +148,72 @@ TEST_F(WriteOnlyReadCountTest, WriteOnlyField_WriteNeverCallsRead) {
 // A 4-bit ReadWrite field at bits [7:4] of an 8-bit register.
 using NibbleHigh = ohal::core::BitField<Reg8, 4, 4, ohal::core::Access::ReadWrite>;
 
-TEST_F(BitField8Test, ReadWriteField8_ReadReturnsCorrectNibble) {
-  field8_storage = 0xC0U;
-  EXPECT_EQ(static_cast<unsigned>(NibbleHigh::read()), 0xCU);
+TEST_F(BitField8Test, ReadWriteField8_ReadReturnsCorrectNibble)
+{
+    field8_storage = 0xC0U;
+    EXPECT_EQ(static_cast<unsigned>(NibbleHigh::read()), 0xCU);
 }
 
-TEST_F(BitField8Test, ReadWriteField8_WriteUpdatesCorrectNibble) {
-  field8_storage = 0x0FU;
-  NibbleHigh::write(static_cast<uint8_t>(0x7U));
-  EXPECT_EQ(field8_storage, 0x7FU);
+TEST_F(BitField8Test, ReadWriteField8_WriteUpdatesCorrectNibble)
+{
+    field8_storage = 0x0FU;
+    NibbleHigh::write(static_cast<uint8_t>(0x7U));
+    EXPECT_EQ(field8_storage, 0x7FU);
 }
 
 // ---------------------------------------------------------------------------
 // Custom enum ValueType test
 // ---------------------------------------------------------------------------
 
-enum class Speed : uint32_t { Low = 0, Medium = 1, High = 2, VeryHigh = 3 };
+enum class Speed : uint32_t
+{
+    Low = 0,
+    Medium = 1,
+    High = 2,
+    VeryHigh = 3
+};
 
 using SpeedField = ohal::core::BitField<Reg32, 2, 2, ohal::core::Access::ReadWrite, Speed>;
 
-TEST_F(BitField32Test, EnumValueType_ReadReturnsEnum) {
-  field32_storage = static_cast<uint32_t>(Speed::High) << 2U;
-  EXPECT_EQ(SpeedField::read(), Speed::High);
+TEST_F(BitField32Test, EnumValueType_ReadReturnsEnum)
+{
+    field32_storage = static_cast<uint32_t>(Speed::High) << 2U;
+    EXPECT_EQ(SpeedField::read(), Speed::High);
 }
 
-TEST_F(BitField32Test, EnumValueType_WriteAcceptsEnum) {
-  SpeedField::write(Speed::VeryHigh);
-  EXPECT_EQ((field32_storage >> 2U) & 0b11U, static_cast<uint32_t>(Speed::VeryHigh));
+TEST_F(BitField32Test, EnumValueType_WriteAcceptsEnum)
+{
+    SpeedField::write(Speed::VeryHigh);
+    EXPECT_EQ((field32_storage >> 2U) & 0b11U, static_cast<uint32_t>(Speed::VeryHigh));
 }
 
 // ---------------------------------------------------------------------------
 // Compile-time mask computation check (value-parameterised)
 // ---------------------------------------------------------------------------
 
-struct MaskCase {
-  uint32_t actual_mask;
-  uint32_t expected_mask;
-  const char* name;
+struct MaskCase
+{
+    uint32_t actual_mask;
+    uint32_t expected_mask;
+    const char* name;
 };
 
-class BitFieldMaskTest : public ::testing::TestWithParam<MaskCase> {};
+class BitFieldMaskTest : public ::testing::TestWithParam<MaskCase>
+{
+};
 
 INSTANTIATE_TEST_SUITE_P(FieldMasks, BitFieldMaskTest,
                          ::testing::Values(MaskCase{RwField::mask, 0b0111'0000U, "RwField"},
                                            MaskCase{RoField::mask, 0x0F00U, "RoField"},
                                            MaskCase{WoField::mask, 0x00FF'0000U, "WoField"},
                                            MaskCase{NibbleHigh::mask, 0xF0U, "NibbleHigh"}),
-                         [](const ::testing::TestParamInfo<MaskCase>& info) {
-                           return info.param.name;
-                         });
+                         [](const ::testing::TestParamInfo<MaskCase>& info)
+                         { return info.param.name; });
 
-TEST_P(BitFieldMaskTest, MaskIsCorrect) {
-  const auto& p = GetParam();
-  EXPECT_EQ(p.actual_mask, p.expected_mask);
+TEST_P(BitFieldMaskTest, MaskIsCorrect)
+{
+    const auto& p = GetParam();
+    EXPECT_EQ(p.actual_mask, p.expected_mask);
 }
 
 // ---------------------------------------------------------------------------

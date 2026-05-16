@@ -7,17 +7,21 @@
 // Enum value tests (value-parameterised — one assertion per test instance)
 // ---------------------------------------------------------------------------
 
-namespace {
+namespace
+{
 
-struct EnumCase {
-  unsigned actual;
-  unsigned expected;
-  const char* name;
+struct EnumCase
+{
+    unsigned actual;
+    unsigned expected;
+    const char* name;
 };
 
 // --- PinMode ---
 
-class GpioPinModeTest : public ::testing::TestWithParam<EnumCase> {};
+class GpioPinModeTest : public ::testing::TestWithParam<EnumCase>
+{
+};
 
 INSTANTIATE_TEST_SUITE_P(
     PinModeValues, GpioPinModeTest,
@@ -28,14 +32,17 @@ INSTANTIATE_TEST_SUITE_P(
                       EnumCase{static_cast<unsigned>(ohal::gpio::PinMode::Analog), 3U, "Analog"}),
     [](const ::testing::TestParamInfo<EnumCase>& info) { return info.param.name; });
 
-TEST_P(GpioPinModeTest, ValueIsCorrect) {
-  const auto& p = GetParam();
-  EXPECT_EQ(p.actual, p.expected);
+TEST_P(GpioPinModeTest, ValueIsCorrect)
+{
+    const auto& p = GetParam();
+    EXPECT_EQ(p.actual, p.expected);
 }
 
 // --- OutputType ---
 
-class GpioOutputTypeTest : public ::testing::TestWithParam<EnumCase> {};
+class GpioOutputTypeTest : public ::testing::TestWithParam<EnumCase>
+{
+};
 
 INSTANTIATE_TEST_SUITE_P(
     OutputTypeValues, GpioOutputTypeTest,
@@ -44,14 +51,17 @@ INSTANTIATE_TEST_SUITE_P(
         EnumCase{static_cast<unsigned>(ohal::gpio::OutputType::OpenDrain), 1U, "OpenDrain"}),
     [](const ::testing::TestParamInfo<EnumCase>& info) { return info.param.name; });
 
-TEST_P(GpioOutputTypeTest, ValueIsCorrect) {
-  const auto& p = GetParam();
-  EXPECT_EQ(p.actual, p.expected);
+TEST_P(GpioOutputTypeTest, ValueIsCorrect)
+{
+    const auto& p = GetParam();
+    EXPECT_EQ(p.actual, p.expected);
 }
 
 // --- Speed ---
 
-class GpioSpeedTest : public ::testing::TestWithParam<EnumCase> {};
+class GpioSpeedTest : public ::testing::TestWithParam<EnumCase>
+{
+};
 
 INSTANTIATE_TEST_SUITE_P(
     SpeedValues, GpioSpeedTest,
@@ -61,14 +71,17 @@ INSTANTIATE_TEST_SUITE_P(
                       EnumCase{static_cast<unsigned>(ohal::gpio::Speed::VeryHigh), 3U, "VeryHigh"}),
     [](const ::testing::TestParamInfo<EnumCase>& info) { return info.param.name; });
 
-TEST_P(GpioSpeedTest, ValueIsCorrect) {
-  const auto& p = GetParam();
-  EXPECT_EQ(p.actual, p.expected);
+TEST_P(GpioSpeedTest, ValueIsCorrect)
+{
+    const auto& p = GetParam();
+    EXPECT_EQ(p.actual, p.expected);
 }
 
 // --- Pull ---
 
-class GpioPullTest : public ::testing::TestWithParam<EnumCase> {};
+class GpioPullTest : public ::testing::TestWithParam<EnumCase>
+{
+};
 
 INSTANTIATE_TEST_SUITE_P(
     PullValues, GpioPullTest,
@@ -77,14 +90,17 @@ INSTANTIATE_TEST_SUITE_P(
                       EnumCase{static_cast<unsigned>(ohal::gpio::Pull::Down), 2U, "Down"}),
     [](const ::testing::TestParamInfo<EnumCase>& info) { return info.param.name; });
 
-TEST_P(GpioPullTest, ValueIsCorrect) {
-  const auto& p = GetParam();
-  EXPECT_EQ(p.actual, p.expected);
+TEST_P(GpioPullTest, ValueIsCorrect)
+{
+    const auto& p = GetParam();
+    EXPECT_EQ(p.actual, p.expected);
 }
 
 // --- Level ---
 
-class GpioLevelTest : public ::testing::TestWithParam<EnumCase> {};
+class GpioLevelTest : public ::testing::TestWithParam<EnumCase>
+{
+};
 
 INSTANTIATE_TEST_SUITE_P(
     LevelValues, GpioLevelTest,
@@ -92,9 +108,10 @@ INSTANTIATE_TEST_SUITE_P(
                       EnumCase{static_cast<unsigned>(ohal::gpio::Level::High), 1U, "High"}),
     [](const ::testing::TestParamInfo<EnumCase>& info) { return info.param.name; });
 
-TEST_P(GpioLevelTest, ValueIsCorrect) {
-  const auto& p = GetParam();
-  EXPECT_EQ(p.actual, p.expected);
+TEST_P(GpioLevelTest, ValueIsCorrect)
+{
+    const auto& p = GetParam();
+    EXPECT_EQ(p.actual, p.expected);
 }
 
 // ---------------------------------------------------------------------------
@@ -105,7 +122,9 @@ TEST_P(GpioLevelTest, ValueIsCorrect) {
 
 // Use a dummy port type (not one of the real port tags) to ensure no platform
 // specialisation could accidentally match.
-struct DummyPort {};
+struct DummyPort
+{
+};
 
 static_assert(!ohal::gpio::capabilities::supports_output_type<DummyPort, 0>::value,
               "supports_output_type must default to false");
@@ -116,20 +135,24 @@ static_assert(!ohal::gpio::capabilities::supports_pull<DummyPort, 0>::value,
 static_assert(!ohal::gpio::capabilities::supports_alternate_function<DummyPort, 0>::value,
               "supports_alternate_function must default to false");
 
-TEST(GpioCapabilitiesTest, SupportsOutputType_DefaultsFalse) {
-  EXPECT_FALSE((ohal::gpio::capabilities::supports_output_type<DummyPort, 0>::value));
+TEST(GpioCapabilitiesTest, SupportsOutputType_DefaultsFalse)
+{
+    EXPECT_FALSE((ohal::gpio::capabilities::supports_output_type<DummyPort, 0>::value));
 }
 
-TEST(GpioCapabilitiesTest, SupportsOutputSpeed_DefaultsFalse) {
-  EXPECT_FALSE((ohal::gpio::capabilities::supports_output_speed<DummyPort, 0>::value));
+TEST(GpioCapabilitiesTest, SupportsOutputSpeed_DefaultsFalse)
+{
+    EXPECT_FALSE((ohal::gpio::capabilities::supports_output_speed<DummyPort, 0>::value));
 }
 
-TEST(GpioCapabilitiesTest, SupportsPull_DefaultsFalse) {
-  EXPECT_FALSE((ohal::gpio::capabilities::supports_pull<DummyPort, 0>::value));
+TEST(GpioCapabilitiesTest, SupportsPull_DefaultsFalse)
+{
+    EXPECT_FALSE((ohal::gpio::capabilities::supports_pull<DummyPort, 0>::value));
 }
 
-TEST(GpioCapabilitiesTest, SupportsAlternateFunction_DefaultsFalse) {
-  EXPECT_FALSE((ohal::gpio::capabilities::supports_alternate_function<DummyPort, 0>::value));
+TEST(GpioCapabilitiesTest, SupportsAlternateFunction_DefaultsFalse)
+{
+    EXPECT_FALSE((ohal::gpio::capabilities::supports_alternate_function<DummyPort, 0>::value));
 }
 
 // ---------------------------------------------------------------------------

@@ -16,7 +16,7 @@ permissions: {}
 jobs:
   copilot-setup-steps:
     name: copilot-setup-steps
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions: {}
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -35,9 +35,11 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y --no-install-recommends \
             -o dir::cache::archives="$HOME/apt-archives" \
-            clang-format clang-tidy cmake shellcheck \
+            clang-format-18 clang-tidy-18 cmake shellcheck \
             gcc-arm-none-eabi binutils-arm-none-eabi \
             libstdc++-arm-none-eabi-newlib
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100
 
       - name: Cache pip packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
