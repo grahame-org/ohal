@@ -245,10 +245,7 @@
       "properties": {
         "number": {
           "description": "Exception number (1-based). May be a range string (e.g. '4-10') for reserved or IRQ blocks.",
-          "oneOf": [
-            { "type": "integer" },
-            { "type": "string" }
-          ]
+          "oneOf": [{ "type": "integer" }, { "type": "string" }]
         },
         "name": {
           "description": "Exception name (e.g. 'Reset', 'NMI', 'HardFault', 'IRQ0-IRQ31').",
@@ -256,11 +253,7 @@
         },
         "irq": {
           "description": "CMSIS IRQ number. Negative for system exceptions, 0-based for external IRQs, null if not applicable. May be a range string for IRQ blocks.",
-          "oneOf": [
-            { "type": "integer" },
-            { "type": "string" },
-            { "type": "null" }
-          ]
+          "oneOf": [{ "type": "integer" }, { "type": "string" }, { "type": "null" }]
         },
         "vector-offset": {
           "description": "Byte offset of the exception vector from the vector table base. May be a range string for blocks (e.g. '0x00000040-0x000000BC').",
