@@ -25,7 +25,11 @@ enum class IrqNumber : uint8_t {
   Tim3 = 16U,
   Tim6DacLptim1 = 17U,
   Tim7Lptim2 = 18U,
+#if defined(OHAL_STM32U0_ENABLE_LPTIM3)
   Tim15Lptim3 = 19U,
+#else
+  Tim15 = 19U,
+#endif
   Tim16 = 20U,
   Tsc = 21U,
   Lcd = 22U,
