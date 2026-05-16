@@ -31,18 +31,18 @@ graph LR
     FAM -->|"family-ref: stm32u0"| MOD
 ```
 
-| Spec type    | Location                                | Schema              | Description                                                               |
-| ------------ | --------------------------------------- | ------------------- | ------------------------------------------------------------------------- |
-| Architecture | `docs/specs/common/arch/{arch}.yml`     | `schema-arch.json`  | Architecture-level metadata shared by all devices of that architecture    |
-| Family       | `docs/specs/{vendor}/{family}.yml`      | `schema.json`       | Device-family register map and peripheral metadata                        |
-| Model        | `docs/specs/{vendor}/models/{part}.yml` | `schema-model.json` | Per-part-number details (package, flash/SRAM sizes, pin AF table, errata) |
+| Spec type    | Location                                | Schema               | Description                                                               |
+| ------------ | --------------------------------------- | -------------------- | ------------------------------------------------------------------------- |
+| Architecture | `docs/specs/common/arch/{arch}.yml`     | `schema-arch.json`   | Architecture-level metadata shared by all devices of that architecture    |
+| Family       | `docs/specs/{vendor}/{family}.yml`      | `schema-family.json` | Device-family register map and peripheral metadata                        |
+| Model        | `docs/specs/{vendor}/models/{part}.yml` | `schema-model.json`  | Per-part-number details (package, flash/SRAM sizes, pin AF table, errata) |
 
 ## Directory layout
 
 ```mermaid
 graph TD
     ROOT["docs/specs/"]
-    SCHEMAS["schema.json\nschema-model.json\nschema-arch.json"]
+    SCHEMAS["schema-family.json\nschema-model.json\nschema-arch.json"]
     COMMON["common/arch/\narch specs — one file per processor architecture"]
     VENDOR["stm32/ nrf/ lpc/ …\none subdirectory per vendor"]
     FAM_YML["stm32u0.yml\nfamily spec"]
@@ -62,7 +62,7 @@ STMicroelectronics STM32, `nrf` for Nordic nRF, `lpc` for NXP LPC).
 
 ## Family spec format
 
-Family specs are validated against `docs/specs/schema.json`.
+Family specs are validated against `docs/specs/schema-family.json`.
 
 ### Required top-level keys
 
@@ -364,7 +364,7 @@ Specs are validated in CI by `lint.sh` using `check-jsonschema`. To validate loc
 pip install check-jsonschema
 
 # Family spec
-check-jsonschema --schemafile docs/specs/schema.json docs/specs/stm32/stm32u0.yml
+check-jsonschema --schemafile docs/specs/schema-family.json docs/specs/stm32/stm32u0.yml
 
 # Model spec
 check-jsonschema --schemafile docs/specs/schema-model.json docs/specs/stm32/models/stm32u083kcu.yml
@@ -396,7 +396,7 @@ on any spec file you edit before committing.
 - [ ] Use `priority-over` for any BSRR-style conflicting-write field pairs.
 - [ ] Use `sequence` for any registers with mandatory multi-step access procedures.
 - [ ] Mark provisional entries with `verified: false`.
-- [ ] Validate: `check-jsonschema --schemafile docs/specs/schema.json docs/specs/{vendor}/{family}.yml`.
+- [ ] Validate: `check-jsonschema --schemafile docs/specs/schema-family.json docs/specs/{vendor}/{family}.yml`.
 - [ ] Run `npx prettier --write docs/specs/{vendor}/{family}.yml`.
 
 ### New model spec
