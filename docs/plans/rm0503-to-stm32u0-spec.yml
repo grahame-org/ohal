@@ -226,7 +226,7 @@ phases:
         title: "Schema: extend field access enum with RM0503 access types"
         description: >
           P1-S1 found that RM0503 §1.2 (page 51) defines 13 access types,
-          replacing the schema's previous {rw, r, w} enum.  The full set
+          replacing the schema's previous {rw, ro, wo} enum.  The full set
           of canonical RM0503 abbreviations is:
             rw     – read/write.
             r      – read-only (was ro).

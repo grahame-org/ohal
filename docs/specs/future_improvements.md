@@ -72,7 +72,7 @@ The 11 coverage gaps documented below can now be allocated to the correct level:
 | 1   | Peripheral instances and base-address binding | Family ✅                                                        |
 | 2   | Register reset values                         | Family                                                           |
 | 3   | Extended access-type taxonomy                 | Architecture ✅ (implemented in family schema)                   |
-| 4   | Reserved fields and write-zero constraint     | Architecture ✅ (implemented: `res` access type added)           |
+| 4   | Reserved fields and write-zero constraint     | Architecture ⚠️ (partially implemented: `res` type added)        |
 | 5   | Sub-family conditional registers/fields       | Family                                                           |
 | 6   | Alternate function pin-mapping table          | **Model**                                                        |
 | 7   | Clock gating and power-domain metadata        | Family                                                           |
