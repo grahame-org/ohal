@@ -2,10 +2,17 @@
 // → timer_impl.hpp.  The STM32U031 package header does NOT define
 // OHAL_STM32U0_ENABLE_LPTIM3, so kLptim3Base and Lptim3 are absent.
 #include <ohal/platforms/stm32u0/models/stm32u031r8t/timer.hpp>
+// STM32U0 IRQ numbers are currently provided via this stm32u083 path with
+// conditional compilation for sub-family differences.
+#include <ohal/platforms/stm32u0/models/stm32u083/irq_numbers.hpp>
 
 #include <cstdint>
 
 #include <gtest/gtest.h>
+
+#if defined(OHAL_STM32U0_ENABLE_LPTIM3)
+#error "STM32U031 tests must compile without OHAL_STM32U0_ENABLE_LPTIM3."
+#endif
 
 // ---------------------------------------------------------------------------
 // Host-side register-address wiring tests for the STM32U031 timer peripherals.
@@ -25,6 +32,8 @@ namespace
 {
 
 namespace tim = ohal::platforms::stm32u0::stm32u083;
+// STM32U0 IRQ numbering currently shares this stm32u083 namespace path.
+namespace irq_wiring = ohal::platforms::stm32u0::stm32u083;
 
 // ---------------------------------------------------------------------------
 // Static (compile-time) address assertions for a representative register in
@@ -166,6 +175,11 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(TimerStm32u031WiringTest, AddressMatchesHardwareBase)
 {
     EXPECT_EQ(GetParam().actual, GetParam().expected);
+}
+
+TEST(Stm32u031IrqVectorNumberTest, IrqNumberTim15_MapsToPosition19)
+{
+    EXPECT_EQ(static_cast<uint8_t>(irq_wiring::IrqNumber::Tim15), 19U);
 }
 
 } // namespace

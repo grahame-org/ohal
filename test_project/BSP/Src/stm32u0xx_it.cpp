@@ -22,6 +22,7 @@
 #include "main.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <ohal/ohal.hpp>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -148,7 +149,7 @@ void EXTI4_15_IRQHandler(void)
     /* USER CODE BEGIN EXTI4_15_IRQn 0 */
 
     /* USER CODE END EXTI4_15_IRQn 0 */
-    BSP_PB_IRQHandler(BUTTON_USER);
+    ohal::exti::Line<ohal::gpio::PortC, 13U>::clear_pending_falling();
     /* USER CODE BEGIN EXTI4_15_IRQn 1 */
 
     /* USER CODE END EXTI4_15_IRQn 1 */

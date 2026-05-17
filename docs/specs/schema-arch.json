@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/grahame-org/ohal/blob/main/docs/specs/schema-arch.json",
   "title": "Processor architecture specification",
-  "description": "Schema for architecture-level spec files in docs/specs/common/arch/. An architecture spec captures metadata that is identical on every device implementing that processor architecture: word size, endianness, Private Peripheral Bus (PPB) address regions, and settings encodings shared by all devices of that architecture.",
+  "description": "Schema for architecture-level spec files in docs/specs/common/arch/. An architecture spec captures metadata that is identical on every device implementing that processor architecture: word size, endianness, pipeline configuration, the full architectural memory map, the exception model (vector table layout, exception stack frame, EXC_RETURN values, exception table), and settings encodings shared by all devices of that architecture.",
   "type": "object",
   "required": ["spec-version", "architecture"],
   "additionalProperties": false,
@@ -31,6 +31,27 @@
           "description": "Byte order of the architecture.",
           "type": "string",
           "enum": ["little", "big"]
+        },
+        "instruction-set": {
+          "description": "Instruction set architecture name (e.g. 'ARMv6-M Thumb/Thumb-2').",
+          "type": "string"
+        },
+        "pipeline-stages": {
+          "description": "Number of pipeline stages.",
+          "type": "integer"
+        },
+        "pipeline-type": {
+          "description": "Pipeline memory architecture (Harvard separates instruction and data buses; Von Neumann shares them).",
+          "type": "string",
+          "enum": ["Harvard", "Von Neumann"]
+        },
+        "multiplier": {
+          "description": "Hardware multiplier capability (e.g. 'single-cycle 32-bit').",
+          "type": "string"
+        },
+        "address-space": {
+          "description": "Total addressable memory space in bits (e.g. 32 for a 4GB address space).",
+          "type": "integer"
         }
       }
     },
@@ -61,6 +82,31 @@
           "additionalProperties": { "$ref": "#/$defs/settings" }
         }
       }
+    },
+    "exceptions": {
+      "description": "Architecturally-defined exception model. Exception numbers, vector offsets, EXC_RETURN values, and the exception stack frame are identical on every device implementing this architecture.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vector-table": {
+          "description": "Vector table structural constraints.",
+          "$ref": "#/$defs/arch-vector-table"
+        },
+        "stack-frame": {
+          "description": "Register state saved on the active stack at exception entry.",
+          "$ref": "#/$defs/arch-exception-stack-frame"
+        },
+        "exc-return": {
+          "description": "Valid EXC_RETURN values. Loading one of these into PC from an exception handler triggers exception return.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/arch-exc-return" }
+        },
+        "entries": {
+          "description": "Architectural exception table. Exception numbers, vector offsets, and fixed priorities are identical on every device implementing this architecture.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/arch-exception" }
+        }
+      }
     }
   },
   "$defs": {
@@ -87,8 +133,147 @@
         "name": { "type": "string" },
         "start": { "$ref": "#/$defs/hex-address" },
         "end": { "$ref": "#/$defs/hex-address" },
+        "memory-type": {
+          "description": "ARMv6-M architectural memory type for this region (PM0223 Table 4).",
+          "type": "string",
+          "enum": ["Normal", "Device", "Strongly-ordered"]
+        },
+        "xn": {
+          "description": "Execute Never. true means instruction fetches from this region generate a HardFault.",
+          "type": "boolean"
+        },
+        "shareability": {
+          "description": "ARMv6-M architectural shareability attribute (PM0223 Table 4). Omit when not constrained by the architecture.",
+          "type": "string",
+          "enum": ["Shareable", "Non-shareable"]
+        },
+        "cache-policy": {
+          "description": "ARMv6-M architectural cache policy (PM0223 Table 4). WT=write-through no write-allocate; WBWA=write-back write-allocate. Omit when not applicable (Device or Strongly-ordered regions).",
+          "type": "string",
+          "enum": ["WT", "WBWA"]
+        },
         "note": {
-          "description": "Optional free-text annotation.",
+          "description": "Optional free-text annotation for constraints not expressible as formal properties.",
+          "type": "string"
+        }
+      }
+    },
+    "arch-vector-table": {
+      "description": "Architectural vector table properties identical on every device implementing this architecture.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reset-address": {
+          "description": "Address of the vector table at reset.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "alignment-bytes": {
+          "description": "Minimum alignment of the vector table in bytes. VTOR bits below log2(alignment) are always zero.",
+          "type": "integer"
+        },
+        "entry-size-bytes": {
+          "description": "Size of each vector table entry in bytes.",
+          "type": "integer"
+        },
+        "lsb-must-be-set": {
+          "description": "true if bit[0] of each exception vector entry must be 1 to indicate Thumb code.",
+          "type": "boolean"
+        }
+      }
+    },
+    "arch-exception-stack-frame": {
+      "description": "Register state pushed onto the active stack by the processor on exception entry.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "words": {
+          "description": "Number of 32-bit words pushed onto the active stack on exception entry.",
+          "type": "integer"
+        },
+        "alignment-bytes": {
+          "description": "Stack pointer alignment enforced on exception entry.",
+          "type": "integer"
+        },
+        "layout": {
+          "description": "Stack frame fields in order from lowest to highest address.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["offset", "field"],
+            "additionalProperties": false,
+            "properties": {
+              "offset": {
+                "description": "Byte offset from the stack pointer value at exception entry.",
+                "type": "string"
+              },
+              "field": {
+                "description": "Register or processor state saved at this offset.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "arch-exc-return": {
+      "description": "A valid EXC_RETURN value written to LR on exception entry. Loading this value into PC triggers the exception return sequence.",
+      "type": "object",
+      "required": ["value", "return-to", "stack"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "description": "32-bit EXC_RETURN magic value (bits[31:4] are 0xFFFFFFF on ARMv6-M).",
+          "$ref": "#/$defs/hex-address"
+        },
+        "return-to": {
+          "description": "Processor mode entered after exception return.",
+          "type": "string",
+          "enum": ["Handler mode", "Thread mode"]
+        },
+        "stack": {
+          "description": "Stack pointer used to restore state on exception return.",
+          "type": "string",
+          "enum": ["MSP", "PSP"]
+        }
+      }
+    },
+    "arch-exception": {
+      "description": "An architecturally-defined exception. Reserved ranges and IRQ blocks may use range strings for number, irq, and vector-offset.",
+      "type": "object",
+      "required": ["number", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "description": "Exception number (1-based). May be a range string (e.g. '4-10') for reserved or IRQ blocks.",
+          "oneOf": [{ "type": "integer" }, { "type": "string" }]
+        },
+        "name": {
+          "description": "Exception name (e.g. 'Reset', 'NMI', 'HardFault', 'IRQ0-IRQ31').",
+          "type": "string"
+        },
+        "irq": {
+          "description": "CMSIS IRQ number. Negative for system exceptions, 0-based for external IRQs, null if not applicable. May be a range string for IRQ blocks.",
+          "oneOf": [{ "type": "integer" }, { "type": "string" }, { "type": "null" }]
+        },
+        "vector-offset": {
+          "description": "Byte offset of the exception vector from the vector table base. May be a range string for blocks (e.g. '0x00000040-0x000000BC').",
+          "$ref": "#/$defs/hex-address"
+        },
+        "fixed-priority": {
+          "description": "Fixed exception priority (negative integer for Reset/NMI/HardFault). null for configurable-priority or reserved exceptions.",
+          "type": ["integer", "null"]
+        },
+        "configurable-priority": {
+          "description": "true if software can configure the priority of this exception via NVIC or system handler priority registers.",
+          "type": "boolean"
+        },
+        "activation": {
+          "description": "How the exception is raised: synchronous (caused by instruction) or asynchronous (external signal or software-pended).",
+          "type": "string",
+          "enum": ["synchronous", "asynchronous"]
+        },
+        "note": {
+          "description": "Optional annotation.",
           "type": "string"
         }
       }
