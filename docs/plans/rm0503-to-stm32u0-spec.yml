@@ -1455,7 +1455,7 @@ phases:
 
   # ============================================================
   # PHASE 28 – USART supplemental data (§34)
-  # Pages approximately 1017-1105
+  # Pages approximately 1016-1105
   # (USART registers already in stm32u0.yml)
   # ============================================================
 
@@ -1876,6 +1876,79 @@ phases:
         acceptance-criteria:
           - Separate arch-spec plan document created.
           - Sections identified; not duplicated in stm32u0.yml.
+
+  # ============================================================
+  # PHASE 39 – Voltage reference buffer (VREFBUF) (§16)
+  # Pages 411-413
+  # stm32u073/stm32u083 only
+  # ============================================================
+
+  - id: P39
+    title: "Voltage reference buffer (VREFBUF) (§16)"
+    description: >
+      VREFBUF base 0x40010030. Sub-families: [stm32u073, stm32u083].
+      The section explicitly states it applies to STM32U073xx and
+      STM32U083xx devices only.
+      Two registers: VREFBUF_CSR (offset 0x00) and VREFBUF_CCR
+      (offset 0x04). Register map is Table 87 (page 413).
+
+    steps:
+      - id: P39-S1
+        title: "Add VREFBUF peripheral skeleton"
+        description: >
+          Base 0x40010030. Sub-families: [stm32u073, stm32u083].
+        source-pages: [411]
+        acceptance-criteria:
+          - VREFBUF peripheral entry added with correct sub-family filter.
+          - spec validates.
+
+      - id: P39-S2
+        title: "Add VREFBUF registers (VREFBUF_CSR and VREFBUF_CCR)"
+        description: >
+          Add VREFBUF_CSR (offset 0x00, reset 0x00000002) and
+          VREFBUF_CCR (offset 0x04, reset 0x000000XX — factory
+          trimmed; treat as 0x00 in spec). Use Table 87 (page 413)
+          for the register map. Register fields: VRR (r), VRS (rw),
+          HIZ (rw), ENVR (rw) in CSR; TRIM[5:0] (rw) in CCR.
+        source-pages: [412, 413]
+        depends-on: [P39-S1, P0-S1]
+        acceptance-criteria:
+          - VREFBUF_CSR added with VRR, VRS, HIZ, ENVR fields.
+          - VREFBUF_CCR added with TRIM[5:0] field.
+          - Reset values, offsets, and access types match Table 87.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 40 – Infrared interface (IRTIM) (§28)
+  # Page 881
+  # ============================================================
+
+  - id: P40
+    title: "Infrared interface (IRTIM) (§28)"
+    description: >
+      IRTIM has no standalone register block. It is controlled
+      entirely via bits in SYSCFG_CFGR1 (IR_MOD[1:0] at bits
+      6:5 and IR_POL at bit 4) and GPIO alternate-function
+      configuration. The hardware wires TIM15_CH1, TIM16_CH1,
+      USART1, and USART4 through an internal mux to IR_OUT.
+      This phase verifies that the SYSCFG_CFGR1 register in the
+      spec already exposes these bits correctly, and records the
+      IRTIM functional description as a cross-reference note.
+
+    steps:
+      - id: P40-S1
+        title: "Verify SYSCFG_CFGR1 IR_MOD and IR_POL fields"
+        description: >
+          Confirm that SYSCFG_CFGR1 in stm32u0.yml already has
+          IR_MOD[1:0] (bits 6:5) and IR_POL (bit 4) fields.
+          If absent, add them referencing §8.1.1 (SYSCFG_CFGR1)
+          and §28. No new peripheral entry is needed — IRTIM is
+          purely a logical function using existing peripherals.
+        source-pages: [881]
+        acceptance-criteria:
+          - SYSCFG_CFGR1 IR_MOD and IR_POL fields confirmed present
+            or added.
+          - lint.sh passes.
 
   # ============================================================
   # PHASE 38 – Final validation
