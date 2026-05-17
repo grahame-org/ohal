@@ -6,22 +6,11 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections import Counter
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    try:
-        import pymupdf
-    except ImportError:
-        import fitz as pymupdf  # type: ignore[no-redef]
-
-
-def _import_pymupdf():
-    """Import pymupdf (or the legacy fitz alias) and return the module."""
-    try:
-        import pymupdf as _mu
-    except ImportError:
-        import fitz as _mu  # type: ignore[no-redef]
-    return _mu
+try:
+    import pymupdf
+except ImportError:
+    import fitz as pymupdf  # type: ignore[no-redef]
 
 
 # Mojibake substitutions for common CP1252/Latin-1 bytes mis-decoded as
@@ -51,6 +40,23 @@ _ITEM_BODY = r".+(?:\n(?!\n| *- |\d+\. ).+)*"
 _UL_COLLAPSE = re.compile(rf"(?m)^( *- {_ITEM_BODY})\n(?:\n)+( *- )")
 _OL_COLLAPSE = re.compile(rf"(?m)^(\d+\. {_ITEM_BODY})\n(?:\n)+(\d+\. )")
 
+# Bullet/dash glyphs used as list markers in PDF output.
+_BULLET_GLYPHS: frozenset[str] = frozenset({
+    "\u2022",  # •  bullet
+    "\u2013",  # –  en-dash
+    "\u2014",  # —  em-dash
+    "\u25e6",  # ◦  white bullet
+    "\u00b7",  # ·  middle dot
+})
+
+# Matches the opening of a Markdown list item; used by _indent_list_continuations.
+# Group 1 = leading spaces, group 2 = marker ("-" or "N.")
+_LIST_ITEM_START = re.compile(r"^( *)(-|\d+\.) ")
+
+# Bit-value enum lines: "0:", "1:", "00:", "0x1F:", etc.
+# These are top-level body lines and must not be treated as list continuations.
+_BIT_VALUE_LINE = re.compile(r"^[01x][0-9A-Fa-fx]*:")
+
 # Simple whole-line patterns whose match means the line is a header/footer
 # artefact and should be dropped.  Checked via fullmatch against stripped text.
 _SKIP_LINE_PATTERNS: tuple[re.Pattern, ...] = (
@@ -64,6 +70,18 @@ _SKIP_LINE_PATTERNS: tuple[re.Pattern, ...] = (
     re.compile(r"\*?www\.st\.com\*?"),
 )
 
+# Running header: "**RM0503**" optionally preceded by a heading marker.
+_RUNNING_HEADER_RE = re.compile(r"(?:#{1,6}\s+)?\*\*RM0503\*\*")
+# Bold-only line: any text wrapped in **…** (optionally heading-prefixed).
+_BOLD_SECTION_TITLE_RE = re.compile(r"(?:#{1,6}\s+)?\*\*[^*]+\*\*")
+# Standalone bold title without heading prefix.
+_STANDALONE_BOLD_RE = re.compile(r"\*\*[^*]+\*\*")
+# Matches any Markdown heading line.
+_HEADING_LINE_RE = re.compile(r"#{1,6} ")
+
+
+_PAGE_RANGE_RE = re.compile(r"^(\d+)-(\d+)$")
+
 
 def parse_page_ranges(spec: str) -> list[int]:
     """Parse a page-range spec like '1,5-10,20' into a sorted list of 1-based page numbers."""
@@ -72,23 +90,25 @@ def parse_page_ranges(spec: str) -> list[int]:
         part = part.strip()
         if not part:
             continue
-        m = re.fullmatch(r"(\d+)-(\d+)", part)
+        m = _PAGE_RANGE_RE.match(part)
         if m:
             start, end = int(m.group(1)), int(m.group(2))
             if start > end:
                 raise ValueError(f"Invalid range '{part}': start > end")
             pages.update(range(start, end + 1))
-        elif re.fullmatch(r"\d+", part):
+        elif part.isdecimal():
             pages.add(int(part))
         else:
             raise ValueError(f"Cannot parse page spec '{part}'")
     return sorted(pages)
 
 
+_MONO_HINTS: tuple[str, ...] = ("courier", "mono", "consolas", "inconsolata", "lucidaconsole", "cour")
+
+
 def is_monospace(font_name: str) -> bool:
     """Return True if the font name looks like a monospace / code font."""
-    mono_hints = ("courier", "mono", "consolas", "inconsolata", "lucidaconsole", "cour")
-    return any(h in font_name.lower() for h in mono_hints)
+    return any(h in font_name.lower() for h in _MONO_HINTS)
 
 
 def heading_level(size: float, body_size: float, bold: bool) -> int | None:
@@ -161,11 +181,11 @@ def _filter_header_footer_lines(lines: list[str]) -> list[str]:
 
         # Running header: bold "RM0503" optionally preceded by a bold section name and
         # optionally followed on the next line by another bold section title.
-        if re.fullmatch(r"(?:#{1,6}\s+)?\*\*RM0503\*\*", stripped):
-            if filtered and re.fullmatch(r"(?:#{1,6}\s+)?\*\*[^*]+\*\*", filtered[-1].strip()):
+        if _RUNNING_HEADER_RE.fullmatch(stripped):
+            if filtered and _BOLD_SECTION_TITLE_RE.fullmatch(filtered[-1].strip()):
                 filtered.pop()
-            if i + 1 < len(lines) and re.fullmatch(
-                r"(?:#{1,6}\s+)?\*\*[^*]+\*\*", lines[i + 1].strip()
+            if i + 1 < len(lines) and _BOLD_SECTION_TITLE_RE.fullmatch(
+                lines[i + 1].strip()
             ):
                 i += 2
             else:
@@ -183,7 +203,7 @@ def _filter_header_footer_lines(lines: list[str]) -> list[str]:
             continue
 
         # Standalone bold section/chapter title that duplicates a heading immediately below it.
-        if re.fullmatch(r"\*\*[^*]+\*\*", stripped):
+        if _STANDALONE_BOLD_RE.fullmatch(stripped):
             j = i + 1
             while j < len(lines) and not lines[j].strip():
                 j += 1
@@ -213,11 +233,20 @@ def _apply_mojibake_fixes(text: str) -> str:
     return text
 
 
+def _normalise_text(raw: str) -> str:
+    """Apply mojibake fixes and Unicode NFKC normalisation to *raw*.
+
+    This combines the two steps that are always applied together when
+    cleaning text extracted directly from PDF spans or table cells.
+    """
+    return unicodedata.normalize("NFKC", _apply_mojibake_fixes(raw))
+
+
 def _strip_heading_bold(text: str) -> str:
     """Remove all ``**`` bold markers from heading lines."""
     out = []
     for line in text.splitlines():
-        if re.match(r"#{1,6} ", line):
+        if _HEADING_LINE_RE.match(line):
             line = line.replace("**", "")
         out.append(line)
     return "\n".join(out)
@@ -255,22 +284,22 @@ def _indent_list_continuations(text: str) -> str:
     * ``  - item``  → already-indented nested item → 2 + 2 = 4 spaces
     * ``   1. item``→ already-indented nested item → 3 + 3 = 6 spaces
     """
-    # Matches leading spaces + marker; group 1 = leading spaces, group 2 = marker
-    _LIST_START = re.compile(r"^( *)(-|\d+\.) ")
     lines = text.splitlines()
     out: list[str] = []
     cont_indent: int = 0   # spaces to prepend to continuation lines
     in_item = False
     for line in lines:
-        m = _LIST_START.match(line)
+        m = _LIST_ITEM_START.match(line)
         if m:
             leading = len(m.group(1))
             marker = m.group(2)          # "-" or "N."
             cont_indent = leading + len(marker) + 1   # +1 for the space after marker
             in_item = True
             out.append(line)
-        elif in_item and line and not line[0].isspace():
+        elif in_item and line and not line[0].isspace() and not _BIT_VALUE_LINE.match(line):
             # Non-blank, non-indented continuation of the current list item.
+            # Bit-value enum lines (0:, 1:, 00:, 01: …) are excluded: they are
+            # top-level body text that happens to follow a bullet list.
             out.append(" " * cont_indent + line)
         else:
             if not line.strip():
@@ -279,8 +308,8 @@ def _indent_list_continuations(text: str) -> str:
     return "\n".join(out)
 
 
-def _apply_regex_postprocessing(text: str) -> str:
-    """Apply structural regex fixes to merged page text after line filtering."""
+def _fix_headings(text: str) -> str:
+    """Normalise heading levels and clean up mis-promoted / mis-demoted headings."""
     # Drop figure/diagram legend headings.  Two surface forms exist:
     #   "#### BOLD:label"        – span text already plain
     #   "## **BOLD:**label"      – bold markers still present
@@ -293,7 +322,6 @@ def _apply_regex_postprocessing(text: str) -> str:
 
     # Merge same-level heading continuation lines that start with "(" — e.g.:
     #   "### TIM1 DMA/interrupt enable register\n### (TIM1_DIER)"
-    # Bold markers are already stripped above, so "**(...)**" is no longer an issue.
     text = re.sub(
         r"(?m)^(#{1,6} .+)\n(#{1,6}) (\(.+)",
         lambda m: m.group(1) + " " + m.group(3) if m.group(1).startswith(m.group(2)) else m.group(0),
@@ -301,7 +329,6 @@ def _apply_regex_postprocessing(text: str) -> str:
     )
 
     # Join ToC bold-integer orphans: "#### **3**\n#### Title" -> "#### 3 Title"
-    # (bold stripped above, but keep for any residual ** from other passes)
     text = re.sub(
         r"(?m)^(#{1,6}) \*\*(\d+)\*\*\n\n?\1 (.+)",
         r"\1 \2 \3",
@@ -309,25 +336,13 @@ def _apply_regex_postprocessing(text: str) -> str:
     )
 
     # Demote headings that are really register bit-value enum entries.
-    # The PDF renders "0: Disable", "01: Input mode", "0x1F: some value" in bold,
-    # which causes heading_level() to assign them a heading prefix.  These are body
-    # text and should carry no heading prefix.
-    text = re.sub(
-        r"(?m)^#{1,6} ([01x]+:|0x[0-9A-Fa-f]+:) ",
-        r"\1 ",
-        text,
-    )
+    text = re.sub(r"(?m)^#{1,6} ([01x]+:|0x[0-9A-Fa-f]+:) ", r"\1 ", text)
 
-    # Demote headings that start with "Example:" — these are bold inline examples
-    # in register descriptions, not structural headings.
+    # Demote headings that start with "Example:" or "Refer to" — inline prose.
     text = re.sub(r"(?m)^#{1,6} (Example:)", r"\1", text)
-
-    # Demote headings that are cross-reference sentences starting with "Refer to".
     text = re.sub(r"(?m)^#{1,6} (Refer to )", r"\1", text)
 
-    # Demote headings that are really body sentences promoted because the PDF
-    # renders them in bold (e.g. long descriptive sentences, conditional clauses).
-    # Real section headings never start with these common prose words.
+    # Demote headings that are really body sentences (bold prose words).
     text = re.sub(
         r"(?m)^#{1,6} "
         r"((?:The |This |If |When |In |After |Before |For |A |An |Set |These |Each |Note[^:]))",
@@ -335,119 +350,155 @@ def _apply_regex_postprocessing(text: str) -> str:
         text,
     )
 
-    # Demote headings that start with a lowercase letter — these are wrapped
-    # continuation lines of a bold sentence that the PDF split across lines.
-    # Genuine section headings always start with an uppercase letter or a digit.
+    # Demote headings starting with a lowercase letter (wrapped continuation lines).
     text = re.sub(r"(?m)^#{1,6} ([a-z])", r"\1", text)
 
-    # Promote reserved-bit range lines to #### headings so they are rendered at
-    # the same level as named bit-field headings.  In the PDF these lines are not
-    # bold, so heading_level() leaves them as plain text, while neighbouring named
-    # fields (which are bold) get a #### prefix.
-    # Matches: "Bit 7 Reserved, ..."  and  "Bits 31:24 Reserved, ..."
-    text = re.sub(
-        r"(?m)^(Bits? \d+(?::\d+)? Reserved\b)",
-        r"#### \1",
-        text,
-    )
+    # Promote reserved-bit range lines to #### so they match named bit-field headings.
+    text = re.sub(r"(?m)^(Bits? \d+(?::\d+)? Reserved\b)", r"#### \1", text)
 
-    # Demote bare footnote-number headings joined with their footnote body.
-    # The PDF renders both the footnote index ("1.") and its text in bold, so
-    # heading_level() promotes each to a heading.  Join them and demote to plain
-    # body text: "### 1.\n### TRGi are mapped…" → "1. TRGi are mapped…"
-    text = re.sub(
-        r"(?m)^#{1,6} (\d+\.)\n#{1,6} (.+)",
-        r"\1 \2",
-        text,
-    )
-    # Also demote any remaining lone footnote-number heading with no following body.
+    # Demote footnote-number headings and join with their body text.
+    text = re.sub(r"(?m)^#{1,6} (\d+\.)\n#{1,6} (.+)", r"\1 \2", text)
     text = re.sub(r"(?m)^#{1,6} (\d+\.)\s*$", r"\1", text)
 
-    # Join section-heading number orphans after bold-stripping so the plain form
-    # "### 1.1\n### Title" (previously "### **1.1**\n### **Title**") is matched.
+    # Join section-heading number orphans: "### 1.1\n### Title" -> "### 1.1 Title"
     text = re.sub(
         r"(?m)^(#{1,6}) (\d+(?:\.\d+)*)\n\n?#{1,6} (.+)",
         r"\1 \2 \3",
         text,
     )
 
-    # Join Table/Figure caption label split across two lines:
-    # "Table 12.\nSome description . . . 45" -> "Table 12. Some description . . . 45"
-    # "Figure 5.\nSome diagram caption"       -> "Figure 5. Some diagram caption"
-    text = re.sub(
-        r"(?m)^((?:Table|Figure) \d+\.)\n(.+)",
-        r"\1 \2",
-        text,
-    )
+    # Join Table/Figure caption split across two lines.
+    text = re.sub(r"(?m)^((?:Table|Figure) \d+\.)\n(.+)", r"\1 \2", text)
 
-    # Ensure a space before inline ** or * markers when they directly follow a word character
+    return text
+
+
+def _fix_italic_spans(text: str) -> str:
+    """Normalise italic markup corrupted during PDF extraction.
+
+    The PDF extractor produces several malformed italic forms that must be
+    repaired before prettier runs, since prettier will otherwise escape or
+    reinterpret ambiguous delimiter sequences.
+    """
+    # Ensure a space before inline ** or * markers when they directly follow a
+    # word character (e.g. "TIMx*BDTR" → "TIMx *BDTR").
     text = re.sub(r"(\w)(\*+)(?=\w)", r"\1 \2", text)
 
-    # Collapse double list markers: "- - item" -> "- item"
-    text = re.sub(r"(?m)^- - ", "- ", text)
+    # Replace a bare * used as an underscore artefact within register/signal names.
+    # The space-insertion pass above separates "TIMx*BDTR" into "TIMx *BDTR";
+    # this pass then converts the lone " *" back to "_".
+    text = re.sub(r"(?<=[A-Za-z0-9\]]) \*(?=[A-Za-z0-9\[])", "_", text)
 
-    # Join ToC sub-section number orphans: "1.1\nTitle" -> "1.1 Title"
+    # Fix broken "Note:" patterns: "\_Note:*", "\_Note:_", "*Note:_".
+    text = re.sub(r"\\_Note:[_*]", "Note:", text)
+    text = re.sub(r"\*Note:_", "_Note:_", text)
+
+    # Fix missing space before an italic-open underscore absorbed into the
+    # preceding word (e.g. "the_FLASH" → "the _FLASH").  Only fires when two
+    # lowercase letters precede "_" followed by an uppercase letter, so
+    # mixed-case register names like "TIMx_BDTR" are left untouched.
+    text = re.sub(r"(?<=[a-z][a-z])_(?=[A-Z])", " _", text)
+
+    # Fix "\*" used as an italic-close marker (e.g. "Section 1.2\* for").
+    text = re.sub(r"(?<=\w)\\\*(?=[ \t]|$)", "_", text, flags=re.MULTILINE)
+
+    # Normalise balanced "*...*" spans to "_..._".
+    # Must run BEFORE the "*Word_" pass so the non-greedy match doesn't stop at
+    # an underscore inside the body.
+    text = re.sub(r"(?<!\*)\*(?=[A-Za-z])((?:[^*\n])+?)\*", r"_\1_", text)
+
+    # Normalise mismatched "*Word_" spans (asterisk-open, underscore-close) to "_Word_".
+    # Runs AFTER the balanced "*...*" pass so only genuinely mismatched spans remain.
+    text = re.sub(r"(?<!\*)\*(?=[A-Za-z])((?:[^*\n])+?)_", r"_\1_", text)
+
+    # Fix a bare * used as an italic-close marker: "_Word*" → "_Word_".
+    text = re.sub(r"(?<=[\w:)\]])(?<!\*)\*(?=[ \t,;.!?]|$)", "_", text, flags=re.MULTILINE)
+
+    # Join wrapped italic spans split across lines: "_text_\n_cont_" → "_text cont_".
+    text = re.sub(r"_\n_", " ", text)
+
+    # Convert "_..._" spans whose body contains underscores to "*...*".
+    # CommonMark forbids underscore-delimited italics when the body itself contains
+    # underscores (e.g. register names like "FLASH_HDPEXTR"); prettier would escape
+    # the delimiters.  Using "*" markers sidesteps the ambiguity.
     text = re.sub(
-        r"(?m)^(\d+(?:\.\d+)+)\n(.+)",
-        r"\1 \2",
+        r"(?<!\w)_((?:[^_\n]|(?<=\w)_(?=\w))*_(?:[^_\n])*?)_(?!\w)",
+        r"*\1*",
         text,
     )
 
+    # Remove spurious escaped-underscore artifacts trailing register names in table
+    # cells: "WRP1x END \_ \_" → "WRP1x END".
+    text = re.sub(r"(?<=\w)( \\_)+(?=\s*(?:\||$))", "", text)
+
+    # Remove spurious bare-underscore artifacts in table cells (pre-prettier form).
+    text = re.sub(r"(?<=\w)( _)+(?=\s*(?:\||$))", "", text)
+
+    return text
+
+
+def _fix_toc(text: str) -> str:
+    """Fix and normalise Table of Contents structure."""
+    # Join ToC sub-section number orphans: "1.1\nTitle" → "1.1 Title"
+    text = re.sub(r"(?m)^(\d+(?:\.\d+)+)\n(.+)", r"\1 \2", text)
+
     # Join wrapped ToC chapter headings whose title spills onto the next line.
-    # The PDF sometimes wraps long chapter titles so the heading line contains
-    # only the first part (no dot-leader) and the continuation carries the
-    # remainder plus the dot-leader and page number, e.g.:
-    #   "### 34 Universal synchronous/asynchronous receiver"
-    #   "transmitter (USART/UART) . . . . . 1016"
-    # The continuation line is not a heading, not a list item, and not blank.
     text = re.sub(
         r"(?m)^(#{1,6} \d.+[^.\d\s])\n([^#\-\n].+\.{3,}.+\d+\s*)$",
         r"\1 \2",
         text,
     )
 
-    # Join wrapped ToC titles whose continuation carries the dot-leader + page number
-    text = re.sub(
-        r"(?m)^(\d+(?:\.\d+)+ .+[^\d])\n([^\d#-].+)",
-        r"\1 \2",
-        text,
-    )
+    # Join wrapped ToC sub-section titles whose continuation carries dot-leader + page.
+    text = re.sub(r"(?m)^(\d+(?:\.\d+)+ .+[^\d])\n([^\d#-].+)", r"\1 \2", text)
 
-    # Strip spurious bold markers wrapping a ToC dot-leader + page number
+    # Strip spurious bold markers wrapping a ToC dot-leader + page number.
     text = re.sub(r"\*\*([\s.]+\d+)\*\*", r"\1", text)
 
-    # Prefix ToC dotted sub-section lines with "- " to form a markdown list
+    # Prefix ToC dotted sub-section lines with "- " to form a Markdown list.
     text = re.sub(r"(?m)^(\d+(?:\.\d+)+) ", r"- \1 ", text)
 
-    # Right-justify page numbers in ToC lines
+    # Right-justify page numbers in ToC lines.
     text = _align_toc_page_numbers(text)
 
     # Normalise ToC chapter-level headings from #### to ###.
-    # The PDF renders chapter titles on the ToC page in bold-at-body-size, which
-    # causes heading_level() to assign them level 4 (####).  Every other
-    # occurrence of the same title (on the chapter's own pages) is rendered at a
-    # larger size, giving level 3 (###).  A ToC chapter entry is identified by a
-    # line that: (a) starts with "#### ", (b) begins with a digit (chapter number),
-    # and (c) contains a dot-leader followed by a page number.
-    text = re.sub(
-        r"(?m)^#### (\d.+ \.{3,} \d+\s*)$",
-        r"### \1",
-        text,
-    )
+    text = re.sub(r"(?m)^#### (\d.+ \.{3,} \d+\s*)$", r"### \1", text)
+
+    return text
+
+
+def _fix_lists(text: str) -> str:
+    """Fix list structure: collapse markers, join orphans, indent continuations."""
+    # Collapse double list markers: "- - item" → "- item"
+    text = re.sub(r"(?m)^- - ", "- ", text)
 
     # Join orphaned unordered list markers with next content line.
-    # Use [ \t] (horizontal whitespace only) so the quantifiers never overlap
-    # with \n, which would cause catastrophic backtracking on non-matching input.
-    # The leading ( *) captures any nesting indent so it is preserved.
+    # Use [ \t] (horizontal whitespace only) to avoid catastrophic backtracking.
     text = re.sub(r"(?m)^( *)-[ \t]*\n(?:[ \t]*\n)*[ \t]*(.+)", r"\1- \2", text)
 
     # Join orphaned ordered list markers with next content line.
-    # Limit to 1-3 digits so hex value tails like "0000." are not matched.
+    # Limit to 1-3 digits so hex tails like "0000." are not matched.
     text = re.sub(r"(?m)^(\d{1,3}\.)[ \t]*\n(?:[ \t]*\n)*[ \t]*(.+)", r"\1 \2", text)
 
     text = _collapse_list_items(text)
     text = _indent_list_continuations(text)
 
+    return text
+
+
+def _apply_regex_postprocessing(text: str) -> str:
+    """Apply structural regex fixes to merged page text after line filtering.
+
+    Delegates to four focused helpers applied in order:
+    1. ``_fix_headings``    – heading level normalisation and join/demote passes
+    2. ``_fix_italic_spans`` – italic marker corruption from PDF extraction
+    3. ``_fix_toc``         – Table of Contents structure
+    4. ``_fix_lists``       – list marker joining and continuation indentation
+    """
+    text = _fix_headings(text)
+    text = _fix_italic_spans(text)
+    text = _fix_toc(text)
+    text = _fix_lists(text)
     return text
 
 
@@ -457,6 +508,9 @@ def strip_header_footer(text: str) -> str:
     result = "\n".join(filtered)
     result = _apply_mojibake_fixes(result)
     result = _apply_regex_postprocessing(result)
+    # Replace any tab characters with spaces so the output is consistently
+    # space-indented regardless of what the PDF extractor emits.
+    result = result.expandtabs(4)
     return result.strip()
 
 
@@ -479,8 +533,7 @@ def _dominant_body_size(page: "pymupdf.Page") -> float:
 
 def _normalise_cell(value: object, collapse_newlines: bool = True) -> str:
     """Normalise a single table cell value to a plain string."""
-    text = _apply_mojibake_fixes(str(value)) if value is not None else ""
-    text = unicodedata.normalize("NFKC", text)
+    text = _normalise_text(str(value)) if value is not None else ""
     if collapse_newlines:
         text = text.replace("\n", " ")
     return text
@@ -504,16 +557,15 @@ def _table_rects(page: "pymupdf.Page") -> list[tuple[object, str]]:
                 cells = [_normalise_cell(c) for c in row]
                 md_lines.append("| " + " | ".join(cells) + " |")
             results.append((tab.bbox, "\n".join(md_lines)))
-    except Exception:
+    except Exception:  # pymupdf may raise on malformed tables; skip gracefully
         pass
     return results
 
 
 def _normalise_span_text(raw: str) -> str:
     """Apply Unicode normalisation and replace PDF bullet/dash characters."""
-    text = _apply_mojibake_fixes(raw)
     return (
-        unicodedata.normalize("NFKC", text)
+        _normalise_text(raw)
         .replace("\u2022", "-")  # bullet •
         .replace("\u2013", "-")  # en-dash –
     )
@@ -523,25 +575,28 @@ def _format_span(raw: str, flags: int, font: str) -> str:
     """Apply Markdown inline formatting to a span's text based on its font flags."""
     bold = bool(flags & 16)
     italic = bool(flags & 2)
-    mono = is_monospace(font)
-    text = raw
-    if mono:
-        text = f"`{text.strip()}`"
-    elif bold and italic:
-        text = f"***{text.strip()}***"
-    elif bold:
-        text = f"**{text.strip()}**"
-    elif italic:
-        text = f"*{text.strip()}*"
-    return text
+    if is_monospace(font):
+        return f"`{raw.strip()}`"
+    if bold and italic:
+        return f"***{raw.strip()}***"
+    if bold:
+        return f"**{raw.strip()}**"
+    if italic:
+        return f"*{raw.strip()}*"
+    return raw
 
 
 def _rect_overlaps_any(rect: object, rect_list: list) -> bool:
     """Return True if *rect* overlaps any rectangle in *rect_list*."""
-    for tr in rect_list:
-        if abs(rect & tr) > 0:
-            return True
-    return False
+    return any(abs(rect & tr) > 0 for tr in rect_list)
+
+
+def _first_line_text(block: dict) -> str:
+    """Return the stripped text of the first line of a text block."""
+    lines = block.get("lines", [])
+    if not lines:
+        return ""
+    return "".join(s["text"] for s in lines[0].get("spans", [])).strip()
 
 
 def _bullet_nesting_level(block: dict, min_bullet_x: float) -> int:
@@ -553,11 +608,10 @@ def _bullet_nesting_level(block: dict, min_bullet_x: float) -> int:
     x-position seen on the page to infer the nesting level.  A difference of
     ~20 pt (typical PDF indent step) maps to one nesting level.
     """
-    _BULLET_GLYPHS = {"\u2022", "\u2013", "\u2014", "\u25e6", "\u00b7"}
     lines = block.get("lines", [])
     if not lines:
         return 0
-    first_text = "".join(s["text"] for s in lines[0].get("spans", [])).strip()
+    first_text = _first_line_text(block)
     if first_text not in _BULLET_GLYPHS:
         return 0
     x0 = block["bbox"][0]
@@ -571,15 +625,13 @@ def _bullet_nesting_level(block: dict, min_bullet_x: float) -> int:
 
 def _min_bullet_x(blocks: list[dict]) -> float:
     """Return the minimum x0 among all bullet-marker blocks on the page."""
-    _BULLET_GLYPHS = {"\u2022", "\u2013", "\u2014", "\u25e6", "\u00b7"}
     xs: list[float] = []
     for block in blocks:
         if block.get("type") != 0:
             continue
-        lines = block.get("lines", [])
-        if not lines:
+        if not block.get("lines"):
             continue
-        first_text = "".join(s["text"] for s in lines[0].get("spans", [])).strip()
+        first_text = _first_line_text(block)
         if first_text in _BULLET_GLYPHS:
             xs.append(block["bbox"][0])
     return min(xs) if xs else 0.0
@@ -587,12 +639,10 @@ def _min_bullet_x(blocks: list[dict]) -> float:
 
 def page_to_markdown(page: "pymupdf.Page") -> str:
     """Convert a single PDF page to structured Markdown using font metadata and table detection."""
-    _mu = _import_pymupdf()
-
     body_size = _dominant_body_size(page)
 
     table_entries = _table_rects(page)
-    table_rect_list = [_mu.Rect(r) for r, _ in table_entries]
+    table_rect_list = [pymupdf.Rect(r) for r, _ in table_entries]
 
     data = page.get_text("dict", sort=True)
     all_blocks = data.get("blocks", [])
@@ -603,7 +653,7 @@ def page_to_markdown(page: "pymupdf.Page") -> str:
         if block.get("type") != 0:
             continue
 
-        block_rect = _mu.Rect(block["bbox"])
+        block_rect = pymupdf.Rect(block["bbox"])
         if _rect_overlaps_any(block_rect, table_rect_list):
             continue
 

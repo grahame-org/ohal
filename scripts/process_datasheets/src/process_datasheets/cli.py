@@ -21,6 +21,7 @@ except ImportError:
     import fitz as pymupdf  # type: ignore[no-redef]
 
 from process_datasheets.pdf_to_markdown import page_to_markdown, parse_page_ranges
+from process_datasheets.fixups import apply_fixups, compute_pdf_sha256
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -56,6 +57,9 @@ def main(argv: list[str] | None = None) -> None:
     doc: pymupdf.Document = pymupdf.open(str(pdf_path))
     total_pages = doc.page_count
 
+    pdf_sha256 = compute_pdf_sha256(pdf_path)
+    print(f"PDF SHA-256: {pdf_sha256}")
+
     print(f"PDF has {total_pages} pages.")
     print(f"Extracting {len(page_numbers)} page(s) -> {out_dir}")
 
@@ -82,6 +86,11 @@ def main(argv: list[str] | None = None) -> None:
     print(f"\nDone. {extracted} file(s) written to {out_dir}")
     if skipped:
         print(f"  ({skipped} page(s) skipped - out of range)")
+
+    # Apply document-specific fixups keyed to the PDF's SHA-256 digest.
+    fixup_count = apply_fixups(pdf_sha256, out_dir)
+    if fixup_count:
+        print(f"Applied {fixup_count} document-specific fixup(s).")
 
     # Post-process: run prettier over every Markdown file in the output directory.
     # prettier normalises formatting (trailing newlines, spacing, etc.).

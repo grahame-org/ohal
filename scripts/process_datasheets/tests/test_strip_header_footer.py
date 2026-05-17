@@ -5,7 +5,12 @@ import re
 import pytest
 from hamcrest import assert_that, equal_to, matches_regexp, not_, contains_string
 
-from process_datasheets.pdf_to_markdown import strip_header_footer, _TOC_WIDTH
+from process_datasheets.pdf_to_markdown import (
+    strip_header_footer,
+    _TOC_WIDTH,
+    _normalise_cell,
+    _normalise_span_text,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -588,21 +593,15 @@ def test_strip_demotes_refer_to_heading(level):
 
 def test_mojibake_registered_trademark_in_cell_text():
     """ﾂｮ must be replaced with ® even when it appears in table-like text."""
-    from process_datasheets.pdf_to_markdown import _normalise_cell
-
     assert_that(_normalise_cell("Armﾂｮ JEDEC code"), equal_to("Arm® JEDEC code"))
 
 
 def test_mojibake_apostrophe_t_in_cell_text():
-    from process_datasheets.pdf_to_markdown import _normalise_cell
-
     assert_that(_normalise_cell("don窶冲 care"), equal_to("don't care"))
 
 
 def test_mojibake_span_registered_trademark():
     """ﾂｮ must be replaced with ® in span text before NFKC normalisation."""
-    from process_datasheets.pdf_to_markdown import _normalise_span_text
-
     assert_that(_normalise_span_text("Armﾂｮ JEDEC code"), equal_to("Arm® JEDEC code"))
 
 
@@ -678,14 +677,10 @@ def test_strip_demotes_lowercase_continuation_heading():
 
 
 def test_mojibake_micro_sign_in_cell_text():
-    from process_datasheets.pdf_to_markdown import _normalise_cell
-
     assert_that(_normalise_cell("0.400 ﾎｼs"), equal_to("0.400 μs"))
 
 
 def test_mojibake_micro_sign_in_span_text():
-    from process_datasheets.pdf_to_markdown import _normalise_span_text
-
     assert_that(_normalise_span_text("42 ﾎｼs"), equal_to("42 μs"))
 
 
@@ -768,4 +763,243 @@ def test_toc_chapter_heading_wrapped_title_subsections_preserved():
     result = strip_header_footer(text)
     assert_that(result, contains_string("- 35.1 Introduction"))
     assert_that(result, contains_string("- 35.2 LPUART main features"))
+
+
+# ---------------------------------------------------------------------------
+# Bit-value line after bullet list — must not be indented as continuation
+# ---------------------------------------------------------------------------
+
+
+def test_bit_value_after_bullet_list_not_indented():
+    """A '1:' bit-value line following a bullet list must not be treated as a list continuation.
+
+    Real example from page 806: 'Bit 2 URS' has a '0:' entry whose description
+    contains a bullet list, followed immediately by a '1:' entry.  Without the
+    fix, _indent_list_continuations indents '1:' under the last bullet item.
+    """
+    text = (
+        "0: Any of the following events generate an update interrupt or DMA request if enabled.\n"
+        "These events can be:\n\n"
+        "- Counter overflow/underflow\n"
+        "- Setting the UG bit\n"
+        "- Update generation through the slave mode controller\n"
+        "1: Only counter overflow/underflow generates an update interrupt or DMA request if enabled."
+    )
+    result = strip_header_footer(text)
+    lines = result.splitlines()
+    one_line = next((l for l in lines if l.startswith("1:")), None)
+    assert_that(one_line is not None, equal_to(True))
+    assert_that(one_line[0], equal_to("1"))
+
+
+# ---------------------------------------------------------------------------
+# Register-name asterisk artefact replacement
+# ---------------------------------------------------------------------------
+
+
+def test_asterisk_between_register_name_parts_replaced_with_underscore():
+    """A bare * between alphanumeric characters in a register name must become _.
+
+    The PDF extractor sometimes emits '*' where the source had '_', e.g.
+    "TIMx*BDTR" should be "TIMx_BDTR".
+    """
+    text = "01: LOCK Level 1 = DTG bits in TIMx*BDTR register can no longer be written."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("TIMx_BDTR"))
+    assert_that(result, not_(contains_string("TIMx*BDTR")))
+    assert_that(result, not_(contains_string("TIMx *BDTR")))
+
+
+def test_broken_note_prefix_normalised():
+    r"""\_Note:* and \_Note:_ are normalised to plain 'Note:'."""
+    text = r"\_Note:* _The LOCK bits can only be written once after reset._"
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("Note:"))
+    assert_that(result, not_(contains_string(r"\_Note:")))
+
+
+def test_asterisk_note_prefix_normalised():
+    r"""*Note:_ (asterisk-open, underscore-close) is normalised to _Note:_."""
+    text = "*Note:_\n*The T6 bit can be used to generate a software reset._"
+    result = strip_header_footer(text)
+    assert_that(result, not_(contains_string("*Note:_")))
+    # The Note prefix is fixed and the body is joined via the wrapped-italic join
+    assert_that(result, contains_string("_Note:"))
+
+
+# ---------------------------------------------------------------------------
+# Missing space before italic-open underscore absorbed into preceding word
+# ---------------------------------------------------------------------------
+
+
+def test_absorbed_italic_open_underscore_gains_space():
+    r"""'the_FLASH' must become 'the _FLASH' (missing space before italic _).
+
+    The PDF extractor sometimes absorbs a space before an italic-start marker,
+    producing e.g. "the_FLASH HDP extension" instead of "the _FLASH HDP
+    extension".  The fix inserts the missing space.
+    """
+    text = "of the_FLASH HDP extension register (FLASH_HDPEXTR)."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("the _FLASH"))
+    assert_that(result, not_(contains_string("the_FLASH")))
+
+
+@pytest.mark.parametrize("input_text,expected", [
+    ("Refer to_Section 1.2 for abbreviations.", "Refer to _Section 1.2"),
+    ("Use the formula in_Figure 299 to calculate.", "in _Figure 299"),
+])
+def test_absorbed_italic_open_underscore_common_variants(input_text, expected):
+    """Other common 'word_Upper' patterns also gain the missing space."""
+    result = strip_header_footer(input_text)
+    assert_that(result, contains_string(expected))
+
+
+# ---------------------------------------------------------------------------
+# Escaped asterisk used as italic-close corruption
+# ---------------------------------------------------------------------------
+
+
+def test_backslash_asterisk_italic_close_replaced():
+    r"""'\*' at end of an italic span (followed by space) must become '_'.
+
+    The PDF extractor occasionally emits '\*' instead of '_' as the closing
+    italic marker, e.g. "Section 1.2\* for" should become "Section 1.2_ for".
+    """
+    text = r"Refer to_Section 1.2\* for a list of abbreviations."
+    result = strip_header_footer(text)
+    assert_that(result, not_(contains_string(r"\*")))
+    # The closing marker becomes _ and the absorbed space is restored too
+    assert_that(result, contains_string("Section 1.2_"))
+
+
+def test_backslash_asterisk_at_end_of_line_replaced():
+    r"""'\*' at end of line inside a cross-reference must become '_'."""
+    text = "extended through HDP1_EXT[6:0] of the_FLASH HDP extension\\*\nregister (FLASH_HDPEXTR)."
+    result = strip_header_footer(text)
+    assert_that(result, not_(contains_string("extension\\*")))
+
+
+def test_bare_asterisk_italic_close_in_cross_reference():
+    """A bare '*' closing an italic cross-reference span must become '_'.
+
+    Raw extracted text from the PDF uses '*' as an italic-close in patterns
+    like '_Section 1.2* for' or '_Figure 299* to'.  The bare '*' must be
+    replaced with '_' so the italic span is properly closed.
+    """
+    text = "Refer to _Section 1.2* for a list of abbreviations."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("Section 1.2_"))
+    # The bare asterisk-as-close must be gone
+    assert_that(result, not_(contains_string("1.2* ")))
+
+
+@pytest.mark.parametrize("input_text,expected_contains,expected_absent", [
+    (
+        "Use the formula in _Figure 299* to calculate.",
+        "Figure 299_",
+        "299* ",
+    ),
+    (
+        "Refer to _Section 34.4:* for details.",
+        "_Section 34.4:_",
+        "34.4:* ",
+    ),
+    (
+        # Body contains an underscore (WWDG_CFR) so the span is promoted to
+        # '*...*' rather than '_..._' to avoid Prettier mangling.
+        "The _WWDG configuration register (WWDG_CFR)* contains the high limit.",
+        "(WWDG_CFR)*",
+        "_WWDG configuration",  # the raw _...* mixed form must be gone
+    ),
+])
+def test_bare_asterisk_italic_close_variants(input_text, expected_contains, expected_absent):
+    """Other '*'-as-italic-close patterns are also normalised."""
+    result = strip_header_footer(input_text)
+    assert_that(result, contains_string(expected_contains))
+    assert_that(result, not_(contains_string(expected_absent)))
+
+
+def test_asterisk_open_underscore_close_italic_span_normalised():
+    """A '*Word_' italic span (asterisk-open, underscore-close) is normalised to '_Word_'.
+
+    The PDF extractor sometimes emits '*Figure 299_ describes' or
+    '*The T6 bit can..._' where '_Figure 299_' is intended.
+    """
+    text = "*Figure 299_ describes the window watchdog process."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("_Figure 299_"))
+    assert_that(result, not_(contains_string("*Figure 299_")))
+
+
+def test_asterisk_open_dotasterisk_close_italic_span_normalised():
+    r"""A '*Word.*' italic span (asterisk-open, period+asterisk-close) is normalised to '_Word._'.
+
+    The PDF extractor sometimes emits '*cleared).*' where '_cleared)._' is
+    intended (the tail of a multi-line italic note wrapped across lines).
+    """
+    text = "*cleared).*"
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("_cleared)._"))
+    assert_that(result, not_(contains_string("*cleared).*")))
+
+
+def test_wrapped_italic_span_joined_across_lines():
+    """An italic span split across two lines ('_text_\\n_cont_') must be joined.
+
+    When the PDF wraps an italic cross-reference across a line boundary the
+    extractor emits the closing '_' at the end of the first line and the
+    opening '_' at the start of the continuation.  Prettier would treat these
+    as two separate spans and mangle the output.  The two markers must be
+    collapsed into a single space so both fragments form one italic span.
+
+    Because the joined body contains an underscore (FLASH_HDPEXTR) the span is
+    further promoted to '*...*' to keep Prettier from escaping the delimiters.
+    """
+    text = (
+        "extended through HDP1_EXT[6:0] of the _FLASH HDP extension_\n"
+        "_register (FLASH_HDPEXTR)_. HDP1_EXT[6:0] indicates"
+    )
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("*FLASH HDP extension register (FLASH_HDPEXTR)*"))
+    assert_that(result, not_(contains_string("extension_\n_register")))
+
+
+# ---------------------------------------------------------------------------
+# Spurious escaped-underscore artifacts in table cells
+# ---------------------------------------------------------------------------
+
+
+def test_trailing_escaped_underscores_stripped_from_table_cells():
+    r"""'\_ \_' artifacts after a register name in a table cell are removed.
+
+    The PDF extractor sometimes emits "WRP1x END \_ \_" inside a table cell
+    where the identifier has no trailing underscores.  These must be stripped.
+    """
+    text = (
+        "| WRP1x STRT = WRP1x END \\_ \\_ | Page WRP1x |\n"
+        "| WRP1x STRT > WRP1x END \\_ \\_ | None (unprotected) |"
+    )
+    result = strip_header_footer(text)
+    assert_that(result, not_(contains_string(r"\_ \_")))
+    assert_that(result, not_(contains_string(r"\_")))
+    assert_that(result, contains_string("WRP1x END"))
+    assert_that(result, contains_string("WRP1x STRT"))
+
+
+def test_trailing_bare_underscores_stripped_from_table_cells():
+    """Bare '_ _' artifacts (pre-prettier) after a register name in a table cell are removed.
+
+    The raw PDF extraction produces "WRP1x END _ _" in table cells where no
+    trailing underscores exist.  These must be stripped before prettier runs.
+    """
+    text = (
+        "| WRP1x STRT = WRP1x END _ _ | Page WRP1x |\n"
+        "| WRP1x STRT > WRP1x END _ _ | None (unprotected) |\n"
+        "| WRP1x STRT < WRP1x END _ _ | Pages from WRP1x STRT to WRP1x END _ _ |"
+    )
+    result = strip_header_footer(text)
+    assert_that(result, not_(contains_string("END _ _")))
+    assert_that(result, contains_string("WRP1x END"))
+    assert_that(result, contains_string("WRP1x STRT"))
 
