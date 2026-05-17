@@ -71,3 +71,38 @@ package-lock.json
 
 # Visual studio files
 .vs/
+
+# Python – bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python – distribution / packaging
+*.egg
+*.egg-info/
+dist/
+build/  # already covered above; explicit here for Python context
+wheels/
+*.whl
+MANIFEST
+
+# Python – virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python – test and coverage artefacts
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.cover
+*.hypothesis/
+
+# Python – installer / tool caches
+pip-wheel-metadata/
+.mypy_cache/
+.ruff_cache/
+.pytype/

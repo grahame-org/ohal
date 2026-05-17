@@ -1,0 +1,1983 @@
+---
+# yaml-language-server: $schema=schema-plan.json
+# Incremental plan: incorporate RM0503 content into docs/specs/stm32/stm32u0.yml
+#
+# Source: C:\src\ohal\claude\rm0503\  (1333 extracted markdown pages)
+# Target: docs/specs/stm32/stm32u0.yml
+# Schema: docs/specs/schema-family.json
+#
+# Principles
+# ----------
+# - Each step is atomic (single concern, single PR-level commit).
+# - Notes in the YAML spec are reserved for structured context only;
+#   formal specification data must use typed schema fields.
+# - No assumptions are made about figure content (figures are absent
+#   from the extracted markdown; only captions are present).
+# - Table concerns that cannot be resolved unambiguously are flagged
+#   with page/section/table references, possible interpretations, and
+#   confidence levels, and are escalated to the developer.
+# - Schema extensions are tracked here and must be implemented before
+#   the step that first requires them.
+# - The plan is family-agnostic in intent; schema extensions must
+#   remain valid for future families (e.g. msp430fr2xx4xx).
+
+meta:
+  plan-version: "1.1.0"
+  rm-source: RM0503
+  rm-revision: 4
+  rm-last-modified: "2025-07"
+  target-spec: docs/specs/stm32/stm32u0.yml
+  schema: docs/specs/schema-family.json
+  page-corpus: claude/rm0503/
+  total-pages: 1333
+
+  # ------------------------------------------------------------------
+  # Step-completion policy
+  # Applies to every step in every phase.  The final acceptance
+  # criterion for ANY step is always:
+  #   "progress.current is updated to the id of the next step
+  #    (or to the first step of the next phase if this is the last
+  #    step in the current phase, or to 'complete' if this is the
+  #    very last step in the plan)."
+  # This policy is recorded once here rather than duplicated on every
+  # step.  Tooling and reviewers MUST treat it as an implicit trailing
+  # item in every step's acceptance-criteria list.
+  # ------------------------------------------------------------------
+  step-completion-policy: >
+    When a step's acceptance criteria are fully met, update
+    progress.current to the id of the next step before closing the
+    work item.  If the step is the last step in its phase, advance to
+    the first step of the following phase.  If no further steps exist,
+    set progress.current to "complete".  Record the completed step in
+    progress.history with its id and the ISO-8601 date of acceptance.
+
+  # ------------------------------------------------------------------
+  # Progress tracker
+  # current  – the step that should be worked on RIGHT NOW.
+  # history  – ordered list of accepted steps (oldest first).
+  # ------------------------------------------------------------------
+  progress:
+    current: P0-S1
+    history: []
+
+# ============================================================
+# PHASE 0 – Schema extensions
+# Must be completed before any downstream phase that uses them.
+# ============================================================
+phases:
+  - id: P0
+    title: Schema extensions
+    description: >
+      Extend docs/specs/schema-family.json to capture structure
+      not yet expressible in the schema but required by ohal and
+      future families.  Each step is atomic; implement and validate
+      (jsonschema lint + existing spec lint) before moving to the
+      next step.
+
+    steps:
+      - id: P0-S1
+        title: "Schema: add reset-value to register definition"
+        description: >
+          Registers have a documented reset value. This is a formal
+          specification datum required by ohal for initialisation
+          and test generation, not merely context. Add an optional
+          `reset-value` integer property to `$defs/register`.
+        source-pages: []
+        acceptance-criteria:
+          - schema/register/$defs/register gains optional property
+            reset-value (type integer, minimum 0).
+          - docs/specs/stm32/stm32u0.yml continues to validate
+            against the updated schema.
+          - Any future family spec can also use reset-value.
+
+      - id: P0-S2
+        title: "Schema: add register-map array to peripheral"
+        description: >
+          RM0503 provides a register-map table for each peripheral
+          (e.g. Table 19 for FLASH, Table 41 for GPIO). These maps
+          list every register with its offset and reset value in a
+          canonical order and serve as the authoritative source for
+          verifying individual register definitions. Add an optional
+          `register-map` array to `$defs/peripheral` whose items
+          reference a register name and its reset value (and
+          optionally the RM table number, for traceability).
+        source-pages: []
+        acceptance-criteria:
+          - $defs/peripheral gains optional property register-map.
+          - "Each register-map item has: name (string), offset
+            (hex-address), reset-value (integer), and optionally
+            source-table (string/number)."
+          - Existing specs validate without change.
+
+      - id: P0-S3
+        title: "Schema: add source-table reference to register"
+        description: >
+          Individual registers may cite a specific table in the RM
+          for their field layout.  Add optional `source-table`
+          property (string or number) to `$defs/register` for
+          traceability; it complements the existing `reference`
+          object.
+        source-pages: []
+        acceptance-criteria:
+          - $defs/register gains optional source-table (type
+            string or number).
+          - Existing specs validate without change.
+
+      - id: P0-S4
+        title: "Schema: add sub-family-filter to register"
+        description: >
+          Some registers differ per sub-family (e.g. bit fields
+          present only on stm32u073/u083). Add optional
+          `sub-families` array to `$defs/register` matching the
+          pattern already used on peripheral-instance.
+        source-pages: []
+        acceptance-criteria:
+          - $defs/register gains optional sub-families (array of
+            string).
+          - Existing specs validate without change.
+
+      - id: P0-S5
+        title: "Schema: add clock-source-constraints to peripheral"
+        description: >
+          Peripherals have clock source constraints documented in
+          the RCC chapter (RM0503 §5). ohal needs this to emit
+          correct clock-enable sequences. Add an optional
+          `clock-sources` array to `$defs/peripheral`. Each item:
+          name (string), bus (string, e.g. APB1/AHB), enable-bit
+          (string). This must remain generic enough for non-STM32
+          families.
+        source-pages: []
+        acceptance-criteria:
+          - $defs/peripheral gains optional clock-sources array.
+          - Validation passes on existing specs.
+
+      - id: P0-S6
+        title: "Schema: add dma-requests array to peripheral"
+        description: >
+          Table 49 (DMAMUX assignment) maps DMA request lines to
+          peripherals. ohal requires this to generate DMA
+          configuration. Add optional `dma-requests` array to
+          `$defs/peripheral`. Each item: request-name (string),
+          channel-id (integer or string), mux-input (integer).
+        source-pages: [49]
+        acceptance-criteria:
+          - $defs/peripheral gains optional dma-requests array.
+          - Validation passes on existing specs.
+
+      - id: P0-S7
+        title: "Schema: add alternate-functions array to peripheral-instance"
+        description: >
+          GPIO alternate function mappings (e.g. AF1=TIM1_CH1 on
+          PA8) are per-instance data.  Table 16 (not in the
+          extracted pages; see RM0503 datasheet, not this RM) and
+          the GPIO AFRL/AFRH registers reference AF numbers.
+          Add optional `alternate-functions` array to
+          `$defs/peripheral-instance`. Each item: pin (string),
+          af-number (integer 0-15), signal (string), sub-families
+          (optional array). Note: the AF table is in the device
+          datasheet, not RM0503; flag for developer guidance on
+          source.
+        source-pages: []
+        concern: >
+          AF pin mapping tables are in the device datasheet
+          (DS13565 / DS13566 for STM32U0), not in RM0503.
+          Confirm whether to source these from the datasheet
+          extraction or leave for a separate plan.
+        acceptance-criteria:
+          - $defs/peripheral-instance gains optional
+            alternate-functions array if developer confirms scope.
+          - Developer guidance obtained before implementation.
+
+      - id: P0-S8
+        title: "Schema: add boot-modes table to family spec"
+        description: >
+          Table 6 (Boot modes) is a formal spec datum consumed by
+          ohal for boot-sequence generation. Add a top-level
+          optional `boot` object to the family schema with
+          sub-fields: modes (array of boot-mode items each with
+          name, boot-pin-state, source).
+        source-pages: [51]
+        acceptance-criteria:
+          - Top-level `boot` property added to schema with
+            appropriate definition.
+          - Validation passes.
+
+  # ============================================================
+  # PHASE 1 – Documentation conventions (§1, pages 51-52)
+  # ============================================================
+
+  - id: P1
+    title: "Documentation conventions (§1)"
+    description: >
+      Extract register abbreviations and feature-availability
+      conventions used throughout RM0503. These inform how
+      spec data is interpreted rather than directly adding
+      peripheral registers.
+
+    steps:
+      - id: P1-S1
+        title: "Verify register-access abbreviation set (§1.2)"
+        description: >
+          RM0503 §1.2 defines register-access abbreviations
+          (r, w, rw, rs, rc_w1, rc_w0, rc_r, rw_once, rt_w, etc.).
+          Cross-check that the schema's `access` enum {rw, ro, wo}
+          covers all abbreviations used in RM0503 for registers
+          that ohal targets. Document any gap as a schema extension
+          concern.
+        source-pages: [51]
+        acceptance-criteria:
+          - Each RM0503 access type used in ohal-relevant registers
+            is either already covered by the schema enum or a
+            schema extension task is filed.
+          - No spec changes unless a gap is found.
+
+      - id: P1-S2
+        title: "Record peripheral-availability table reference (§1.5 / Table 1)"
+        description: >
+          Table 1 (Peripherals versus products) is the authoritative
+          source for per-sub-family feature availability. Verify
+          that all rows in Table 1 relevant to ohal are already
+          reflected in the `features.data` section of
+          stm32u0.yml. File individual correction tasks for any
+          missing or mismatched row.
+        source-pages: [51, 52]
+        acceptance-criteria:
+          - Table 1 reviewed against stm32u0.yml `features.data`.
+          - Discrepancies each have a separate filed step; none
+            are silently resolved here.
+
+  # ============================================================
+  # PHASE 2 – Memory and bus architecture (§2)
+  # Pages approximately 53-63
+  # ============================================================
+
+  - id: P2
+    title: "Memory and bus architecture (§2)"
+
+    steps:
+      - id: P2-S1
+        title: "Verify memory map against §2.2.2 / Tables 2, 3, 4"
+        description: >
+          Tables 2 and 3 give memory boundary addresses for
+          STM32U073/83 and STM32U031 respectively. Table 4 gives
+          peripheral register boundary addresses. Cross-check
+          each entry against `memory.map` in stm32u0.yml and
+          `peripherals[*].instances[*].base`.
+        source-pages: [56, 57, 58, 59]
+        acceptance-criteria:
+          - Every Table 2/3/4 entry checked against the spec.
+          - Mismatches each produce a separate atomic correction
+            step; none are resolved silently here.
+
+      - id: P2-S2
+        title: "Correct memory map entry: Table 2/3/4 mismatch resolutions"
+        description: >
+          Placeholder step. For each mismatch found in P2-S1,
+          create a child step (P2-S2a, P2-S2b, …) that corrects
+          exactly one address entry in stm32u0.yml.
+        depends-on: [P2-S1]
+        acceptance-criteria:
+          - Each correction step changes at most one memory-map
+            entry.
+          - lint.sh passes after each child step.
+
+      - id: P2-S3
+        title: "Add SRAM size data (§2.3 / Table 5)"
+        description: >
+          Table 5 gives SRAM sizes per sub-family. Verify the
+          SRAM entries in `memory.map` match Table 5 exactly.
+        source-pages: [60]
+        acceptance-criteria:
+          - SRAM start/end addresses and derived sizes match
+            Table 5 for all three sub-families.
+          - Note the SRAM verified flag is set to true if
+            previously false.
+
+      - id: P2-S4
+        title: "Add boot-modes table (§2.5 / Table 6)"
+        description: >
+          Table 6 specifies boot modes (BOOT0 pin + FLASH option
+          byte combinations). Using the schema extension from
+          P0-S8, add a `boot.modes` section to stm32u0.yml.
+        source-pages: [62]
+        depends-on: [P0-S8]
+        acceptance-criteria:
+          - stm32u0.yml boot.modes section added with all rows
+            from Table 6.
+          - spec validates against schema.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 3 – FLASH peripheral (§3)
+  # Pages approximately 64-103
+  # ============================================================
+
+  - id: P3
+    title: "Embedded FLASH peripheral (§3)"
+    description: >
+      FLASH registers are needed by ohal for read-wait-state
+      configuration and option-byte management.
+
+    steps:
+      - id: P3-S1
+        title: "Add FLASH peripheral skeleton to stm32u0.yml"
+        description: >
+          Add a `flash` peripheral entry with the base address
+          0x40022000 and empty registers list. Instances:
+          single instance FLASH at 0x40022000 for all sub-families.
+        source-pages: [64]
+        acceptance-criteria:
+          - stm32u0.yml has a `flash` peripheral with correct base.
+          - spec validates.
+
+      - id: P3-S2
+        title: "Add FLASH_ACR register (§3.7.1)"
+        description: >
+          Add FLASH_ACR (offset 0x00) with all fields from §3.7.1
+          and correct reset values.
+        source-pages: [86, 87]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_ACR has correct offset, reset-value, and all
+            fields with correct msb/lsb/width/access/settings.
+          - lint.sh passes.
+
+      - id: P3-S3
+        title: "Add FLASH_KEYR register (§3.7.2)"
+        source-pages: [87]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_KEYR at offset 0x08 with correct fields.
+          - lint.sh passes.
+
+      - id: P3-S4
+        title: "Add FLASH_OPTKEYR register (§3.7.3)"
+        source-pages: [87]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_OPTKEYR at offset 0x0C with correct fields.
+          - lint.sh passes.
+
+      - id: P3-S5
+        title: "Add FLASH_SR register (§3.7.4)"
+        source-pages: [88, 89]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_SR at offset 0x10 with all fields.
+          - lint.sh passes.
+
+      - id: P3-S6
+        title: "Add FLASH_CR register (§3.7.5)"
+        source-pages: [90, 91, 92]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_CR at offset 0x14 with all fields.
+          - lint.sh passes.
+
+      - id: P3-S7
+        title: "Add FLASH_ECCR register (§3.7.6)"
+        source-pages: [92, 93]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_ECCR at offset 0x18 with all fields.
+          - lint.sh passes.
+
+      - id: P3-S8
+        title: "Add FLASH_OPTR register (§3.7.7)"
+        source-pages: [93, 94, 95]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_OPTR at offset 0x20 with all sub-family-varying
+            fields correctly marked.
+          - lint.sh passes.
+
+      - id: P3-S9
+        title: "Add FLASH_WRP1AR register (§3.7.8)"
+        source-pages: [95]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_WRP1AR at offset 0x28 with correct fields.
+          - lint.sh passes.
+
+      - id: P3-S10
+        title: "Add FLASH_WRP1BR register (§3.7.9)"
+        source-pages: [95, 96]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_WRP1BR at offset 0x2C with correct fields.
+          - lint.sh passes.
+
+      - id: P3-S11
+        title: "Add FLASH_SECR register (§3.7.10)"
+        source-pages: [96, 97]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - FLASH_SECR at offset 0x80 (verify exact offset from
+            register map Table 19 before committing).
+          - lint.sh passes.
+
+      - id: P3-S12
+        title: "Add FLASH OEM key registers (§3.7.11–§3.7.19)"
+        description: >
+          Nine OEM key registers. Add all in a single step as
+          they are structurally repetitive write-only key slots.
+          Read Table 19 carefully for exact offsets.
+        source-pages: [97, 98, 99, 100]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - All nine registers added with correct offsets and
+            write-only access.
+          - lint.sh passes.
+
+      - id: P3-S13
+        title: "Add FLASH_HDPCR and FLASH_HDPEXTR registers (§3.7.20–§3.7.21)"
+        source-pages: [100, 101]
+        depends-on: [P3-S1, P0-S1]
+        acceptance-criteria:
+          - Both registers added with correct fields.
+          - lint.sh passes.
+
+      - id: P3-S14
+        title: "Add FLASH register-map from Table 19"
+        description: >
+          Using P0-S2 schema extension, add a register-map array
+          to the flash peripheral entry citing Table 19. Cross-
+          check every previously added register offset/reset-value
+          against Table 19.
+        source-pages: [102, 103]
+        depends-on: [P3-S2, P3-S3, P3-S4, P3-S5, P3-S6, P3-S7, P3-S8, P3-S9, P3-S10, P3-S11, P3-S12, P3-S13, P0-S2]
+        acceptance-criteria:
+          - FLASH register-map section matches Table 19 completely.
+          - Any offset/reset-value discrepancy produces a separate
+            correction step; none resolved silently.
+          - lint.sh passes.
+
+      - id: P3-S15
+        title: "Add FLASH interrupt-events (§3.6 / Table 18)"
+        source-pages: [85, 86]
+        depends-on: [P3-S1]
+        acceptance-criteria:
+          - FLASH peripheral has interrupt-events section with all
+            rows from Table 18.
+          - lint.sh passes.
+
+      - id: P3-S16
+        title: "Add FLASH wait-state table reference (§3.3.3 / Table 9)"
+        description: >
+          Table 9 defines wait states vs. HCLK frequency. This
+          is used by ohal clock-init code. Add a
+          `flash-wait-states` structured section to stm32u0.yml
+          under the flash peripheral or as a top-level entry.
+          File a schema-extension task (P0 child) if the schema
+          does not yet have a home for this.
+        source-pages: [67, 68]
+        depends-on: [P3-S1]
+        concern: >
+          Table 9 structure: it maps HCLK frequency ranges to
+          number of wait states, and may also include voltage-
+          range columns. The exact column structure must be
+          verified from the extracted pages before the schema
+          extension is designed. Do not assume column layout.
+        acceptance-criteria:
+          - Developer confirms table structure.
+          - Schema extension filed if needed.
+          - Wait-state data added once schema is confirmed.
+
+  # ============================================================
+  # PHASE 4 – Power control (PWR) (§4)
+  # Pages approximately 104-148
+  # ============================================================
+
+  - id: P4
+    title: "Power control (PWR) (§4)"
+
+    steps:
+      - id: P4-S1
+        title: "Add PWR peripheral skeleton"
+        description: >
+          Base address 0x40007000. Present on all sub-families.
+        source-pages: [104]
+        acceptance-criteria:
+          - PWR peripheral entry added with correct base.
+          - spec validates.
+
+      - id: P4-S2
+        title: "Add low-power mode summary table (§4.3 / Table 21)"
+        description: >
+          Table 21 is a cross-cutting formal specification datum
+          for ohal low-power mode support. Add a top-level
+          `low-power-modes` section to stm32u0.yml (schema
+          extension P0 child required; file before implementing).
+        source-pages: [115, 116]
+        concern: >
+          Table 21 may span multiple pages (pages ~115-116).
+          Check whether the table is split and that no rows are
+          missed.  Table 22 may extend it; treat both as separate
+          atomic steps.
+        acceptance-criteria:
+          - Developer guidance on schema location for low-power
+            mode summary obtained before implementation.
+
+      - id: P4-S3
+        title: "Add PWR registers from §4.7 (all)"
+        description: >
+          Add all PWR registers. Read each register section
+          atomically; if a register's description page is also
+          the last page of the previous register, verify the
+          boundary carefully. Use Table 31 (register map) to
+          verify offsets and reset values.
+        source-pages: [133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148]
+        depends-on: [P4-S1, P0-S1]
+        note: >
+          PWR registers are split into individual atomic sub-steps
+          below (P4-S3a … P4-S3n) based on the register map
+          Table 31. Each sub-step adds exactly one register.
+        acceptance-criteria:
+          - All PWR registers present with correct fields.
+          - Register-map from Table 31 added via P0-S2 extension.
+          - lint.sh passes.
+
+      # Individual PWR register sub-steps are enumerated after
+      # Table 31 (page ~148) has been reviewed. They are listed
+      # here as a placeholder pending that review.
+      - id: P4-S3a
+        title: "Enumerate PWR register sub-steps from Table 31"
+        description: >
+          Read Table 31 (page ~148) and create one sub-step per
+          register row. This step produces child steps
+          P4-S3b, P4-S3c, … but makes no spec changes itself.
+        source-pages: [148]
+        acceptance-criteria:
+          - Child steps enumerated covering every PWR register.
+
+  # ============================================================
+  # PHASE 5 – Reset and clock control (RCC) (§5)
+  # Pages approximately 149-213
+  # ============================================================
+
+  - id: P5
+    title: "Reset and clock control (RCC) (§5)"
+
+    steps:
+      - id: P5-S1
+        title: "Add RCC peripheral skeleton"
+        description: >
+          Base 0x40021000. All sub-families.
+        source-pages: [149]
+        acceptance-criteria:
+          - RCC peripheral entry added.
+          - spec validates.
+
+      - id: P5-S2
+        title: "Add clock-source frequency table (§5.4 / Table 32)"
+        description: >
+          Table 32 lists oscillator frequencies. This is a formal
+          specification datum required by ohal for clock
+          initialisation. File a schema extension if needed to
+          host a `clock-sources` top-level or RCC-peripheral
+          structured section.
+        source-pages: [162]
+        concern: >
+          Table 32 may list HSI16, MSI, HSE, LSE, LSI, HSI48
+          with their nominal frequencies and tolerances. The
+          column layout must be read from the extracted page
+          before the schema is extended. Do not assume column
+          layout.
+        acceptance-criteria:
+          - Table 32 structure confirmed from extracted page.
+          - Schema extension filed and implemented.
+          - Clock-source data added.
+
+      - id: P5-S3
+        title: "Add RCC registers from §5.7 (all) – enumeration step"
+        description: >
+          Read Table 33 (register map, page ~210) and enumerate
+          individual register sub-steps. Makes no spec changes.
+        source-pages: [210, 211, 212, 213]
+        acceptance-criteria:
+          - Child steps enumerated covering every RCC register.
+
+      - id: P5-S4
+        title: "Add RCC registers (child steps)"
+        description: >
+          Placeholder. Each child step P5-S4a … P5-S4n adds one
+          RCC register. Child steps depend on P5-S1 and P0-S1.
+        depends-on: [P5-S1, P0-S1, P5-S3]
+        acceptance-criteria:
+          - All RCC registers present with correct fields.
+          - Register-map from Table 33 added.
+          - lint.sh passes after each child step.
+
+      - id: P5-S5
+        title: "Add peripheral clock-enable bits to peripheral entries"
+        description: >
+          For each peripheral already in stm32u0.yml, add the
+          clock-source entry (P0-S5 schema extension) using the
+          RCC enable-bit name from the RCC register fields.
+        depends-on: [P0-S5, P5-S4]
+        acceptance-criteria:
+          - Every peripheral in stm32u0.yml has a clock-sources
+            entry referencing the correct RCC bit.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 6 – CRS (§6)
+  # Pages approximately 214-224
+  # ============================================================
+
+  - id: P6
+    title: "Clock recovery system (CRS) (§6)"
+    description: >
+      CRS is present only on stm32u073 and stm32u083.
+
+    steps:
+      - id: P6-S1
+        title: "Add CRS peripheral skeleton"
+        description: >
+          Base 0x40006C00. Sub-families: [stm32u073, stm32u083].
+        source-pages: [214]
+        acceptance-criteria:
+          - CRS peripheral entry added with sub-families filter.
+          - spec validates.
+
+      - id: P6-S2
+        title: "Add CRS registers (enumeration from Table 39)"
+        source-pages: [224]
+        depends-on: [P6-S1]
+        acceptance-criteria:
+          - Child steps enumerated for every CRS register.
+
+      - id: P6-S3
+        title: "Add CRS registers (child steps)"
+        depends-on: [P6-S2, P0-S1]
+        acceptance-criteria:
+          - All CRS registers added with correct fields.
+          - lint.sh passes.
+
+      - id: P6-S4
+        title: "Add CRS interrupt-events (§6.5 / Table 38)"
+        source-pages: [219]
+        depends-on: [P6-S1]
+        acceptance-criteria:
+          - CRS interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 7 – GPIO supplemental data (§7)
+  # Pages approximately 225-261
+  # ============================================================
+
+  - id: P7
+    title: "GPIO supplemental data (§7)"
+    description: >
+      GPIO peripheral registers are already in stm32u0.yml.
+      This phase adds missing structured data: reset values,
+      register-map verification, and port-bit configuration.
+
+    steps:
+      - id: P7-S1
+        title: "Add reset values to all GPIO registers (§7.4 / Table 41)"
+        description: >
+          Use Table 41 (GPIO register map and reset values) to
+          add reset-value to every GPIO register using the
+          P0-S1 schema extension.
+        source-pages: [241, 242, 243, 244]
+        depends-on: [P0-S1, P0-S2]
+        concern: >
+          Table 41 spans multiple pages and uses sub-family
+          columns for reset values. Verify that no row is missed
+          due to page splits. Confirm whether reset values differ
+          per sub-family (if so, the schema needs a reset-value-
+          by-sub-family extension — file before implementing).
+        acceptance-criteria:
+          - Each GPIO register has correct reset-value in spec.
+          - GPIO peripheral has register-map section.
+          - lint.sh passes.
+
+      - id: P7-S2
+        title: "Verify GPIO port-bit configuration table (§7.3 / Table 40)"
+        description: >
+          Table 40 (Port bit configuration table) defines the
+          interplay between MODE, OTYPE, PUPD, OSPEED fields.
+          This is formal spec data; it must not live in a note.
+          File a schema extension if the schema has no structured
+          home for it.
+        source-pages: [227, 228]
+        concern: >
+          Table 40 appears to span pages 227-228. Verify whether
+          all mode combinations are present on both pages before
+          confirming row count. The table may have multi-row
+          cells describing combined conditions.
+        acceptance-criteria:
+          - Table 40 structure confirmed.
+          - Schema extension filed if needed.
+          - Configuration table data added once schema confirmed.
+
+  # ============================================================
+  # PHASE 8 – SYSCFG (§8)
+  # Pages approximately 244-262
+  # ============================================================
+
+  - id: P8
+    title: "SYSCFG (§8)"
+
+    steps:
+      - id: P8-S1
+        title: "Add SYSCFG peripheral skeleton"
+        description: >
+          Base 0x40010000. Note the split address layout
+          (SYSCFG 0x40010000-0x4001002F, VREFBUF 0x40010030-
+          0x4001007F, SYSCFG ITLINE 0x40010080-0x400101FF)
+          already documented in memory.map. Verify the single
+          peripheral instance covers the whole block.
+        source-pages: [244]
+        acceptance-criteria:
+          - SYSCFG peripheral entry added.
+          - spec validates.
+
+      - id: P8-S2
+        title: "Add SYSCFG registers (enumeration from Table 42)"
+        source-pages: [262]
+        depends-on: [P8-S1]
+        acceptance-criteria:
+          - Child steps enumerated for every SYSCFG register.
+
+      - id: P8-S3
+        title: "Add SYSCFG registers (child steps)"
+        depends-on: [P8-S2, P0-S1]
+        acceptance-criteria:
+          - All SYSCFG registers added with correct fields.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 9 – DMA and DMAMUX (§9, §10)
+  # Pages approximately 264-316
+  # ============================================================
+
+  - id: P9
+    title: "DMA and DMAMUX (§9, §10)"
+
+    steps:
+      - id: P9-S1
+        title: "Add DMA1 and DMA2 peripheral skeletons"
+        description: >
+          DMA1 base 0x40020000; DMA2 base 0x40020400.
+          Both present on all sub-families.
+        source-pages: [264, 265]
+        acceptance-criteria:
+          - Both DMA peripheral entries added.
+          - spec validates.
+
+      - id: P9-S2
+        title: "Add DMA interrupt-events (§9.6 / Table 46)"
+        source-pages: [275]
+        depends-on: [P9-S1]
+        acceptance-criteria:
+          - DMA interrupt-events section with all Table 46 rows.
+          - lint.sh passes.
+
+      - id: P9-S3
+        title: "Add DMA registers (enumeration from Table 47)"
+        source-pages: [283, 284, 285, 286]
+        depends-on: [P9-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all DMA channel and global
+            registers.
+
+      - id: P9-S4
+        title: "Add DMA registers (child steps)"
+        depends-on: [P9-S3, P0-S1]
+        acceptance-criteria:
+          - All DMA registers added.
+          - lint.sh passes.
+
+      - id: P9-S5
+        title: "Add DMAMUX peripheral skeleton"
+        description: >
+          Base 0x40020800. All sub-families.
+        source-pages: [287]
+        acceptance-criteria:
+          - DMAMUX entry added.
+          - spec validates.
+
+      - id: P9-S6
+        title: "Add DMAMUX request-mapping table (§10 / Table 49)"
+        description: >
+          Table 49 maps DMAMUX inputs to peripheral request
+          signals. Use the P0-S6 dma-requests schema extension
+          to capture this as structured data on each peripheral.
+        source-pages: [288, 289, 290, 291, 292, 293]
+        depends-on: [P0-S6, P9-S5]
+        concern: >
+          Table 49 is likely multi-page. Verify all rows are
+          captured. Request numbers must match DMAMUX hardware
+          exactly — any uncertainty in a row should be flagged
+          rather than assumed.
+        acceptance-criteria:
+          - Each peripheral's dma-requests populated from Table 49.
+          - lint.sh passes.
+
+      - id: P9-S7
+        title: "Add DMAMUX registers (enumeration from register-map table)"
+        source-pages: [315, 316]
+        depends-on: [P9-S5]
+        acceptance-criteria:
+          - Child steps enumerated for all DMAMUX registers.
+
+      - id: P9-S8
+        title: "Add DMAMUX registers (child steps)"
+        depends-on: [P9-S7, P0-S1]
+        acceptance-criteria:
+          - All DMAMUX registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 10 – EXTI (§11)
+  # Pages approximately 317-368
+  # ============================================================
+
+  - id: P10
+    title: "EXTI supplemental data (§11)"
+    description: >
+      The exti section already exists in stm32u0.yml.
+      This phase adds structured data from §11 that is currently
+      absent or incomplete.
+
+    steps:
+      - id: P10-S1
+        title: "Verify EXTI line table against §11 / Table 59"
+        description: >
+          Cross-check every exti.lines entry in stm32u0.yml
+          against Table 59 (EXTI line connections). In particular
+          verify `reserved-on` fields for stm32u031.
+        source-pages: [330, 331, 332, 333, 334]
+        concern: >
+          Table 59 may span multiple pages. Check for line entries
+          that appear only in the second half of the table and
+          ensure reserved-on values are correctly attributed.
+        acceptance-criteria:
+          - All Table 59 rows verified.
+          - Corrections submitted as individual atomic child steps.
+
+      - id: P10-S2
+        title: "Add EXTI peripheral skeleton and registers"
+        description: >
+          Base 0x40021800. Add EXTI as a peripheral with its
+          register set (IMR1, EMR1, RTSR1, FTSR1, SWIER1,
+          RPR1, FPR1, EXTICR1-4, and extended registers if any).
+        source-pages: [335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348]
+        acceptance-criteria:
+          - EXTI peripheral added with all registers and
+            correct fields.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 11 – ADC (§12)
+  # Pages approximately 369-480
+  # ============================================================
+
+  - id: P11
+    title: "ADC (§12)"
+
+    steps:
+      - id: P11-S1
+        title: "Add ADC peripheral skeleton"
+        description: >
+          Base 0x40012400. All sub-families.
+        source-pages: [369]
+        acceptance-criteria:
+          - ADC peripheral entry added.
+          - spec validates.
+
+      - id: P11-S2
+        title: "Add ADC registers (enumeration from register-map table)"
+        description: >
+          Locate the ADC register map table (Table number TBD;
+          check Table of Tables for 'ADC register map') and
+          enumerate child steps.
+        source-pages: [477, 478, 479, 480]
+        depends-on: [P11-S1]
+        acceptance-criteria:
+          - Child steps enumerated.
+
+      - id: P11-S3
+        title: "Add ADC registers (child steps)"
+        depends-on: [P11-S2, P0-S1]
+        acceptance-criteria:
+          - All ADC registers added.
+          - lint.sh passes.
+
+      - id: P11-S4
+        title: "Add ADC interrupt-events"
+        source-pages: [471, 472]
+        depends-on: [P11-S1]
+        acceptance-criteria:
+          - ADC interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 12 – DAC (§13)
+  # Pages approximately 481-530
+  # ============================================================
+
+  - id: P12
+    title: "DAC (§13)"
+
+    steps:
+      - id: P12-S1
+        title: "Add DAC peripheral skeleton"
+        description: >
+          Base 0x40007400. All sub-families.
+        source-pages: [481]
+        acceptance-criteria:
+          - DAC peripheral entry added.
+          - spec validates.
+
+      - id: P12-S2
+        title: "Add DAC registers (enumeration)"
+        source-pages: [525, 526, 527, 528, 529, 530]
+        depends-on: [P12-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all DAC registers.
+
+      - id: P12-S3
+        title: "Add DAC registers (child steps)"
+        depends-on: [P12-S2, P0-S1]
+        acceptance-criteria:
+          - All DAC registers added.
+          - lint.sh passes.
+
+      - id: P12-S4
+        title: "Add DAC interrupt-events"
+        source-pages: [524]
+        depends-on: [P12-S1]
+        acceptance-criteria:
+          - DAC interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 13 – COMP (§14)
+  # Pages approximately 531-566
+  # ============================================================
+
+  - id: P13
+    title: "Comparator (COMP) (§14)"
+
+    steps:
+      - id: P13-S1
+        title: "Add COMP peripheral skeleton"
+        description: >
+          COMP base 0x40010200. All sub-families.
+          COMP2 present only on stm32u073/u083 per features table.
+        source-pages: [531]
+        acceptance-criteria:
+          - COMP peripheral entry added with sub-family filtering
+            for COMP2 instance.
+          - spec validates.
+
+      - id: P13-S2
+        title: "Add COMP registers (enumeration and child steps)"
+        source-pages: [560, 561, 562, 563, 564, 565, 566]
+        depends-on: [P13-S1, P0-S1]
+        acceptance-criteria:
+          - All COMP registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 14 – OPAMP (§15)
+  # Pages approximately 567-590
+  # ============================================================
+
+  - id: P14
+    title: "OPAMP (§15)"
+
+    steps:
+      - id: P14-S1
+        title: "Add OPAMP peripheral skeleton"
+        description: >
+          Base 0x40007800. All sub-families.
+        source-pages: [567]
+        acceptance-criteria:
+          - OPAMP peripheral entry added.
+          - spec validates.
+
+      - id: P14-S2
+        title: "Add OPAMP registers (enumeration and child steps)"
+        source-pages: [585, 586, 587, 588, 589, 590]
+        depends-on: [P14-S1, P0-S1]
+        acceptance-criteria:
+          - All OPAMP registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 15 – TSC (§16)
+  # Pages approximately 591-629
+  # ============================================================
+
+  - id: P15
+    title: "Touch sensing controller (TSC) (§16)"
+
+    steps:
+      - id: P15-S1
+        title: "Add TSC peripheral skeleton"
+        description: >
+          Base 0x40024000. All sub-families.
+        source-pages: [591]
+        acceptance-criteria:
+          - TSC peripheral entry added.
+          - spec validates.
+
+      - id: P15-S2
+        title: "Add TSC registers (enumeration and child steps)"
+        source-pages: [620, 621, 622, 623, 624, 625, 626, 627, 628, 629]
+        depends-on: [P15-S1, P0-S1]
+        acceptance-criteria:
+          - All TSC registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 16 – RNG (§17)
+  # Pages approximately 630-651
+  # ============================================================
+
+  - id: P16
+    title: "Random number generator (RNG) (§17)"
+
+    steps:
+      - id: P16-S1
+        title: "Add RNG peripheral skeleton"
+        description: >
+          Base 0x40025000. All sub-families.
+        source-pages: [630]
+        acceptance-criteria:
+          - RNG peripheral entry added.
+          - spec validates.
+
+      - id: P16-S2
+        title: "Add RNG registers (enumeration and child steps)"
+        source-pages: [645, 646, 647, 648, 649, 650, 651]
+        depends-on: [P16-S1, P0-S1]
+        acceptance-criteria:
+          - All RNG registers added.
+          - lint.sh passes.
+
+      - id: P16-S3
+        title: "Add RNG interrupt-events"
+        source-pages: [643, 644]
+        depends-on: [P16-S1]
+        acceptance-criteria:
+          - RNG interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 17 – AES (§18)
+  # Pages approximately 652-720
+  # ============================================================
+
+  - id: P17
+    title: "AES (§18)"
+    description: >
+      AES present only on stm32u083 per features table.
+
+    steps:
+      - id: P17-S1
+        title: "Add AES peripheral skeleton"
+        description: >
+          Base 0x40026000. Sub-families: [stm32u083].
+        source-pages: [652]
+        acceptance-criteria:
+          - AES peripheral entry added with sub-family filter.
+          - spec validates.
+
+      - id: P17-S2
+        title: "Add AES registers (enumeration and child steps)"
+        source-pages: [712, 713, 714, 715, 716, 717, 718, 719, 720]
+        depends-on: [P17-S1, P0-S1]
+        acceptance-criteria:
+          - All AES registers added.
+          - lint.sh passes.
+
+      - id: P17-S3
+        title: "Add AES interrupt-events"
+        source-pages: [711]
+        depends-on: [P17-S1]
+        acceptance-criteria:
+          - AES interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 18 – TIM1 supplemental data (§23)
+  # Pages approximately 582-646
+  # (TIM1 registers already in stm32u0.yml)
+  # ============================================================
+
+  - id: P18
+    title: "TIM1 supplemental data (§23)"
+
+    steps:
+      - id: P18-S1
+        title: "Add reset values to all TIM1 registers (Table 133)"
+        description: >
+          Use Table 133 (TIM1 register map and reset values)
+          to add reset-value and verify offsets for every TIM1
+          register already present in stm32u0.yml.
+        source-pages: [642, 643, 644, 645, 646]
+        depends-on: [P0-S1, P0-S2]
+        concern: >
+          Table 133 likely spans pages 642-646. Verify page
+          boundaries carefully to ensure all rows are included.
+        acceptance-criteria:
+          - Every TIM1 register has reset-value.
+          - TIM1 register-map section added.
+          - Offsets match spec; any discrepancy filed separately.
+          - lint.sh passes.
+
+      - id: P18-S2
+        title: "Add TIM1 DMA-requests from Table 49"
+        depends-on: [P0-S6, P9-S6]
+        acceptance-criteria:
+          - TIM1 dma-requests populated.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 19 – TIM2/TIM3 supplemental data (§24)
+  # Pages approximately 647-726
+  # ============================================================
+
+  - id: P19
+    title: "TIM2/TIM3 supplemental data (§24)"
+
+    steps:
+      - id: P19-S1
+        title: "Add reset values to all TIM2/TIM3 registers"
+        description: >
+          Use Table 137 (TIM2/TIM3 register map) to add
+          reset-value and verify offsets. TIM2 has 32-bit
+          counter and CCR registers; TIM3 has 16-bit.
+        source-pages: [720, 721, 722, 723, 724, 725, 726]
+        depends-on: [P0-S1, P0-S2]
+        acceptance-criteria:
+          - All TIM2/TIM3 registers have reset-value.
+          - Register-map section added for both.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 20 – TIM6/TIM7 supplemental data (§25)
+  # ============================================================
+
+  - id: P20
+    title: "TIM6/TIM7 supplemental data (§25)"
+
+    steps:
+      - id: P20-S1
+        title: "Add reset values to all TIM6/TIM7 registers (Table 141)"
+        source-pages: [740, 741, 742]
+        depends-on: [P0-S1, P0-S2]
+        acceptance-criteria:
+          - All TIM6/TIM7 registers have reset-value.
+          - Register-map section added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 21 – TIM15/TIM16 supplemental data (§26)
+  # ============================================================
+
+  - id: P21
+    title: "TIM15/TIM16 supplemental data (§26)"
+
+    steps:
+      - id: P21-S1
+        title: "Add reset values to all TIM15 registers"
+        description: >
+          Use TIM15 register map table (§26.5) to add
+          reset-value and verify offsets.
+        source-pages: [769, 770, 771, 772, 773, 774, 775, 776]
+        depends-on: [P0-S1, P0-S2]
+        acceptance-criteria:
+          - All TIM15 registers have reset-value.
+          - lint.sh passes.
+
+      - id: P21-S2
+        title: "Add reset values to all TIM16 registers"
+        description: >
+          Use TIM16 register map table (§26.6) to add
+          reset-value and verify offsets.
+        source-pages: [807, 808, 809, 810, 811, 812, 813]
+        depends-on: [P0-S1, P0-S2]
+        acceptance-criteria:
+          - All TIM16 registers have reset-value.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 22 – LPTIM supplemental data (§27)
+  # ============================================================
+
+  - id: P22
+    title: "LPTIM supplemental data (§27)"
+
+    steps:
+      - id: P22-S1
+        title: "Add reset values to all LPTIM registers"
+        description: >
+          Use LPTIM register map table (§27.7) to add
+          reset-value and verify offsets for LPTIM1/2/3.
+          LPTIM3 is stm32u073/u083 only.
+        source-pages: [840, 841, 842, 843, 844, 845, 846]
+        depends-on: [P0-S1, P0-S2]
+        concern: >
+          LPTIM3 sub-family filtering must be applied to the
+          instance only, not to registers, unless registers
+          genuinely differ. Verify before implementing.
+        acceptance-criteria:
+          - All LPTIM registers have reset-value.
+          - LPTIM3 instance correctly sub-family filtered.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 23 – IWDG (§29)
+  # Pages approximately 882-897
+  # ============================================================
+
+  - id: P23
+    title: "Independent watchdog (IWDG) (§29)"
+
+    steps:
+      - id: P23-S1
+        title: "Add IWDG peripheral skeleton"
+        description: >
+          Base 0x40003000. All sub-families.
+        source-pages: [882]
+        acceptance-criteria:
+          - IWDG peripheral entry added.
+          - spec validates.
+
+      - id: P23-S2
+        title: "Add IWDG registers (enumeration from Table 166)"
+        source-pages: [897]
+        depends-on: [P23-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all IWDG registers.
+
+      - id: P23-S3
+        title: "Add IWDG registers (child steps)"
+        depends-on: [P23-S2, P0-S1]
+        acceptance-criteria:
+          - All IWDG registers added.
+          - lint.sh passes.
+
+      - id: P23-S4
+        title: "Add IWDG interrupt-events (Table 165)"
+        source-pages: [891]
+        depends-on: [P23-S1]
+        acceptance-criteria:
+          - IWDG interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 24 – WWDG (§30)
+  # Pages approximately 898-904
+  # ============================================================
+
+  - id: P24
+    title: "Window watchdog (WWDG) (§30)"
+
+    steps:
+      - id: P24-S1
+        title: "Add WWDG peripheral skeleton"
+        description: >
+          Base 0x40002C00. All sub-families.
+        source-pages: [898]
+        acceptance-criteria:
+          - WWDG peripheral entry added.
+          - spec validates.
+
+      - id: P24-S2
+        title: "Add WWDG registers (enumeration from Table 169)"
+        source-pages: [904]
+        depends-on: [P24-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all WWDG registers.
+
+      - id: P24-S3
+        title: "Add WWDG registers (child steps)"
+        depends-on: [P24-S2, P0-S1]
+        acceptance-criteria:
+          - All WWDG registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 25 – RTC (§31)
+  # Pages approximately 905-948
+  # ============================================================
+
+  - id: P25
+    title: "Real-time clock (RTC) (§31)"
+
+    steps:
+      - id: P25-S1
+        title: "Add RTC peripheral skeleton"
+        description: >
+          Base 0x40002800. All sub-families.
+        source-pages: [905]
+        acceptance-criteria:
+          - RTC peripheral entry added.
+          - spec validates.
+
+      - id: P25-S2
+        title: "Add RTC registers (enumeration from Table 178)"
+        source-pages: [945, 946, 947, 948]
+        depends-on: [P25-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all RTC registers.
+
+      - id: P25-S3
+        title: "Add RTC registers (child steps)"
+        depends-on: [P25-S2, P0-S1]
+        acceptance-criteria:
+          - All RTC registers added with correct fields.
+          - lint.sh passes.
+
+      - id: P25-S4
+        title: "Add RTC interrupt-events (Table 177)"
+        source-pages: [923]
+        depends-on: [P25-S1]
+        acceptance-criteria:
+          - RTC interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 26 – TAMP (§32)
+  # Pages approximately 949-967
+  # ============================================================
+
+  - id: P26
+    title: "Tamper and backup registers (TAMP) (§32)"
+
+    steps:
+      - id: P26-S1
+        title: "Add TAMP peripheral skeleton"
+        description: >
+          Base 0x4000B000. All sub-families.
+          The memory map entry reads 'TAMP (+BKP registers)'.
+        source-pages: [949]
+        acceptance-criteria:
+          - TAMP peripheral entry added.
+          - spec validates.
+
+      - id: P26-S2
+        title: "Add TAMP registers (enumeration from Table 185)"
+        source-pages: [967]
+        depends-on: [P26-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all TAMP registers.
+
+      - id: P26-S3
+        title: "Add TAMP registers (child steps)"
+        depends-on: [P26-S2, P0-S1]
+        acceptance-criteria:
+          - All TAMP registers added.
+          - lint.sh passes.
+
+      - id: P26-S4
+        title: "Add TAMP interrupt-events (Table 184)"
+        source-pages: [955]
+        depends-on: [P26-S1]
+        acceptance-criteria:
+          - TAMP interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 27 – I2C (§33)
+  # Pages approximately 968-1016
+  # ============================================================
+
+  - id: P27
+    title: "I2C (§33)"
+
+    steps:
+      - id: P27-S1
+        title: "Add I2C peripheral skeletons (I2C1–I2C4)"
+        description: >
+          I2C1 0x40005400, I2C2 0x40005800, I2C3 0x40008800:
+          all sub-families. I2C4 0x4000A000: stm32u073/u083 only.
+        source-pages: [968]
+        acceptance-criteria:
+          - All four I2C peripheral entries added with correct
+            sub-family filtering.
+          - spec validates.
+
+      - id: P27-S2
+        title: "Add I2C registers (enumeration from Table 198)"
+        source-pages: [1015, 1016]
+        depends-on: [P27-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all I2C registers.
+
+      - id: P27-S3
+        title: "Add I2C registers (child steps)"
+        depends-on: [P27-S2, P0-S1]
+        acceptance-criteria:
+          - All I2C registers added.
+          - lint.sh passes.
+
+      - id: P27-S4
+        title: "Add I2C interrupt-events (Table 197)"
+        source-pages: [1002]
+        depends-on: [P27-S1]
+        acceptance-criteria:
+          - I2C interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 28 – USART supplemental data (§34)
+  # Pages approximately 1017-1100
+  # (USART registers already in stm32u0.yml)
+  # ============================================================
+
+  - id: P28
+    title: "USART supplemental data (§34)"
+
+    steps:
+      - id: P28-S1
+        title: "Add reset values to all USART registers (Table 209)"
+        description: >
+          Locate Table 209 (USART register map) in the extracted
+          pages and add reset-value to every USART register using
+          P0-S1. Cross-check all offsets.
+        source-pages: [1097, 1098, 1099, 1100]
+        depends-on: [P0-S1, P0-S2]
+        concern: >
+          Table 209 covers USART1/2/3/4. Verify whether reset
+          values differ between the full-feature-set and
+          basic-feature-set instances, and if so how the spec
+          should represent them. File a schema extension if needed.
+        acceptance-criteria:
+          - All USART registers have reset-value.
+          - USART register-map section added.
+          - lint.sh passes.
+
+      - id: P28-S2
+        title: "Verify USART feature-set table (§34.4 / Table 200)"
+        description: >
+          Cross-check the existing feature-sets data in stm32u0.yml
+          against Table 200. One row per feature, three columns.
+          Note: Table 200 appears to start on page ~1018.
+        source-pages: [1018, 1019, 1020]
+        concern: >
+          Table 200 is a multi-row table; the converted markdown
+          may split or reformat rows. Read every row carefully.
+          Do not assume any row is correct without explicit
+          verification.
+        acceptance-criteria:
+          - Every row in Table 200 verified against spec.
+          - Discrepancies filed as child correction steps.
+
+      - id: P28-S3
+        title: "Verify USART instance feature-set assignments (§34.4 / Table 199)"
+        description: >
+          Cross-check usart.instances[*].feature-set in
+          stm32u0.yml against Table 199.
+        source-pages: [1017]
+        acceptance-criteria:
+          - All instance feature-set assignments verified.
+          - Discrepancies filed separately.
+
+  # ============================================================
+  # PHASE 29 – LPUART supplemental data (§35)
+  # Pages approximately 1101-1161
+  # (LPUART registers already in stm32u0.yml)
+  # ============================================================
+
+  - id: P29
+    title: "LPUART supplemental data (§35)"
+
+    steps:
+      - id: P29-S1
+        title: "Add reset values to all LPUART registers (Table 219)"
+        source-pages: [1161]
+        depends-on: [P0-S1, P0-S2]
+        concern: >
+          Table 219 (LPUART register map) must be carefully
+          cross-checked against the LPUART register sections
+          in stm32u0.yml. Some LPUART registers differ from
+          USART in field layout (e.g. BRR is 20-bit vs 16-bit).
+          Verify each register individually.
+        acceptance-criteria:
+          - All LPUART registers have reset-value.
+          - Offsets cross-checked; discrepancies filed separately.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 30 – SPI (§36)
+  # Pages approximately 1162-1197
+  # ============================================================
+
+  - id: P30
+    title: "SPI (§36)"
+
+    steps:
+      - id: P30-S1
+        title: "Add SPI peripheral skeletons (SPI1, SPI2, SPI3)"
+        description: >
+          SPI1 0x40013000: all sub-families.
+          SPI2 0x40003800: all sub-families.
+          SPI3 0x40003C00: stm32u073/u083 only (per features table).
+        source-pages: [1162, 1163, 1164]
+        acceptance-criteria:
+          - All three SPI entries added with correct sub-family
+            filtering on SPI3.
+          - spec validates.
+
+      - id: P30-S2
+        title: "Add SPI registers (enumeration from Table 222)"
+        source-pages: [1197]
+        depends-on: [P30-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all SPI registers.
+
+      - id: P30-S3
+        title: "Add SPI registers (child steps)"
+        depends-on: [P30-S2, P0-S1]
+        acceptance-criteria:
+          - All SPI registers added.
+          - lint.sh passes.
+
+      - id: P30-S4
+        title: "Add SPI interrupt-events (Table 221)"
+        source-pages: [1188]
+        depends-on: [P30-S1]
+        acceptance-criteria:
+          - SPI interrupt-events section complete.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 31 – USB (§37)
+  # Pages approximately 1198-1245
+  # stm32u073/u083 only
+  # ============================================================
+
+  - id: P31
+    title: "USB (§37)"
+    description: >
+      USB present only on stm32u073/u083.
+
+    steps:
+      - id: P31-S1
+        title: "Add USB peripheral skeleton"
+        description: >
+          USB base 0x40005C00; USBSRAM at a separate address.
+          Sub-families: [stm32u073, stm32u083].
+        source-pages: [1198, 1199, 1200]
+        concern: >
+          The USB peripheral has two address ranges in the
+          memory map: USB (0x40005C00-0x40005FFF) and
+          USB RAM1 (0x40009800-0x40009BFF). Confirm whether
+          these should be separate peripheral entries or one
+          peripheral with two instances. Do not assume without
+          developer guidance.
+        acceptance-criteria:
+          - Developer guidance on USB / USBSRAM split obtained.
+          - USB peripheral entry/entries added accordingly.
+          - spec validates.
+
+      - id: P31-S2
+        title: "Add USB registers (enumeration from Table 236)"
+        source-pages: [1239]
+        depends-on: [P31-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all USB registers.
+
+      - id: P31-S3
+        title: "Add USB registers (child steps)"
+        depends-on: [P31-S2, P0-S1]
+        acceptance-criteria:
+          - All USB registers added.
+          - lint.sh passes.
+
+      - id: P31-S4
+        title: "Add USBSRAM buffer descriptor registers (Table 238)"
+        source-pages: [1245]
+        depends-on: [P31-S1, P0-S1]
+        acceptance-criteria:
+          - USBSRAM buffer descriptor registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 32 – NVIC supplemental data (§11 / Table 55)
+  # ============================================================
+
+  - id: P32
+    title: "NVIC supplemental data"
+    description: >
+      The NVIC section in stm32u0.yml is already populated.
+      This phase verifies it against Table 55 and fills any gaps.
+
+    steps:
+      - id: P32-S1
+        title: "Verify NVIC vector table against Table 55"
+        description: >
+          Cross-check every nvic.vectors entry in stm32u0.yml
+          against Table 55. In particular: addresses, positions,
+          and sub-family filtering of sub-family-specific vectors
+          (e.g. position 8 USB, position 19 TIM15 vs
+          TIM15_LPTIM3).
+        source-pages: [330, 331, 332, 333, 334]
+        concern: >
+          Table 55 may span several pages. Verify that IRQ
+          positions 0-31 are all present and that no position
+          is missing due to a page break. The table has sub-family
+          columns; verify each column maps to the correct
+          sub-family identifier used in the spec.
+        acceptance-criteria:
+          - Every Table 55 row verified.
+          - Corrections each filed as individual atomic steps.
+
+  # ============================================================
+  # PHASE 33 – CRC (§19, if in ToC)
+  # ============================================================
+
+  - id: P33
+    title: "CRC (§19)"
+    description: >
+      CRC peripheral base 0x40023000. All sub-families.
+      ToC check: confirm CRC section and table number from
+      the extracted ToC pages before implementing.
+
+    steps:
+      - id: P33-S1
+        title: "Locate CRC chapter and register-map table in ToC"
+        description: >
+          Search the ToC (pages 2-36) for the CRC chapter
+          number and register-map table number.
+        source-pages: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+        acceptance-criteria:
+          - CRC chapter and register-map table number confirmed.
+          - If not found, escalate to developer.
+
+      - id: P33-S2
+        title: "Add CRC peripheral skeleton and registers"
+        depends-on: [P33-S1, P0-S1]
+        acceptance-criteria:
+          - CRC peripheral added with all registers.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 34 – LCD (§21, stm32u073/u083 only)
+  # ============================================================
+
+  - id: P34
+    title: "LCD controller (§21)"
+    description: >
+      LCD base 0x40002400. Sub-families: [stm32u073, stm32u083].
+
+    steps:
+      - id: P34-S1
+        title: "Add LCD peripheral skeleton"
+        source-pages: []
+        acceptance-criteria:
+          - LCD peripheral entry added with sub-family filter.
+          - spec validates.
+
+      - id: P34-S2
+        title: "Add LCD registers (enumeration and child steps)"
+        depends-on: [P34-S1, P0-S1]
+        acceptance-criteria:
+          - All LCD registers added.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 35 – Debug support (§38) – ohal-relevant subset
+  # Pages approximately 1246-1315
+  # ============================================================
+
+  - id: P35
+    title: "Debug support (§38) – ohal-relevant subset"
+    description: >
+      Only the DBGMCU registers and peripheral-clock-freeze
+      data are relevant to ohal. SW-DP, AP, ROM-table, DWT,
+      BPU, and SCS are Cortex-M architecture generic and are
+      expected to be captured in the cortex-m0plus.yml arch
+      spec, not the STM32U0 family spec.
+
+    steps:
+      - id: P35-S1
+        title: "Add DBGMCU peripheral skeleton"
+        description: >
+          Base 0x40015800. All sub-families.
+        source-pages: [1303]
+        acceptance-criteria:
+          - DBGMCU peripheral entry added.
+          - spec validates.
+
+      - id: P35-S2
+        title: "Add DBGMCU registers (enumeration from Table 260)"
+        source-pages: [1314, 1315]
+        depends-on: [P35-S1]
+        acceptance-criteria:
+          - Child steps enumerated for all DBGMCU registers.
+
+      - id: P35-S3
+        title: "Add DBGMCU registers (child steps)"
+        depends-on: [P35-S2, P0-S1]
+        acceptance-criteria:
+          - All DBGMCU registers added.
+          - lint.sh passes.
+
+      - id: P35-S4
+        title: "Add peripheral clock-freeze table (Table 258)"
+        description: >
+          Table 258 lists which peripheral clocks can be frozen
+          in debug mode and via which DBGMCU bit. This is
+          structured spec data ohal can use to generate debug
+          configuration. File a schema extension if no structured
+          home exists yet.
+        source-pages: [1304, 1305]
+        concern: >
+          Table 258 may span pages 1304-1305. Read both pages
+          completely before implementing. Column structure must
+          be confirmed before a schema extension is designed.
+        acceptance-criteria:
+          - Table 258 structure confirmed.
+          - Schema extension filed and implemented if needed.
+          - Clock-freeze data added.
+
+  # ============================================================
+  # PHASE 36 – Device electronic signature (§39)
+  # Pages approximately 1317-1319
+  # ============================================================
+
+  - id: P36
+    title: "Device electronic signature (§39)"
+
+    steps:
+      - id: P36-S1
+        title: "Add device-signature structured section"
+        description: >
+          §39 documents the unique device ID register (96-bit,
+          three 32-bit words), flash-size register, and package-
+          data register. These are formal spec data needed by
+          ohal for device identification. File a schema extension
+          to add a `device-signature` top-level object if one
+          does not yet exist.
+        source-pages: [1317, 1318, 1319]
+        concern: >
+          The register addresses for UID/flash-size/package
+          registers are in the information block, not in the
+          main peripheral map. Confirm their addresses from the
+          extracted pages before implementing.
+        acceptance-criteria:
+          - Schema extension filed and implemented.
+          - device-signature section added to stm32u0.yml with
+            UID, flash-size, and package-data register addresses
+            and field layouts.
+          - lint.sh passes.
+
+  # ============================================================
+  # PHASE 37 – Cortex-M0+ architecture spec
+  # (docs/specs/common/arch/cortex-m0plus.yml)
+  # ============================================================
+
+  - id: P37
+    title: "Cortex-M0+ architecture spec (cross-cutting)"
+    description: >
+      Several chapters of RM0503 document the Cortex-M0+
+      internal peripherals. These belong in
+      docs/specs/common/arch/cortex-m0plus.yml, not in the
+      STM32U0 family spec, because they are architecture-generic
+      and will be shared by other families referencing
+      cortex-m0plus. This phase is a separate planning task,
+      not part of the stm32u0.yml updates.
+
+    steps:
+      - id: P37-S1
+        title: "Create cortex-m0plus architecture spec skeleton"
+        description: >
+          Create docs/specs/common/arch/cortex-m0plus.yml with
+          metadata (arch name, word-size, reference: ARMv6-M
+          Architecture Reference Manual). The stm32u0.yml
+          already sets arch-ref: cortex-m0plus; confirm the
+          arch spec file location is consistent with that
+          reference.
+        source-pages: []
+        acceptance-criteria:
+          - cortex-m0plus.yml created and validates against schema.
+          - File path matches arch-ref convention.
+
+      - id: P37-S2
+        title: "Plan SysTick, NVIC, SCB sections for arch spec"
+        description: >
+          These Cortex-M0+ internal blocks (SysTick, NVIC,
+          SCB from §38.8, BPU from §38.7, DWT from §38.6)
+          should be documented in the arch spec. Create a
+          separate plan document for the arch spec population.
+        source-pages:
+          [
+            1266,
+            1267,
+            1268,
+            1269,
+            1270,
+            1271,
+            1272,
+            1273,
+            1274,
+            1275,
+            1276,
+            1277,
+            1278,
+            1279,
+            1280,
+            1281,
+            1282,
+            1283,
+            1284,
+            1285,
+            1286,
+            1287,
+            1288,
+            1289,
+            1290,
+            1291,
+            1292,
+            1293,
+            1294,
+            1295,
+            1296,
+            1297,
+            1298,
+            1299,
+            1300,
+            1301,
+            1302,
+          ]
+        acceptance-criteria:
+          - Separate arch-spec plan document created.
+          - Sections identified; not duplicated in stm32u0.yml.
+
+  # ============================================================
+  # PHASE 38 – Final validation
+  # ============================================================
+
+  - id: P38
+    title: "Final validation"
+
+    steps:
+      - id: P38-S1
+        title: "Full lint.sh run against completed spec"
+        description: >
+          Run bash lint.sh from repo root (after removing build/)
+          and confirm zero failures.
+        acceptance-criteria:
+          - lint.sh exits 0.
+          - No YAML schema validation errors.
+          - No clang-format/tidy/cmake-lint/prettier/markdownlint
+            failures.
+
+      - id: P38-S2
+        title: "Cross-check every peripheral instance base against Table 4"
+        description: >
+          Perform a final sweep comparing every peripheral
+          instance base address in stm32u0.yml against
+          Table 4 (peripheral register boundary addresses).
+        source-pages: [58, 59]
+        acceptance-criteria:
+          - No discrepancies remain; any found produce correction
+            steps.
+
+      - id: P38-S3
+        title: "Review all concern flags and escalation items"
+        description: >
+          Review every `concern:` field in this plan document.
+          Each must be either resolved (with a reference to the
+          step that resolved it) or explicitly accepted as
+          deferred with developer sign-off.
+        acceptance-criteria:
+          - Zero open concerns remain unresolved or undeferred.
+
+# ============================================================
+# Open concerns requiring developer guidance
+# (collected here for visibility; each is also inline above)
+# ============================================================
+
+open-concerns:
+  - id: OC-1
+    step: P0-S7
+    description: >
+      Alternate function (AF) pin-to-signal mapping tables are
+      in the device datasheet (DS13565/DS13566 for STM32U0),
+      not in RM0503. Confirm whether AF mapping should be sourced
+      from a separate datasheet extraction plan or deferred.
+
+  - id: OC-2
+    step: P3-S16
+    description: >
+      FLASH wait-state table (Table 9) column structure: it may
+      include voltage-range columns in addition to HCLK frequency
+      ranges. Confirm column layout from page ~67 of the
+      extracted pages before designing the schema extension.
+
+  - id: OC-3
+    step: P4-S2
+    description: >
+      Low-power mode summary tables (Tables 21-30) are spread
+      across multiple pages (~115-131). The schema currently has
+      no structured home for a cross-peripheral low-power mode
+      table. Confirm the intended schema location before
+      implementing.
+
+  - id: OC-4
+    step: P7-S1
+    description: >
+      GPIO register reset values in Table 41 may differ by
+      sub-family (e.g. MODER reset value differs between ports
+      due to debug pin reservations). If so, the schema needs
+      a reset-value-by-sub-family capability. Confirm from the
+      extracted table before implementing.
+
+  - id: OC-5
+    step: P9-S6
+    description: >
+      DMAMUX Table 49 maps request numbers to peripheral signals.
+      If any row is ambiguous or spans a page break in the
+      extracted markdown, it must not be assumed; escalate.
+
+  - id: OC-6
+    step: P28-S1
+    description: >
+      USART register reset values in Table 209 may differ between
+      full-feature-set (USART1/2) and basic-feature-set (USART3/4)
+      instances, because some registers (GTPR, RTOR) do not
+      exist in the basic tier. Confirm whether the schema needs
+      a per-instance register-exclusion mechanism.
+
+  - id: OC-7
+    step: P31-S1
+    description: >
+      USB peripheral address map: the memory map has separate
+      entries for USB (0x40005C00) and USB RAM1 (0x40009800).
+      Clarify whether these should be one peripheral with two
+      regions or two separate peripheral entries in the spec.
+
+  - id: OC-8
+    step: P35-S4
+    description: >
+      DBGMCU Table 258 (peripheral clock freeze) may have a
+      complex column structure. Confirm before designing the
+      schema extension.
+
+  - id: OC-9
+    step: P36-S1
+    description: >
+      Device-signature register addresses (UID, flash size,
+      package) are in the MCU information block; their exact
+      addresses must be read from §39 of the extracted pages
+      before implementing. Do not use assumed addresses.
+
+  - id: OC-10
+    status: resolved
+    resolved-by: "Table 16 confirmed as 'WRP protection' on page 83 (§3.5.2). Added to
+      the Table of Tables in claude/rm0503/page_0037.md between Table 15 (page 80) and
+      Table 17 (page 84). Table 16 is FLASH-peripheral-specific; it is referenced by
+      P3-S9 (FLASH_WRP1AR) and P3-S10 (FLASH_WRP1BR) as the normative description of
+      WRP register value semantics."
+    step: P7-S1
