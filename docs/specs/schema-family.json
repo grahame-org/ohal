@@ -147,6 +147,10 @@
     "gpio-exti": {
       "description": "GPIO external interrupt and wake-up line capability metadata.",
       "$ref": "#/$defs/gpio-exti"
+    },
+    "boot": {
+      "description": "Boot-mode configuration table (e.g. Table 6 in RM0503). Lists the available boot modes and the pin states that select them.",
+      "$ref": "#/$defs/boot"
     }
   },
   "$defs": {
@@ -880,6 +884,44 @@
           "description": "GPIO modes in which external interrupt capability is not supported.",
           "type": "array",
           "items": { "type": "string" }
+        }
+      }
+    },
+    "boot": {
+      "description": "Boot-mode configuration block. Captures the boot-mode selection table from the reference manual (e.g. RM0503 Table 6).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "references": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the boot-mode table as a whole.",
+          "type": "string"
+        },
+        "modes": {
+          "description": "List of boot modes supported by the device family.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/boot-mode" },
+          "minItems": 1
+        }
+      }
+    },
+    "boot-mode": {
+      "description": "A single entry in the boot-mode selection table.",
+      "type": "object",
+      "required": ["name", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Short identifier for this boot mode, e.g. 'main-flash', 'system-memory', 'sram'.",
+          "type": "string"
+        },
+        "boot-pin-state": {
+          "description": "Required state of the BOOT pin (or equivalent signal) to select this mode, e.g. '0', '1', or a free-text description.",
+          "type": ["string", "integer"]
+        },
+        "source": {
+          "description": "Human-readable description of the boot memory source for this mode, e.g. 'Main Flash memory', 'System memory (bootloader)', 'Embedded SRAM'.",
+          "type": "string"
         }
       }
     },
