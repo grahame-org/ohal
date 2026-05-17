@@ -890,6 +890,7 @@
     "boot": {
       "description": "Boot-mode configuration block. Captures the boot-mode selection table from the reference manual (e.g. RM0503 Table 6).",
       "type": "object",
+      "required": ["modes"],
       "additionalProperties": false,
       "properties": {
         "references": { "$ref": "#/$defs/references" },
