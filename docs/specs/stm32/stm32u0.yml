@@ -20,9 +20,9 @@ reference:
 
 memory:
   references:
-    sections: [2.2.2]
+    sections: [2.2.2, 2.3]
     figures: [2]
-    tables: [2, 3, 4]
+    tables: [2, 3, 4, 5]
   map:
     - name: block 0
       sub-families: [stm32u031, stm32u073, stm32u083]
@@ -84,22 +84,30 @@ memory:
       sub-families: [stm32u031, stm32u073, stm32u083]
       start: 0x20000000
       end: 0x3FFFFFFF
-    - name: SRAM
+    - name: SRAM1
       sub-families: [stm32u031]
       start: 0x20000000
+      end: 0x20001FFF
+    - name: SRAM2
+      sub-families: [stm32u031]
+      start: 0x20002000
       end: 0x20002FFF
     - name: reserved
       sub-families: [stm32u031]
       start: 0x20003000
       end: 0x20009FFF
-      verified: false
       note: >-
-        Table 3 of RM0503 does not document this address range: stm32u031 SRAM ends at
-        0x20002FFF and the next listed region starts at 0x2000A000, leaving this gap unlabelled.
-        Assumed reserved until a citable reference is located.
-    - name: SRAM
+        Table 5 of RM0503 confirms STM32U031xx SRAM totals 12 Kbytes (SRAM1: 8 Kbytes,
+        SRAM2: 4 Kbytes), ending at 0x20002FFF. The next region listed in Table 3 starts
+        at 0x2000A000, leaving this address range undocumented in the reference manual.
+        Treated as reserved.
+    - name: SRAM1
       sub-families: [stm32u073, stm32u083]
       start: 0x20000000
+      end: 0x20007FFF
+    - name: SRAM2
+      sub-families: [stm32u073, stm32u083]
+      start: 0x20008000
       end: 0x20009FFF
     - name: reserved
       sub-families: [stm32u031, stm32u073, stm32u083]
