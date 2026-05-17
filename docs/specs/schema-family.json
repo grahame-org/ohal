@@ -477,7 +477,7 @@
           "$ref": "#/$defs/peripheral-interrupt-events"
         },
         "clock-sources": {
-          "description": "Optional list of clock sources that can drive this peripheral, as documented in the RCC chapter of the reference manual. Used by ohal to emit correct clock-enable sequences.",
+          "description": "Optional list of clock sources that can drive this peripheral, as documented in the clock-controller chapter of the reference manual.",
           "type": "array",
           "items": { "$ref": "#/$defs/clock-source-item" },
           "minItems": 1
@@ -553,7 +553,7 @@
       "additionalProperties": { "$ref": "#/$defs/peripheral" }
     },
     "clock-source-item": {
-      "description": "A single clock source that can drive a peripheral, as documented in the RCC chapter of the reference manual.",
+      "description": "A single clock source that can drive a peripheral, as documented in the clock-controller chapter of the reference manual.",
       "type": "object",
       "required": ["name", "bus", "enable-bit"],
       "additionalProperties": false,
@@ -563,11 +563,11 @@
           "type": "string"
         },
         "bus": {
-          "description": "Bus or clock domain this source belongs to, e.g. 'APB1', 'APB2', 'AHB', 'RCC'.",
+          "description": "Bus or clock domain this source belongs to, e.g. 'APB1', 'APB2', 'AHB'.",
           "type": "string"
         },
         "enable-bit": {
-          "description": "Name of the RCC enable bit that gates this clock for the peripheral, e.g. 'USART1EN', 'TIM2EN'.",
+          "description": "Name of the clock-gating bit that enables this clock source for the peripheral, e.g. 'USART1EN', 'TIM2EN'.",
           "type": "string"
         }
       }
