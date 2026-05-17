@@ -65,7 +65,6 @@ meta:
 # Must be completed before any downstream phase that uses them.
 # ============================================================
 phases:
-
   - id: P0
     title: Schema extensions
     description: >
@@ -76,7 +75,6 @@ phases:
       next step.
 
     steps:
-
       - id: P0-S1
         title: "Schema: add reset-value to register definition"
         description: >
@@ -217,7 +215,6 @@ phases:
       peripheral registers.
 
     steps:
-
       - id: P1-S1
         title: "Verify register-access abbreviation set (§1.2)"
         description: >
@@ -258,7 +255,6 @@ phases:
     title: "Memory and bus architecture (§2)"
 
     steps:
-
       - id: P2-S1
         title: "Verify memory map against §2.2.2 / Tables 2, 3, 4"
         description: >
@@ -323,7 +319,6 @@ phases:
       configuration and option-byte management.
 
     steps:
-
       - id: P3-S1
         title: "Add FLASH peripheral skeleton to stm32u0.yml"
         description: >
@@ -450,9 +445,7 @@ phases:
           check every previously added register offset/reset-value
           against Table 19.
         source-pages: [102, 103]
-        depends-on: [P3-S2, P3-S3, P3-S4, P3-S5, P3-S6, P3-S7,
-                     P3-S8, P3-S9, P3-S10, P3-S11, P3-S12,
-                     P3-S13, P0-S2]
+        depends-on: [P3-S2, P3-S3, P3-S4, P3-S5, P3-S6, P3-S7, P3-S8, P3-S9, P3-S10, P3-S11, P3-S12, P3-S13, P0-S2]
         acceptance-criteria:
           - FLASH register-map section matches Table 19 completely.
           - Any offset/reset-value discrepancy produces a separate
@@ -499,7 +492,6 @@ phases:
     title: "Power control (PWR) (§4)"
 
     steps:
-
       - id: P4-S1
         title: "Add PWR peripheral skeleton"
         description: >
@@ -534,8 +526,7 @@ phases:
           the last page of the previous register, verify the
           boundary carefully. Use Table 31 (register map) to
           verify offsets and reset values.
-        source-pages: [133, 134, 135, 136, 137, 138, 139, 140,
-                       141, 142, 143, 144, 145, 146, 147, 148]
+        source-pages: [133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148]
         depends-on: [P4-S1, P0-S1]
         note: >
           PWR registers are split into individual atomic sub-steps
@@ -568,7 +559,6 @@ phases:
     title: "Reset and clock control (RCC) (§5)"
 
     steps:
-
       - id: P5-S1
         title: "Add RCC peripheral skeleton"
         description: >
@@ -641,7 +631,6 @@ phases:
       CRS is present only on stm32u073 and stm32u083.
 
     steps:
-
       - id: P6-S1
         title: "Add CRS peripheral skeleton"
         description: >
@@ -686,7 +675,6 @@ phases:
       register-map verification, and port-bit configuration.
 
     steps:
-
       - id: P7-S1
         title: "Add reset values to all GPIO registers (§7.4 / Table 41)"
         description: >
@@ -734,7 +722,6 @@ phases:
     title: "SYSCFG (§8)"
 
     steps:
-
       - id: P8-S1
         title: "Add SYSCFG peripheral skeleton"
         description: >
@@ -771,7 +758,6 @@ phases:
     title: "DMA and DMAMUX (§9, §10)"
 
     steps:
-
       - id: P9-S1
         title: "Add DMA1 and DMA2 peripheral skeletons"
         description: >
@@ -858,7 +844,6 @@ phases:
       absent or incomplete.
 
     steps:
-
       - id: P10-S1
         title: "Verify EXTI line table against §11 / Table 59"
         description: >
@@ -880,8 +865,7 @@ phases:
           Base 0x40021800. Add EXTI as a peripheral with its
           register set (IMR1, EMR1, RTSR1, FTSR1, SWIER1,
           RPR1, FPR1, EXTICR1-4, and extended registers if any).
-        source-pages: [335, 336, 337, 338, 339, 340, 341, 342,
-                       343, 344, 345, 346, 347, 348]
+        source-pages: [335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348]
         acceptance-criteria:
           - EXTI peripheral added with all registers and
             correct fields.
@@ -896,7 +880,6 @@ phases:
     title: "ADC (§12)"
 
     steps:
-
       - id: P11-S1
         title: "Add ADC peripheral skeleton"
         description: >
@@ -941,7 +924,6 @@ phases:
     title: "DAC (§13)"
 
     steps:
-
       - id: P12-S1
         title: "Add DAC peripheral skeleton"
         description: >
@@ -982,7 +964,6 @@ phases:
     title: "Comparator (COMP) (§14)"
 
     steps:
-
       - id: P13-S1
         title: "Add COMP peripheral skeleton"
         description: >
@@ -1011,7 +992,6 @@ phases:
     title: "OPAMP (§15)"
 
     steps:
-
       - id: P14-S1
         title: "Add OPAMP peripheral skeleton"
         description: >
@@ -1038,7 +1018,6 @@ phases:
     title: "Touch sensing controller (TSC) (§16)"
 
     steps:
-
       - id: P15-S1
         title: "Add TSC peripheral skeleton"
         description: >
@@ -1050,8 +1029,7 @@ phases:
 
       - id: P15-S2
         title: "Add TSC registers (enumeration and child steps)"
-        source-pages: [620, 621, 622, 623, 624, 625, 626, 627,
-                       628, 629]
+        source-pages: [620, 621, 622, 623, 624, 625, 626, 627, 628, 629]
         depends-on: [P15-S1, P0-S1]
         acceptance-criteria:
           - All TSC registers added.
@@ -1066,7 +1044,6 @@ phases:
     title: "Random number generator (RNG) (§17)"
 
     steps:
-
       - id: P16-S1
         title: "Add RNG peripheral skeleton"
         description: >
@@ -1103,7 +1080,6 @@ phases:
       AES present only on stm32u083 per features table.
 
     steps:
-
       - id: P17-S1
         title: "Add AES peripheral skeleton"
         description: >
@@ -1115,8 +1091,7 @@ phases:
 
       - id: P17-S2
         title: "Add AES registers (enumeration and child steps)"
-        source-pages: [712, 713, 714, 715, 716, 717, 718, 719,
-                       720]
+        source-pages: [712, 713, 714, 715, 716, 717, 718, 719, 720]
         depends-on: [P17-S1, P0-S1]
         acceptance-criteria:
           - All AES registers added.
@@ -1140,7 +1115,6 @@ phases:
     title: "TIM1 supplemental data (§23)"
 
     steps:
-
       - id: P18-S1
         title: "Add reset values to all TIM1 registers (Table 133)"
         description: >
@@ -1174,7 +1148,6 @@ phases:
     title: "TIM2/TIM3 supplemental data (§24)"
 
     steps:
-
       - id: P19-S1
         title: "Add reset values to all TIM2/TIM3 registers"
         description: >
@@ -1196,7 +1169,6 @@ phases:
     title: "TIM6/TIM7 supplemental data (§25)"
 
     steps:
-
       - id: P20-S1
         title: "Add reset values to all TIM6/TIM7 registers (Table 141)"
         source-pages: [740, 741, 742]
@@ -1214,7 +1186,6 @@ phases:
     title: "TIM15/TIM16 supplemental data (§26)"
 
     steps:
-
       - id: P21-S1
         title: "Add reset values to all TIM15 registers"
         description: >
@@ -1245,7 +1216,6 @@ phases:
     title: "LPTIM supplemental data (§27)"
 
     steps:
-
       - id: P22-S1
         title: "Add reset values to all LPTIM registers"
         description: >
@@ -1272,7 +1242,6 @@ phases:
     title: "Independent watchdog (IWDG) (§29)"
 
     steps:
-
       - id: P23-S1
         title: "Add IWDG peripheral skeleton"
         description: >
@@ -1313,7 +1282,6 @@ phases:
     title: "Window watchdog (WWDG) (§30)"
 
     steps:
-
       - id: P24-S1
         title: "Add WWDG peripheral skeleton"
         description: >
@@ -1346,7 +1314,6 @@ phases:
     title: "Real-time clock (RTC) (§31)"
 
     steps:
-
       - id: P25-S1
         title: "Add RTC peripheral skeleton"
         description: >
@@ -1387,7 +1354,6 @@ phases:
     title: "Tamper and backup registers (TAMP) (§32)"
 
     steps:
-
       - id: P26-S1
         title: "Add TAMP peripheral skeleton"
         description: >
@@ -1429,7 +1395,6 @@ phases:
     title: "I2C (§33)"
 
     steps:
-
       - id: P27-S1
         title: "Add I2C peripheral skeletons (I2C1–I2C4)"
         description: >
@@ -1473,7 +1438,6 @@ phases:
     title: "USART supplemental data (§34)"
 
     steps:
-
       - id: P28-S1
         title: "Add reset values to all USART registers (Table 209)"
         description: >
@@ -1528,7 +1492,6 @@ phases:
     title: "LPUART supplemental data (§35)"
 
     steps:
-
       - id: P29-S1
         title: "Add reset values to all LPUART registers (Table 219)"
         source-pages: [1161]
@@ -1553,7 +1516,6 @@ phases:
     title: "SPI (§36)"
 
     steps:
-
       - id: P30-S1
         title: "Add SPI peripheral skeletons (SPI1, SPI2, SPI3)"
         description: >
@@ -1600,7 +1562,6 @@ phases:
       USB present only on stm32u073/u083.
 
     steps:
-
       - id: P31-S1
         title: "Add USB peripheral skeleton"
         description: >
@@ -1652,7 +1613,6 @@ phases:
       This phase verifies it against Table 55 and fills any gaps.
 
     steps:
-
       - id: P32-S1
         title: "Verify NVIC vector table against Table 55"
         description: >
@@ -1684,7 +1644,6 @@ phases:
       the extracted ToC pages before implementing.
 
     steps:
-
       - id: P33-S1
         title: "Locate CRC chapter and register-map table in ToC"
         description: >
@@ -1712,7 +1671,6 @@ phases:
       LCD base 0x40002400. Sub-families: [stm32u073, stm32u083].
 
     steps:
-
       - id: P34-S1
         title: "Add LCD peripheral skeleton"
         source-pages: []
@@ -1742,7 +1700,6 @@ phases:
       spec, not the STM32U0 family spec.
 
     steps:
-
       - id: P35-S1
         title: "Add DBGMCU peripheral skeleton"
         description: >
@@ -1793,7 +1750,6 @@ phases:
     title: "Device electronic signature (§39)"
 
     steps:
-
       - id: P36-S1
         title: "Add device-signature structured section"
         description: >
@@ -1833,7 +1789,6 @@ phases:
       not part of the stm32u0.yml updates.
 
     steps:
-
       - id: P37-S1
         title: "Create cortex-m0plus architecture spec skeleton"
         description: >
@@ -1855,13 +1810,46 @@ phases:
           SCB from §38.8, BPU from §38.7, DWT from §38.6)
           should be documented in the arch spec. Create a
           separate plan document for the arch spec population.
-        source-pages: [1266, 1267, 1268, 1269, 1270, 1271,
-                       1272, 1273, 1274, 1275, 1276, 1277,
-                       1278, 1279, 1280, 1281, 1282, 1283,
-                       1284, 1285, 1286, 1287, 1288, 1289,
-                       1290, 1291, 1292, 1293, 1294, 1295,
-                       1296, 1297, 1298, 1299, 1300, 1301,
-                       1302]
+        source-pages:
+          [
+            1266,
+            1267,
+            1268,
+            1269,
+            1270,
+            1271,
+            1272,
+            1273,
+            1274,
+            1275,
+            1276,
+            1277,
+            1278,
+            1279,
+            1280,
+            1281,
+            1282,
+            1283,
+            1284,
+            1285,
+            1286,
+            1287,
+            1288,
+            1289,
+            1290,
+            1291,
+            1292,
+            1293,
+            1294,
+            1295,
+            1296,
+            1297,
+            1298,
+            1299,
+            1300,
+            1301,
+            1302,
+          ]
         acceptance-criteria:
           - Separate arch-spec plan document created.
           - Sections identified; not duplicated in stm32u0.yml.
@@ -1874,7 +1862,6 @@ phases:
     title: "Final validation"
 
     steps:
-
       - id: P38-S1
         title: "Full lint.sh run against completed spec"
         description: >
@@ -1913,7 +1900,6 @@ phases:
 # ============================================================
 
 open-concerns:
-
   - id: OC-1
     step: P0-S7
     description: >

@@ -20,7 +20,6 @@
   },
 
   "$defs": {
-
     "step-id": {
       "description": "Identifier for a plan step. Base steps: P<n>-S<n>. Sub-steps append a lowercase letter suffix: P<n>-S<n>a.",
       "type": "string",
@@ -70,10 +69,7 @@
       "properties": {
         "current": {
           "description": "The step id that should be worked on right now, or 'complete' when all steps are done.",
-          "oneOf": [
-            { "$ref": "#/$defs/step-id" },
-            { "type": "string", "const": "complete" }
-          ]
+          "oneOf": [{ "$ref": "#/$defs/step-id" }, { "type": "string", "const": "complete" }]
         },
         "history": {
           "description": "Ordered list of accepted steps, oldest first.",
@@ -254,6 +250,5 @@
         "required": ["description"]
       }
     }
-
   }
 }
