@@ -5895,12 +5895,6 @@ peripherals:
                 settings:
                   "0000": TIM1_CH1 input
                   "0001": COMP1 output
-              - name: PRESCALER
-                msb: 3
-                lsb: 0
-                width: 4
-                access: rw
-                settings: *uart-prescaler
   - tim2:
       reference:
         sections: [24.4]
