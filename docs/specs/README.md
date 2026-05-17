@@ -276,7 +276,7 @@ register write, the hardware applies only one of them. Document this with `prior
   msb: 0
   lsb: 0
   width: 1
-  access: wo
+  access: w
   priority-over: [BR0]  # if both BS0=1 and BR0=1 are written, BS0's effect wins
   settings: *bsrr-bs
 ```

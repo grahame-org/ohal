@@ -1,4 +1,4 @@
-spec-version: "1.1.1"
+spec-version: "1.2.0"
 
 vendor: STMicroelectronics
 
@@ -1283,97 +1283,97 @@ peripherals:
                 msb: 15
                 lsb: 15
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID14
                 msb: 14
                 lsb: 14
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID13
                 msb: 13
                 lsb: 13
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID12
                 msb: 12
                 lsb: 12
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID11
                 msb: 11
                 lsb: 11
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID10
                 msb: 10
                 lsb: 10
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID9
                 msb: 9
                 lsb: 9
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID8
                 msb: 8
                 lsb: 8
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID7
                 msb: 7
                 lsb: 7
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID6
                 msb: 6
                 lsb: 6
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID5
                 msb: 5
                 lsb: 5
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID4
                 msb: 4
                 lsb: 4
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID3
                 msb: 3
                 lsb: 3
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID2
                 msb: 2
                 lsb: 2
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID1
                 msb: 1
                 lsb: 1
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
               - name: ID0
                 msb: 0
                 lsb: 0
                 width: 1
-                access: ro
+                access: r
                 settings: *bit-value
         - ODR:
             reference:
@@ -1491,208 +1491,208 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR14
                 msb: 30
                 lsb: 30
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR13
                 msb: 29
                 lsb: 29
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR12
                 msb: 28
                 lsb: 28
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR11
                 msb: 27
                 lsb: 27
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR10
                 msb: 26
                 lsb: 26
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR9
                 msb: 25
                 lsb: 25
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR8
                 msb: 24
                 lsb: 24
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR7
                 msb: 23
                 lsb: 23
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR6
                 msb: 22
                 lsb: 22
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR5
                 msb: 21
                 lsb: 21
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR4
                 msb: 20
                 lsb: 20
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR3
                 msb: 19
                 lsb: 19
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR2
                 msb: 18
                 lsb: 18
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR1
                 msb: 17
                 lsb: 17
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BR0
                 msb: 16
                 lsb: 16
                 width: 1
-                access: wo
+                access: w
                 settings: *bsrr-br
               - name: BS15
                 msb: 15
                 lsb: 15
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR15]
                 settings: *bsrr-bs
               - name: BS14
                 msb: 14
                 lsb: 14
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR14]
                 settings: *bsrr-bs
               - name: BS13
                 msb: 13
                 lsb: 13
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR13]
                 settings: *bsrr-bs
               - name: BS12
                 msb: 12
                 lsb: 12
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR12]
                 settings: *bsrr-bs
               - name: BS11
                 msb: 11
                 lsb: 11
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR11]
                 settings: *bsrr-bs
               - name: BS10
                 msb: 10
                 lsb: 10
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR10]
                 settings: *bsrr-bs
               - name: BS9
                 msb: 9
                 lsb: 9
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR9]
                 settings: *bsrr-bs
               - name: BS8
                 msb: 8
                 lsb: 8
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR8]
                 settings: *bsrr-bs
               - name: BS7
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR7]
                 settings: *bsrr-bs
               - name: BS6
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR6]
                 settings: *bsrr-bs
               - name: BS5
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR5]
                 settings: *bsrr-bs
               - name: BS4
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR4]
                 settings: *bsrr-bs
               - name: BS3
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR3]
                 settings: *bsrr-bs
               - name: BS2
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR2]
                 settings: *bsrr-bs
               - name: BS1
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR1]
                 settings: *bsrr-bs
               - name: BS0
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 priority-over: [BR0]
                 settings: *bsrr-bs
         - LCKR:
@@ -1962,97 +1962,97 @@ peripherals:
                 msb: 15
                 lsb: 15
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR14
                 msb: 14
                 lsb: 14
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR13
                 msb: 13
                 lsb: 13
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR12
                 msb: 12
                 lsb: 12
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR11
                 msb: 11
                 lsb: 11
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR10
                 msb: 10
                 lsb: 10
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR9
                 msb: 9
                 lsb: 9
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR8
                 msb: 8
                 lsb: 8
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR7
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR6
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR5
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR4
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR3
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR2
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR1
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
               - name: BR0
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings: *brr
   - usart:
       reference:
@@ -2751,32 +2751,32 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 note: FIFO mode only
                 settings: *uart-request
               - name: RXFRQ
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
               - name: MMRQ
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
               - name: SBKRQ
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
               - name: ABRRQ
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
         - ISR:
             reference:
@@ -2797,7 +2797,7 @@ peripherals:
                 msb: 27
                 lsb: 27
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": TXFIFO above configured threshold
                   "1": TXFIFO at or below configured threshold (FIFO mode only)
@@ -2805,7 +2805,7 @@ peripherals:
                 msb: 26
                 lsb: 26
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": RXFIFO below configured threshold
                   "1": RXFIFO at or above configured threshold (FIFO mode only)
@@ -2813,7 +2813,7 @@ peripherals:
                 msb: 25
                 lsb: 25
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No transmission complete before guard time event
                   "1": Transmission complete before guard time (smartcard mode)
@@ -2821,7 +2821,7 @@ peripherals:
                 msb: 24
                 lsb: 24
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": RXFIFO not full
                   "1": RXFIFO full (FIFO mode only)
@@ -2829,7 +2829,7 @@ peripherals:
                 msb: 23
                 lsb: 23
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": TXFIFO not empty
                   "1": TXFIFO empty (FIFO mode only)
@@ -2837,7 +2837,7 @@ peripherals:
                 msb: 22
                 lsb: 22
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Receive not yet enabled or acknowledgement pending
                   "1": Receive enabled and acknowledged by hardware
@@ -2845,7 +2845,7 @@ peripherals:
                 msb: 21
                 lsb: 21
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Transmit not yet enabled or acknowledgement pending
                   "1": Transmit enabled and acknowledged by hardware
@@ -2853,7 +2853,7 @@ peripherals:
                 msb: 20
                 lsb: 20
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No wake-up event
                   "1": Wake-up event detected from low-power mode
@@ -2861,19 +2861,19 @@ peripherals:
                 msb: 19
                 lsb: 19
                 width: 1
-                access: ro
+                access: r
                 settings: *uart-rwu
               - name: SBKF
                 msb: 18
                 lsb: 18
                 width: 1
-                access: ro
+                access: r
                 settings: *uart-sbkf
               - name: CMF
                 msb: 17
                 lsb: 17
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No character match
                   "1": Character match detected
@@ -2881,7 +2881,7 @@ peripherals:
                 msb: 16
                 lsb: 16
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": USART is idle
                   "1": Receive or transmit in progress
@@ -2889,7 +2889,7 @@ peripherals:
                 msb: 15
                 lsb: 15
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Auto baud rate not yet complete
                   "1": Auto baud rate sequence complete
@@ -2897,7 +2897,7 @@ peripherals:
                 msb: 14
                 lsb: 14
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No auto baud rate error
                   "1": Auto baud rate error detected
@@ -2905,7 +2905,7 @@ peripherals:
                 msb: 13
                 lsb: 13
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No SPI slave underrun error
                   "1": SPI slave underrun error detected
@@ -2913,7 +2913,7 @@ peripherals:
                 msb: 12
                 lsb: 12
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No end of block
                   "1": End of block detected (smartcard mode)
@@ -2921,7 +2921,7 @@ peripherals:
                 msb: 11
                 lsb: 11
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No receiver timeout
                   "1": Receiver timeout elapsed
@@ -2929,13 +2929,13 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: ro
+                access: r
                 settings: *uart-cts-line
               - name: CTSIF
                 msb: 9
                 lsb: 9
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No CTS change
                   "1": CTS line change detected
@@ -2943,7 +2943,7 @@ peripherals:
                 msb: 8
                 lsb: 8
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No LIN break detected
                   "1": LIN break detected
@@ -2951,7 +2951,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: ro
+                access: r
                 note: TXE in non-FIFO mode
                 settings:
                   "0": TXFIFO full (FIFO mode) or TX register not empty (non-FIFO mode)
@@ -2960,7 +2960,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Transmission not complete
                   "1": Transmission complete
@@ -2968,7 +2968,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: ro
+                access: r
                 note: RXNE in non-FIFO mode
                 settings:
                   "0": RXFIFO empty (FIFO mode) or RX register empty (non-FIFO mode)
@@ -2977,7 +2977,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No idle line detected
                   "1": Idle line detected
@@ -2985,7 +2985,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No overrun error
                   "1": Overrun error detected
@@ -2993,7 +2993,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No noise detected
                   "1": Noise detected
@@ -3001,7 +3001,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No framing error
                   "1": Framing error detected
@@ -3009,7 +3009,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No parity error
                   "1": Parity error detected
@@ -3028,7 +3028,7 @@ peripherals:
                 msb: 20
                 lsb: 20
                 width: 1
-                access: wo
+                access: w
                 note: Wake-up from low-power mode clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -3041,7 +3041,7 @@ peripherals:
                 msb: 17
                 lsb: 17
                 width: 1
-                access: wo
+                access: w
                 note: Character match clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -3054,21 +3054,21 @@ peripherals:
                 msb: 13
                 lsb: 13
                 width: 1
-                access: wo
+                access: w
                 note: SPI slave underrun clear flag
                 settings: *uart-clear-flag
               - name: EOBCF
                 msb: 12
                 lsb: 12
                 width: 1
-                access: wo
+                access: w
                 note: End of block clear flag (smartcard mode)
                 settings: *uart-clear-flag
               - name: RTOCF
                 msb: 11
                 lsb: 11
                 width: 1
-                access: wo
+                access: w
                 note: Receiver timeout clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -3081,70 +3081,70 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: wo
+                access: w
                 note: CTS clear flag
                 settings: *uart-clear-flag
               - name: LBDCF
                 msb: 8
                 lsb: 8
                 width: 1
-                access: wo
+                access: w
                 note: LIN break detection clear flag
                 settings: *uart-clear-flag
               - name: TCBGTCF
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 note: Transmission complete before guard time clear flag
                 settings: *uart-clear-flag
               - name: TCCF
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 note: Transmission complete clear flag
                 settings: *uart-clear-flag
               - name: TXFECF
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 note: TXFIFO empty clear flag
                 settings: *uart-clear-flag
               - name: IDLECF
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 note: Idle line detected clear flag
                 settings: *uart-clear-flag
               - name: ORECF
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 note: Overrun error clear flag
                 settings: *uart-clear-flag
               - name: NECF
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 note: Noise detected clear flag
                 settings: *uart-clear-flag
               - name: FECF
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 note: Framing error clear flag
                 settings: *uart-clear-flag
               - name: PECF
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 note: Parity error clear flag
                 settings: *uart-clear-flag
         - RDR:
@@ -3162,7 +3162,7 @@ peripherals:
                 msb: 8
                 lsb: 0
                 width: 9
-                access: ro
+                access: r
                 note: Received data value (bits [8:0]; bit 8 is parity when enabled)
                 settings: ~
         - TDR:
@@ -3781,26 +3781,26 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 note: FIFO mode only
                 settings: *uart-request
               - name: RXFRQ
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
               - name: MMRQ
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
               - name: SBKRQ
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings: *uart-request
               - name: RESERVED
                 msb: 0
@@ -3827,7 +3827,7 @@ peripherals:
                 msb: 27
                 lsb: 27
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": TXFIFO above configured threshold
                   "1": TXFIFO at or below configured threshold (FIFO mode only)
@@ -3835,7 +3835,7 @@ peripherals:
                 msb: 26
                 lsb: 26
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": RXFIFO below configured threshold
                   "1": RXFIFO at or above configured threshold (FIFO mode only)
@@ -3849,7 +3849,7 @@ peripherals:
                 msb: 24
                 lsb: 24
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": RXFIFO not full
                   "1": RXFIFO full (FIFO mode only)
@@ -3857,7 +3857,7 @@ peripherals:
                 msb: 23
                 lsb: 23
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": TXFIFO not empty
                   "1": TXFIFO empty (FIFO mode only)
@@ -3865,7 +3865,7 @@ peripherals:
                 msb: 22
                 lsb: 22
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Receive not yet enabled or acknowledgement pending
                   "1": Receive enabled and acknowledged by hardware
@@ -3873,7 +3873,7 @@ peripherals:
                 msb: 21
                 lsb: 21
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Transmit not yet enabled or acknowledgement pending
                   "1": Transmit enabled and acknowledged by hardware
@@ -3881,7 +3881,7 @@ peripherals:
                 msb: 20
                 lsb: 20
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No wake-up event
                   "1": Wake-up event detected from low-power mode
@@ -3889,19 +3889,19 @@ peripherals:
                 msb: 19
                 lsb: 19
                 width: 1
-                access: ro
+                access: r
                 settings: *uart-rwu
               - name: SBKF
                 msb: 18
                 lsb: 18
                 width: 1
-                access: ro
+                access: r
                 settings: *uart-sbkf
               - name: CMF
                 msb: 17
                 lsb: 17
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No character match
                   "1": Character match detected
@@ -3909,7 +3909,7 @@ peripherals:
                 msb: 16
                 lsb: 16
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": LPUART is idle
                   "1": Receive or transmit in progress
@@ -3923,13 +3923,13 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: ro
+                access: r
                 settings: *uart-cts-line
               - name: CTSIF
                 msb: 9
                 lsb: 9
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No CTS change
                   "1": CTS line change detected
@@ -3943,7 +3943,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: ro
+                access: r
                 note: TXE in non-FIFO mode
                 settings:
                   "0": TXFIFO full (FIFO mode) or TX register not empty (non-FIFO mode)
@@ -3952,7 +3952,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": Transmission not complete
                   "1": Transmission complete
@@ -3960,7 +3960,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: ro
+                access: r
                 note: RXNE in non-FIFO mode
                 settings:
                   "0": RXFIFO empty (FIFO mode) or RX register empty (non-FIFO mode)
@@ -3969,7 +3969,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No idle line detected
                   "1": Idle line detected
@@ -3977,7 +3977,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No overrun error
                   "1": Overrun error detected
@@ -3985,7 +3985,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No noise detected
                   "1": Noise detected
@@ -3993,7 +3993,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No framing error
                   "1": Framing error detected
@@ -4001,7 +4001,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No parity error
                   "1": Parity error detected
@@ -4020,7 +4020,7 @@ peripherals:
                 msb: 20
                 lsb: 20
                 width: 1
-                access: wo
+                access: w
                 note: Wake-up from low-power mode clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -4033,7 +4033,7 @@ peripherals:
                 msb: 17
                 lsb: 17
                 width: 1
-                access: wo
+                access: w
                 note: Character match clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -4046,7 +4046,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: wo
+                access: w
                 note: CTS clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -4059,7 +4059,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 note: Transmission complete clear flag
                 settings: *uart-clear-flag
               - name: RESERVED
@@ -4072,35 +4072,35 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 note: Idle line detected clear flag
                 settings: *uart-clear-flag
               - name: ORECF
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 note: Overrun error clear flag
                 settings: *uart-clear-flag
               - name: NECF
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 note: Noise detected clear flag
                 settings: *uart-clear-flag
               - name: FECF
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 note: Framing error clear flag
                 settings: *uart-clear-flag
               - name: PECF
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 note: Parity error clear flag
                 settings: *uart-clear-flag
         - RDR:
@@ -4118,7 +4118,7 @@ peripherals:
                 msb: 8
                 lsb: 0
                 width: 9
-                access: ro
+                access: r
                 note: Received data value (bits [8:0]; bit 8 is parity when enabled)
                 settings: ~
         - TDR:
@@ -4860,7 +4860,7 @@ peripherals:
                 msb: 8
                 lsb: 8
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A break 2 event is generated. MOE bit is cleared and B2IF flag is set.
@@ -4868,7 +4868,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A break event is generated. MOE bit is cleared and BIF flag is set.
@@ -4876,7 +4876,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": TIF flag is set in TIMx_SR register
@@ -4884,7 +4884,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": When CCPC bit is set, allows CCxE, CCxNE and OCxM bits to be updated
@@ -4892,7 +4892,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 4
@@ -4900,7 +4900,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 3
@@ -4908,7 +4908,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 2
@@ -4916,7 +4916,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 1
@@ -4924,7 +4924,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": Reinitialize the counter and generate an update of the registers
@@ -5216,7 +5216,7 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: ro
+                access: r
                 note: Read-only copy of the UIF bit of TIMx_SR. Present only when UIFREMAP=1 in CR1.
                 settings:
                   "0": No update event occurred
@@ -6345,7 +6345,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": TIF flag is set in TIMx_SR register
@@ -6359,7 +6359,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 4
@@ -6367,7 +6367,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 3
@@ -6375,7 +6375,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 2
@@ -6383,7 +6383,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 1
@@ -6391,7 +6391,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": Reinitialize the counter and generate an update of the registers
@@ -6642,7 +6642,7 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: ro
+                access: r
                 note: Read-only copy of the UIF bit of TIMx_SR. Present only when UIFREMAP=1 in CR1.
                 settings:
                   "0": No update event occurred
@@ -7334,7 +7334,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": TIF flag is set in TIMx_SR register
@@ -7348,7 +7348,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 4
@@ -7356,7 +7356,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 3
@@ -7364,7 +7364,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 2
@@ -7372,7 +7372,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 1
@@ -7380,7 +7380,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": Reinitialize the counter and generate an update of the registers
@@ -7631,7 +7631,7 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: ro
+                access: r
                 note: Read-only copy of the UIF bit of TIMx_SR. Present only when UIFREMAP=1 in CR1.
                 settings:
                   "0": No update event occurred
@@ -8076,7 +8076,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": Reinitialize the counter and generate an update of the registers
@@ -8089,7 +8089,7 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: ro
+                access: r
                 note: Read-only copy of the UIF bit of TIMx_SR. Present only when UIFREMAP=1 in CR1.
                 settings:
                   "0": No update event occurred
@@ -8523,7 +8523,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A break event is generated. MOE bit is cleared and BIF flag is set.
@@ -8531,7 +8531,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": TIF flag is set in TIMx_SR register
@@ -8539,7 +8539,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": When CCPC bit is set, allows CCxE, CCxNE and OCxM bits to be updated
@@ -8553,7 +8553,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 2
@@ -8561,7 +8561,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 1
@@ -8569,7 +8569,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": Reinitialize the counter and generate an update of the registers
@@ -8706,7 +8706,7 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: ro
+                access: r
                 note: Read-only copy of the UIF bit of TIMx_SR. Present only when UIFREMAP=1 in CR1.
                 settings:
                   "0": No update event occurred
@@ -9374,7 +9374,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A break event is generated. MOE bit is cleared and BIF flag is set.
@@ -9388,7 +9388,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": When CCPC bit is set, allows CCxE, CCxNE and OCxM bits to be updated
@@ -9402,7 +9402,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": A capture/compare event is generated on channel 1
@@ -9410,7 +9410,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No action
                   "1": Reinitialize the counter and generate an update of the registers
@@ -9499,7 +9499,7 @@ peripherals:
                 msb: 31
                 lsb: 31
                 width: 1
-                access: ro
+                access: r
                 note: Read-only copy of the UIF bit of TIMx_SR. Present only when UIFREMAP=1 in CR1.
                 settings:
                   "0": No update event occurred
@@ -9872,7 +9872,7 @@ peripherals:
                 msb: 24
                 lsb: 24
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": A DIER register update transfer is ongoing
                   "1": DIER register update completed
@@ -9886,7 +9886,7 @@ peripherals:
                 msb: 21
                 lsb: 21
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": CCR4 register update ongoing or not yet done
                   "1": CCR4 register successfully updated
@@ -9894,7 +9894,7 @@ peripherals:
                 msb: 20
                 lsb: 20
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": CCR3 register update ongoing or not yet done
                   "1": CCR3 register successfully updated
@@ -9902,7 +9902,7 @@ peripherals:
                 msb: 19
                 lsb: 19
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": CCR2 register update ongoing or not yet done
                   "1": CCR2 register successfully updated
@@ -9916,7 +9916,7 @@ peripherals:
                 msb: 15
                 lsb: 15
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No capture 4 over-capture detected
                   "1": Capture 4 over-capture detected
@@ -9924,7 +9924,7 @@ peripherals:
                 msb: 14
                 lsb: 14
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No capture 3 over-capture detected
                   "1": Capture 3 over-capture detected
@@ -9932,7 +9932,7 @@ peripherals:
                 msb: 13
                 lsb: 13
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No capture 2 over-capture detected
                   "1": Capture 2 over-capture detected
@@ -9940,7 +9940,7 @@ peripherals:
                 msb: 12
                 lsb: 12
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No capture 1 over-capture detected
                   "1": Capture 1 over-capture detected
@@ -9948,7 +9948,7 @@ peripherals:
                 msb: 11
                 lsb: 11
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No compare/capture 4 interrupt
                   "1": Compare/capture 4 interrupt pending
@@ -9956,7 +9956,7 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No compare/capture 3 interrupt
                   "1": Compare/capture 3 interrupt pending
@@ -9964,7 +9964,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No compare/capture 2 interrupt
                   "1": Compare/capture 2 interrupt pending
@@ -9972,7 +9972,7 @@ peripherals:
                 msb: 8
                 lsb: 8
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": RCR register update ongoing or not yet done
                   "1": RCR register successfully updated
@@ -9980,7 +9980,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No update event occurred
                   "1": LPTIM update event occurred
@@ -9988,7 +9988,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No change from down to up detected
                   "1": Counter direction changed from up to down
@@ -9996,7 +9996,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No change from up to down detected
                   "1": Counter direction changed from down to up
@@ -10004,7 +10004,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": ARR register update ongoing or not yet done
                   "1": ARR register successfully updated
@@ -10012,7 +10012,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": CCR1 register update ongoing or not yet done
                   "1": CCR1 register successfully updated
@@ -10020,7 +10020,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No external trigger edge event detected
                   "1": External trigger edge event detected
@@ -10028,7 +10028,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No autoreload match
                   "1": LPTIM counter reached the value in ARR
@@ -10036,7 +10036,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: ro
+                access: r
                 settings:
                   "0": No compare/capture 1 interrupt
                   "1": Compare/capture 1 interrupt pending
@@ -10055,7 +10055,7 @@ peripherals:
                 msb: 24
                 lsb: 24
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the DIEROK flag in ISR
@@ -10069,7 +10069,7 @@ peripherals:
                 msb: 15
                 lsb: 15
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC4OF flag in ISR
@@ -10077,7 +10077,7 @@ peripherals:
                 msb: 14
                 lsb: 14
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC3OF flag in ISR
@@ -10085,7 +10085,7 @@ peripherals:
                 msb: 13
                 lsb: 13
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC2OF flag in ISR
@@ -10093,7 +10093,7 @@ peripherals:
                 msb: 12
                 lsb: 12
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC1OF flag in ISR
@@ -10101,7 +10101,7 @@ peripherals:
                 msb: 11
                 lsb: 11
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC4IF flag in ISR
@@ -10109,7 +10109,7 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC3IF flag in ISR
@@ -10117,7 +10117,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC2IF flag in ISR
@@ -10125,7 +10125,7 @@ peripherals:
                 msb: 8
                 lsb: 8
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the REPOK flag in ISR
@@ -10133,7 +10133,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the UE flag in ISR
@@ -10141,7 +10141,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the DOWN flag in ISR
@@ -10149,7 +10149,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the UP flag in ISR
@@ -10157,7 +10157,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the ARROK flag in ISR
@@ -10165,7 +10165,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CMP1OK flag in ISR
@@ -10173,7 +10173,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the EXTTRIG flag in ISR
@@ -10181,7 +10181,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the ARRM flag in ISR
@@ -10189,7 +10189,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: wo
+                access: w
                 settings:
                   "0": No effect
                   "1": Clears the CC1IF flag in ISR
@@ -10630,7 +10630,7 @@ peripherals:
                 msb: 15
                 lsb: 0
                 width: 16
-                access: ro
+                access: r
                 note: >-
                   Counter value. To ensure reliable reading, it is recommended to perform two
                   consecutive read accesses and compare the results.

@@ -317,7 +317,7 @@ there is no way to specify the required write behaviour (`write-zero`, `write-as
 - name: RESERVED
   msb: 31
   lsb: 17
-  access: ro
+  access: res
   reserved-write: write-zero
 ```
 
