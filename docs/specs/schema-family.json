@@ -457,9 +457,40 @@
           "items": { "$ref": "#/$defs/register-item" },
           "minItems": 1
         },
+        "register-map": {
+          "description": "Ordered register-map table for this peripheral, listing every register with its offset and reset value. Serves as the authoritative source for verifying individual register definitions.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/register-map-entry" },
+          "minItems": 1
+        },
         "interrupt-events": {
           "description": "Structured interrupt event metadata for this peripheral, including per-event flag/enable/clear information and low-power mode behaviour.",
           "$ref": "#/$defs/peripheral-interrupt-events"
+        }
+      }
+    },
+    "register-map-entry": {
+      "description": "A single entry in a peripheral register-map table, recording the register name, byte offset, reset value, and optional source-table reference.",
+      "type": "object",
+      "required": ["name", "offset", "reset-value"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Register name as it appears in the reference manual.",
+          "type": "string"
+        },
+        "offset": {
+          "description": "Register byte offset from the peripheral base address.",
+          "$ref": "#/$defs/hex-address"
+        },
+        "reset-value": {
+          "description": "Register value after reset, as documented in the reference manual.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "source-table": {
+          "description": "Reference manual table number or identifier that is the source for this register-map entry.",
+          "type": ["string", "number"]
         }
       }
     },
