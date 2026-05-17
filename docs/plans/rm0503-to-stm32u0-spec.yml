@@ -808,6 +808,7 @@ phases:
       - id: P8-S2
         title: "Add SYSCFG registers (enumeration from Table 42)"
         source-pages: [262, 263, 264]
+        depends-on: [P8-S1]
         acceptance-criteria:
           - Child steps enumerated for every SYSCFG register.
 
@@ -886,6 +887,7 @@ phases:
       - id: P9-S7
         title: "Add DMAMUX registers (enumeration from register-map table)"
         source-pages: [300, 301]
+        depends-on: [P9-S5]
         acceptance-criteria:
           - Child steps enumerated for all DMAMUX registers.
 
@@ -954,6 +956,7 @@ phases:
           check Table of Tables for 'ADC register map') and
           enumerate child steps.
         source-pages: [384, 385, 386]
+        depends-on: [P11-S1]
         acceptance-criteria:
           - Child steps enumerated.
 
@@ -967,6 +970,7 @@ phases:
       - id: P11-S4
         title: "Add ADC interrupt-events"
         source-pages: [364, 365]
+        depends-on: [P11-S1]
         acceptance-criteria:
           - ADC interrupt-events section complete.
           - lint.sh passes.
@@ -989,6 +993,7 @@ phases:
       - id: P12-S2
         title: "Add DAC registers (enumeration)"
         source-pages: [409, 410]
+        depends-on: [P12-S1]
         acceptance-criteria:
           - Child steps enumerated for all DAC registers.
 
@@ -1002,6 +1007,7 @@ phases:
       - id: P12-S4
         title: "Add DAC interrupt-events"
         source-pages: [401]
+        depends-on: [P12-S1]
         acceptance-criteria:
           - DAC interrupt-events section complete.
           - lint.sh passes.
@@ -1094,6 +1100,7 @@ phases:
       - id: P16-S2
         title: "Add RNG registers (enumeration and child steps)"
         source-pages: [503]
+        depends-on: [P16-S1, P0-S1]
         acceptance-criteria:
           - All RNG registers added.
           - lint.sh passes.
@@ -1101,6 +1108,7 @@ phases:
       - id: P16-S3
         title: "Add RNG interrupt-events"
         source-pages: [496]
+        depends-on: [P16-S1]
         acceptance-criteria:
           - RNG interrupt-events section complete.
           - lint.sh passes.
@@ -1133,6 +1141,7 @@ phases:
       - id: P17-S3
         title: "Add AES interrupt-events"
         source-pages: [540]
+        depends-on: [P17-S1]
         acceptance-criteria:
           - AES interrupt-events section complete.
           - lint.sh passes.
@@ -1355,6 +1364,7 @@ phases:
       - id: P25-S2
         title: "Add RTC registers (enumeration from Table 178)"
         source-pages: [945, 946]
+        depends-on: [P25-S1]
         acceptance-criteria:
           - Child steps enumerated for all RTC registers.
 
@@ -1906,16 +1916,31 @@ phases:
         title: "Add VREFBUF registers (VREFBUF_CSR and VREFBUF_CCR)"
         description: >
           Add VREFBUF_CSR (offset 0x00, reset 0x00000002) and
-          VREFBUF_CCR (offset 0x04, reset 0x000000XX — factory
-          trimmed; treat as 0x00 in spec). Use Table 87 (page 413)
-          for the register map. Register fields: VRR (r), VRS (rw),
-          HIZ (rw), ENVR (rw) in CSR; TRIM[5:0] (rw) in CCR.
+          VREFBUF_CCR (offset 0x04). VREFBUF_CCR reset value is
+          factory-trimmed (documented as 0x000000XX in RM0503
+          Table 87) and cannot be expressed as a concrete integer.
+          Record reset value as 0x00 in the spec and add a note
+          that bits [5:0] (TRIM) hold a factory-programmed value
+          that must not be overwritten without calibration.
+          Register fields: VRR (r), VRS (rw), HIZ (rw), ENVR (rw)
+          in CSR; TRIM[5:0] (rw) in CCR.
         source-pages: [412, 413]
         depends-on: [P39-S1, P0-S1]
+        concern: >
+          The VREFBUF_CCR reset value is factory-trimmed
+          (0x000000XX per Table 87 page 413). The schema
+          reset-value field is integer-only and cannot represent
+          an unknown byte. Record 0x00 as a placeholder and add
+          a note field to VREFBUF_CCR warning that bits [5:0]
+          hold a factory value. Confirm the schema note field
+          is sufficient or raise a schema-extension request.
         acceptance-criteria:
           - VREFBUF_CSR added with VRR, VRS, HIZ, ENVR fields.
           - VREFBUF_CCR added with TRIM[5:0] field.
-          - Reset values, offsets, and access types match Table 87.
+          - VREFBUF_CSR reset value 0x00000002 matches Table 87.
+          - VREFBUF_CCR reset value recorded as 0x00 with a note
+            documenting the factory-trim caveat.
+          - Offsets and access types match Table 87.
           - lint.sh passes.
 
   # ============================================================
@@ -1951,14 +1976,14 @@ phases:
           - lint.sh passes.
 
   # ============================================================
-  # PHASE 38 – Final validation
+  # PHASE 41 – Final validation
   # ============================================================
 
-  - id: P38
+  - id: P41
     title: "Final validation"
 
     steps:
-      - id: P38-S1
+      - id: P41-S1
         title: "Full lint.sh run against completed spec"
         description: >
           Run bash lint.sh from repo root (after removing build/)
@@ -1969,7 +1994,7 @@ phases:
           - No clang-format/tidy/cmake-lint/prettier/markdownlint
             failures.
 
-      - id: P38-S2
+      - id: P41-S2
         title: "Cross-check every peripheral instance base against Table 4"
         description: >
           Perform a final sweep comparing every peripheral
@@ -1980,7 +2005,7 @@ phases:
           - No discrepancies remain; any found produce correction
             steps.
 
-      - id: P38-S3
+      - id: P41-S3
         title: "Review all concern flags and escalation items"
         description: >
           Review every `concern:` field in this plan document.
