@@ -248,9 +248,9 @@
           "maximum": 64
         },
         "access": {
-          "description": "Register access type: rw = read/write, ro = read-only, wo = write-only.",
+          "description": "Register field access type, using RM0503 §1.2 abbreviations exactly: rw = read/write; r = read-only; w = write-only; rc_w0 = read/clear by writing 0; rc_w1 = read/clear by writing 1; rc_w = read/clear by any write; rc_r = read/clear by reading; rs_r = read/set by reading; rs = read/set by software; rwo = read/write once after reset; t = toggle by writing 1; rt_w1 = read, writing 1 triggers an event (no effect on bit value); res = reserved (must not be modified by software).",
           "type": "string",
-          "enum": ["rw", "ro", "wo"]
+          "enum": ["rw", "r", "w", "rc_w0", "rc_w1", "rc_w", "rc_r", "rs_r", "rs", "rwo", "t", "rt_w1", "res"]
         },
         "note": {
           "description": "Optional free-text annotation for this field.",

@@ -106,7 +106,7 @@ struct UsartPortBase
                                      ohal::core::Access::ReadOnly, uint16_t>;
     using Tdr = ohal::core::BitField<typename Regs::Tdr, 0U,
                                      ohal::platforms::stm32u0::stm32u083::kUsartDataBits,
-                                     ohal::core::Access::WriteOnly, uint16_t>;
+                                     ohal::core::Access::ReadWrite, uint16_t>;
 };
 
 } // namespace detail

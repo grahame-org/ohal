@@ -248,22 +248,34 @@ register. For example, when two adjacent registers each hold one bit per pin of 
 
 Each field has:
 
-| Key             | Type                 | Description                                                                                        |
-| --------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
-| `name`          | string               | Field name from the reference manual                                                               |
-| `msb`           | integer              | Most-significant bit position (inclusive, 0-based)                                                 |
-| `lsb`           | integer              | Least-significant bit position (inclusive, 0-based)                                                |
-| `width`         | integer              | Field width in bits (must equal `msb - lsb + 1`)                                                   |
-| `access`        | `rw` \| `ro` \| `wo` | Read/write, read-only, or write-only                                                               |
-| `note`          | string (optional)    | Free-text annotation for cases not covered by the structured keys                                  |
-| `priority-over` | list (optional)      | Names of fields in the same register that this field overrides in a simultaneous write (see below) |
-| `settings`      | mapping or `~`       | Enumerated bit-pattern values (see below)                                                          |
+| Key             | Type              | Description                                                                                        |
+| --------------- | ----------------- | -------------------------------------------------------------------------------------------------- |
+| `name`          | string            | Field name from the reference manual                                                               |
+| `msb`           | integer           | Most-significant bit position (inclusive, 0-based)                                                 |
+| `lsb`           | integer           | Least-significant bit position (inclusive, 0-based)                                                |
+| `width`         | integer           | Field width in bits (must equal `msb - lsb + 1`)                                                   |
+| `access`        | see below         | Field access type (RM0503 §1.2 abbreviation)                                                       |
+| `note`          | string (optional) | Free-text annotation for cases not covered by the structured keys                                  |
+| `priority-over` | list (optional)   | Names of fields in the same register that this field overrides in a simultaneous write (see below) |
+| `settings`      | mapping or `~`    | Enumerated bit-pattern values (see below)                                                          |
 
-The `access` values are:
+The `access` values follow the exact RM0503 §1.2 abbreviations:
 
-- `rw` — read/write
-- `ro` — read-only
-- `wo` — write-only (hardware ignores the read value)
+| Value   | Meaning                                                    |
+| ------- | ---------------------------------------------------------- |
+| `rw`    | Read/write                                                 |
+| `r`     | Read-only                                                  |
+| `w`     | Write-only (hardware ignores the read value)               |
+| `rc_w0` | Read; cleared by writing 0                                 |
+| `rc_w1` | Read; cleared by writing 1                                 |
+| `rc_w`  | Read; cleared by any write                                 |
+| `rc_r`  | Read; cleared by reading                                   |
+| `rs_r`  | Read; set by reading                                       |
+| `rs`    | Read; set by software (cleared by hardware)                |
+| `rwo`   | Read/write once after reset                                |
+| `t`     | Toggle — writing 1 toggles the current value               |
+| `rt_w1` | Read; writing 1 triggers an event (bit value is unchanged) |
+| `res`   | Reserved — must not be modified by software                |
 
 ### Field write-conflict priority
 
@@ -276,7 +288,7 @@ register write, the hardware applies only one of them. Document this with `prior
   msb: 0
   lsb: 0
   width: 1
-  access: wo
+  access: w
   priority-over: [BR0]  # if both BS0=1 and BR0=1 are written, BS0's effect wins
   settings: *bsrr-bs
 ```
