@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P2-S1
+    current: P2-S3
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -80,6 +80,10 @@ meta:
       - id: P0-S9
         date: "2026-05-17"
       - id: P1-S2
+        date: "2026-05-17"
+      - id: P2-S1
+        date: "2026-05-17"
+      - id: P2-S2
         date: "2026-05-17"
 
 # ============================================================
@@ -320,11 +324,20 @@ phases:
           peripheral register boundary addresses. Cross-check
           each entry against `memory.map` in stm32u0.yml and
           `peripherals[*].instances[*].base`.
-        source-pages: [56, 57, 58, 59]
+        source-pages: [56, 57, 58, 59, 60]
         acceptance-criteria:
           - Every Table 2/3/4 entry checked against the spec.
           - Mismatches each produce a separate atomic correction
             step; none are resolved silently here.
+        note: >
+          Verification outcome: all Table 2, 3, and 4 entries match
+          stm32u0.yml memory.map and peripherals[*].instances[*].base.
+          No substantive mismatches found. One OCR extraction artefact
+          noted: the markdown extraction of Table 2 renders the STM32U073/
+          STM32U083 SRAM end address as 0x20029FFF, whereas the stated
+          size of 40 Kbytes confirms the correct value is 0x20009FFF
+          (consistent with the existing spec entry). Table 4 continues on
+          page 60 (not listed in the original source-pages); updated here.
 
       - id: P2-S2
         title: "Correct memory map entry: Table 2/3/4 mismatch resolutions"
@@ -337,6 +350,9 @@ phases:
           - Each correction step changes at most one memory-map
             entry.
           - lint.sh passes after each child step.
+        note: >
+          No mismatches found in P2-S1; no child steps required.
+          Step vacuously satisfied.
 
       - id: P2-S3
         title: "Add SRAM size data (§2.3 / Table 5)"
