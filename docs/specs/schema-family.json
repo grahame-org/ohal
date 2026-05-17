@@ -345,6 +345,11 @@
           "description": "Reference manual table number or identifier that documents the field layout of this register.",
           "type": ["string", "number"]
         },
+        "sub-families": {
+          "description": "Sub-families for which this register is present. Omit if the register is present in all sub-families.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "note": {
           "description": "Optional free-text annotation for this register, e.g. to document cross-register dependencies or constraints not expressible in the structured fields.",
           "type": "string"
