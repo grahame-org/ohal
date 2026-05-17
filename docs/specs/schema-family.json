@@ -590,7 +590,15 @@
         },
         "channel-id": {
           "description": "DMA channel identifier associated with this request, if statically assigned. May be an integer channel number or a string label.",
-          "type": ["integer", "string"]
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string"
+            }
+          ]
         },
         "mux-input": {
           "description": "DMAMUX input number assigned to this request, as listed in the DMAMUX assignment table (e.g. Table 49 in RM0503).",
