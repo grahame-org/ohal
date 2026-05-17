@@ -331,12 +331,15 @@ phases:
             step; none are resolved silently here.
         note: >
           Verification outcome: all Table 2, 3, and 4 entries match
-          stm32u0.yml memory.map and peripherals[*].instances[*].base.
-          No substantive mismatches found. One OCR extraction artefact
-          noted: the markdown extraction of Table 2 renders the STM32U073/
-          STM32U083 SRAM end address as 0x20029FFF, whereas the stated
-          size of 40 Kbytes confirms the correct value is 0x20009FFF
-          (consistent with the existing spec entry). Table 4 continues on
+          stm32u0.yml memory.map and peripherals[*].instances[*].base,
+          with one internal inconsistency in RM0503 noted below.
+          Table 2 gives the STM32U073/STM32U083 SRAM end boundary as
+          0x20029FFF (this is the value in the original RM0503 PDF, not
+          an OCR artefact), but the same row states the size as
+          40 Kbytes. 40 Kbytes = 0xA000 bytes, so start 0x20000000 +
+          0xA000 - 1 = 0x20009FFF. The spec uses 0x20009FFF, which is
+          consistent with the stated size; the boundary address in the
+          PDF appears to be a typographic error. Table 4 continues on
           page 60 (not listed in the original source-pages); updated here.
 
       - id: P2-S2
