@@ -475,6 +475,12 @@
         "interrupt-events": {
           "description": "Structured interrupt event metadata for this peripheral, including per-event flag/enable/clear information and low-power mode behaviour.",
           "$ref": "#/$defs/peripheral-interrupt-events"
+        },
+        "clock-sources": {
+          "description": "Optional list of clock sources that can drive this peripheral, as documented in the RCC chapter of the reference manual. Used by ohal to emit correct clock-enable sequences.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/clock-source-item" },
+          "minItems": 1
         }
       }
     },
@@ -545,6 +551,26 @@
       "minProperties": 1,
       "maxProperties": 1,
       "additionalProperties": { "$ref": "#/$defs/peripheral" }
+    },
+    "clock-source-item": {
+      "description": "A single clock source that can drive a peripheral, as documented in the RCC chapter of the reference manual.",
+      "type": "object",
+      "required": ["name", "bus", "enable-bit"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Clock source name, e.g. 'PCLK1', 'HCLK', 'LSE', 'HSI16'.",
+          "type": "string"
+        },
+        "bus": {
+          "description": "Bus or clock domain this source belongs to, e.g. 'APB1', 'APB2', 'AHB', 'RCC'.",
+          "type": "string"
+        },
+        "enable-bit": {
+          "description": "Name of the RCC enable bit that gates this clock for the peripheral, e.g. 'USART1EN', 'TIM2EN'.",
+          "type": "string"
+        }
+      }
     },
     "peripheral-interrupt-events": {
       "description": "Structured interrupt event metadata for a peripheral, extracted from the reference manual interrupt-request table.",
