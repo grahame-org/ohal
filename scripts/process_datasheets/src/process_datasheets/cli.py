@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 
@@ -81,6 +82,27 @@ def main(argv: list[str] | None = None) -> None:
     print(f"\nDone. {extracted} file(s) written to {out_dir}")
     if skipped:
         print(f"  ({skipped} page(s) skipped - out of range)")
+
+    # Post-process: run prettier over every Markdown file in the output directory.
+    # prettier normalises formatting (trailing newlines, spacing, etc.).
+    # Line endings are managed exclusively by git via .gitattributes, so we do
+    # not pass --end-of-line here.
+    #
+    # Pass a glob pattern to prettier rather than individual file paths to avoid
+    # the Windows command-line length limit when there are many output files.
+    # shell=True is required on Windows where npx is a .cmd batch wrapper that
+    # subprocess cannot locate without shell mediation.
+    md_files = sorted(out_dir.glob("*.md"))
+    if md_files:
+        print(f"\nRunning prettier on {len(md_files)} file(s) in {out_dir} …")
+        glob_pattern = str(out_dir / "*.md")
+        result = subprocess.run(
+            ["npx", "--yes", "prettier", "--write", glob_pattern],
+            check=False,
+            shell=(sys.platform == "win32"),
+        )
+        if result.returncode != 0:
+            print("WARNING: prettier exited with a non-zero status.", file=sys.stderr)
 
 
 if __name__ == "__main__":

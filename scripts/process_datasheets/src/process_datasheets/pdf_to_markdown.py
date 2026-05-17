@@ -393,6 +393,19 @@ def _apply_regex_postprocessing(text: str) -> str:
         text,
     )
 
+    # Join wrapped ToC chapter headings whose title spills onto the next line.
+    # The PDF sometimes wraps long chapter titles so the heading line contains
+    # only the first part (no dot-leader) and the continuation carries the
+    # remainder plus the dot-leader and page number, e.g.:
+    #   "### 34 Universal synchronous/asynchronous receiver"
+    #   "transmitter (USART/UART) . . . . . 1016"
+    # The continuation line is not a heading, not a list item, and not blank.
+    text = re.sub(
+        r"(?m)^(#{1,6} \d.+[^.\d\s])\n([^#\-\n].+\.{3,}.+\d+\s*)$",
+        r"\1 \2",
+        text,
+    )
+
     # Join wrapped ToC titles whose continuation carries the dot-leader + page number
     text = re.sub(
         r"(?m)^(\d+(?:\.\d+)+ .+[^\d])\n([^\d#-].+)",
@@ -408,6 +421,19 @@ def _apply_regex_postprocessing(text: str) -> str:
 
     # Right-justify page numbers in ToC lines
     text = _align_toc_page_numbers(text)
+
+    # Normalise ToC chapter-level headings from #### to ###.
+    # The PDF renders chapter titles on the ToC page in bold-at-body-size, which
+    # causes heading_level() to assign them level 4 (####).  Every other
+    # occurrence of the same title (on the chapter's own pages) is rendered at a
+    # larger size, giving level 3 (###).  A ToC chapter entry is identified by a
+    # line that: (a) starts with "#### ", (b) begins with a digit (chapter number),
+    # and (c) contains a dot-leader followed by a page number.
+    text = re.sub(
+        r"(?m)^#### (\d.+ \.{3,} \d+\s*)$",
+        r"### \1",
+        text,
+    )
 
     # Join orphaned unordered list markers with next content line.
     # Use [ \t] (horizontal whitespace only) so the quantifiers never overlap

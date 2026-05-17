@@ -276,7 +276,10 @@ def test_strip_joins_toc_section_number_with_following_title(level):
     text = f"{level} **3**\n{level} **Section title . . . 42**"
     result = strip_header_footer(text)
     # Section number and title are both plain; dot-leader is normalised.
-    assert_that(result, matches_regexp(rf"^\{level} 3 Section title \.+ 42$"))
+    # #### ToC chapter entries are further normalised to ### (see heading-level
+    # normalisation step), so the expected level for #### input is ###.
+    expected_level = "###" if level == "####" else level
+    assert_that(result, matches_regexp(rf"^\{expected_level} 3 Section title \.+ 42$"))
 
 
 def test_strip_does_not_join_section_number_when_heading_levels_differ():
@@ -354,7 +357,8 @@ def test_align_toc_page_numbers_right_justifies_page_number():
 
 def test_align_toc_page_numbers_right_justifies_top_level_heading():
     # Supply a line that has already had the heading-join applied (plain number).
-    text = "#### 2 Memory and bus architecture . . . . . 53"
+    # #### ToC chapter headings are normalised to ### so the expected prefix is ###.
+    text = "### 2 Memory and bus architecture . . . . . 53"
     result = strip_header_footer(text)
     line = result.splitlines()[0]
     assert_that(len(line), equal_to(_TOC_WIDTH))
@@ -683,4 +687,85 @@ def test_mojibake_micro_sign_in_span_text():
     from process_datasheets.pdf_to_markdown import _normalise_span_text
 
     assert_that(_normalise_span_text("42 ﾎｼs"), equal_to("42 μs"))
+
+
+# ---------------------------------------------------------------------------
+# ToC chapter heading level normalisation (#### → ###)
+# ---------------------------------------------------------------------------
+
+
+def test_toc_chapter_heading_promoted_from_level4_to_level3():
+    """#### chapter entries on ToC pages must be normalised to ###."""
+    text = (
+        "## Contents\n\n"
+        "#### 1 Documentation conventions ................................................................ 51\n\n"
+        "- 1.1 General information ....................................................................... 51\n\n"
+        "#### 2 Memory and bus architecture .............................................................. 53\n\n"
+        "- 2.1 System architecture ....................................................................... 53"
+    )
+    result = strip_header_footer(text)
+    assert_that(result, not_(contains_string("#### 1")))
+    assert_that(result, not_(contains_string("#### 2")))
+    assert_that(result, contains_string("### 1 Documentation conventions"))
+    assert_that(result, contains_string("### 2 Memory and bus architecture"))
+
+
+def test_toc_chapter_heading_normalisation_preserves_subsection_list():
+    """Sub-section list items (- N.M ...) are unchanged by the normalisation."""
+    text = (
+        "#### 3 Embedded flash memory (FLASH) ............................................................ 64\n\n"
+        "- 3.1 FLASH introduction ....................................................................... 64\n"
+        "- 3.2 FLASH main features ....................................................................... 64"
+    )
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("- 3.1 FLASH introduction"))
+    assert_that(result, contains_string("- 3.2 FLASH main features"))
+
+
+def test_non_toc_level4_heading_not_affected():
+    """#### headings that are not ToC entries (no dot-leader) are left unchanged."""
+    text = "#### Bits 31:8 Reserved, must be kept at reset value."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("#### Bits 31:8 Reserved"))
+
+
+# ---------------------------------------------------------------------------
+# ToC chapter heading — wrapped title joining
+# ---------------------------------------------------------------------------
+
+
+def test_toc_chapter_heading_wrapped_title_is_joined():
+    """A chapter heading whose title wraps onto the next line must be joined.
+
+    Long chapter titles in the PDF are sometimes split across two lines so that
+    the heading line carries the first part only (no dot-leader) and the
+    continuation carries the rest of the title plus the dot-leader and page
+    number.  Both lines must be merged into a single ### heading line.
+
+    Real example: sections 34 (USART/UART) and 35 (LPUART) in RM0503.
+    """
+    text = (
+        "### 34 Universal synchronous/asynchronous receiver\n"
+        "transmitter (USART/UART) ...................................................................... 1016\n\n"
+        "- 34.1 Introduction ........................................................................... 1016"
+    )
+    result = strip_header_footer(text)
+    first_line = result.splitlines()[0]
+    assert_that(first_line, contains_string("### 34 Universal synchronous/asynchronous receiver transmitter (USART/UART)"))
+    assert_that(first_line, contains_string("1016"))
+    # Must be a single line — no newline within the heading
+    assert_that(result, not_(contains_string("### 34 Universal synchronous/asynchronous receiver\n")))
+
+
+def test_toc_chapter_heading_wrapped_title_subsections_preserved():
+    """Sub-section list items following a wrapped chapter heading are not affected."""
+    text = (
+        "### 35 Low-power universal asynchronous receiver\n"
+        "transmitter (LPUART) .......................................................................... 1106\n\n"
+        "- 35.1 Introduction ........................................................................... 1106\n"
+        "- 35.2 LPUART main features ................................................................... 1106"
+    )
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("- 35.1 Introduction"))
+    assert_that(result, contains_string("- 35.2 LPUART main features"))
 

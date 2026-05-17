@@ -1,0 +1,4 @@
+# Let git manage line endings using platform-native defaults.
+# text=auto enables git's built-in end-of-line normalisation; no eol= overrides
+# are set so that git uses the platform native line endings on checkout.
+* text=auto
