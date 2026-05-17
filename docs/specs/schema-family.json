@@ -336,6 +336,11 @@
           "description": "Register byte offset from the peripheral base address.",
           "$ref": "#/$defs/hex-address"
         },
+        "reset-value": {
+          "description": "Register value after reset, as documented in the reference manual.",
+          "type": "integer",
+          "minimum": 0
+        },
         "note": {
           "description": "Optional free-text annotation for this register, e.g. to document cross-register dependencies or constraints not expressible in the structured fields.",
           "type": "string"
