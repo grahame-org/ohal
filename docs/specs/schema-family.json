@@ -481,6 +481,12 @@
           "type": "array",
           "items": { "$ref": "#/$defs/clock-source-item" },
           "minItems": 1
+        },
+        "dma-requests": {
+          "description": "Optional list of DMA request lines that this peripheral can issue, as documented in the DMAMUX assignment table of the reference manual.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/dma-request-item" },
+          "minItems": 1
         }
       }
     },
@@ -569,6 +575,35 @@
         "enable-bit": {
           "description": "Name of the clock-gating bit that enables this clock source for the peripheral, e.g. 'USART1EN', 'TIM2EN'.",
           "type": "string"
+        }
+      }
+    },
+    "dma-request-item": {
+      "description": "A single DMA request line that a peripheral can issue, as documented in the DMAMUX assignment table of the reference manual.",
+      "type": "object",
+      "required": ["request-name", "mux-input"],
+      "additionalProperties": false,
+      "properties": {
+        "request-name": {
+          "description": "Name of the DMA request signal as it appears in the reference manual, e.g. 'USART1_RX', 'TIM2_UP'.",
+          "type": "string"
+        },
+        "channel-id": {
+          "description": "DMA channel identifier associated with this request, if statically assigned. May be an integer channel number or a string label.",
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "mux-input": {
+          "description": "DMAMUX input number assigned to this request, as listed in the DMAMUX assignment table (e.g. Table 49 in RM0503).",
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
