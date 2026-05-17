@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P1-S1
+    current: P1-S2
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -74,6 +74,8 @@ meta:
       - id: P0-S7
         date: "2026-05-17"
       - id: P0-S8
+        date: "2026-05-17"
+      - id: P1-S1
         date: "2026-05-17"
 
 # ============================================================
@@ -217,6 +219,32 @@ phases:
           - Top-level `boot` property added to schema with
             appropriate definition.
           - Validation passes.
+
+      - id: P0-S9
+        title: "Schema: extend field access enum with RM0503 access types"
+        description: >
+          P1-S1 found that RM0503 §1.2 defines access types beyond
+          the schema's current {rw, ro, wo} enum.  The additional
+          types used in ohal-relevant registers are:
+            rc_w1  – read; set by hardware; cleared by writing 1.
+            rc_w0  – read; set by hardware; cleared by writing 0.
+            rc_r   – read; set by hardware; cleared by reading.
+            rw_once – read/write once after reset (e.g. key registers).
+            rt_w   – read; toggle by writing 1.
+            rs     – read; set by software (cleared by hardware).
+          These are required for status-flag, error-flag, and
+          one-time-programmable fields in peripherals such as FLASH,
+          RCC, and EXTI.  Extend the `access` enum in
+          `$defs/field` and add a description clarifying each value.
+        filed-by: P1-S1
+        acceptance-criteria:
+          - $defs/field/properties/access enum extended with
+            rc_w1, rc_w0, rc_r, rw_once, rt_w, rs.
+          - Description string updated to explain all values.
+          - docs/specs/stm32/stm32u0.yml continues to validate
+            against the updated schema (no existing access values
+            change).
+          - lint.sh passes.
 
   # ============================================================
   # PHASE 1 – Documentation conventions (§1, pages 51-52)
