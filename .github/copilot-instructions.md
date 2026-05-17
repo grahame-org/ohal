@@ -39,7 +39,9 @@ since the PR title becomes the squash-merge commit message:
 
 - **type**: `feat` | `fix` | `docs` | `test` | `ci` | `build` | `refactor` | `chore`
 - **scope**: optional — e.g. `core` | `gpio` | `stm32u0` | `ci` | `vcpkg`
-- **summary**: present tense, lowercase, no trailing period
+- **summary**: present tense, lowercase, no trailing period; the first
+  character after `': '` **must** be a digit or a lowercase letter
+  (e.g. `docs: A note` is invalid; `docs: a note` is valid)
 
 Examples:
 
