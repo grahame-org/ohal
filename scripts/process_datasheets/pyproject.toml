@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "process-datasheets"
+version = "0.1.0"
+description = "Extract and convert datasheet PDF pages to Markdown"
+requires-python = ">=3.11"
+dependencies = ["pymupdf>=1.24"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "PyHamcrest>=2",
+    "pyfakefs>=5",
+]
+
+[project.scripts]
+process-datasheets = "process_datasheets.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
