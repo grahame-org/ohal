@@ -541,6 +541,12 @@
         "feature-set": {
           "description": "Feature-set tier for this instance (for example 'full-feature-set', 'basic-feature-set', or 'low-power-feature-set').",
           "type": "string"
+        },
+        "alternate-functions": {
+          "description": "GPIO alternate-function pin mappings for this peripheral instance. Each entry names a GPIO pin, the AF number (0-15) used to select this peripheral on that pin, and the signal routed when that AF is active. Source: device datasheet alternate-function tables (e.g. Table 16 in DS14463), not RM0503.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/af-mapping" },
+          "minItems": 1
         }
       }
     },
@@ -872,6 +878,33 @@
         },
         "pin-modes-forbidden": {
           "description": "GPIO modes in which external interrupt capability is not supported.",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "af-mapping": {
+      "description": "A single GPIO alternate-function mapping: the GPIO pin, AF number, and the peripheral signal activated when that AF is selected.",
+      "type": "object",
+      "required": ["pin", "af-number", "signal"],
+      "additionalProperties": false,
+      "properties": {
+        "pin": {
+          "description": "GPIO pin identifier in the form 'PA8', 'PB3', etc.",
+          "type": "string"
+        },
+        "af-number": {
+          "description": "Alternate-function selection number (0-15) written to the GPIO AFRL/AFRH register to route the signal to this pin.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "signal": {
+          "description": "Peripheral signal name activated on this pin when the AF is selected, e.g. 'TIM1_CH1', 'USART2_TX'.",
+          "type": "string"
+        },
+        "sub-families": {
+          "description": "Sub-families for which this mapping is valid. Omit if valid on all sub-families.",
           "type": "array",
           "items": { "type": "string" }
         }
