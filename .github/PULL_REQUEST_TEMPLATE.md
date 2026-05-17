@@ -5,7 +5,9 @@ PR title MUST follow Conventional Commits format:
 
   type  : feat | fix | docs | test | ci | build | refactor | chore
   scope : optional — e.g. core | gpio | stm32u0 | pic | ci | vcpkg
-  summary: present tense, lowercase, no trailing period
+  summary: present tense, no trailing period
+           first character after ': ' must be a digit or lowercase letter
+           (e.g. 'fix: A comment' is invalid, 'fix: a comment' is valid)
 
 Examples:
   feat(gpio): add STM32U073 partial specialisation
