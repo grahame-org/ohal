@@ -225,27 +225,36 @@ phases:
       - id: P0-S9
         title: "Schema: extend field access enum with RM0503 access types"
         description: >
-          P1-S1 found that RM0503 §1.2 defines access types beyond
-          the schema's current {rw, ro, wo} enum.  The additional
-          types used in ohal-relevant registers are:
+          P1-S1 found that RM0503 §1.2 (page 51) defines 13 access types,
+          replacing the schema's previous {rw, r, w} enum.  The full set
+          of canonical RM0503 abbreviations is:
+            rw     – read/write.
+            r      – read-only (was ro).
+            w      – write-only (was wo).
             rc_w1  – read; set by hardware; cleared by writing 1.
             rc_w0  – read; set by hardware; cleared by writing 0.
+            rc_w   – read; cleared by any write.
             rc_r   – read; set by hardware; cleared by reading.
-            rw_once – read/write once after reset (e.g. key registers).
-            rt_w   – read; toggle by writing 1.
+            rs_r   – read; set by reading.
             rs     – read; set by software (cleared by hardware).
-          These are required for status-flag, error-flag, and
-          one-time-programmable fields in peripherals such as FLASH,
-          RCC, and EXTI.  Extend the `access` enum in
-          `$defs/field` and add a description clarifying each value.
+            rwo    – read/write once after reset (was rw_once).
+            t      – toggle by writing 1 (was rt_w).
+            rt_w1  – read; writing 1 triggers an event (no effect on bit).
+            res    – reserved; must not be modified by software.
+          Existing fields in stm32u0.yml were migrated to the canonical
+          abbreviations and all RESERVED fields were reclassified as res.
+          The USART TDR implementation was corrected from WriteOnly to
+          ReadWrite, and all timer SR fields were corrected from rw to rc_w0.
         filed-by: P1-S1
         acceptance-criteria:
-          - $defs/field/properties/access enum extended with
-            rc_w1, rc_w0, rc_r, rw_once, rt_w, rs.
-          - Description string updated to explain all values.
-          - docs/specs/stm32/stm32u0.yml continues to validate
-            against the updated schema (no existing access values
-            change).
+          - "$defs/field/properties/access enum contains all 13 RM0503
+            abbreviations (rw, r, w, rc_w0, rc_w1, rc_w, rc_r, rs_r,
+            rs, rwo, t, rt_w1, res)."
+          - Description string updated to explain all 13 values.
+          - "docs/specs/stm32/stm32u0.yml validates against the updated
+            schema with all access values using canonical abbreviations."
+          - All STM32U0 C++ BitField access policies are consistent with
+            the updated spec and RM0503 register tables.
           - lint.sh passes.
 
   # ============================================================

@@ -15,7 +15,7 @@ the format manageable and the data reusable, three granularity levels should be 
 ### Why three levels?
 
 - **Architecture** data is entirely vendor-independent. The ARM Cortex-M0+ access-type taxonomy
-  (`rc_w1`, `w1s`, etc.), NVIC register layout, and word size apply identically to STM32, NXP LPC,
+  (`rc_w1`, `rc_w0`, `rwo`, etc.), NVIC register layout, and word size apply identically to STM32, NXP LPC,
   Nordic nRF, and any other Cortex-M0+ device. Storing it once avoids duplication and drift.
 
 - **Family** data is shared across all models in a family. The STM32U0 GPIO register layout (MODER,
@@ -71,8 +71,8 @@ The 11 coverage gaps documented below can now be allocated to the correct level:
 | --- | --------------------------------------------- | ---------------------------------------------------------------- |
 | 1   | Peripheral instances and base-address binding | Family ✅                                                        |
 | 2   | Register reset values                         | Family                                                           |
-| 3   | Extended access-type taxonomy                 | Architecture                                                     |
-| 4   | Reserved fields and write-zero constraint     | Architecture                                                     |
+| 3   | Extended access-type taxonomy                 | Architecture ✅ (implemented in family schema)                   |
+| 4   | Reserved fields and write-zero constraint     | Architecture ✅ (implemented: `res` access type added)           |
 | 5   | Sub-family conditional registers/fields       | Family                                                           |
 | 6   | Alternate function pin-mapping table          | **Model**                                                        |
 | 7   | Clock gating and power-domain metadata        | Family                                                           |
@@ -285,40 +285,26 @@ No reset value is recorded for registers. This is essential for:
 
 **Proposed addition:** an optional `reset-value` (hex string) field on each register entry.
 
-### 3. Extended access-type taxonomy
+### 3. Extended access-type taxonomy ✅ (implemented)
 
-The current access types (`rw`, `ro`, `wo`) are insufficient for status registers. Many STM32
-and other ARM Cortex-M registers use:
+The `access` enum in `schema-family.json` now covers all 13 RM0503 §1.2 abbreviations:
+`rw`, `r`, `w`, `rc_w0`, `rc_w1`, `rc_w`, `rc_r`, `rs_r`, `rs`, `rwo`, `t`, `rt_w1`, `res`.
+These replace the previous 3-value set (`rw`/`ro`/`wo`) and include the dedicated `res` type
+for reserved fields. See `docs/specs/README.md` for the full table of access values.
 
-| Access code | Meaning                                     |
-| ----------- | ------------------------------------------- |
-| `rc_w1`     | Read; clear by writing 1                    |
-| `rc_w0`     | Read; clear by writing 0                    |
-| `w1s`       | Write 1 to set (read returns current value) |
-| `w1c`       | Write 1 to clear                            |
-| `rs`        | Read/set (writing has no effect)            |
-| `t`         | Toggle (write 1 to toggle current value)    |
+### 4. Reserved fields and write-zero constraint ✅ (partially implemented)
 
-Without these access types, driver code generation is incomplete and consumers cannot determine
-the correct RMW strategy for each field.
-
-**Proposed addition:** expand the `access` enum in the schema to include the above codes, and
-document each in the README.
-
-### 4. Reserved fields and write-zero constraint
-
-Reserved bits within a register are partially expressed (e.g. `RESERVED` fields in LCKR), but
-there is no way to specify the required write behaviour (`write-zero`, `write-as-read`,
-`write-any`). Incorrect writes to reserved bits can cause undefined hardware behaviour.
-
-**Proposed addition:** an optional `reserved-write` field on `RESERVED`-named register entries:
+All reserved register fields now use `access: res` (the dedicated RM0503 §1.2 reserved type),
+which signals to consumers that these bits must not be modified by software. The finer-grained
+write-behaviour qualifier (`write-zero`, `write-as-read`, `write-any`) is not yet captured; that
+remains a potential future addition:
 
 ```yaml
 - name: RESERVED
   msb: 31
   lsb: 17
   access: res
-  reserved-write: write-zero
+  reserved-write: write-zero # not yet in schema
 ```
 
 ### 5. Sub-family conditional registers and fields
