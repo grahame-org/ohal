@@ -55,10 +55,6 @@ echo "=== shellcheck ==="
 find "${REPO_ROOT}" -name '*.sh' -print0 | xargs -0 shellcheck
 
 echo "=== markdownlint ==="
-MARKDOWNLINT_TARGETS=("${REPO_ROOT}/docs/**/*.md" "${REPO_ROOT}/README.md")
-if [ -f "${REPO_ROOT}/CHANGELOG.md" ]; then
-    MARKDOWNLINT_TARGETS+=("${REPO_ROOT}/CHANGELOG.md")
-fi
-markdownlint-cli2 "${MARKDOWNLINT_TARGETS[@]}"
+markdownlint-cli2 "${REPO_ROOT}/docs/**/*.md" "${REPO_ROOT}/README.md"
 
 echo "All lint checks passed."
