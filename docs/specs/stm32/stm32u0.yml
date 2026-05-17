@@ -1,4 +1,4 @@
-spec-version: "1.2.0"
+spec-version: "1.3.0"
 
 vendor: STMicroelectronics
 
@@ -4715,7 +4715,7 @@ peripherals:
                 msb: 17
                 lsb: 17
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match
                   "1": A compare match occurred on channel 6
@@ -4723,7 +4723,7 @@ peripherals:
                 msb: 16
                 lsb: 16
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match
                   "1": A compare match occurred on channel 5
@@ -4737,7 +4737,7 @@ peripherals:
                 msb: 13
                 lsb: 13
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No break event occurred
                   "1": An active level has been detected on the system break input
@@ -4745,7 +4745,7 @@ peripherals:
                 msb: 12
                 lsb: 12
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR4 while CC4IF was already set
@@ -4753,7 +4753,7 @@ peripherals:
                 msb: 11
                 lsb: 11
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR3 while CC3IF was already set
@@ -4761,7 +4761,7 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR2 while CC2IF was already set
@@ -4769,7 +4769,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture has been detected
                   "1": Counter value captured in TIMx_CCR1 while CC1IF was already set
@@ -4777,7 +4777,7 @@ peripherals:
                 msb: 8
                 lsb: 8
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No break 2 event occurred
                   "1": An active level has been detected on the break 2 input
@@ -4785,7 +4785,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No break event occurred
                   "1": An active level has been detected on the break input
@@ -4793,7 +4793,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No trigger event occurred
                   "1": Trigger interrupt pending
@@ -4801,7 +4801,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No COM event occurred
                   "1": COM interrupt pending
@@ -4809,7 +4809,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 4
@@ -4817,7 +4817,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 3
@@ -4825,7 +4825,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 2
@@ -4833,7 +4833,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 1
@@ -4841,7 +4841,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No update occurred
                   "1": Update interrupt pending
@@ -6236,7 +6236,7 @@ peripherals:
                 msb: 12
                 lsb: 12
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR4 while CC4IF was already set
@@ -6244,7 +6244,7 @@ peripherals:
                 msb: 11
                 lsb: 11
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR3 while CC3IF was already set
@@ -6252,7 +6252,7 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR2 while CC2IF was already set
@@ -6260,7 +6260,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture has been detected
                   "1": Counter value captured in TIMx_CCR1 while CC1IF was already set
@@ -6274,7 +6274,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No trigger event occurred
                   "1": Trigger interrupt pending
@@ -6288,7 +6288,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 4
@@ -6296,7 +6296,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 3
@@ -6304,7 +6304,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 2
@@ -6312,7 +6312,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 1
@@ -6320,7 +6320,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No update occurred
                   "1": Update interrupt pending
@@ -7225,7 +7225,7 @@ peripherals:
                 msb: 12
                 lsb: 12
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR4 while CC4IF was already set
@@ -7233,7 +7233,7 @@ peripherals:
                 msb: 11
                 lsb: 11
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR3 while CC3IF was already set
@@ -7241,7 +7241,7 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR2 while CC2IF was already set
@@ -7249,7 +7249,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture has been detected
                   "1": Counter value captured in TIMx_CCR1 while CC1IF was already set
@@ -7263,7 +7263,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No trigger event occurred
                   "1": Trigger interrupt pending
@@ -7277,7 +7277,7 @@ peripherals:
                 msb: 4
                 lsb: 4
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 4
@@ -7285,7 +7285,7 @@ peripherals:
                 msb: 3
                 lsb: 3
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 3
@@ -7293,7 +7293,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 2
@@ -7301,7 +7301,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 1
@@ -7309,7 +7309,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No update occurred
                   "1": Update interrupt pending
@@ -8051,7 +8051,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No update occurred
                   "1": Update interrupt pending
@@ -8436,7 +8436,7 @@ peripherals:
                 msb: 10
                 lsb: 10
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture detected
                   "1": Counter value captured in TIMx_CCR2 while CC2IF was already set
@@ -8444,7 +8444,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture has been detected
                   "1": Counter value captured in TIMx_CCR1 while CC1IF was already set
@@ -8458,7 +8458,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No break event occurred
                   "1": An active level has been detected on the break input
@@ -8466,7 +8466,7 @@ peripherals:
                 msb: 6
                 lsb: 6
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No trigger event occurred
                   "1": Trigger interrupt pending
@@ -8474,7 +8474,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No COM event occurred
                   "1": COM interrupt pending
@@ -8482,7 +8482,7 @@ peripherals:
                 msb: 2
                 lsb: 2
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 2
@@ -8490,7 +8490,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 1
@@ -8498,7 +8498,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No update occurred
                   "1": Update interrupt pending
@@ -9299,7 +9299,7 @@ peripherals:
                 msb: 9
                 lsb: 9
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No overcapture has been detected
                   "1": Counter value captured in TIMx_CCR1 while CC1IF was already set
@@ -9313,7 +9313,7 @@ peripherals:
                 msb: 7
                 lsb: 7
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No break event occurred
                   "1": An active level has been detected on the break input
@@ -9327,7 +9327,7 @@ peripherals:
                 msb: 5
                 lsb: 5
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No COM event occurred
                   "1": COM interrupt pending
@@ -9341,7 +9341,7 @@ peripherals:
                 msb: 1
                 lsb: 1
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No compare match / No input capture occurred
                   "1": A compare match or input capture occurred on channel 1
@@ -9349,7 +9349,7 @@ peripherals:
                 msb: 0
                 lsb: 0
                 width: 1
-                access: rw
+                access: rc_w0
                 settings:
                   "0": No update occurred
                   "1": Update interrupt pending
