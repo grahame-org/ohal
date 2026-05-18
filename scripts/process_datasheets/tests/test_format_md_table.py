@@ -231,9 +231,12 @@ def test_format_md_table_header_only():
 # ---------------------------------------------------------------------------
 
 
-def test_normalise_cell_escapes_trailing_space_underscore():
-	# "FLASH ITF _" has a trailing space-separated _ that Prettier escapes as \_.
-	assert_that(_normalise_cell("FLASH ITF _"), equal_to(r"FLASH ITF \_"))
+def test_normalise_cell_strips_trailing_space_underscore():
+	# A trailing standalone _ is a PDF border artefact and must be stripped entirely.
+	# e.g. pymupdf emits "REV ID\n_" -> collapse -> "REV ID _" -> strip -> "REV ID".
+	assert_that(_normalise_cell("FLASH ITF _"), equal_to("FLASH ITF"))
+	assert_that(_normalise_cell("REV ID _"), equal_to("REV ID"))
+	assert_that(_normalise_cell("FLASH SIZE _"), equal_to("FLASH SIZE"))
 
 
 def test_normalise_cell_escapes_leading_underscore():
@@ -251,16 +254,16 @@ def test_normalise_cell_does_not_escape_identifier_underscore():
 
 
 def test_format_md_table_with_escaped_cell_uses_correct_column_width():
-	# When _normalise_cell escapes trailing _, the escaped form \_ is wider than _.
-	# _format_md_table must use the escaped width for column alignment.
+	# Mid-string standalone _ is escaped as \_ by _normalise_cell; _format_md_table
+	# must use the display width of the escaped form for column alignment.
 	escaped_rows = [
-		[_normalise_cell(c) for c in ["Res.", "Res.", "FLASH ITF _", "FLASH ECC _"]],
+		[_normalise_cell(c) for c in ["Res.", "Res.", "FOO _ BAR", "FOO _ BAZ"]],
 		[_normalise_cell(c) for c in ["", "", "r", "r"]],
 	]
 	result = _format_md_table(escaped_rows)
-	assert_that(result, contains_string(r"FLASH ITF \_"))
-	assert_that(result, contains_string(r"FLASH ECC \_"))
-	# Column width should be 12 (len("FLASH ITF \_") = 12), giving "------------"
-	assert_that(result, contains_string("------------"))
+	assert_that(result, contains_string(r"FOO \_ BAR"))
+	assert_that(result, contains_string(r"FOO \_ BAZ"))
+	# Column width should be 10 (len("FOO \_ BAR") = 10), giving "----------"
+	assert_that(result, contains_string("----------"))
 
 

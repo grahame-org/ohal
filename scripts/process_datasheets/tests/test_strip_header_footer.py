@@ -906,11 +906,11 @@ def test_bare_asterisk_italic_close_in_cross_reference():
         "34.4:* ",
     ),
     (
-        # Body contains an underscore (WWDG_CFR) so the span is promoted to
-        # '*...*' rather than '_..._' to avoid Prettier mangling.
+        # Body contains only identifier underscores (WWDG_CFR = word_word),
+        # which are fine inside _..._ — prettier keeps _..._ for them.
         "The _WWDG configuration register (WWDG_CFR)* contains the high limit.",
-        "(WWDG_CFR)*",
-        "_WWDG configuration",  # the raw _...* mixed form must be gone
+        "(WWDG_CFR)_",
+        "(WWDG_CFR)*",  # the raw _...* mixed form must be gone
     ),
 ])
 def test_bare_asterisk_italic_close_variants(input_text, expected_contains, expected_absent):
@@ -953,15 +953,15 @@ def test_wrapped_italic_span_joined_across_lines():
     as two separate spans and mangle the output.  The two markers must be
     collapsed into a single space so both fragments form one italic span.
 
-    Because the joined body contains an underscore (FLASH_HDPEXTR) the span is
-    further promoted to '*...*' to keep Prettier from escaping the delimiters.
+    The body contains only identifier underscores (FLASH_HDPEXTR = word_word),
+    so prettier keeps the span as _..._ rather than converting it to *...*.
     """
     text = (
         "extended through HDP1_EXT[6:0] of the _FLASH HDP extension_\n"
         "_register (FLASH_HDPEXTR)_. HDP1_EXT[6:0] indicates"
     )
     result = strip_header_footer(text)
-    assert_that(result, contains_string("*FLASH HDP extension register (FLASH_HDPEXTR)*"))
+    assert_that(result, contains_string("_FLASH HDP extension register (FLASH_HDPEXTR)_"))
     assert_that(result, not_(contains_string("extension_\n_register")))
 
 

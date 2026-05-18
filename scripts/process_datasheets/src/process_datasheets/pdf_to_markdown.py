@@ -463,15 +463,54 @@ def _fix_italic_spans(text: str) -> str:
     # Join wrapped italic spans split across lines: "_text_\n_cont_" → "_text cont_".
     text = re.sub(r"_\n_", " ", text)
 
-    # Convert "_..._" spans whose body contains underscores to "*...*".
-    # CommonMark forbids underscore-delimited italics when the body itself contains
-    # underscores (e.g. register names like "FLASH_HDPEXTR"); prettier would escape
-    # the delimiters.  Using "*" markers sidesteps the ambiguity.
+    # Join adjacent italic spans on the same line separated by a single space:
+    # "_span one_ _span two_" → "_span one span two_".
+    # This occurs when the PDF emits two consecutive italic spans (e.g. the main
+    # cross-reference text and its parenthesised register name) as separate runs.
+    # The merge must happen BEFORE the underscore-body conversion pass so that
+    # the greedy body regex does not mis-span across the inter-span gap and corrupt
+    # both spans (e.g. "_Section...register_ _(DBGMCU_IDCODE)_" → single span).
+    text = re.sub(r"_( )_", r"\1", text)
+
+    # Convert "_..._" spans whose body contains a non-identifier underscore to "*...*".
+    # A non-identifier underscore is one NOT between two word characters (e.g. a
+    # standalone " _ " or a leading/trailing "_word").  Identifier underscores such as
+    # TIMx_BDTR or FLASH_HDPEXTR are fine inside "_..._" and prettier keeps them as-is.
+    # We only switch to "*...*" when ambiguous underscores are present, matching
+    # exactly what prettier would do.
+    def _underscore_body_to_star(m: re.Match) -> str:  # type: ignore[type-arg]
+        body = m.group(1)
+        # Non-identifier _ = one not preceded by \w OR not followed by \w.
+        if re.search(r"(?<!\w)_|_(?!\w)", body):
+            return f"*{body}*"
+        return m.group(0)
+
     text = re.sub(
         r"(?<!\w)_((?:[^_\n]|(?<=\w)_(?=\w))*_(?:[^_\n])*?)_(?!\w)",
+        _underscore_body_to_star,
+        text,
+    )
+
+    # Convert inline cross-reference italic spans such as "_Figure 365_",
+    # "_Section 26.5.9_", or "_Table 12_" to "*...*".  These spans appear at
+    # the end of a paragraph line and are then continued by the next sentence on
+    # the following line.  Because the surrounding paragraph text may contain
+    # identifier underscores (e.g. LPUART_CR3), Prettier can mistake the opening
+    # "_" of one of those identifiers and the "_" inside "_Figure N_" as the
+    # delimiters of an implicit italic span, corrupting both.  Switching to
+    # "*...*" eliminates the ambiguity without changing the rendered appearance.
+    text = re.sub(
+        r"_((Figure|Section|Table|Equation|Appendix)\s+[\d.]+[a-z]?)_",
         r"*\1*",
         text,
     )
+
+    # Escape bare "*" used as a multiplication operator in address-offset
+    # formulas (e.g. "0x004 * x").  Prettier interprets "space * letter" as an
+    # italic-open delimiter and escapes it to "\*".  We pre-empt this by
+    # escaping such occurrences ourselves so the raw output already matches
+    # what Prettier would produce.
+    text = re.sub(r"(0x[0-9A-Fa-f]+) \* ([a-zA-Z])", r"\1 \* \2", text)
 
     # Remove spurious escaped-underscore artifacts trailing register names in table
     # cells: "WRP1x END \_ \_" → "WRP1x END".
@@ -539,7 +578,14 @@ def _fix_lists(text: str) -> str:
     # non-blank content (same-block extraction artefact, symmetric to the above).
     text = re.sub(r"(?m)(?<!\n)\n(#{1,6} )", r"\n\n\1", text)
 
-    # Collapse 3+ consecutive blank lines to a single blank line.  Prettier
+    # Ensure a blank line before italic Note paragraphs (_Note: or *Note:) that
+    # directly follow body text without one.  Without this separation, prettier
+    # treats the Note and the preceding lines as a single paragraph and can
+    # misinterpret identifier underscores (e.g. USART_CR1) in those lines as
+    # italic delimiters, corrupting the output.
+    text = re.sub(r"(?m)(?<!\n)\n([_*]Note:)", r"\n\n\1", text)
+
+    # Collapse 3+ consecutive blank lines to a single blank line.
     # never produces more than one blank line between blocks, so any run of
     # two or more empty lines in the output is an extraction artefact.
     text = re.sub(r"\n{3,}", "\n\n", text)
@@ -617,6 +663,13 @@ def _normalise_cell(value: object, collapse_newlines: bool = True) -> str:
     text = _normalise_text(str(value)) if value is not None else ""
     if collapse_newlines:
         text = text.replace("\n", " ")
+    # Strip trailing standalone-underscore PDF artefacts.  pymupdf sometimes
+    # extracts a register-map cell as e.g. "REV ID\n_" or "FLASH SIZE\n_" where
+    # the lone "_" on its own line is a table-border glyph, not part of the name.
+    # After newline collapsing this becomes "REV ID _" / "FLASH SIZE _".  Remove
+    # any trailing " _" (space + lone underscore) that is not an embedded
+    # identifier underscore (i.e. the _ has a space before it).
+    text = re.sub(r"(?<=\w)( _)+$", "", text)
     # Escape underscore characters that are not embedded between two word characters
     # (i.e. not identifier underscores like FLASH_ITF).  Prettier escapes standalone _
     # in table cells because they can act as italic/emphasis delimiters in Markdown.
