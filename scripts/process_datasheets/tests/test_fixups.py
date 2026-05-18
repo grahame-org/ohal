@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 from hamcrest import assert_that, contains_string, equal_to, not_
 
 from process_datasheets.fixups import (
