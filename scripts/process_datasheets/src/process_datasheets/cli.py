@@ -94,19 +94,33 @@ def main(argv: list[str] | None = None) -> None:
 
     # Post-process: run prettier over every Markdown file in the output directory.
     # prettier normalises formatting (trailing newlines, spacing, etc.).
-    # Line endings are managed exclusively by git via .gitattributes, so we do
-    # not pass --end-of-line here.
+    #
+    # Always pass --config pointing at the repo-root .prettierrc.json so that
+    # the same settings apply regardless of where out_dir is on disk (e.g. a
+    # temporary directory outside the repository tree would otherwise cause
+    # prettier to fall back to its built-in defaults, producing output that
+    # differs from what lint.sh checks).
     #
     # Pass a glob pattern to prettier rather than individual file paths to avoid
     # the Windows command-line length limit when there are many output files.
     # shell=True is required on Windows where npx is a .cmd batch wrapper that
     # subprocess cannot locate without shell mediation.
+    _repo_root = Path(__file__).parents[4]
+    _prettier_config = _repo_root / ".prettierrc.json"
     md_files = sorted(out_dir.glob("*.md"))
     if md_files:
         print(f"\nRunning prettier on {len(md_files)} file(s) in {out_dir} …")
         glob_pattern = str(out_dir / "*.md")
         result = subprocess.run(
-            ["npx", "--yes", "prettier", "--write", glob_pattern],
+            [
+                "npx",
+                "--yes",
+                "prettier",
+                "--config",
+                str(_prettier_config),
+                "--write",
+                glob_pattern,
+            ],
             check=False,
             shell=(sys.platform == "win32"),
         )
