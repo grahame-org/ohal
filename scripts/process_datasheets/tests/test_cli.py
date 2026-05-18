@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import pathlib
 import pytest
 from unittest.mock import MagicMock, patch
 from hamcrest import assert_that, equal_to, contains_string
@@ -56,7 +57,6 @@ def test_cli_writes_output_file_for_valid_page(fs):
         mock_mu.open.return_value = mock_doc
         main([pdf_path, "3", "--output-dir", out_dir])
 
-    import pathlib
     out_file = pathlib.Path(out_dir) / "page_0003.md"
     assert_that(out_file.exists(), equal_to(True))
 
@@ -77,7 +77,6 @@ def test_cli_output_file_contains_page_comment(fs):
         mock_mu.open.return_value = mock_doc
         main([pdf_path, "5", "--output-dir", out_dir])
 
-    import pathlib
     content = (pathlib.Path(out_dir) / "page_0005.md").read_text(encoding="utf-8")
     assert_that(content, contains_string("<!-- RM0503 page 5 -->"))
 
@@ -99,7 +98,6 @@ def test_cli_output_file_contains_markdown_body(fs):
         mock_mu.open.return_value = mock_doc
         main([pdf_path, "2", "--output-dir", out_dir])
 
-    import pathlib
     content = (pathlib.Path(out_dir) / "page_0002.md").read_text(encoding="utf-8")
     assert_that(content, contains_string(expected_body))
 
