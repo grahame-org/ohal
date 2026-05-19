@@ -498,6 +498,41 @@ memory:
       # Cortex-M0+ internal peripherals (0xE0000000–0xE00FFFFF) are defined in
       # docs/specs/common/arch/cortex-m0plus.yml and are not repeated here.
 
+boot:
+  references:
+    section: "2.5"
+    tables: [6]
+  note: >-
+    Boot mode is determined by five configuration inputs (RM0503 Table 6): the
+    BOOT_LOCK option bit, the BOOT0 pin (or nBOOT0 option bit when nBOOT_SEL=1),
+    the nBOOT_SEL option bit, the nBOOT1 option bit, and the nBOOT0 option bit.
+    When nBOOT_SEL=0 the physical BOOT0 pin selects the boot source; when
+    nBOOT_SEL=1 the nBOOT0 option bit is used instead of the pin. Setting
+    BOOT_LOCK=1 overrides all other settings and forces boot from main flash
+    memory regardless of all other bits.
+  modes:
+    - name: main-flash-nbootsel0-boot0-low
+      boot-pin-state: "0"
+      source: Main flash memory
+    - name: system-memory-nbootsel0-boot0-high
+      boot-pin-state: "1"
+      source: System memory
+    - name: sram-nbootsel0-boot0-high
+      boot-pin-state: "1"
+      source: Embedded SRAM
+    - name: main-flash-nbootsel1-nboot0-high
+      boot-pin-state: x
+      source: Main flash memory
+    - name: system-memory-nbootsel1-nboot0-low
+      boot-pin-state: x
+      source: System memory
+    - name: sram-nbootsel1-nboot0-low
+      boot-pin-state: x
+      source: Embedded SRAM
+    - name: main-flash-boot-lock
+      boot-pin-state: x
+      source: Main flash memory (forced)
+
 features:
   references:
     section: "1.5"
