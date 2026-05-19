@@ -521,16 +521,16 @@ boot:
       boot-pin-state: "1"
       source: Embedded SRAM
     - name: main-flash-nbootsel1-nboot0-high
-      boot-pin-state: x
+      boot-pin-state: "x"
       source: Main flash memory
     - name: system-memory-nbootsel1-nboot0-low
-      boot-pin-state: x
+      boot-pin-state: "x"
       source: System memory
     - name: sram-nbootsel1-nboot0-low
-      boot-pin-state: x
+      boot-pin-state: "x"
       source: Embedded SRAM
     - name: main-flash-boot-lock
-      boot-pin-state: x
+      boot-pin-state: "x"
       source: Main flash memory (forced)
 
 features:
