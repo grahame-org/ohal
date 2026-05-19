@@ -11186,6 +11186,14 @@ peripherals:
             The LPTIM peripheral is powered down and must be reinitialized after
             exiting Standby mode.
 
+  - flash:
+      reference:
+        section: "3"
+      instances:
+        - name: FLASH
+          base: 0x40022000
+      registers: []
+
 nvic:
   reference:
     section: "11"
