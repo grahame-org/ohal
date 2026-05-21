@@ -200,10 +200,10 @@ def _strip_header_footer(text: str) -> str:
     # Join orphaned unordered list markers: a bare "-" line merged with the next content line.
     # Use [ \t]* instead of \s* to avoid newlines being matched by the space-consuming
     # quantifiers, which would create overlapping alternatives and risk catastrophic backtracking.
-    result = re.sub(r"(?m)^-[ \t]*\n(?:[ \t]*\n)*[ \t]*(.+)", r"- \1", result)
+    result = re.sub(r"(?m)^-[ \t]*\n(?:[ \t]*\n)*[ \t]*([^\n]+)", r"- \1", result)
 
     # Join orphaned ordered list markers: e.g. "1.\n" merged with the next content line.
-    result = re.sub(r"(?m)^(\d+\.)[ \t]*\n(?:[ \t]*\n)*[ \t]*(.+)", r"\1 \2", result)
+    result = re.sub(r"(?m)^(\d+\.)[ \t]*\n(?:[ \t]*\n)*[ \t]*([^\n]+)", r"\1 \2", result)
 
     # Collapse blank lines between consecutive list items (both unordered and ordered) so
     # they form a single tight list.  Only remove the blank when BOTH neighbours are list
