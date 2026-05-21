@@ -11279,6 +11279,21 @@ peripherals:
                   "000": Zero wait states
                   "001": One wait state
                   "010": Two wait states
+        - KEYR:
+            reference:
+              section: 3.7.2
+            offset: 0x08
+            reset-value: 0x00000000
+            note: >-
+              Write KEY1 (0x45670123) then KEY2 (0xCDEF89AB) consecutively to
+              unlock FLASH_CR and enable programming/erasing operations.
+            fields:
+              - name: KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
 
 nvic:
   reference:
