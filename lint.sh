@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 # lint.sh — runs all linting and formatting checks.
+# Usage: lint.sh [--fix]
 # Exit codes: 0 = all checks passed, non-zero = at least one check failed.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FIX_MODE="${1:-}"
+
+if [[ "$FIX_MODE" == "--fix" ]]; then
+  PRETTIER_ARGS="--write"
+else
+  PRETTIER_ARGS="--check"
+fi
 
 echo "=== prettier ==="
 find "${REPO_ROOT}" \
     \( -name '*.md' -o -name '*.yml' -o -name '*.yaml' -o -name '*.json' \) \
     ! -path "${REPO_ROOT}/.git/*" \
-    -print0 | xargs -0 npx prettier --check
+    -print0 | xargs -0 npx prettier ${PRETTIER_ARGS}
 
 echo "=== clang-format ==="
 find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" "${REPO_ROOT}/test_project" \
