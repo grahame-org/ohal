@@ -83,6 +83,13 @@ _STANDALONE_BOLD_RE = re.compile(r"\*\*[^*]+\*\*")
 # Matches any Markdown heading line.
 _HEADING_LINE_RE = re.compile(r"#{1,6} ")
 
+# Italic-adjacency patterns for _fix_italic_spans / _fix_italic_adjacency.
+# _ITALIC_ADJ_RE matches a word character followed by an opening "_" that starts
+# a complete italic span (non-greedy: content, no _ or newline, closing _).
+_ITALIC_ADJ_RE = re.compile(r"(\w)(_(?=[^\s_][^_\n]*_(?!\w)))")
+# _ITALIC_SPAN_RE matches a complete inline italic span for range-tracking.
+_ITALIC_SPAN_RE = re.compile(r"_[^_\n]+_")
+
 
 _PAGE_RANGE_RE = re.compile(r"^(\d+)-(\d+)$")
 
@@ -316,6 +323,18 @@ def _indent_list_continuations(text: str) -> str:
     return "\n".join(out)
 
 
+def _merge_paren_heading(m: re.Match) -> str:  # type: ignore[type-arg]
+    """Merge a same-level heading continuation that starts with '(' into the preceding line.
+
+    E.g. ``### TIM1 DMA/interrupt enable register\\n### (TIM1_DIER)``
+    becomes ``### TIM1 DMA/interrupt enable register (TIM1_DIER)``.
+    Only merges when both lines share the same heading level prefix.
+    """
+    if m.group(1).startswith(m.group(2)):
+        return m.group(1) + " " + m.group(3)
+    return m.group(0)
+
+
 def _fix_headings(text: str) -> str:
     """Normalise heading levels and clean up mis-promoted / mis-demoted headings."""
     # Drop figure/diagram legend headings.  Two surface forms exist:
@@ -332,7 +351,7 @@ def _fix_headings(text: str) -> str:
     #   "### TIM1 DMA/interrupt enable register\n### (TIM1_DIER)"
     text = re.sub(
         r"(?m)^(#{1,6} .+)\n(#{1,6}) (\(.+)",
-        lambda m: m.group(1) + " " + m.group(3) if m.group(1).startswith(m.group(2)) else m.group(0),
+        _merge_paren_heading,
         text,
     )
 
@@ -381,6 +400,37 @@ def _fix_headings(text: str) -> str:
     return text
 
 
+def _fix_italic_adjacency(line: str) -> str:
+    """Insert a space before an opening ``_`` that directly follows a word character.
+
+    Only fires when the ``_`` starts a complete italic span (there is a matching
+    closing ``_`` later on the same line).  Underscores that are interior to an
+    already-open span (e.g. ``TI1F_ED`` inside ``_…TI1F_ED…_``) are left alone.
+    """
+    italic_ranges = [(m.start(), m.end()) for m in _ITALIC_SPAN_RE.finditer(line)]
+
+    def _replacer(m: re.Match) -> str:  # type: ignore[type-arg]
+        underscore_pos = m.start(2)
+        for span_start, span_end in italic_ranges:
+            if span_start < underscore_pos < span_end:
+                return m.group(0)
+        return m.group(1) + " " + m.group(2)
+
+    return _ITALIC_ADJ_RE.sub(_replacer, line)
+
+
+def _underscore_body_to_star(m: re.Match) -> str:  # type: ignore[type-arg]
+    """Replace ``_body_`` with ``*body*`` when *body* contains a non-identifier underscore.
+
+    A non-identifier underscore is one not surrounded by word characters on both
+    sides.  This matches what Prettier would produce, so we normalise proactively.
+    """
+    body = m.group(1)
+    if re.search(r"(?<!\w)_|_(?!\w)", body):
+        return f"*{body}*"
+    return m.group(0)
+
+
 def _fix_italic_spans(text: str) -> str:
     """Normalise italic markup corrupted during PDF extraction.
 
@@ -400,39 +450,7 @@ def _fix_italic_spans(text: str) -> str:
     # Ensure a space before _ italic/bold-italic markers when they directly follow a word
     # character.  CommonMark forbids _ from opening emphasis when preceded by a Unicode
     # alphanumeric (left-flanking delimiter rule), so "word_italic_" would be rewritten
-    # by Prettier to "word*italic*".  The lookahead matches our formatter's output: a _
-    # followed by at least one non-space non-_ character and then a closing _ that is NOT
-    # itself immediately followed by a word character, which distinguishes italic spans
-    # from plain-text identifiers like RCC_CFGR (no isolated closing _).
-    # [^_\n]* is used (not [^_]*) to prevent the lookahead from crossing newlines and
-    # falsely matching a closing _ on a subsequent line (e.g. inside a table row).
-    #
-    # The fix is NOT applied to identifier underscores that appear INSIDE an already-open
-    # italic span (e.g. TI1F_ED inside _The gated ... TI1F_ED ... trigger input_), because
-    # the outer closing _ would satisfy the lookahead and produce a spurious "TI1F _ED".
-    # We detect this by computing the character ranges of complete italic spans on each
-    # line and skipping any match whose _ falls inside one of those ranges.
-    _ITALIC_ADJ_RE = re.compile(r"(\w)(_(?=[^\s_][^_\n]*_(?!\w)))")
-    # Matches a complete italic span: opening _, content (no _ or newline), closing _.
-    _ITALIC_SPAN_RE = re.compile(r"_[^_\n]+_")
-
-    def _fix_italic_adjacency(line: str) -> str:
-        # Build the set of (start, end) char ranges for complete italic spans on this line.
-        italic_ranges = [(m.start(), m.end()) for m in _ITALIC_SPAN_RE.finditer(line)]
-
-        def _replacer(m: re.Match) -> str:  # type: ignore[type-arg]
-            # The _ we are considering is at m.start(2) (group 2 is the _ and its lookahead).
-            underscore_pos = m.start(2)
-            # Skip if the underscore is inside an already-open italic span — it is an
-            # identifier _ (e.g. TI1F_ED in _...TI1F_ED...trigger input_), not a new opener.
-            for span_start, span_end in italic_ranges:
-                # The span's own opening _ is at span_start; its interior starts at span_start+1.
-                if span_start < underscore_pos < span_end:
-                    return m.group(0)  # leave unchanged
-            return m.group(1) + " " + m.group(2)
-
-        return _ITALIC_ADJ_RE.sub(_replacer, line)
-
+    # by Prettier to "word*italic*".  See _fix_italic_adjacency for the full explanation.
     text = "\n".join(_fix_italic_adjacency(line) for line in text.splitlines())
 
     # Fix broken "Note:" patterns: "\_Note:*", "\_Note:_", "*Note:_".
@@ -473,18 +491,7 @@ def _fix_italic_spans(text: str) -> str:
     text = re.sub(r"_( )_", r"\1", text)
 
     # Convert "_..._" spans whose body contains a non-identifier underscore to "*...*".
-    # A non-identifier underscore is one NOT between two word characters (e.g. a
-    # standalone " _ " or a leading/trailing "_word").  Identifier underscores such as
-    # TIMx_BDTR or FLASH_HDPEXTR are fine inside "_..._" and prettier keeps them as-is.
-    # We only switch to "*...*" when ambiguous underscores are present, matching
-    # exactly what prettier would do.
-    def _underscore_body_to_star(m: re.Match) -> str:  # type: ignore[type-arg]
-        body = m.group(1)
-        # Non-identifier _ = one not preceded by \w OR not followed by \w.
-        if re.search(r"(?<!\w)_|_(?!\w)", body):
-            return f"*{body}*"
-        return m.group(0)
-
+    # See _underscore_body_to_star for the full explanation.
     text = re.sub(
         r"(?<!\w)_((?:[^_\n]|(?<=\w)_(?=\w))*_(?:[^_\n])*?)_(?!\w)",
         _underscore_body_to_star,
@@ -552,6 +559,27 @@ def _fix_toc(text: str) -> str:
     return text
 
 
+def _collapse_spaces_outside_tables(text: str) -> str:
+    """Collapse multiple consecutive spaces within non-table, non-code lines.
+
+    Preserves leading indentation and skips table rows (``|``-prefixed) and
+    fenced code blocks so that intentional column padding is not destroyed.
+    """
+    result_lines: list[str] = []
+    in_fence = False
+    for line in text.splitlines():
+        if line.startswith("```"):
+            in_fence = not in_fence
+        if not in_fence and not line.startswith("|"):
+            # Preserve leading whitespace; collapse only internal runs.
+            stripped = line.lstrip()
+            indent = line[: len(line) - len(stripped)]
+            stripped = re.sub(r"  +", " ", stripped)
+            line = indent + stripped
+        result_lines.append(line)
+    return "\n".join(result_lines)
+
+
 def _fix_lists(text: str) -> str:
     """Fix list structure: collapse markers, join orphans, indent continuations."""
     # Collapse double list markers: "- - item" → "- item"
@@ -590,24 +618,6 @@ def _fix_lists(text: str) -> str:
     # two or more empty lines in the output is an extraction artefact.
     text = re.sub(r"\n{3,}", "\n\n", text)
 
-    # Collapse multiple consecutive spaces within a line to a single space, but
-    # only in the non-leading portion (indentation must be preserved).  Exclude
-    # table rows (which use intentional column padding) and fenced code blocks.
-    def _collapse_spaces_outside_tables(t: str) -> str:
-        result_lines: list[str] = []
-        in_fence = False
-        for line in t.splitlines():
-            if line.startswith("```"):
-                in_fence = not in_fence
-            if not in_fence and not line.startswith("|"):
-                # Preserve leading whitespace; collapse only internal runs.
-                stripped = line.lstrip()
-                indent = line[: len(line) - len(stripped)]
-                stripped = re.sub(r"  +", " ", stripped)
-                line = indent + stripped
-            result_lines.append(line)
-        return "\n".join(result_lines)
-
     text = _collapse_spaces_outside_tables(text)
 
     return text
@@ -641,11 +651,10 @@ def strip_header_footer(text: str) -> str:
     return result.strip()
 
 
-def _dominant_body_size(page: "pymupdf.Page") -> float:
-    """Return the modal font size on the page, weighted by character count."""
+def _dominant_body_size(blocks: list[dict]) -> float:
+    """Return the modal font size among *blocks*, weighted by character count."""
     size_chars: Counter[int] = Counter()
-    data = page.get_text("dict", sort=True)
-    for block in data.get("blocks", []):
+    for block in blocks:
         if block.get("type") != 0:
             continue
         for line in block.get("lines", []):
@@ -678,6 +687,11 @@ def _normalise_cell(value: object, collapse_newlines: bool = True) -> str:
     return text
 
 
+def _fmt_table_row(cells: list[str], widths: list[int]) -> str:
+    """Render one GFM table row, padding each cell to its column width."""
+    return "| " + " | ".join(cell.ljust(w) for cell, w in zip(cells, widths)) + " |"
+
+
 def _format_md_table(rows: list[list[str]]) -> str:
     """Format a list of rows (header first) as a Prettier-aligned GFM table.
 
@@ -695,14 +709,10 @@ def _format_md_table(rows: list[list[str]]) -> str:
         max(3, max(len(padded[r][c]) for r in range(len(padded))))
         for c in range(col_count)
     ]
-
-    def _fmt_row(cells: list[str]) -> str:
-        return "| " + " | ".join(cell.ljust(w) for cell, w in zip(cells, widths)) + " |"
-
-    lines = [_fmt_row(padded[0])]
+    lines = [_fmt_table_row(padded[0], widths)]
     lines.append("| " + " | ".join("-" * w for w in widths) + " |")
     for row in padded[1:]:
-        lines.append(_fmt_row(row))
+        lines.append(_fmt_table_row(row, widths))
     return "\n".join(lines)
 
 
@@ -825,6 +835,22 @@ _FIGURE_STAMP_RE = re.compile(r"^[A-Z]{2,}v?\d+[Vv]\d+$")
 _FIGURE_CAPTION_RE = re.compile(r"^Figure\s+\d+[\.\:]")
 
 
+def _collect_block_spans(block: dict) -> tuple[str, bool]:
+    """Return (block_text, all_bold) for the text spans in *block*.
+
+    ``block_text`` is the concatenation of all span texts, stripped.
+    ``all_bold`` is True when every non-empty span in the block has the bold flag set.
+    Returns ("", False) for blocks with no spans.
+    """
+    lines = block.get("lines", [])
+    spans = [s for ln in lines for s in ln.get("spans", [])]
+    if not spans:
+        return ("", False)
+    block_text = "".join(s.get("text", "") for s in spans).strip()
+    all_bold = all(bool(s.get("flags", 0) & 16) for s in spans if s.get("text", "").strip())
+    return (block_text, all_bold)
+
+
 def _figure_body_rects(blocks: list[dict]) -> list[tuple[float, float]]:
     """Return (y_start, y_end) exclusion bands for figure-body content on a page.
 
@@ -847,14 +873,10 @@ def _figure_body_rects(blocks: list[dict]) -> list[tuple[float, float]]:
             continue
         y0: float = block["bbox"][1]
         y1: float = block["bbox"][3]
-        lines = block.get("lines", [])
-        if not lines:
+        if not block.get("lines"):
             continue
 
-        # Collect all span texts and flags for this block.
-        spans = [s for ln in lines for s in ln.get("spans", [])]
-        block_text = "".join(s.get("text", "") for s in spans).strip()
-        all_bold = spans and all(bool(s.get("flags", 0) & 16) for s in spans if s.get("text", "").strip())
+        block_text, all_bold = _collect_block_spans(block)
 
         # Detect a figure caption: bold block whose text starts with "Figure N."
         if all_bold and _FIGURE_CAPTION_RE.match(block_text):
@@ -869,15 +891,70 @@ def _figure_body_rects(blocks: list[dict]) -> list[tuple[float, float]]:
     return exclusion_bands
 
 
+def _in_figure_band(y: float, exclusions: list[tuple[float, float]]) -> bool:
+    """Return True if *y* falls within any of the figure-body exclusion bands."""
+    return any(y_start <= y <= y_end for y_start, y_end in exclusions)
+
+
+def _render_text_block(block: dict, body_size: float, min_bx: float) -> str | None:
+    """Convert one PDF text block to a Markdown string, or None if it is empty.
+
+    Handles heading detection, bullet nesting, and span-level inline formatting.
+    Returns None when the block produces no visible output lines.
+    """
+    nesting = _bullet_nesting_level(block, min_bx)
+    nest_prefix = "  " * nesting
+    para_lines: list[str] = []
+    is_first_line = True
+
+    for line in block.get("lines", []):
+        line_parts: list[str] = []
+        line_is_heading: int | None = None
+
+        for span in line.get("spans", []):
+            raw = _normalise_span_text(span.get("text", ""))
+            if not raw.strip():
+                line_parts.append(raw)
+                continue
+
+            size = span["size"]
+            flags = span.get("flags", 0)
+            font = span.get("font", "")
+
+            level = heading_level(size, body_size, bool(flags & 16))
+            if level is not None and line_is_heading is None:
+                line_is_heading = level
+
+            line_parts.append(_format_span(raw, flags, font))
+
+        line_text = "".join(line_parts).strip()
+        if not line_text:
+            continue
+
+        if line_is_heading is not None:
+            prefix = "#" * line_is_heading
+            para_lines.append(f"{prefix} {line_text}")
+        else:
+            # For nested bullet blocks, prefix only the first (glyph) line.
+            # Continuation lines are left un-prefixed so that
+            # _indent_list_continuations can align them correctly.
+            if nest_prefix and is_first_line:
+                para_lines.append(nest_prefix + line_text)
+            else:
+                para_lines.append(line_text)
+        is_first_line = False
+
+    return "\n".join(para_lines) if para_lines else None
+
+
 def page_to_markdown(page: "pymupdf.Page") -> str:
     """Convert a single PDF page to structured Markdown using font metadata and table detection."""
-    body_size = _dominant_body_size(page)
-
     table_entries = _table_rects(page)
     table_rect_list = [pymupdf.Rect(r) for r, _ in table_entries]
 
     data = page.get_text("dict", sort=True)
     all_blocks = data.get("blocks", [])
+    body_size = _dominant_body_size(all_blocks)
     min_bx = _min_bullet_x(all_blocks)
     figure_exclusions = _figure_body_rects(all_blocks)
     output_items: list[tuple[float, str]] = []
@@ -891,59 +968,16 @@ def page_to_markdown(page: "pymupdf.Page") -> str:
             continue
 
         block_y0: float = block["bbox"][1]
-
-        # Skip blocks whose top edge falls inside a figure-body exclusion band.
-        if any(y_start <= block_y0 <= y_end for y_start, y_end in figure_exclusions):
+        if _in_figure_band(block_y0, figure_exclusions):
             continue
 
-        nesting = _bullet_nesting_level(block, min_bx)
-        nest_prefix = "  " * nesting
-        para_lines: list[str] = []
-        is_first_line = True
-
-        for line in block.get("lines", []):
-            line_parts: list[str] = []
-            line_is_heading: int | None = None
-
-            for span in line.get("spans", []):
-                raw = _normalise_span_text(span.get("text", ""))
-                if not raw.strip():
-                    line_parts.append(raw)
-                    continue
-
-                size = span["size"]
-                flags = span.get("flags", 0)
-                font = span.get("font", "")
-
-                level = heading_level(size, body_size, bool(flags & 16))
-                if level is not None and line_is_heading is None:
-                    line_is_heading = level
-
-                line_parts.append(_format_span(raw, flags, font))
-
-            line_text = "".join(line_parts).strip()
-            if not line_text:
-                continue
-
-            if line_is_heading is not None:
-                prefix = "#" * line_is_heading
-                para_lines.append(f"{prefix} {line_text}")
-            else:
-                # For nested bullet blocks, prefix only the first (glyph) line.
-                # Continuation lines are left un-prefixed so that
-                # _indent_list_continuations can align them correctly.
-                if nest_prefix and is_first_line:
-                    para_lines.append(nest_prefix + line_text)
-                else:
-                    para_lines.append(line_text)
-            is_first_line = False
-
-        if para_lines:
-            output_items.append((block_y0, "\n".join(para_lines)))
+        text = _render_text_block(block, body_size, min_bx)
+        if text is not None:
+            output_items.append((block_y0, text))
 
     for bbox, md_table in table_entries:
         y0 = bbox[1] if isinstance(bbox, (list, tuple)) else bbox.y0
-        if any(y_start <= y0 <= y_end for y_start, y_end in figure_exclusions):
+        if _in_figure_band(y0, figure_exclusions):
             continue
         output_items.append((y0, md_table))
 
