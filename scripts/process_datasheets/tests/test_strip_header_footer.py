@@ -906,11 +906,11 @@ def test_bare_asterisk_italic_close_in_cross_reference():
         "34.4:* ",
     ),
     (
-        # Body contains an underscore (WWDG_CFR) so the span is promoted to
-        # '*...*' rather than '_..._' to avoid Prettier mangling.
+        # Body contains only identifier underscores (WWDG_CFR = word_word),
+        # which are fine inside _..._ — prettier keeps _..._ for them.
         "The _WWDG configuration register (WWDG_CFR)* contains the high limit.",
-        "(WWDG_CFR)*",
-        "_WWDG configuration",  # the raw _...* mixed form must be gone
+        "(WWDG_CFR)_",
+        "(WWDG_CFR)*",  # the raw _...* mixed form must be gone
     ),
 ])
 def test_bare_asterisk_italic_close_variants(input_text, expected_contains, expected_absent):
@@ -953,15 +953,15 @@ def test_wrapped_italic_span_joined_across_lines():
     as two separate spans and mangle the output.  The two markers must be
     collapsed into a single space so both fragments form one italic span.
 
-    Because the joined body contains an underscore (FLASH_HDPEXTR) the span is
-    further promoted to '*...*' to keep Prettier from escaping the delimiters.
+    The body contains only identifier underscores (FLASH_HDPEXTR = word_word),
+    so prettier keeps the span as _..._ rather than converting it to *...*.
     """
     text = (
         "extended through HDP1_EXT[6:0] of the _FLASH HDP extension_\n"
         "_register (FLASH_HDPEXTR)_. HDP1_EXT[6:0] indicates"
     )
     result = strip_header_footer(text)
-    assert_that(result, contains_string("*FLASH HDP extension register (FLASH_HDPEXTR)*"))
+    assert_that(result, contains_string("_FLASH HDP extension register (FLASH_HDPEXTR)_"))
     assert_that(result, not_(contains_string("extension_\n_register")))
 
 
@@ -1003,3 +1003,66 @@ def test_trailing_bare_underscores_stripped_from_table_cells():
     assert_that(result, contains_string("WRP1x END"))
     assert_that(result, contains_string("WRP1x STRT"))
 
+
+# Italic underscore adjacency (Prettier CommonMark left-flanking delimiter rule)
+# ---------------------------------------------------------------------------
+
+
+def test_strip_inserts_space_before_italic_directly_following_word():
+    # "Refer to_Section 1.5_" -> "Refer to _Section 1.5_"
+    # Prettier would rewrite "word_italic_" -> "word*italic*" because _ cannot
+    # open emphasis when preceded by an alphanumeric (CommonMark rule).
+    text = "Refer to_Section 1.5_ for details."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("to _Section"))
+    assert_that(result, not_(contains_string("to_Section")))
+
+
+def test_strip_does_not_alter_space_already_present_before_italic():
+    text = "Refer to _Section 1.5_ for details."
+    result = strip_header_footer(text)
+    assert_that(result, equal_to("Refer to _Section 1.5_ for details."))
+
+
+def test_strip_does_not_alter_register_identifier_underscores():
+    # Plain-text register names with underscores must never be modified.
+    text = "The RCC_CFGR register and TIM1_DIER field."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("RCC_CFGR"))
+    assert_that(result, contains_string("TIM1_DIER"))
+
+
+def test_strip_does_not_alter_model_identifier_underscores():
+    text = "See the STM32U083_xx datasheet."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("STM32U083_xx"))
+
+
+def test_strip_inserts_space_before_single_word_italic_following_word():
+    text = "word_italic_ here."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("word _italic_"))
+
+
+def test_strip_italic_adjacency_fix_is_idempotent():
+    # Running strip_header_footer twice must produce the same result.
+    text = "Refer to_Section 1.5_ for details."
+    once = strip_header_footer(text)
+    twice = strip_header_footer(once)
+    assert_that(twice, equal_to(once))
+
+
+def test_strip_does_not_space_identifier_underscore_inside_italic_span():
+    # TI1F_ED inside _..._: the outer closing _ must not satisfy the italic-adjacency
+    # lookahead and produce a spurious "TI1F _ED".  The identifier must be preserved.
+    text = "_The gated mode must not be used if TI1F_ED is selected as the trigger input_"
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("TI1F_ED"))
+    assert_that(result, not_(contains_string("TI1F _ED")))
+
+
+def test_strip_still_spaces_italic_directly_following_word_when_no_outer_span():
+    # word_italic_ (no outer italic span) should still get a space inserted.
+    text = "word_italic_ here."
+    result = strip_header_footer(text)
+    assert_that(result, contains_string("word _italic_"))
