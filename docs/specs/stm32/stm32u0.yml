@@ -11485,6 +11485,130 @@ peripherals:
                 settings:
                   "0": No end of operation event
                   "1": Flash memory operation completed successfully
+        - CR:
+            reference:
+              section: 3.7.5
+            offset: 0x14
+            reset-value: 0xC0000000
+            fields:
+              - name: LOCK
+                msb: 31
+                lsb: 31
+                width: 1
+                access: rs
+                settings:
+                  "0": FLASH_CR register unlocked
+                  "1": FLASH_CR register locked
+              - name: OPTLOCK
+                msb: 30
+                lsb: 30
+                width: 1
+                access: rs
+                settings:
+                  "0": Flash option registers unlocked
+                  "1": Flash option registers locked
+              - name: RESERVED
+                msb: 29
+                lsb: 28
+                width: 2
+                access: res
+                settings: ~
+              - name: OBL_LAUNCH
+                msb: 27
+                lsb: 27
+                width: 1
+                access: rc_w1
+                settings:
+                  "0": No option byte load triggered
+                  "1": Option byte load triggered
+              - name: RESERVED
+                msb: 26
+                lsb: 26
+                width: 1
+                access: res
+                settings: ~
+              - name: ERRIE
+                msb: 25
+                lsb: 25
+                width: 1
+                access: rw
+                settings:
+                  "0": Error interrupt disabled
+                  "1": Error interrupt enabled
+              - name: EOPIE
+                msb: 24
+                lsb: 24
+                width: 1
+                access: rw
+                settings:
+                  "0": End-of-operation interrupt disabled
+                  "1": End-of-operation interrupt enabled
+              - name: RESERVED
+                msb: 23
+                lsb: 19
+                width: 5
+                access: res
+                settings: ~
+              - name: FSTPG
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings:
+                  "0": Fast programming disabled
+                  "1": Fast programming enabled
+              - name: OPTSTRT
+                msb: 17
+                lsb: 17
+                width: 1
+                access: rs
+                settings:
+                  "0": No option modification operation triggered
+                  "1": Option modification operation triggered
+              - name: STRT
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rs
+                settings:
+                  "0": No erase operation triggered
+                  "1": Erase operation triggered
+              - name: RESERVED
+                msb: 15
+                lsb: 10
+                width: 6
+                access: res
+                settings: ~
+              - name: PNB
+                msb: 9
+                lsb: 3
+                width: 7
+                access: rw
+                settings: ~
+              - name: MER1
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings:
+                  "0": No mass erase
+                  "1": Mass erase of all user pages triggered
+              - name: PER
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": Page erase disabled
+                  "1": Page erase enabled
+              - name: PG
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Flash programming disabled
+                  "1": Flash programming enabled
 
 nvic:
   reference:
