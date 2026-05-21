@@ -17,7 +17,7 @@ echo "=== prettier ==="
 find "${REPO_ROOT}" \
     \( -name '*.md' -o -name '*.yml' -o -name '*.yaml' -o -name '*.json' \) \
     ! -path "${REPO_ROOT}/.git/*" \
-    -print0 | xargs -0 npx prettier ${PRETTIER_ARGS}
+    -print0 | xargs -0 npx prettier "${PRETTIER_ARGS}"
 
 echo "=== clang-format ==="
 find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" "${REPO_ROOT}/test_project" \
