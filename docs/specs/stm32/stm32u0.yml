@@ -11238,7 +11238,10 @@ peripherals:
                 lsb: 11
                 width: 1
                 access: w
-                settings: ~
+                note: Can only be written when the instruction cache is disabled (ICEN=0). Always reads as zero.
+                settings:
+                  "0": CPU Instruction cache is not reset
+                  "1": CPU Instruction cache is reset
               - name: RESERVED
                 msb: 10
                 lsb: 10
