@@ -915,7 +915,7 @@ const arm_sort_instance_f32 * S,
       float32_t * pDst, 
       uint32_t blockSize)
 {
-    uint16_t s, i;
+    uint32_t s, i;
     uint8_t dir = S->dir;
 
 #ifdef ARM_MATH_NEON
