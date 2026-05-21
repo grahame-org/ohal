@@ -7,17 +7,18 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FIX_MODE="${1:-}"
 
+# Use array for safer argument passing
 if [[ "$FIX_MODE" == "--fix" ]]; then
-  PRETTIER_ARGS="--write"
+  PRETTIER_ARGS=(--write)
 else
-  PRETTIER_ARGS="--check"
+  PRETTIER_ARGS=(--check)
 fi
 
 echo "=== prettier ==="
 find "${REPO_ROOT}" \
     \( -name '*.md' -o -name '*.yml' -o -name '*.yaml' -o -name '*.json' \) \
     ! -path "${REPO_ROOT}/.git/*" \
-    -print0 | xargs -0 npx prettier "${PRETTIER_ARGS}"
+    -print0 | xargs -0 npx prettier "${PRETTIER_ARGS[@]}"
 
 echo "=== clang-format ==="
 find "${REPO_ROOT}/include" "${REPO_ROOT}/tests" "${REPO_ROOT}/test_project" \
