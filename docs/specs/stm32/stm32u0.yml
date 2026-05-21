@@ -498,6 +498,73 @@ memory:
       # Cortex-M0+ internal peripherals (0xE0000000–0xE00FFFFF) are defined in
       # docs/specs/common/arch/cortex-m0plus.yml and are not repeated here.
 
+boot:
+  references:
+    section: "2.5"
+    tables: [6]
+  note: >-
+    Boot mode is governed by five inputs from RM0503 Table 6. When
+    nBOOT_SEL=0 the physical BOOT0 pin is used; when nBOOT_SEL=1 the
+    nBOOT0 option bit replaces the pin. Setting BOOT_LOCK=1 overrides
+    all other inputs and forces boot from main flash memory.
+  modes:
+    - name: main-flash-pin
+      conditions:
+        BOOT_LOCK: "0"
+        nBOOT_SEL: "0"
+        BOOT0_pin: "0"
+        nBOOT1: "x"
+        nBOOT0: "x"
+      source: Main flash memory
+    - name: system-memory-pin
+      conditions:
+        BOOT_LOCK: "0"
+        nBOOT_SEL: "0"
+        BOOT0_pin: "1"
+        nBOOT1: "1"
+        nBOOT0: "x"
+      source: System memory
+    - name: sram-pin
+      conditions:
+        BOOT_LOCK: "0"
+        nBOOT_SEL: "0"
+        BOOT0_pin: "1"
+        nBOOT1: "0"
+        nBOOT0: "x"
+      source: Embedded SRAM
+    - name: main-flash-opt
+      conditions:
+        BOOT_LOCK: "0"
+        nBOOT_SEL: "1"
+        nBOOT0: "1"
+        nBOOT1: "x"
+        BOOT0_pin: "x"
+      source: Main flash memory
+    - name: system-memory-opt
+      conditions:
+        BOOT_LOCK: "0"
+        nBOOT_SEL: "1"
+        nBOOT0: "0"
+        nBOOT1: "1"
+        BOOT0_pin: "x"
+      source: System memory
+    - name: sram-opt
+      conditions:
+        BOOT_LOCK: "0"
+        nBOOT_SEL: "1"
+        nBOOT0: "0"
+        nBOOT1: "0"
+        BOOT0_pin: "x"
+      source: Embedded SRAM
+    - name: main-flash-locked
+      conditions:
+        BOOT_LOCK: "1"
+        nBOOT_SEL: "x"
+        BOOT0_pin: "x"
+        nBOOT1: "x"
+        nBOOT0: "x"
+      source: Main flash memory (forced)
+
 features:
   references:
     section: "1.5"
@@ -11118,6 +11185,14 @@ peripherals:
           standby: >-
             The LPTIM peripheral is powered down and must be reinitialized after
             exiting Standby mode.
+
+  - flash:
+      reference:
+        section: "3"
+      instances:
+        - name: FLASH
+          base: 0x40022000
+      registers: []
 
 nvic:
   reference:
