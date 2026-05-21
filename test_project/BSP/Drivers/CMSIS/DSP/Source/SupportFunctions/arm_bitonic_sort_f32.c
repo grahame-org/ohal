@@ -922,7 +922,7 @@ const arm_sort_instance_f32 * S,
     (void)s;
 
     float32_t * pOut;
-    uint16_t counter = blockSize>>5;
+    uint32_t counter = blockSize>>5;
 
     if( (blockSize & (blockSize-1)) == 0 ) // Powers of 2 only
     {
