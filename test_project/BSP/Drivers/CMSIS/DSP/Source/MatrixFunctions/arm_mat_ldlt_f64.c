@@ -112,9 +112,9 @@ arm_status arm_mat_ldlt_f64(
     int fullRank = 1, diag,k;
     float64_t *pA;
 
-    memset(pd->pData,0,sizeof(float64_t)*n*n);
+    memset(pd->pData,0,sizeof(float64_t)*(size_t)n*n);
 
-    memcpy(pl->pData,pSrc->pData,n*n*sizeof(float64_t));
+    memcpy(pl->pData,pSrc->pData,(size_t)n*n*sizeof(float64_t));
     pA = pl->pData;
 
     for(k=0;k < n; k++)
