@@ -11316,10 +11316,10 @@ peripherals:
             offset: 0x10
             reset-value: 0x00000000
             note: >-
-              OEM1LOCK (bit 20) and OEM2LOCK (bit 21) may read as 1 if the
-              corresponding OEM key slots have been programmed; the RM lists
-              the reset value as 0x000X 0000 to indicate those nibble bits
-              are implementation-specific.
+              OPTVERR (bit 15) is marked X at reset in RM0503 Table 19 — it
+              may be set if options and engineering bits were not correctly
+              loaded at the previous boot. OEM1LOCK (bit 20) and OEM2LOCK
+              (bit 21) reset to 0.
             fields:
               - name: RESERVED
                 msb: 31
