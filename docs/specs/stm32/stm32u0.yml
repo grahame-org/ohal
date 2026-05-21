@@ -11192,7 +11192,93 @@ peripherals:
       instances:
         - name: FLASH
           base: 0x40022000
-      registers: []
+      registers:
+        - ACR:
+            reference:
+              section: 3.7.1
+            offset: 0x00
+            reset-value: 0x00040600
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 19
+                width: 13
+                access: res
+                settings: ~
+              - name: DBG_SWEN
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings:
+                  "0": Debugger disabled
+                  "1": Debugger enabled
+              - name: RESERVED
+                msb: 17
+                lsb: 17
+                width: 1
+                access: res
+                settings: ~
+              - name: EMPTY
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                settings:
+                  "0": Main flash memory area programmed
+                  "1": Main flash memory area empty
+              - name: RESERVED
+                msb: 15
+                lsb: 12
+                width: 4
+                access: res
+                settings: ~
+              - name: ICRST
+                msb: 11
+                lsb: 11
+                width: 1
+                access: w
+                note: Can only be written when the instruction cache is disabled (ICEN=0). Always reads as zero.
+                settings:
+                  "0": CPU Instruction cache is not reset
+                  "1": CPU Instruction cache is reset
+              - name: RESERVED
+                msb: 10
+                lsb: 10
+                width: 1
+                access: res
+                settings: ~
+              - name: ICEN
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings:
+                  "0": CPU Instruction cache is disabled
+                  "1": CPU Instruction cache is enabled
+              - name: PRFTEN
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": CPU Prefetch disabled
+                  "1": CPU Prefetch enabled
+              - name: RESERVED
+                msb: 7
+                lsb: 3
+                width: 5
+                access: res
+                settings: ~
+              - name: LATENCY
+                msb: 2
+                lsb: 0
+                width: 3
+                access: rw
+                settings:
+                  "000": Zero wait states
+                  "001": One wait state
+                  "010": Two wait states
 
 nvic:
   reference:

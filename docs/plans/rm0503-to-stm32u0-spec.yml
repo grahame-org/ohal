@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P3-S2
+    current: P3-S3
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -91,6 +91,8 @@ meta:
         date: "2026-05-19"
       - id: P3-S1
         date: "2026-05-19"
+      - id: P3-S2
+        date: "2026-05-20"
 
 # ============================================================
 # PHASE 0 – Schema extensions
