@@ -267,7 +267,7 @@ void arm_maxpool_q7_HWC(q7_t *Im_in,
 #else
     /* Run the following code as reference implementation for Cortex-M0 and Cortex-M3 */
     int16_t i_ch_in, i_x, i_y;
-    int16_t k_x, k_y;
+    int k_x, k_y;
 
     for (i_ch_in = 0; i_ch_in < ch_im_in; i_ch_in++)
     {
@@ -430,7 +430,7 @@ void arm_avepool_q7_HWC(q7_t *Im_in,
 
     (void)bufferA;
     int16_t i_ch_in, i_x, i_y;
-    int16_t k_x, k_y;
+    int k_x, k_y;
 
     for (i_ch_in = 0; i_ch_in < ch_im_in; i_ch_in++)
     {

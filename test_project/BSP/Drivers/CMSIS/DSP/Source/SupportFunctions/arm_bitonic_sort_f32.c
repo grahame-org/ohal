@@ -915,14 +915,14 @@ const arm_sort_instance_f32 * S,
       float32_t * pDst, 
       uint32_t blockSize)
 {
-    uint16_t s, i;
+    uint32_t s, i;
     uint8_t dir = S->dir;
 
 #ifdef ARM_MATH_NEON
     (void)s;
 
     float32_t * pOut;
-    uint16_t counter = blockSize>>5;
+    uint32_t counter = blockSize>>5;
 
     if( (blockSize & (blockSize-1)) == 0 ) // Powers of 2 only
     {

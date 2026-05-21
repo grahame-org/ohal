@@ -341,8 +341,8 @@ arm_status arm_avgpool_s8(const cmsis_nn_context *ctx,
     /* Reference C code adapted from CMSIS-NN arm_avepool_q7_HWC.
      */
     (void)buffer;
-    int16_t i_ch_in, i_x, i_y;
-    int16_t k_x, k_y;
+    int32_t i_ch_in, i_x, i_y;
+    int32_t k_x, k_y;
 
     for (i_y = 0; i_y < output_y; i_y++)
     {
