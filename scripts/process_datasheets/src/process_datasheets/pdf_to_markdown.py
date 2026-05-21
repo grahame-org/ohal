@@ -728,6 +728,8 @@ def _table_rects(page: "pymupdf.Page") -> list[tuple[object, str]]:
             str_rows = [[_normalise_cell(c) for c in row] for row in rows]
             results.append((tab.bbox, _format_md_table(str_rows)))
     except Exception:
+        # Table extraction is best-effort; failures are intentionally ignored
+        # so that page conversion can continue without the table content.
         pass
     return results
 

@@ -10,8 +10,7 @@ canonical form so that ``prettier --check`` generates no diff.
 
 from __future__ import annotations
 
-import pytest
-from hamcrest import assert_that, equal_to, starts_with, contains_string, not_
+from hamcrest import assert_that, contains_string, equal_to
 
 from process_datasheets.pdf_to_markdown import _format_md_table, _normalise_cell
 
@@ -86,7 +85,6 @@ def test_format_md_table_all_columns_equal_width_when_uniform():
 def test_format_md_table_column_width_driven_by_widest_cell():
 	rows = [["Name", "Value"], ["SHORT", "x"], ["LONGER_NAME", "y"]]
 	result = _format_md_table(rows)
-	widths = _column_widths(result)
 	# First column: max("Name"=4, "SHORT"=5, "LONGER_NAME"=11) = 11
 	# Separator width includes a leading and trailing space: " " + dashes + " "
 	# _column_widths splits on "|" so each part is " dashes " → strip → len
