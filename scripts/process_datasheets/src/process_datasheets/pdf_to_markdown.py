@@ -83,14 +83,6 @@ _STANDALONE_BOLD_RE = re.compile(r"\*\*[^*]+\*\*")
 # Matches any Markdown heading line.
 _HEADING_LINE_RE = re.compile(r"#{1,6} ")
 
-# Italic-adjacency patterns for _fix_italic_spans / _fix_italic_adjacency.
-# _ITALIC_ADJ_RE matches a word character followed by an opening "_" that starts
-# a complete italic span (non-greedy: content, no _ or newline, closing _).
-_ITALIC_ADJ_RE = re.compile(r"(\w)(_(?=[^\s_][^_\n]*_(?!\w)))")
-# _ITALIC_SPAN_RE matches a complete inline italic span for range-tracking.
-_ITALIC_SPAN_RE = re.compile(r"_[^_\n]+_")
-
-
 _PAGE_RANGE_RE = re.compile(r"^(\d+)-(\d+)$")
 
 
@@ -400,81 +392,21 @@ def _fix_headings(text: str) -> str:
     return text
 
 
-def _fix_italic_adjacency(line: str) -> str:
-    """Insert a space before an opening ``_`` that directly follows a word character.
-
-    Only fires when the ``_`` starts a complete italic span (there is a matching
-    closing ``_`` later on the same line).  Underscores that are interior to an
-    already-open span (e.g. ``TI1F_ED`` inside ``_…TI1F_ED…_``) are left alone.
-    """
-    italic_ranges = [(m.start(), m.end()) for m in _ITALIC_SPAN_RE.finditer(line)]
-
-    def _replacer(m: re.Match) -> str:  # type: ignore[type-arg]
-        underscore_pos = m.start(2)
-        for span_start, span_end in italic_ranges:
-            if span_start < underscore_pos < span_end:
-                return m.group(0)
-        return m.group(1) + " " + m.group(2)
-
-    return _ITALIC_ADJ_RE.sub(_replacer, line)
-
-
-def _underscore_body_to_star(m: re.Match) -> str:  # type: ignore[type-arg]
-    """Replace ``_body_`` with ``*body*`` when *body* contains a non-identifier underscore.
-
-    A non-identifier underscore is one not surrounded by word characters on both
-    sides.  This matches what Prettier would produce, so we normalise proactively.
-    """
-    body = m.group(1)
-    if re.search(r"(?<!\w)_|_(?!\w)", body):
-        return f"*{body}*"
-    return m.group(0)
-
-
-def _escape_identifier_underscores(line: str) -> str:
-    """Escape word-internal underscores that lie outside italic spans.
-
-    On lines that contain italic ``_..._`` spans, a plain-text identifier such
-    as ``CRS_ISR`` can cause CommonMark to treat the ``_`` in the identifier as
-    an italic-open or italic-close delimiter, corrupting both the identifier and
-    the intended italic span.  This function escapes any ``_`` that:
-
-    * is flanked by a word character (``\\w``) on both sides, AND
-    * lies strictly outside every *genuine* italic span on the same line.
-
-    A genuine italic span has its opening ``_`` NOT preceded by a word character
-    (CommonMark left-flanking delimiter rule).  Using this stricter pattern
-    avoids treating the identifier underscore in ``CRS_ISR`` as an italic opener
-    and then falsely marking it as "already inside a span".
-
-    Underscores that are already inside a genuine italic span are left untouched
-    so that the span itself is not broken.
-    """
-    if "_" not in line:
-        return line
-    # Only match italic spans whose opening _ is a true left-flanking delimiter
-    # (not preceded by a word character).
-    _TRUE_ITALIC_SPAN_RE = re.compile(r"(?<!\w)_[^_\n]+_(?!\w)")
-    italic_ranges = [m.span() for m in _TRUE_ITALIC_SPAN_RE.finditer(line)]
-    if not italic_ranges:
-        return line
-
-    def _in_italic(pos: int) -> bool:
-        return any(start < pos < end for start, end in italic_ranges)
-
-    result = list(line)
-    for m in re.finditer(r"(?<=\w)_(?=\w)", line):
-        if not _in_italic(m.start()):
-            result[m.start()] = r"\_"
-    return "".join(result)
-
-
 def _fix_italic_spans(text: str) -> str:
-    """Normalise italic markup corrupted during PDF extraction.
+    """Fix stray asterisk artefacts left by PDF extraction.
 
-    The PDF extractor produces several malformed italic forms that must be
-    repaired before prettier runs, since prettier will otherwise escape or
-    reinterpret ambiguous delimiter sequences.
+    Italic formatting is stripped entirely (see ``_format_span``), so this
+    function no longer needs to repair italic markup.  It retains only the
+    passes that correct artefacts unrelated to italic emphasis:
+
+    1. Bold-adjacency fix – insert a space before ``**`` / ``*`` markers that
+       directly follow a word character (e.g. ``TIMx*BDTR`` → ``TIMx *BDTR``).
+    2. Bare ``*`` → ``_`` fix – converts the space-separated lone ``*`` from
+       pass 1 back to an underscore for register names.
+    3. Multiplication ``*`` escape – pre-empt Prettier's interpretation of
+       ``0x004 * x`` as an italic-open delimiter.
+    4. Table-cell trailing-underscore cleanup – remove spurious ``\\_`` / ``_``
+       artefacts at the end of register-name cells.
     """
     # Ensure a space before inline ** or * markers when they directly follow a
     # word character (e.g. "TIMx*BDTR" → "TIMx *BDTR").
@@ -484,74 +416,6 @@ def _fix_italic_spans(text: str) -> str:
     # The space-insertion pass above separates "TIMx*BDTR" into "TIMx *BDTR";
     # this pass then converts the lone " *" back to "_".
     text = re.sub(r"(?<=[A-Za-z0-9\]]) \*(?=[A-Za-z0-9\[])", "_", text)
-
-    # Ensure a space before _ italic/bold-italic markers when they directly follow a word
-    # character.  CommonMark forbids _ from opening emphasis when preceded by a Unicode
-    # alphanumeric (left-flanking delimiter rule), so "word_italic_" would be rewritten
-    # by Prettier to "word*italic*".  See _fix_italic_adjacency for the full explanation.
-    text = "\n".join(_fix_italic_adjacency(line) for line in text.splitlines())
-
-    # Fix broken "Note:" patterns: "\_Note:*", "\_Note:_", "*Note:_".
-    text = re.sub(r"\\_Note:[_*]", "Note:", text)
-    text = re.sub(r"\*Note:_", "_Note:_", text)
-
-    # Fix missing space before an italic-open underscore absorbed into the
-    # preceding word (e.g. "the_FLASH" → "the _FLASH").  Only fires when two
-    # lowercase letters precede "_" followed by an uppercase letter, so
-    # mixed-case register names like "TIMx_BDTR" are left untouched.
-    text = re.sub(r"(?<=[a-z][a-z])_(?=[A-Z])", " _", text)
-
-    # Fix "\*" used as an italic-close marker (e.g. "Section 1.2\* for").
-    text = re.sub(r"(?<=\w)\\\*(?=[ \t]|$)", "_", text, flags=re.MULTILINE)
-
-    # Normalise balanced "*...*" spans to "_..._".
-    # Must run BEFORE the "*Word_" pass so the non-greedy match doesn't stop at
-    # an underscore inside the body.
-    text = re.sub(r"(?<!\*)\*(?=[A-Za-z])((?:[^*\n])+?)\*", r"_\1_", text)
-
-    # Normalise mismatched "*Word_" spans (asterisk-open, underscore-close) to "_Word_".
-    # Runs AFTER the balanced "*...*" pass so only genuinely mismatched spans remain.
-    text = re.sub(r"(?<!\*)\*(?=[A-Za-z])((?:[^*\n])+?)_", r"_\1_", text)
-
-    # Fix a bare * used as an italic-close marker: "_Word*" → "_Word_".
-    text = re.sub(r"(?<=[\w:)\]])(?<!\*)\*(?=[ \t,;.!?]|$)", "_", text, flags=re.MULTILINE)
-
-    # Join wrapped italic spans split across lines: "_text_\n_cont_" → "_text cont_".
-    text = re.sub(r"_\n_", " ", text)
-
-    # Join adjacent italic spans on the same line separated by a single space:
-    # "_span one_ _span two_" → "_span one span two_".
-    # This occurs when the PDF emits two consecutive italic spans (e.g. the main
-    # cross-reference text and its parenthesised register name) as separate runs.
-    # The merge must happen BEFORE the underscore-body conversion pass so that
-    # the greedy body regex does not mis-span across the inter-span gap and corrupt
-    # both spans (e.g. "_Section...register_ _(DBGMCU_IDCODE)_" → single span).
-    text = re.sub(r"_( )_", r"\1", text)
-
-    # After merging adjacent italic spans the inter-span space can land
-    # immediately before a punctuation character, e.g.:
-    #   "_Section 1.5: Availability of peripherals_ _._"
-    #   → "_Section 1.5: Availability of peripherals ._"   (wrong – spurious space)
-    # Strip any whitespace that directly precedes sentence-ending punctuation
-    # inside an italic span (i.e. before a closing "_").
-    text = re.sub(r"\s+([.,;:!?])_", r"\1_", text)
-
-    # Convert "_..._" spans whose body contains a non-identifier underscore to "*...*".
-    # See _underscore_body_to_star for the full explanation.
-    text = re.sub(
-        r"(?<!\w)_((?:[^_\n]|(?<=\w)_(?=\w))*_(?:[^_\n])*?)_(?!\w)",
-        _underscore_body_to_star,
-        text,
-    )
-
-    # Escape identifier underscores that sit outside italic spans on lines that
-    # also contain italic spans.  Without this, a pattern such as
-    #   "the CRS_ISR register. Refer to _Section 6.4.5_ for details."
-    # would be mis-parsed by CommonMark (and subsequently by Prettier) as an
-    # italic run spanning from the identifier _ to the italic-open _.
-    # Running AFTER _underscore_body_to_star ensures genuine spans are already
-    # finalised (_..._) or converted (*...*) before we scan for plain-text _.
-    text = "\n".join(_escape_identifier_underscores(line) for line in text.splitlines())
 
     # Escape bare "*" used as a multiplication operator in address-offset
     # formulas (e.g. "0x004 * x").  Prettier interprets "space * letter" as an
@@ -647,12 +511,10 @@ def _fix_lists(text: str) -> str:
     # non-blank content (same-block extraction artefact, symmetric to the above).
     text = re.sub(r"(?m)(?<!\n)\n(#{1,6} )", r"\n\n\1", text)
 
-    # Ensure a blank line before italic Note paragraphs (_Note: or *Note:) that
-    # directly follow body text without one.  Without this separation, prettier
-    # treats the Note and the preceding lines as a single paragraph and can
-    # misinterpret identifier underscores (e.g. USART_CR1) in those lines as
-    # italic delimiters, corrupting the output.
-    text = re.sub(r"(?m)(?<!\n)\n([_*]Note:)", r"\n\n\1", text)
+    # Ensure a blank line before bold Note paragraphs (*Note:) that directly
+    # follow body text without one.  Without this separation, prettier may
+    # misinterpret identifier underscores (e.g. USART_CR1) in preceding lines.
+    text = re.sub(r"(?m)(?<!\n)\n(\*Note:)", r"\n\n\1", text)
 
     # Collapse 3+ consecutive blank lines to a single blank line.
     # never produces more than one blank line between blocks, so any run of
@@ -669,7 +531,7 @@ def _apply_regex_postprocessing(text: str) -> str:
 
     Delegates to four focused helpers applied in order:
     1. ``_fix_headings``    – heading level normalisation and join/demote passes
-    2. ``_fix_italic_spans`` – italic marker corruption from PDF extraction
+    2. ``_fix_italic_spans`` – asterisk artefacts from PDF bold-span extraction
     3. ``_fix_toc``         – Table of Contents structure
     4. ``_fix_lists``       – list marker joining and continuation indentation
     """
@@ -762,6 +624,23 @@ def _join_register_cell_lines(text: str) -> str:
 
     # Separate word segments from separator lines; convert internal spaces to _
     # in word segments (each space is an underscore extracted by the table parser).
+    # Only convert a space if neither the preceding nor the following character is
+    # an operator (=, <, >, +, -, *, /) or a space.  This preserves the space
+    # around comparison operators in cells like "WRP1x STRT = WRP1x END"
+    # (which should become "WRP1x_STRT = WRP1x_END", not "WRP1x_STRT_=_WRP1x_END").
+    _OPERATOR_CHAR = re.compile(r"[=<>+\-*/]")
+
+    def _spaces_to_underscores(s: str) -> tuple[str, int]:
+        """Replace spaces with _ unless either neighbour is an operator character."""
+        result = list(s)
+        count = 0
+        for i, ch in enumerate(s):
+            if ch == " " and i > 0 and i < len(s) - 1:
+                if not _OPERATOR_CHAR.fullmatch(s[i - 1]) and not _OPERATOR_CHAR.fullmatch(s[i + 1]):
+                    result[i] = "_"
+                    count += 1
+        return "".join(result), count
+
     words: list[str] = []
     sep_count = 0   # total underscore separators available
     spaces_used = 0
@@ -772,9 +651,9 @@ def _join_register_cell_lines(text: str) -> str:
             # next, plus one trailing/leading from the adjacent span).
             sep_count += ln.count("_")
         else:
-            n_spaces = ln.count(" ")
+            converted, n_spaces = _spaces_to_underscores(ln)
             spaces_used += n_spaces
-            words.append(ln.replace(" ", "_"))
+            words.append(converted)
 
     if not words:
         return text
@@ -902,16 +781,14 @@ def _normalise_span_text(raw: str) -> str:
 def _format_span(raw: str, flags: int, font: str) -> str:
     """Apply Markdown inline formatting to a span's text based on its font flags.
 
+    Italic spans are emitted as plain text (italic formatting is stripped to
+    avoid underscore/asterisk collisions with register identifiers).  Bold and
+    monospace spans are marked up as ``**text**`` and `` `text` `` respectively.
+
     Leading and trailing whitespace is preserved *outside* the emphasis/code
-    markers so that the natural inter-span spacing from the PDF prevents the
-    opening marker from being immediately adjacent to a word character.
-    CommonMark forbids ``_`` from opening emphasis when it is directly preceded
-    by a Unicode alphanumeric (left-flanking delimiter rule), so ``word_italic_``
-    would be rewritten by Prettier to ``word*italic*``.  Keeping the PDF's own
-    whitespace outside the markers avoids this entirely.
+    markers so that the natural inter-span spacing from the PDF is not lost.
     """
     bold = bool(flags & 16)
-    italic = bool(flags & 2)
     mono = is_monospace(font)
     content = raw.strip()
     lead = raw[: len(raw) - len(raw.lstrip())]
@@ -920,14 +797,8 @@ def _format_span(raw: str, flags: int, font: str) -> str:
         return raw
     if mono:
         marked = f"`{content}`"
-    elif bold and italic:
-        # Prettier 3.x normalises bold+italic to **_text_**, not ***text***.
-        marked = f"**_{content}_**"
     elif bold:
         marked = f"**{content}**"
-    elif italic:
-        # Prettier 3.x normalises italic to _text_, not *text*.
-        marked = f"_{content}_"
     else:
         return raw
     return lead + marked + trail
