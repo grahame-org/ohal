@@ -11937,6 +11937,51 @@ peripherals:
                   Offset of the first page of WRP area B. The number of
                   effective bits depends on the flash memory size of the device.
                 settings: ~
+        - SECR:
+            reference:
+              section: 3.7.10
+            offset: 0x80
+            note: >-
+              Reset value is loaded from flash memory option bytes at power-on
+              reset release (factory-programmed; not a fixed constant).
+            fields:
+              - name: HDP1EN
+                msb: 31
+                lsb: 24
+                width: 8
+                access: rw
+                note: >-
+                  Hide protection area enable. 0xB4: no HDP area; any other
+                  value: HDP area enabled.
+                settings: ~
+              - name: RESERVED
+                msb: 23
+                lsb: 17
+                width: 7
+                access: res
+                settings: ~
+              - name: BOOT_LOCK
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                note: >-
+                  Forced boot from user area. 0: boot based on pad/option bit
+                  configuration; 1: boot forced from main flash memory.
+                settings: ~
+              - name: RESERVED
+                msb: 15
+                lsb: 7
+                width: 9
+                access: res
+                settings: ~
+              - name: HDP1_PEND
+                msb: 6
+                lsb: 0
+                width: 7
+                access: rw
+                note: Last page of the first hide protection area.
+                settings: ~
 
 nvic:
   reference:
