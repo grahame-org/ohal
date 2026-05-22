@@ -11861,6 +11861,44 @@ peripherals:
                 settings:
                   "10101010": Level 0, read protection not active
                   "11001100": Level 2, chip read protection active
+        - WRP1AR:
+            reference:
+              section: 3.7.8
+            offset: 0x2C
+            note: >-
+              Reset value is loaded from flash memory option bytes at power-on
+              reset release (factory-programmed; not a fixed constant).
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 23
+                width: 9
+                access: res
+                settings: ~
+              - name: WRP1A_END
+                msb: 22
+                lsb: 16
+                width: 7
+                access: rw
+                note: >-
+                  Offset of the last page of WRP area A. The number of effective
+                  bits depends on the flash memory size of the device.
+                settings: ~
+              - name: RESERVED
+                msb: 15
+                lsb: 7
+                width: 9
+                access: res
+                settings: ~
+              - name: WRP1A_STRT
+                msb: 6
+                lsb: 0
+                width: 7
+                access: rw
+                note: >-
+                  Offset of the first page of WRP area A. The number of
+                  effective bits depends on the flash memory size of the device.
+                settings: ~
 
 nvic:
   reference:
