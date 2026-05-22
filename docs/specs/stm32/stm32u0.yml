@@ -11677,11 +11677,7 @@ peripherals:
             offset: 0x20
             note: >-
               Reset value is loaded from flash memory option bytes at power-on
-              reset release (factory-programmed; not a fixed constant). Fields
-              NRST_MODE, BKPSRAM_HW_ERASE_DISABLE, RAM_PARITY_CHECK, NRST_SHDW,
-              and NRST_STOP are marked with footnote asterisks in the original
-              RM0503 register diagram, indicating potential sub-family variation;
-              see per-field notes.
+              reset release (factory-programmed; not a fixed constant).
             fields:
               - name: RESERVED
                 msb: 31
@@ -11702,9 +11698,7 @@ peripherals:
                 lsb: 27
                 width: 2
                 access: rw
-                note: >-
-                  Marked with footnote asterisk in RM0503 register diagram. Refer
-                  to §7.3.17 for additional considerations when using GPIO mode.
+                note: Refer to §7.3.17 for additional considerations when using GPIO mode.
                 settings:
                   "00": Reserved
                   "01": >-
@@ -11757,7 +11751,6 @@ peripherals:
                 lsb: 22
                 width: 1
                 access: rw
-                note: Marked with footnote asterisk in RM0503 register diagram.
                 settings:
                   "0": SRAM parity check enabled
                   "1": SRAM parity check disabled
@@ -11812,9 +11805,7 @@ peripherals:
                 lsb: 15
                 width: 1
                 access: rw
-                note: >-
-                  Marked with footnote asterisk in RM0503 register diagram.
-                  Shutdown mode may not be available on all sub-families.
+                note: Shutdown mode may not be available on all sub-families.
                 settings:
                   "0": Reset generated when entering the Shutdown mode
                   "1": No reset generated when entering the Shutdown mode
@@ -11831,7 +11822,6 @@ peripherals:
                 lsb: 13
                 width: 1
                 access: rw
-                note: Marked with footnote asterisk in RM0503 register diagram.
                 settings:
                   "0": Reset generated when entering the Stop mode
                   "1": No reset generated when entering the Stop mode
