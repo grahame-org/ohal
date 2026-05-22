@@ -498,20 +498,6 @@ def _fix_italic_spans(text: str) -> str:
         text,
     )
 
-    # Convert inline cross-reference italic spans such as "_Figure 365_",
-    # "_Section 26.5.9_", or "_Table 12_" to "*...*".  These spans appear at
-    # the end of a paragraph line and are then continued by the next sentence on
-    # the following line.  Because the surrounding paragraph text may contain
-    # identifier underscores (e.g. LPUART_CR3), Prettier can mistake the opening
-    # "_" of one of those identifiers and the "_" inside "_Figure N_" as the
-    # delimiters of an implicit italic span, corrupting both.  Switching to
-    # "*...*" eliminates the ambiguity without changing the rendered appearance.
-    text = re.sub(
-        r"_((Figure|Section|Table|Equation|Appendix)\s+[\d.]+[a-z]?)_",
-        r"*\1*",
-        text,
-    )
-
     # Escape bare "*" used as a multiplication operator in address-offset
     # formulas (e.g. "0x004 * x").  Prettier interprets "space * letter" as an
     # italic-open delimiter and escapes it to "\*".  We pre-empt this by
@@ -667,10 +653,101 @@ def _dominant_body_size(blocks: list[dict]) -> float:
     return size_chars.most_common(1)[0][0]
 
 
+def _join_register_cell_lines(text: str) -> str:
+    """Reassemble a multi-line register-header cell into a single identifier.
+
+    pymupdf's table extractor renders vertically-stacked register field names
+    as multiple text lines, with underscores either appearing on their own
+    separator lines or being stripped from embedded spans and placed on adjacent
+    lines.  The observed patterns and their expected outputs are::
+
+        "NRST\\n_\\nSHDW"                            -> "NRST_SHDW"
+        "NRST MODE\\n_\\n[1:0]"                       -> "NRST_MODE[1:0]"
+        "N\\nBOOT\\n0"                                -> "NBOOT0"
+        "NBOOT\\nSEL\\n_"                             -> "NBOOT_SEL"
+        "BKPSRAM\\nHW\\n_ _\\nERASE\\n_\\nDISABLE"   -> "BKPSRAM_HW_ERASE_DISABLE"
+        "BOR LEV[1:0]\\n_"                            -> "BOR_LEV[1:0]"
+
+    The algorithm:
+
+    1. Split on ``\\n`` and strip each line.
+    2. Classify lines as word segments or lone-underscore separator lines
+       (lines whose stripped content consists entirely of ``_`` and spaces).
+    3. Convert internal spaces within word segments to ``_`` (the extractor
+       splits ``NRST_MODE`` into ``NRST MODE`` plus a lone ``_`` separator line;
+       the space marks the original underscore position).  Track how many
+       spaces were converted (``spaces_used``).
+    4. Count the total number of ``_`` chars across all separator lines
+       (``sep_chars``).  The underscores available to join word segments are
+       ``sep_chars - spaces_used``.
+    5. When the available-separator count exactly equals the number of gaps
+       between word segments (``len(words) - 1``), join every pair with ``_``.
+       Otherwise the segments are concatenated directly.
+
+    If no lone-underscore line is present but every line looks like an
+    all-uppercase register-identifier fragment (letters, digits, brackets),
+    the lines are concatenated directly (handles ``N\\nBOOT\\n0`` → ``NBOOT0``).
+    """
+    raw_lines = [ln.strip() for ln in text.split("\n")]
+    lines = [ln for ln in raw_lines if ln]
+    if len(lines) <= 1:
+        return text
+
+    _LONE_UNDERSCORE = re.compile(r"^[_ ]+$")
+    _IDENT_FRAGMENT = re.compile(r"^[A-Z0-9\[\]:.]+$")
+
+    has_separator = any(_LONE_UNDERSCORE.fullmatch(ln) for ln in lines)
+
+    if not has_separator:
+        # No separator lines: concatenate directly only when every fragment
+        # looks like part of an all-caps identifier.
+        if all(_IDENT_FRAGMENT.fullmatch(ln) for ln in lines):
+            return "".join(lines)
+        return text
+
+    # Separate word segments from separator lines; convert internal spaces to _
+    # in word segments (each space is an underscore extracted by the table parser).
+    words: list[str] = []
+    sep_count = 0   # total underscore separators available
+    spaces_used = 0
+    for ln in lines:
+        if _LONE_UNDERSCORE.fullmatch(ln):
+            # Count the number of "_" characters: a line like "_ _" represents
+            # two underscore separators (one between the previous segment and the
+            # next, plus one trailing/leading from the adjacent span).
+            sep_count += ln.count("_")
+        else:
+            n_spaces = ln.count(" ")
+            spaces_used += n_spaces
+            words.append(ln.replace(" ", "_"))
+
+    if not words:
+        return text
+    if len(words) == 1:
+        # Only one word segment; all separator _s were either internal
+        # (converted from spaces) or border artefacts.
+        return words[0]
+
+    # Available underscores for joining word segments.
+    # sep_count counts raw "_" chars in separator lines; spaces_used accounts
+    # for underscores already embedded within word segments (from internal spaces).
+    available = sep_count - spaces_used
+    gaps = len(words) - 1
+    if available == gaps:
+        return "_".join(words)
+    # Fallback: concatenate (shouldn't occur in practice for well-formed cells).
+    return "".join(words)
+
+
 def _normalise_cell(value: object, collapse_newlines: bool = True) -> str:
     """Normalise a single table cell value to a plain string."""
     text = _normalise_text(str(value)) if value is not None else ""
     if collapse_newlines:
+        # Attempt intelligent reassembly of vertically-stacked register field
+        # names before falling back to simple space-joining.
+        text = _join_register_cell_lines(text)
+        # If the cell still contains newlines (e.g. ordinary multi-line prose
+        # not handled by the register-name heuristic), collapse them to spaces.
         text = text.replace("\n", " ")
     # Strip trailing standalone-underscore PDF artefacts.  pymupdf sometimes
     # extracts a register-map cell as e.g. "REV ID\n_" or "FLASH SIZE\n_" where
