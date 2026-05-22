@@ -11982,6 +11982,165 @@ peripherals:
                 access: rw
                 note: Last page of the first hide protection area.
                 settings: ~
+        - OEM1KEYR1:
+            reference:
+              section: 3.7.11
+            offset: 0x88
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 31:0 of the 128-bit OEM1 key.
+            fields:
+              - name: OEM1KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM1KEYR2:
+            reference:
+              section: 3.7.12
+            offset: 0x8C
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 63:32 of the 128-bit OEM1 key.
+            fields:
+              - name: OEM1KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM1KEYR3:
+            reference:
+              section: 3.7.13
+            offset: 0x90
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 95:64 of the 128-bit OEM1 key.
+            fields:
+              - name: OEM1KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM1KEYR4:
+            reference:
+              section: 3.7.14
+            offset: 0x94
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 127:96 of the 128-bit OEM1 key.
+            fields:
+              - name: OEM1KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM2KEYR1:
+            reference:
+              section: 3.7.15
+            offset: 0x98
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 31:0 of the 128-bit OEM2 key.
+            fields:
+              - name: OEM2KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM2KEYR2:
+            reference:
+              section: 3.7.16
+            offset: 0x9C
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 63:32 of the 128-bit OEM2 key.
+            fields:
+              - name: OEM2KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM2KEYR3:
+            reference:
+              section: 3.7.17
+            offset: 0xA0
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 95:64 of the 128-bit OEM2 key.
+            fields:
+              - name: OEM2KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEM2KEYR4:
+            reference:
+              section: 3.7.18
+            offset: 0xA4
+            reset-value: 0xFFFFFFFF
+            note: >-
+              All bits are write-only and always read as zero.
+              Write bits 127:96 of the 128-bit OEM2 key.
+            fields:
+              - name: OEM2KEY
+                msb: 31
+                lsb: 0
+                width: 32
+                access: w
+                settings: ~
+        - OEMKEYSR:
+            reference:
+              section: 3.7.19
+            offset: 0xA8
+            note: >-
+              Reset value is 0x00XX00XX where XX is the 8-bit CRC calculated
+              from each OEM key (polynomial 0x7, initial value 0x0, final
+              XOR 0x5); exact reset value is factory-dependent.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 24
+                width: 8
+                access: res
+                settings: ~
+              - name: OEM2KEYCRC
+                msb: 23
+                lsb: 16
+                width: 8
+                access: r
+                note: >-
+                  8-bit CRC calculated from the 128-bit OEM2 key (polynomial
+                  0x7, initial value 0x0, final XOR 0x5).
+                settings: ~
+              - name: RESERVED
+                msb: 15
+                lsb: 8
+                width: 8
+                access: res
+                settings: ~
+              - name: OEM1KEYCRC
+                msb: 7
+                lsb: 0
+                width: 8
+                access: r
+                note: >-
+                  8-bit CRC calculated from the 128-bit OEM1 key (polynomial
+                  0x7, initial value 0x0, final XOR 0x5).
+                settings: ~
 
 nvic:
   reference:
