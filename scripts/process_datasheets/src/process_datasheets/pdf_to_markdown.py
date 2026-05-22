@@ -431,6 +431,44 @@ def _underscore_body_to_star(m: re.Match) -> str:  # type: ignore[type-arg]
     return m.group(0)
 
 
+def _escape_identifier_underscores(line: str) -> str:
+    """Escape word-internal underscores that lie outside italic spans.
+
+    On lines that contain italic ``_..._`` spans, a plain-text identifier such
+    as ``CRS_ISR`` can cause CommonMark to treat the ``_`` in the identifier as
+    an italic-open or italic-close delimiter, corrupting both the identifier and
+    the intended italic span.  This function escapes any ``_`` that:
+
+    * is flanked by a word character (``\\w``) on both sides, AND
+    * lies strictly outside every *genuine* italic span on the same line.
+
+    A genuine italic span has its opening ``_`` NOT preceded by a word character
+    (CommonMark left-flanking delimiter rule).  Using this stricter pattern
+    avoids treating the identifier underscore in ``CRS_ISR`` as an italic opener
+    and then falsely marking it as "already inside a span".
+
+    Underscores that are already inside a genuine italic span are left untouched
+    so that the span itself is not broken.
+    """
+    if "_" not in line:
+        return line
+    # Only match italic spans whose opening _ is a true left-flanking delimiter
+    # (not preceded by a word character).
+    _TRUE_ITALIC_SPAN_RE = re.compile(r"(?<!\w)_[^_\n]+_(?!\w)")
+    italic_ranges = [m.span() for m in _TRUE_ITALIC_SPAN_RE.finditer(line)]
+    if not italic_ranges:
+        return line
+
+    def _in_italic(pos: int) -> bool:
+        return any(start < pos < end for start, end in italic_ranges)
+
+    result = list(line)
+    for m in re.finditer(r"(?<=\w)_(?=\w)", line):
+        if not _in_italic(m.start()):
+            result[m.start()] = r"\_"
+    return "".join(result)
+
+
 def _fix_italic_spans(text: str) -> str:
     """Normalise italic markup corrupted during PDF extraction.
 
@@ -490,6 +528,14 @@ def _fix_italic_spans(text: str) -> str:
     # both spans (e.g. "_Section...register_ _(DBGMCU_IDCODE)_" → single span).
     text = re.sub(r"_( )_", r"\1", text)
 
+    # After merging adjacent italic spans the inter-span space can land
+    # immediately before a punctuation character, e.g.:
+    #   "_Section 1.5: Availability of peripherals_ _._"
+    #   → "_Section 1.5: Availability of peripherals ._"   (wrong – spurious space)
+    # Strip any whitespace that directly precedes sentence-ending punctuation
+    # inside an italic span (i.e. before a closing "_").
+    text = re.sub(r"\s+([.,;:!?])_", r"\1_", text)
+
     # Convert "_..._" spans whose body contains a non-identifier underscore to "*...*".
     # See _underscore_body_to_star for the full explanation.
     text = re.sub(
@@ -497,6 +543,15 @@ def _fix_italic_spans(text: str) -> str:
         _underscore_body_to_star,
         text,
     )
+
+    # Escape identifier underscores that sit outside italic spans on lines that
+    # also contain italic spans.  Without this, a pattern such as
+    #   "the CRS_ISR register. Refer to _Section 6.4.5_ for details."
+    # would be mis-parsed by CommonMark (and subsequently by Prettier) as an
+    # italic run spanning from the identifier _ to the italic-open _.
+    # Running AFTER _underscore_body_to_star ensures genuine spans are already
+    # finalised (_..._) or converted (*...*) before we scan for plain-text _.
+    text = "\n".join(_escape_identifier_underscores(line) for line in text.splitlines())
 
     # Escape bare "*" used as a multiplication operator in address-offset
     # formulas (e.g. "0x004 * x").  Prettier interprets "space * letter" as an
@@ -735,6 +790,30 @@ def _join_register_cell_lines(text: str) -> str:
     gaps = len(words) - 1
     if available == gaps:
         return "_".join(words)
+    if available > 0:
+        # available < gaps: some inter-word gaps have a separator line between
+        # them (use "_") and some do not (concatenate directly).
+        # Example: "VC\n_\nHARDE\nRR" -> VC gets "_" before HARDE (sep line),
+        # then HARDE and RR are concatenated directly -> "VC_HARDERR".
+        # Replay the original line sequence, consuming the sep budget only
+        # when a lone-underscore line directly precedes the next word.
+        result_tokens: list[str] = []
+        word_iter = iter(words)
+        prev_was_sep = False
+        sep_budget = available
+        for ln in lines:
+            if _LONE_UNDERSCORE.fullmatch(ln):
+                prev_was_sep = True
+            else:
+                word = next(word_iter, None)
+                if word is None:
+                    break
+                if result_tokens and prev_was_sep and sep_budget > 0:
+                    result_tokens.append("_")
+                    sep_budget -= 1
+                result_tokens.append(word)
+                prev_was_sep = False
+        return "".join(result_tokens)
     # Fallback: concatenate (shouldn't occur in practice for well-formed cells).
     return "".join(words)
 
@@ -1033,7 +1112,17 @@ def page_to_markdown(page: "pymupdf.Page") -> str:
 
     data = page.get_text("dict", sort=True)
     all_blocks = data.get("blocks", [])
-    body_size = _dominant_body_size(all_blocks)
+    # Compute the dominant body size from blocks that do not overlap any
+    # detected table rectangle.  Register-map-heavy pages have far more
+    # characters in the tiny (7 pt) bit-field table cells than in the 9 pt
+    # body prose; including those cells skews the modal size downward and
+    # causes "Address offset:" / "Reset value:" lines (10 pt) and section
+    # headings (9 pt) to be incorrectly promoted to higher heading levels.
+    non_table_blocks = [
+        b for b in all_blocks
+        if not _rect_overlaps_any(pymupdf.Rect(b["bbox"]), table_rect_list)
+    ]
+    body_size = _dominant_body_size(non_table_blocks) or _dominant_body_size(all_blocks)
     min_bx = _min_bullet_x(all_blocks)
     figure_exclusions = _figure_body_rects(all_blocks)
     output_items: list[tuple[float, str]] = []

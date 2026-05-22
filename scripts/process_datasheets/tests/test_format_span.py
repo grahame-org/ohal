@@ -16,7 +16,7 @@ from __future__ import annotations
 import pytest
 from hamcrest import assert_that, equal_to
 
-from process_datasheets.pdf_to_markdown import _format_span
+from process_datasheets.pdf_to_markdown import _escape_identifier_underscores, _fix_italic_spans, _format_span
 
 # Font flag bit masks (as used by PyMuPDF).
 _ITALIC_FLAG = 2
@@ -161,3 +161,143 @@ class TestWhitespacePreservation:
 
 	def test_multiple_leading_spaces_all_placed_outside(self):
 		assert_that(_format_span("  word", _ITALIC_FLAG, "Arial"), equal_to("  _word_"))
+
+
+class TestFixItalicSpans:
+	"""Tests for _fix_italic_spans post-processing of merged italic runs."""
+
+	def test_adjacent_italic_spans_joined_by_space_are_merged(self):
+		# Two italic spans separated by a single space are collapsed into one.
+		assert_that(
+			_fix_italic_spans("_span one_ _span two_"),
+			equal_to("_span one span two_"),
+		)
+
+	def test_adjacent_italic_spans_with_trailing_punctuation_no_spurious_space(self):
+		# Regression: PDF emits a trailing period as a separate italic span.
+		# "_Section 1.5: Availability of peripherals_ _._" must not produce
+		# a space before the period inside the merged span.
+		assert_that(
+			_fix_italic_spans("_Section 1.5: Availability of peripherals_ _._"),
+			equal_to("_Section 1.5: Availability of peripherals._"),
+		)
+
+	def test_adjacent_italic_spans_space_before_comma_removed(self):
+		# Same issue for comma-only trailing spans.
+		assert_that(
+			_fix_italic_spans("_some text_ _,_"),
+			equal_to("_some text,_"),
+		)
+
+	def test_non_adjacent_italic_spans_not_merged(self):
+		# Spans separated by more than one space or by non-space content are left alone.
+		result = _fix_italic_spans("_span one_  _span two_")
+		# Two spaces between them — no merge.
+		assert_that("_span one_" in result, equal_to(True))
+
+	def test_wrapped_italic_span_joined_across_newline(self):
+		# "_text_\n_cont_" → "_text cont_"
+		assert_that(
+			_fix_italic_spans("_text_\n_cont_"),
+			equal_to("_text cont_"),
+		)
+
+
+# ---------------------------------------------------------------------------
+# Identifier-underscore escaping (_escape_identifier_underscores)
+# ---------------------------------------------------------------------------
+
+
+class TestEscapeIdentifierUnderscores:
+	"""_escape_identifier_underscores and its integration in _fix_italic_spans."""
+
+	def test_crs_isr_with_italic_span_is_escaped(self):
+		"""CRS_ISR on a line that also contains an italic span must have its _ escaped."""
+		input_ = (
+			"in the FECAP[15:0] bits of the CRS_ISR register. "
+			"Refer to _Section 6.4.5_ for more details"
+		)
+		assert_that(
+			_fix_italic_spans(input_),
+			equal_to(
+				r"in the FECAP[15:0] bits of the CRS\_ISR register. "
+				r"Refer to _Section 6.4.5_ for more details"
+			),
+		)
+
+	def test_identifier_underscore_no_italic_span_unchanged(self):
+		"""On a line without any italic span, identifier underscores must not be escaped."""
+		assert_that(
+			_fix_italic_spans("the CRS_ISR register."),
+			equal_to("the CRS_ISR register."),
+		)
+
+	def test_identifier_inside_italic_span_not_escaped(self):
+		"""An identifier underscore that is itself inside a genuine italic span must not be escaped."""
+		assert_that(
+			_fix_italic_spans("see _TI1F_ED_ for details"),
+			equal_to("see _TI1F_ED_ for details"),
+		)
+
+	def test_multiple_identifiers_on_line_with_italic(self):
+		"""All out-of-span identifier underscores on the same line are escaped."""
+		assert_that(
+			_fix_italic_spans("CRS_ISR and CRS_CR, see _Section 2.1_"),
+			equal_to(r"CRS\_ISR and CRS\_CR, see _Section 2.1_"),
+		)
+
+	def test_plain_italic_span_unchanged_when_no_identifiers(self):
+		"""A line with an italic span but no identifier underscores is unchanged."""
+		assert_that(
+			_fix_italic_spans("Refer to _Section 6.4.4_ for more details."),
+			equal_to("Refer to _Section 6.4.4_ for more details."),
+		)
+# ---------------------------------------------------------------------------
+# Identifier-underscore escaping (_escape_identifier_underscores)
+# ---------------------------------------------------------------------------
+
+
+class TestEscapeIdentifierUnderscores:
+	"""_escape_identifier_underscores and its integration in _fix_italic_spans."""
+
+	def test_crs_isr_with_italic_span_is_escaped(self):
+		"""CRS_ISR on a line that also contains an italic span must have its _ escaped."""
+		input_ = (
+			"in the FECAP[15:0] bits of the CRS_ISR register. "
+			"Refer to _Section 6.4.5_ for more details"
+		)
+		assert_that(
+			_fix_italic_spans(input_),
+			equal_to(
+				r"in the FECAP[15:0] bits of the CRS\_ISR register. "
+				r"Refer to _Section 6.4.5_ for more details"
+			),
+		)
+
+	def test_identifier_underscore_no_italic_span_unchanged(self):
+		"""On a line without any italic span, identifier underscores must not be escaped."""
+		assert_that(
+			_fix_italic_spans("the CRS_ISR register."),
+			equal_to("the CRS_ISR register."),
+		)
+
+	def test_identifier_inside_italic_span_not_escaped(self):
+		"""An identifier underscore that is itself inside a genuine italic span must not be escaped."""
+		assert_that(
+			_fix_italic_spans("see _TI1F_ED_ for details"),
+			equal_to("see _TI1F_ED_ for details"),
+		)
+
+	def test_multiple_identifiers_on_line_with_italic(self):
+		"""All out-of-span identifier underscores on the same line are escaped."""
+		assert_that(
+			_fix_italic_spans("CRS_ISR and CRS_CR, see _Section 2.1_"),
+			equal_to(r"CRS\_ISR and CRS\_CR, see _Section 2.1_"),
+		)
+
+	def test_plain_italic_span_unchanged_when_no_identifiers(self):
+		"""A line with an italic span but no identifier underscores is unchanged."""
+		assert_that(
+			_fix_italic_spans("Refer to _Section 6.4.4_ for more details."),
+			equal_to("Refer to _Section 6.4.4_ for more details."),
+		)
