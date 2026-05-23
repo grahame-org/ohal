@@ -10,6 +10,7 @@
 #include <ohal/gpio.hpp>
 #include <ohal/irq.hpp>
 #include <ohal/nvic.hpp>
+#include <ohal/pwr.hpp>
 #include <ohal/timer.hpp>
 #include <ohal/uart.hpp>
 
