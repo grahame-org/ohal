@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P4-S2b
+    current: P4-S3
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -134,6 +134,10 @@ meta:
       - id: P0-S11
         date: "2026-05-23"
       - id: P4-S2a
+        date: "2026-05-23"
+      - id: P0-S12
+        date: "2026-05-23"
+      - id: P4-S2b
         date: "2026-05-23"
 
 # ============================================================
@@ -348,6 +352,32 @@ phases:
         acceptance-criteria:
           - Top-level `low-power-modes` property added to schema-family.json.
           - "$defs/low-power-mode-table and $defs/low-power-mode-entry added."
+          - docs/specs/stm32/stm32u0.yml validates against the updated schema.
+          - lint.sh passes.
+
+      - id: P0-S12
+        title: "Schema: add peripheral-mode-availability top-level section"
+        description: >
+          P4-S2b requires a top-level `peripheral-mode-availability` section in
+          the family spec to host Table 22 (Functionalities depending on the
+          working mode) from RM0503 §4.3. Table 22 is a per-peripheral × per-mode
+          availability matrix spanning pages 116-118 with columns for Run, Sleep,
+          Low-power run, Low-power sleep, Stop 0/1 (active + wake-up), Stop 2
+          (active + wake-up), Standby (active + wake-up), Shutdown (active +
+          wake-up), and VBAT. Add an optional `peripheral-mode-availability`
+          top-level property to schema-family.json backed by new
+          `$defs/peripheral-mode-availability-table`,
+          `$defs/peripheral-mode-availability-entry`, and
+          `$defs/peripheral-mode-footnote` definitions. Cell values are strings
+          (Y, O, -, numeric, or combinations with footnote references such as
+          O(1), 5 pins (10)).
+        filed-by: P4-S2b
+        acceptance-criteria:
+          - Top-level `peripheral-mode-availability` property added to schema-family.json.
+          - >-
+            $defs/peripheral-mode-availability-table,
+            $defs/peripheral-mode-availability-entry, and
+            $defs/peripheral-mode-footnote added.
           - docs/specs/stm32/stm32u0.yml validates against the updated schema.
           - lint.sh passes.
 
@@ -752,14 +782,14 @@ phases:
       - id: P4-S2b
         title: "Add Table 22 data (functionalities by working mode)"
         description: >
-          Table 22 (page 116) is a per-peripheral availability cross-
+          Table 22 (pages 116-118) is a per-peripheral availability cross-
           reference for all working modes (Run through VBAT). It lists
           each peripheral/component with Y/O/- availability in each mode
           and whether it can be a wake-up source. This data requires a
           schema extension (file a new P0 step before implementing) as
           the current schema has no structured home for a cross-peripheral
           per-mode availability table.
-        source-pages: [116]
+        source-pages: [116, 117, 118]
         concern: >
           Table 22 column structure: Run, Sleep, Low-power run, Low-power
           sleep, Stop 0/1 (active + wake-up capability), Stop 2 (active +
@@ -773,6 +803,12 @@ phases:
           - Table 22 structure confirmed from page 116.
           - Schema extension filed (new P0 step).
           - Table 22 data added once schema is confirmed.
+        note: >
+          Table 22 spans pages 116-118 (45 peripheral rows). Schema
+          extension filed as P0-S12 and implemented in the same PR.
+          All 45 entries and 11 footnotes added to stm32u0.yml under
+          peripheral-mode-availability. Stop 0/1, Stop 2, Standby, and
+          Shutdown each have separate *-active and *-wakeup fields.
 
       - id: P4-S3
         title: "Add PWR registers from §4.4 (all)"

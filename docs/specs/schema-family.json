@@ -155,6 +155,10 @@
     "low-power-modes": {
       "description": "Low-power mode summary table for the device family (e.g. Table 21 in RM0503 §4.3). Each entry describes one low-power mode with its entry conditions, wake-up sources, clock behaviour, and voltage regulator states.",
       "$ref": "#/$defs/low-power-mode-table"
+    },
+    "peripheral-mode-availability": {
+      "description": "Per-peripheral availability cross-reference for each working mode (e.g. Table 22 in RM0503 §4.3). Each entry lists a peripheral or component with its availability (Y/O/-) and wake-up capability in each working mode.",
+      "$ref": "#/$defs/peripheral-mode-availability-table"
     }
   },
   "$defs": {
@@ -1067,6 +1071,88 @@
           "description": "Optional free-text annotation for this mode entry.",
           "type": "string"
         }
+      }
+    },
+    "peripheral-mode-availability-table": {
+      "description": "Container for the per-peripheral working-mode availability table (e.g. Table 22 in RM0503 §4.3).",
+      "type": "object",
+      "required": ["entries"],
+      "additionalProperties": false,
+      "properties": {
+        "references": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the table as a whole.",
+          "type": "string"
+        },
+        "footnotes": {
+          "description": "Numbered footnotes referenced by cell values in the entries.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/peripheral-mode-footnote" },
+          "minItems": 1
+        },
+        "entries": {
+          "description": "List of peripheral availability entries, one per peripheral row, in the order given by the reference manual.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/peripheral-mode-availability-entry" },
+          "minItems": 1
+        }
+      }
+    },
+    "peripheral-mode-footnote": {
+      "description": "A numbered footnote for the peripheral mode availability table.",
+      "type": "object",
+      "required": ["number", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "description": "Footnote number as it appears in the reference manual table.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "text": {
+          "description": "Full text of the footnote.",
+          "type": "string"
+        }
+      }
+    },
+    "peripheral-mode-availability-entry": {
+      "description": "Availability of one peripheral or component in each working mode. Values are Y (always enabled), O (optional/software-enabled), - (not available), or a string combining these with a footnote reference such as 'O(1)' or '5 pins (10)'.",
+      "type": "object",
+      "required": [
+        "peripheral",
+        "run",
+        "sleep",
+        "low-power-run",
+        "low-power-sleep",
+        "stop01-active",
+        "stop01-wakeup",
+        "stop2-active",
+        "stop2-wakeup",
+        "standby-active",
+        "standby-wakeup",
+        "shutdown-active",
+        "shutdown-wakeup",
+        "vbat"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "peripheral": {
+          "description": "Peripheral or component name as given in the reference manual table.",
+          "type": "string"
+        },
+        "run": { "description": "Availability in Run mode.", "type": "string" },
+        "sleep": { "description": "Availability in Sleep mode.", "type": "string" },
+        "low-power-run": { "description": "Availability in Low-power run mode.", "type": "string" },
+        "low-power-sleep": { "description": "Availability in Low-power sleep mode.", "type": "string" },
+        "stop01-active": { "description": "Active capability in Stop 0/1 mode.", "type": "string" },
+        "stop01-wakeup": { "description": "Wake-up capability in Stop 0/1 mode.", "type": "string" },
+        "stop2-active": { "description": "Active capability in Stop 2 mode.", "type": "string" },
+        "stop2-wakeup": { "description": "Wake-up capability in Stop 2 mode.", "type": "string" },
+        "standby-active": { "description": "Active capability in Standby mode.", "type": "string" },
+        "standby-wakeup": { "description": "Wake-up capability in Standby mode.", "type": "string" },
+        "shutdown-active": { "description": "Active capability in Shutdown mode.", "type": "string" },
+        "shutdown-wakeup": { "description": "Wake-up capability in Shutdown mode.", "type": "string" },
+        "vbat": { "description": "Availability in VBAT mode.", "type": "string" }
       }
     }
   }
