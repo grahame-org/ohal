@@ -13,7 +13,9 @@
 
 #include <cstdint>
 
+#include "ohal/core/field.hpp"
 #include "ohal/core/register.hpp"
+#include "ohal/flash.hpp"
 
 namespace ohal::platforms::stm32u0::stm32u083
 {
@@ -23,6 +25,7 @@ namespace ohal::platforms::stm32u0::stm32u083
 // ---------------------------------------------------------------------------
 
 inline constexpr uintptr_t kFlashBase = 0x4002'2000U;
+inline constexpr uint8_t kFlashRegisterWidthBits = 32U;
 
 // ---------------------------------------------------------------------------
 // FLASH register offsets (RM0503 Rev 4, Table 19)
@@ -94,6 +97,80 @@ struct FlashRegs
 
 using Flash = FlashRegs<kFlashBase>;
 
+// ---------------------------------------------------------------------------
+// Instance tag type
+// ---------------------------------------------------------------------------
+
+struct FlashTag
+{
+};
+
 } // namespace ohal::platforms::stm32u0::stm32u083
+
+// ---------------------------------------------------------------------------
+// ohal::flash::Controller specialisation for STM32U0 FLASH
+// ---------------------------------------------------------------------------
+
+namespace ohal::flash
+{
+
+template <>
+struct Controller<ohal::platforms::stm32u0::stm32u083::FlashTag>
+{
+    using Regs = ohal::platforms::stm32u0::stm32u083::Flash;
+
+    using Acr = typename Regs::Acr;
+    using Keyr = ohal::core::BitField<typename Regs::Keyr, 0U,
+                                      ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                                      ohal::core::Access::WriteOnly>;
+    using Optkeyr =
+        ohal::core::BitField<typename Regs::Optkeyr, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Sr = typename Regs::Sr;
+    using Cr = typename Regs::Cr;
+    using Eccr = typename Regs::Eccr;
+    using Optr = typename Regs::Optr;
+    using Wrp1ar = typename Regs::Wrp1ar;
+    using Wrp1br = typename Regs::Wrp1br;
+    using Secr = typename Regs::Secr;
+    using Oem1keyr1 =
+        ohal::core::BitField<typename Regs::Oem1keyr1, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem1keyr2 =
+        ohal::core::BitField<typename Regs::Oem1keyr2, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem1keyr3 =
+        ohal::core::BitField<typename Regs::Oem1keyr3, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem1keyr4 =
+        ohal::core::BitField<typename Regs::Oem1keyr4, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem2keyr1 =
+        ohal::core::BitField<typename Regs::Oem2keyr1, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem2keyr2 =
+        ohal::core::BitField<typename Regs::Oem2keyr2, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem2keyr3 =
+        ohal::core::BitField<typename Regs::Oem2keyr3, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oem2keyr4 =
+        ohal::core::BitField<typename Regs::Oem2keyr4, 0U,
+                             ohal::platforms::stm32u0::stm32u083::kFlashRegisterWidthBits,
+                             ohal::core::Access::WriteOnly>;
+    using Oemkeysr = typename Regs::Oemkeysr;
+    using Hdpcr = typename Regs::Hdpcr;
+    using Hdpextr = typename Regs::Hdpextr;
+};
+
+} // namespace ohal::flash
 
 #endif // OHAL_PLATFORMS_STM32U0_MODELS_STM32U083_FLASH_HPP
