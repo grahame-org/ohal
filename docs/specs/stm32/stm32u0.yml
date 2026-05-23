@@ -12202,7 +12202,7 @@ peripherals:
                 access: rw
                 note: >-
                   HDP1 extension area size in 2-kbyte pages. Extension starts
-                  at page HDP1_PEND[7:0] + 1. Write access depends on
+                  at page HDP1_PEND[6:0] + 1. Write access depends on
                   HDP1EXT_ACCDIS[7:0] in FLASH_HDPCR.
                 settings: ~
 
