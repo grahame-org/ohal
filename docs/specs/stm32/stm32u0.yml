@@ -12360,6 +12360,14 @@ peripherals:
               V Range 1 CORE: 56
               V Range 2 CORE: 18
 
+  - pwr:
+      reference:
+        section: "4"
+      instances:
+        - name: PWR
+          base: 0x40007000
+      registers: []
+
 nvic:
   reference:
     section: "11"
