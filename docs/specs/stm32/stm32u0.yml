@@ -12721,10 +12721,12 @@ low-power-modes:
     Table 21 rows for Sleep and Low-power sleep each span two sub-rows in the
     PDF (WFI/Return-from-ISR and WFE variants); the entry and wakeup-source
     fields consolidate both sub-rows per mode. Stop 1 and Stop 2 share the
-    same wake-up source, wakeup-clock, and effect-on-clocks as Stop 0 (blank
+    same wake-up source, wakeup-clock, and effect-on-clocks as Stop 0, and
+    Stop 1 and Stop 2 share the same lp-regulator state as Stop 0 (blank
     cells in the extracted table indicate inherited values; consolidated here
-    for completeness). Regulator columns left blank in the extracted table are
-    omitted. See Table 22 (P4-S2b) for per-peripheral mode availability.
+    for completeness). Stop 1 MR is explicitly OFF in the table; Stop 2 MR
+    inherits OFF from Stop 1. Standby wakeup-clock inherits from Standby with
+    SRAM2. See Table 22 (P4-S2b) for per-peripheral mode availability.
   modes:
     - name: "Sleep (Sleep-now or Sleep-on-exit)"
       entry: "WFI or Return from ISR, or WFE"
@@ -12775,6 +12777,7 @@ low-power-modes:
         entering the Stop mode when STOPWUCK=0
       effect-on-clocks: "All clocks OFF except LSI and LSE"
       main-regulator: "off"
+      lp-regulator: "on"
     - name: "Stop 2"
       entry: >-
         LPMS="010" + SLEEPDEEP bit + WFI or Return from ISR or WFE
@@ -12785,6 +12788,8 @@ low-power-modes:
         HSI16 when STOPWUCK=1 in RCC_CFGR; MSI with the frequency before
         entering the Stop mode when STOPWUCK=0
       effect-on-clocks: "All clocks OFF except LSI and LSE"
+      main-regulator: "off"
+      lp-regulator: "on"
     - name: "Standby with SRAM2"
       entry: >-
         LPMS="011" + Set RRS bit + SLEEPDEEP bit + WFI or Return from ISR or
@@ -12798,6 +12803,7 @@ low-power-modes:
         WFE
       wakeup-source: >-
         WKUP pin edge, RTC event, external reset on NRST pin, IWDG reset
+      wakeup-clock: "MSI from 1 MHz up to 8 MHz"
       main-regulator: "off"
       lp-regulator: "off"
     - name: "Shutdown"
