@@ -1,4 +1,4 @@
-spec-version: "2.3.0"
+spec-version: "2.4.0"
 
 vendor: STMicroelectronics
 
@@ -14146,6 +14146,54 @@ peripherals:
   - rcc:
       reference:
         section: "5"
+      clock-source-freq-table:
+        reference:
+          section: "5.2.9"
+          tables: [32]
+        notes:
+          - "(1) Maximum VCO frequency is 344 MHz."
+          - "(2) Maximum VCO frequency is 128 MHz."
+        entries:
+          - name: HSI16
+            max-freq-mhz:
+              Range 1: 16
+              Range 2: 16
+          - name: HSE
+            max-freq-mhz:
+              Range 1: 48
+              Range 2: 19
+          - name: HSI48
+            max-freq-mhz:
+              Range 1: 48
+            note: Not available in Range 2.
+          - name: MSI
+            max-freq-mhz:
+              Range 1: 48
+              Range 2: 16
+          - name: PLLPCLK
+            max-freq-mhz:
+              Range 1: 122
+              Range 2: 40
+          - name: PLLQCLK
+            max-freq-mhz:
+              Range 1: 56
+              Range 2: 19
+          - name: PLLRCLK
+            max-freq-mhz:
+              Range 1: 56
+              Range 2: 19
+          - name: SYSCLK
+            max-freq-mhz:
+              Range 1: 56
+              Range 2: 19
+          - name: HCLK
+            max-freq-mhz:
+              Range 1: 56
+              Range 2: 19
+          - name: PCLK
+            max-freq-mhz:
+              Range 1: 56
+              Range 2: 19
       instances:
         - name: RCC
           base: 0x40021000

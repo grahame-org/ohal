@@ -502,6 +502,10 @@
         "flash-wait-states": {
           "description": "Flash wait-state table for this peripheral (applicable only to flash memory controllers). Derived from the reference manual wait-state table (e.g. Table 9 in RM0503 §3.3.3).",
           "$ref": "#/$defs/flash-wait-states"
+        },
+        "clock-source-freq-table": {
+          "description": "Clock source maximum frequency table by voltage range for this peripheral (applicable to clock-controller peripherals, e.g. Table 32 in RM0503 §5.2.9).",
+          "$ref": "#/$defs/clock-source-freq-table"
         }
       }
     },
@@ -1006,6 +1010,48 @@
         },
         "max-hclk-mhz": {
           "description": "Map from voltage-range name to the maximum HCLK frequency in MHz for that range at this wait-state count. Keys are the exact voltage-range names from the reference manual table (e.g. 'V Range 1 CORE', 'V Range 2 CORE').",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "clock-source-freq-table": {
+      "description": "Maximum clock-source frequency table by voltage range (e.g. Table 32 in RM0503 §5.2.9). Defines the maximum frequency in MHz for each named clock source at each voltage range.",
+      "type": "object",
+      "required": ["entries"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "notes": {
+          "description": "Optional footnotes or annotations for the table as a whole, in the order they appear in the reference manual.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "entries": {
+          "description": "List of clock-source rows in the order given by the reference manual.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/clock-source-freq-entry" },
+          "minItems": 1
+        }
+      }
+    },
+    "clock-source-freq-entry": {
+      "description": "A single row from the clock-source frequency table: the clock name and the maximum frequency in MHz for each voltage range.",
+      "type": "object",
+      "required": ["name", "max-freq-mhz"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Clock source name as given in the reference manual, e.g. 'HSI16', 'HSE', 'SYSCLK'.",
+          "type": "string"
+        },
+        "note": {
+          "description": "Optional annotation for this entry, e.g. to document availability constraints.",
+          "type": "string"
+        },
+        "max-freq-mhz": {
+          "description": "Map from voltage-range name to the maximum frequency in MHz for that range. Omit the key if the clock source is not available in that range.",
           "type": "object",
           "minProperties": 1,
           "additionalProperties": { "type": "integer", "minimum": 1 }
