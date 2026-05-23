@@ -12726,7 +12726,9 @@ low-power-modes:
     cells in the extracted table indicate inherited values; consolidated here
     for completeness). Stop 1 MR is explicitly OFF in the table; Stop 2 MR
     inherits OFF from Stop 1. Standby wakeup-clock inherits from Standby with
-    SRAM2. See Table 22 (P4-S2b) for per-peripheral mode availability.
+    SRAM2. Standby with SRAM2 regulator states are blank in the PDF and are
+    inferred as OFF/OFF matching Standby. See Table 22 (P4-S2b) for
+    per-peripheral mode availability.
   modes:
     - name: "Sleep (Sleep-now or Sleep-on-exit)"
       entry: "WFI or Return from ISR, or WFE"
@@ -12797,6 +12799,8 @@ low-power-modes:
       wakeup-source: >-
         WKUP pin edge, RTC event, external reset on NRST pin, IWDG reset
       wakeup-clock: "MSI from 1 MHz up to 8 MHz"
+      main-regulator: "off"
+      lp-regulator: "off"
     - name: "Standby"
       entry: >-
         LPMS="011" + Clear RRS bit + SLEEPDEEP bit + WFI or Return from ISR or
