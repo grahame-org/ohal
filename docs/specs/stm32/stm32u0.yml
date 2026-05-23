@@ -12141,6 +12141,70 @@ peripherals:
                   8-bit CRC calculated from the 128-bit OEM1 key (polynomial
                   0x7, initial value 0x0, final XOR 0x5).
                 settings: ~
+        - HDPCR:
+            reference:
+              section: 3.7.20
+            offset: 0xAC
+            reset-value: 0x00A300A3
+            note: >-
+              HDP1 control register. HDP1EXT_ACCDIS and HDP1_ACCDIS govern
+              access to the HDP1 extension and base areas respectively.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 24
+                width: 8
+                access: res
+                settings: ~
+              - name: HDP1EXT_ACCDIS
+                msb: 23
+                lsb: 16
+                width: 8
+                access: rw
+                note: >-
+                  HDP1 extension area access disable. 0xA3: access granted;
+                  0x5C: access denied but incrementing HDP1_EXT[6:0] is
+                  allowed; others: access denied and HDP1_EXT[6:0] update
+                  blocked.
+                settings: ~
+              - name: RESERVED
+                msb: 15
+                lsb: 8
+                width: 8
+                access: res
+                settings: ~
+              - name: HDP1_ACCDIS
+                msb: 7
+                lsb: 0
+                width: 8
+                access: rw
+                note: >-
+                  HDP1 area access disable. 0xA3: access granted; others:
+                  access denied and the field cannot be modified except by
+                  system reset.
+                settings: ~
+        - HDPEXTR:
+            reference:
+              section: 3.7.21
+            offset: 0xB0
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 7
+                width: 25
+                access: res
+                settings: ~
+              - name: HDP1_EXT
+                msb: 6
+                lsb: 0
+                width: 7
+                access: rw
+                note: >-
+                  HDP1 extension area size in 2-kbyte pages. Extension starts
+                  at page HDP1_PEND[7:0] + 1. Write access depends on
+                  HDP1EXT_ACCDIS[7:0] in FLASH_HDPCR.
+                settings: ~
 
 nvic:
   reference:
