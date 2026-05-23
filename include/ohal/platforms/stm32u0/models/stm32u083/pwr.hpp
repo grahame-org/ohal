@@ -118,6 +118,9 @@ struct Controller<ohal::platforms::stm32u0::stm32u083::PwrTag>
     using Cr4 = typename Regs::Cr4;
     using Sr1 = typename Regs::Sr1;
     using Sr2 = typename Regs::Sr2;
+    // SCR is a write-only clear register (RM0503 §4.4.7): all fields have
+    // access: w, so the whole register is wrapped as a WriteOnly BitField to
+    // prevent accidental reads (which return 0 and are meaningless).
     using Scr = ohal::core::BitField<typename Regs::Scr, 0U,
                                      ohal::platforms::stm32u0::stm32u083::kPwrRegisterWidthBits,
                                      ohal::core::Access::WriteOnly>;
