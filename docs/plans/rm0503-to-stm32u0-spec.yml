@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P4-S2
+    current: P4-S2b
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -128,6 +128,12 @@ meta:
       - id: P3-S16
         date: "2026-05-23"
       - id: P4-S1
+        date: "2026-05-23"
+      - id: P4-S2
+        date: "2026-05-23"
+      - id: P0-S11
+        date: "2026-05-23"
+      - id: P4-S2a
         date: "2026-05-23"
 
 # ============================================================
@@ -323,6 +329,25 @@ phases:
         acceptance-criteria:
           - "$defs/peripheral gains optional flash-wait-states property."
           - "$defs/flash-wait-states and $defs/flash-wait-state-entry added."
+          - docs/specs/stm32/stm32u0.yml validates against the updated schema.
+          - lint.sh passes.
+
+      - id: P0-S11
+        title: "Schema: add low-power-modes top-level section"
+        description: >
+          P4-S2 requires a top-level `low-power-modes` section in the family
+          spec to host the low-power mode summary table (Table 21 in RM0503
+          §4.3). Add an optional `low-power-modes` top-level property to
+          schema-family.json backed by new `$defs/low-power-mode-table` and
+          `$defs/low-power-mode-entry` definitions. Each entry records the
+          mode name, entry conditions, wake-up source, wake-up clock, effect
+          on clocks, and voltage regulator states (main-regulator, lp-regulator).
+          All entry fields except `name` and `entry` are optional to allow
+          partial rows as they appear in the extracted PDF table.
+        filed-by: P4-S2
+        acceptance-criteria:
+          - Top-level `low-power-modes` property added to schema-family.json.
+          - "$defs/low-power-mode-table and $defs/low-power-mode-entry added."
           - docs/specs/stm32/stm32u0.yml validates against the updated schema.
           - lint.sh passes.
 
@@ -683,7 +708,7 @@ phases:
           Table 21 is a cross-cutting formal specification datum
           for ohal low-power mode support. Add a top-level
           `low-power-modes` section to stm32u0.yml (schema
-          extension P0 child required; file before implementing).
+          extension P0-S11 required; filed before implementing).
         source-pages: [115, 116]
         concern: >
           Table 21 may span multiple pages (pages ~115-116).
@@ -693,6 +718,61 @@ phases:
         acceptance-criteria:
           - Developer guidance on schema location for low-power
             mode summary obtained before implementation.
+        note: >
+          Table 21 (page 115) is complete on a single page. The
+          schema location is a top-level `low-power-modes` key
+          in the family spec, backed by $defs/low-power-mode-table
+          and $defs/low-power-mode-entry (schema extension P0-S11).
+          Table 22 (page 116) is a separate step (P4-S2b).
+          Child steps P4-S2a (Table 21 data) and P4-S2b (Table 22
+          data) were filed. P0-S11 and P4-S2a were implemented in
+          the same PR.
+
+      - id: P4-S2a
+        title: "Add Table 21 data (low-power mode summary) to stm32u0.yml"
+        description: >
+          Using schema extension P0-S11, add a `low-power-modes`
+          section to stm32u0.yml with all nine mode entries from
+          Table 21 (page 115): Sleep, Low-power run, Low-power sleep,
+          Stop 0, Stop 1, Stop 2, Standby with SRAM2, Standby, Shutdown.
+          Sleep and Low-power sleep have two sub-rows in the PDF (WFI
+          and WFE variants); consolidate them into single entries. Stop 1
+          and Stop 2 inherit wake-up source, wakeup-clock, and
+          effect-on-clocks from Stop 0 (blank cells in the extracted
+          table). Regulator columns left blank in the extraction are
+          omitted.
+        source-pages: [115]
+        depends-on: [P4-S2, P0-S11]
+        acceptance-criteria:
+          - low-power-modes section added to stm32u0.yml.
+          - All nine Table 21 entries present with explicit field values.
+          - spec validates against updated schema.
+          - lint.sh passes.
+
+      - id: P4-S2b
+        title: "Add Table 22 data (functionalities by working mode)"
+        description: >
+          Table 22 (page 116) is a per-peripheral availability cross-
+          reference for all working modes (Run through VBAT). It lists
+          each peripheral/component with Y/O/- availability in each mode
+          and whether it can be a wake-up source. This data requires a
+          schema extension (file a new P0 step before implementing) as
+          the current schema has no structured home for a cross-peripheral
+          per-mode availability table.
+        source-pages: [116]
+        concern: >
+          Table 22 column structure: Run, Sleep, Low-power run, Low-power
+          sleep, Stop 0/1 (active + wake-up capability), Stop 2 (active +
+          wake-up capability), Standby (active + wake-up capability),
+          Shutdown (active + wake-up capability), VBAT. Values are Y
+          (always enabled), O (optional/software-enabled), - (not
+          available), and numeric (e.g. "5" for tamper pins). Footnotes
+          reference specific conditions. Confirm schema design before
+          implementing; file a P0 step for the extension.
+        acceptance-criteria:
+          - Table 22 structure confirmed from page 116.
+          - Schema extension filed (new P0 step).
+          - Table 22 data added once schema is confirmed.
 
       - id: P4-S3
         title: "Add PWR registers from §4.4 (all)"
@@ -2146,6 +2226,15 @@ open-concerns:
 
   - id: OC-3
     step: P4-S2
+    status: resolved
+    resolved-by: P4-S2
+    resolution: >
+      Table 21 (page 115) is complete on a single page with nine mode entries.
+      Schema location confirmed as a top-level `low-power-modes` key in the
+      family spec, backed by new $defs/low-power-mode-table and
+      $defs/low-power-mode-entry (schema extension P0-S11). Data added to
+      stm32u0.yml via P4-S2a. Table 22 (page 116) is a separate step (P4-S2b)
+      with its own concern about schema design for per-peripheral availability.
     description: >
       Low-power mode summary tables (Tables 21-30) are spread
       across multiple pages (~115-131). The schema currently has
