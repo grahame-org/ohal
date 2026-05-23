@@ -34,7 +34,7 @@ static_assert(flash::Flash::Sr::address == flash::kFlashBase + flash::kFlashSrOf
 static_assert(flash::Flash::Cr::address == flash::kFlashBase + flash::kFlashCrOffset,
               "Flash::Cr must map to FLASH_CR address");
 static_assert(flash::Flash::Oemkeysr::address == flash::kFlashBase + flash::kFlashOemkeysrOffset,
-              "Flash::Oemkeysr must map to FLASH_KEYSR address");
+              "Flash::Oemkeysr must map to OEMKEYSR address (listed as FLASH_KEYSR in Table 19)");
 static_assert(flash::Flash::Hdpextr::address == flash::kFlashBase + flash::kFlashHdpextrOffset,
               "Flash::Hdpextr must map to FLASH_HDPEXTR address");
 

@@ -82,8 +82,9 @@ struct FlashRegs
     using Oem2keyr3 = ohal::core::Register<Base + kFlashOem2keyr3Offset>; ///< §3.7.17
     using Oem2keyr4 = ohal::core::Register<Base + kFlashOem2keyr4Offset>; ///< §3.7.18
     using Oemkeysr =
-        ohal::core::Register<Base + kFlashOemkeysrOffset>; ///< §3.7.19 (FLASH_KEYSR in Table 19)
-    using Hdpcr = ohal::core::Register<Base + kFlashHdpcrOffset>;     ///< §3.7.20
+        ohal::core::Register<Base + kFlashOemkeysrOffset>;        ///< §3.7.19 (OEMKEYSR; listed as
+                                                                  ///< FLASH_KEYSR in Table 19)
+    using Hdpcr = ohal::core::Register<Base + kFlashHdpcrOffset>; ///< §3.7.20
     using Hdpextr = ohal::core::Register<Base + kFlashHdpextrOffset>; ///< §3.7.21
 };
 
