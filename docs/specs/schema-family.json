@@ -1054,7 +1054,7 @@
           "description": "Map from voltage-range name to the maximum frequency in MHz for that range. Omit the key if the clock source is not available in that range.",
           "type": "object",
           "minProperties": 1,
-          "additionalProperties": { "type": "integer", "minimum": 0 }
+          "additionalProperties": { "type": "integer", "minimum": 1 }
         }
       }
     },
