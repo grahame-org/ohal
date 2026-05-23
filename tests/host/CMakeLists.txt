@@ -222,6 +222,12 @@ add_executable(ohal_host_tests_stm32u073mi
     test_gpio_stm32u073m8i.cpp)
 target_link_libraries(ohal_host_tests_stm32u073mi PRIVATE ohal GTest::gtest_main GTest::gmock)
 
+# STM32U0 FLASH register-map wiring tests.  The FLASH peripheral is identical
+# across all STM32U031/U073/U083 variants (single instance at 0x40022000), so
+# a single test executable covers all sub-families.
+add_executable(ohal_host_tests_flash main.cpp test_flash_stm32u0.cpp)
+target_link_libraries(ohal_host_tests_flash PRIVATE ohal GTest::gtest_main GTest::gmock)
+
 include(GoogleTest)
 gtest_discover_tests(ohal_host_tests)
 gtest_discover_tests(ohal_host_tests_cc)
@@ -245,6 +251,7 @@ gtest_discover_tests(ohal_host_tests_stm32u073khc)
 gtest_discover_tests(ohal_host_tests_stm32u073r)
 gtest_discover_tests(ohal_host_tests_stm32u073mt)
 gtest_discover_tests(ohal_host_tests_stm32u073mi)
+gtest_discover_tests(ohal_host_tests_flash)
 
 # ---------------------------------------------------------------------------
 # Negative-compile tests (§11.3)

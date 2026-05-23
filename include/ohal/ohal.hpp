@@ -6,6 +6,7 @@
 #include <ohal/core/field.hpp>
 #include <ohal/core/register.hpp>
 #include <ohal/exti.hpp>
+#include <ohal/flash.hpp>
 #include <ohal/gpio.hpp>
 #include <ohal/irq.hpp>
 #include <ohal/nvic.hpp>
