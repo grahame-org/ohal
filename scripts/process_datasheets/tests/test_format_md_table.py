@@ -367,12 +367,3 @@ def test_join_register_cell_vc_corereset():
 	"""Same one-separator / multi-fragment pattern for VC_CORERESET."""
 	assert_that(_join_register_cell_lines("VC\n_\nCORE\nRESET"), equal_to("VC_CORERESET"))
 
-def test_join_register_cell_vc_harderr():
-	"""One separator line with the second part split across two lines (VC_HARDERR on page 1302)."""
-	assert_that(_join_register_cell_lines("VC\n_\nHARDE\nRR"), equal_to("VC_HARDERR"))
-
-
-def test_join_register_cell_vc_corereset():
-	"""Same pattern as VC_HARDERR but for VC_CORERESET."""
-	assert_that(_join_register_cell_lines("VC\n_\nCORE\nRESET"), equal_to("VC_CORERESET"))
-
