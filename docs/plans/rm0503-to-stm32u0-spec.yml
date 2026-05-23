@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P3-S14
+    current: P3-S14a
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -114,6 +114,8 @@ meta:
       - id: P3-S12
         date: "2026-05-22"
       - id: P3-S13
+        date: "2026-05-23"
+      - id: P3-S14
         date: "2026-05-23"
 
 # ============================================================
@@ -556,6 +558,43 @@ phases:
           - FLASH register-map section matches Table 19 completely.
           - Any offset/reset-value discrepancy produces a separate
             correction step; none resolved silently.
+          - lint.sh passes.
+
+      - id: P3-S14a
+        title: "Correct FLASH_ACR reset-value (Table 19 discrepancy)"
+        description: >
+          P3-S14 cross-check found that the FLASH_ACR individual
+          register entry has reset-value 0x00040600, but Table 19
+          gives 0x00040200 (DBG_SWEN=bit 18, ICEN=bit 9 only).
+          Bit 10 (RESERVED) is erroneously set in the stored value.
+          Correct the ACR reset-value to 0x00040200.
+        source-pages: [102]
+        depends-on: [P3-S14]
+        acceptance-criteria:
+          - FLASH ACR register reset-value is 0x00040200.
+          - register-map entry and individual register are consistent.
+          - lint.sh passes.
+
+      - id: P3-S14b
+        title: "Correct OEM key register reset-values (Table 19 discrepancy)"
+        description: >
+          P3-S14 cross-check found that OEM1KEYR1-4 and OEM2KEYR2-4
+          individual register entries have reset-value 0xFFFFFFFF, but
+          the RM states these registers are write-only and always read
+          as zero. Table 19 marks all bits as X (factory-programmed
+          key), which must be represented as 0x00000000 — the actual
+          read-back value — not 0xFFFFFFFF. The register-map (P3-S14)
+          already records 0x00000000. Correct the eight individual
+          register entries to match.
+        source-pages: [102, 103]
+        depends-on: [P3-S14]
+        acceptance-criteria:
+          - OEM1KEYR1, OEM1KEYR2, OEM1KEYR3, OEM1KEYR4 have
+            reset-value 0x00000000.
+          - OEM2KEYR1, OEM2KEYR2, OEM2KEYR3, OEM2KEYR4 have
+            reset-value 0x00000000.
+          - register-map entries and individual registers are
+            consistent.
           - lint.sh passes.
 
       - id: P3-S15
