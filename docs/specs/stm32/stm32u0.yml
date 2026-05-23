@@ -1,4 +1,4 @@
-spec-version: "2.2.0"
+spec-version: "2.3.0"
 
 vendor: STMicroelectronics
 
@@ -914,6 +914,50 @@ definitions:
       "1001": input clock divided by 64
       "1010": input clock divided by 128
       "1011": input clock divided by 256
+    # PWR shared settings
+    pwr-lpms: &pwr-lpms
+      "000": Stop 0 mode
+      "001": Stop 1 mode
+      "010": Stop 2 mode
+      "011": Standby mode
+      "100": Shutdown mode
+      "101": Shutdown mode
+      "110": Shutdown mode
+      "111": Shutdown mode
+    pwr-vos: &pwr-vos
+      "00": forbidden
+      "01": Range 1
+      "10": Range 2
+      "11": forbidden
+    pwr-pls: &pwr-pls
+      "000": VPVD0 around 2.0 V
+      "001": VPVD1 around 2.2 V
+      "010": VPVD2 around 2.4 V
+      "011": VPVD3 around 2.5 V
+      "100": VPVD4 around 2.6 V
+      "101": VPVD5 around 2.8 V
+      "110": VPVD6 around 2.9 V
+      "111": external input analog voltage PVD_IN
+    pwr-ewup: &pwr-ewup
+      "0": wake-up pin disabled
+      "1": wake-up pin enabled
+    pwr-wp: &pwr-wp
+      "0": detection on rising edge (active high)
+      "1": detection on falling edge (active low)
+    pwr-wuf: &pwr-wuf
+      "0": no wake-up event detected
+      "1": wake-up event detected
+    pwr-stopf: &pwr-stopf
+      "000": did not enter Stop mode
+      "100": entered Stop 0 mode
+      "101": entered Stop 1 mode
+      "110": entered Stop 2 mode
+    pwr-pu-bit: &pwr-pu-bit
+      "0": pull-up inactive
+      "1": pull-up activated
+    pwr-pd-bit: &pwr-pd-bit
+      "0": pull-down inactive
+      "1": pull-down activated
 peripherals:
   - gpio:
       reference:
@@ -12366,7 +12410,1738 @@ peripherals:
       instances:
         - name: PWR
           base: 0x40007000
-      registers: []
+      register-map:
+        - name: PWR_CR1
+          offset: 0x000
+          reset-value: 0x00000208
+          source-table: 31
+        - name: PWR_CR2
+          offset: 0x004
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_CR3
+          offset: 0x008
+          reset-value: 0x00008000
+          source-table: 31
+        - name: PWR_CR4
+          offset: 0x00C
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_SR1
+          offset: 0x010
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_SR2
+          offset: 0x014
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_SCR
+          offset: 0x018
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PUCRA
+          offset: 0x020
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PDCRA
+          offset: 0x024
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PUCRB
+          offset: 0x028
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PDCRB
+          offset: 0x02C
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PUCRC
+          offset: 0x030
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PDCRC
+          offset: 0x034
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PUCRD
+          offset: 0x038
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PDCRD
+          offset: 0x03C
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PUCRE
+          offset: 0x040
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PDCRE
+          offset: 0x044
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PUCRF
+          offset: 0x048
+          reset-value: 0x00000000
+          source-table: 31
+        - name: PWR_PDCRF
+          offset: 0x04C
+          reset-value: 0x00000000
+          source-table: 31
+      registers:
+        - CR1:
+            reference:
+              section: 4.4.1
+            offset: 0x00
+            reset-value: 0x00000208
+            note: >-
+              This register is reset after wake-up from Standby mode.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 15
+                width: 17
+                access: res
+                settings: ~
+              - name: LPR
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings:
+                  "0": main mode (MR)
+                  "1": low-power mode (LPR)
+              - name: RESERVED
+                msb: 13
+                lsb: 11
+                width: 3
+                access: res
+                settings: ~
+              - name: VOS
+                msb: 10
+                lsb: 9
+                width: 2
+                access: rw
+                settings: *pwr-vos
+              - name: DBP
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": access to RTC and backup registers disabled
+                  "1": access to RTC and backup registers enabled
+              - name: RESERVED
+                msb: 7
+                lsb: 6
+                width: 2
+                access: res
+                settings: ~
+              - name: FPD_LPSLP
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": flash memory idle during Low-power sleep mode
+                  "1": flash memory powered down during Low-power sleep mode
+              - name: FPD_LPRUN
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings:
+                  "0": flash memory idle during Low-power run mode
+                  "1": flash memory powered down during Low-power run mode
+              - name: FPD_STOP
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings:
+                  "0": flash memory idle during Stop mode
+                  "1": flash memory powered down during Stop mode
+              - name: LPMS
+                msb: 2
+                lsb: 0
+                width: 3
+                access: rw
+                settings: *pwr-lpms
+        - CR2:
+            reference:
+              section: 4.4.2
+            offset: 0x04
+            reset-value: 0x00000000
+            note: >-
+              This register is reset when exiting the Standby mode. USV and
+              PVME1 are available only on STM32U0x3xx devices.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 11
+                width: 21
+                access: res
+                settings: ~
+              - name: USV
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                note: Available only on STM32U0x3xx devices.
+                settings:
+                  "0": VDDUSB not present; logical and electrical isolation applied
+                  "1": VDDUSB valid
+              - name: RESERVED
+                msb: 9
+                lsb: 7
+                width: 3
+                access: res
+                settings: ~
+              - name: PVME4
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings:
+                  "0": PVM4 (VDDA vs. 1.86 V) disabled
+                  "1": PVM4 (VDDA vs. 1.86 V) enabled
+              - name: PVME3
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": PVM3 (VDDA vs. 1.62 V) disabled
+                  "1": PVM3 (VDDA vs. 1.62 V) enabled
+              - name: PVME1
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                note: Available only on STM32U0x3xx devices.
+                settings:
+                  "0": PVM1 (VDDUSB vs. 1.2 V) disabled
+                  "1": PVM1 (VDDUSB vs. 1.2 V) enabled
+              - name: PLS
+                msb: 3
+                lsb: 1
+                width: 3
+                access: rw
+                settings: *pwr-pls
+              - name: PVDE
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": programmable voltage detector disabled
+                  "1": programmable voltage detector enabled
+        - CR3:
+            reference:
+              section: 4.4.3
+            offset: 0x08
+            reset-value: 0x00008000
+            note: >-
+              This register is neither reset when exiting Standby or Shutdown
+              mode, nor by the PWRRST bit in RCC_APB1RSTR1. Additional APB
+              cycles are needed for access (3 write, 2 read).
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: EIWUL
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings:
+                  "0": internal wake-up line disabled
+                  "1": internal wake-up line enabled
+              - name: RESERVED
+                msb: 14
+                lsb: 11
+                width: 4
+                access: res
+                settings: ~
+              - name: APC
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings:
+                  "0": >-
+                    PWR_PUCRx and PWR_PDCRx not applied; I/Os in floating mode
+                    during Standby or GPIO controller mode during RUN
+                  "1": PWR_PUCRx and PWR_PDCRx pull configurations applied
+              - name: ENULP
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings:
+                  "0": BORL, BORH and PVD continuously monitored
+                  "1": BORL, BORH and PVD periodically sampled to reduce power
+              - name: RRS
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": SRAM2 powered off in Standby mode (content lost)
+                  "1": SRAM2 powered by low-power regulator in Standby mode (content kept)
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: res
+                settings: ~
+              - name: EWUP7
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-ewup
+              - name: RESERVED
+                msb: 5
+                lsb: 5
+                width: 1
+                access: res
+                settings: ~
+              - name: EWUP5
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-ewup
+              - name: EWUP4
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-ewup
+              - name: EWUP3
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-ewup
+              - name: EWUP2
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-ewup
+              - name: EWUP1
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-ewup
+        - CR4:
+            reference:
+              section: 4.4.4
+            offset: 0x0C
+            reset-value: 0x00000000
+            note: >-
+              This register is neither reset when exiting Standby or Shutdown
+              mode, nor by the PWRRST bit in RCC_APB1RSTR1. Additional APB
+              cycles are needed for access (3 write, 2 read).
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 10
+                width: 22
+                access: res
+                settings: ~
+              - name: VBRS
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings:
+                  "0": charge VBAT through 5 kOhms resistor
+                  "1": charge VBAT through 1.5 kOhms resistor
+              - name: VBE
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": VBAT battery charging disabled
+                  "1": VBAT battery charging enabled
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: res
+                settings: ~
+              - name: WP7
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-wp
+              - name: RESERVED
+                msb: 5
+                lsb: 5
+                width: 1
+                access: res
+                settings: ~
+              - name: WP5
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-wp
+              - name: WP4
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-wp
+              - name: WP3
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-wp
+              - name: WP2
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-wp
+              - name: WP1
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-wp
+        - SR1:
+            reference:
+              section: 4.4.5
+            offset: 0x10
+            reset-value: 0x00000000
+            note: >-
+              This register is neither reset when exiting Standby mode, nor by
+              the PWRRST bit in RCC_APB1RSTR1. 2 additional APB cycles are
+              needed to read this register.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: WUFI
+                msb: 15
+                lsb: 15
+                width: 1
+                access: r
+                settings:
+                  "0": no internal wake-up detected
+                  "1": wake-up detected on internal wake-up line
+              - name: RESERVED
+                msb: 14
+                lsb: 12
+                width: 3
+                access: res
+                settings: ~
+              - name: STOPF
+                msb: 11
+                lsb: 9
+                width: 3
+                access: r
+                settings: *pwr-stopf
+              - name: SBF
+                msb: 8
+                lsb: 8
+                width: 1
+                access: r
+                settings:
+                  "0": device did not enter Standby mode
+                  "1": device entered Standby mode
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: res
+                settings: ~
+              - name: WUF7
+                msb: 6
+                lsb: 6
+                width: 1
+                access: r
+                settings: *pwr-wuf
+              - name: RESERVED
+                msb: 5
+                lsb: 5
+                width: 1
+                access: res
+                settings: ~
+              - name: WUF5
+                msb: 4
+                lsb: 4
+                width: 1
+                access: r
+                settings: *pwr-wuf
+              - name: WUF4
+                msb: 3
+                lsb: 3
+                width: 1
+                access: r
+                settings: *pwr-wuf
+              - name: WUF3
+                msb: 2
+                lsb: 2
+                width: 1
+                access: r
+                settings: *pwr-wuf
+              - name: WUF2
+                msb: 1
+                lsb: 1
+                width: 1
+                access: r
+                settings: *pwr-wuf
+              - name: WUF1
+                msb: 0
+                lsb: 0
+                width: 1
+                access: r
+                settings: *pwr-wuf
+        - SR2:
+            reference:
+              section: 4.4.6
+            offset: 0x14
+            note: >-
+              RM0503 Table 31 reset value is 0x0000_XXX0; status bits PVMO1,
+              PVDO, VOSF, REGLPF, REGLPS reflect hardware state at reset and
+              are not fixed. register-map uses 0x00000000 as a schema-required
+              placeholder. PVMO1 (bit 12) is available only on STM32U0x3xx.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PVMO4
+                msb: 15
+                lsb: 15
+                width: 1
+                access: r
+                settings:
+                  "0": VDDA voltage above PVM4 threshold (~2.2 V)
+                  "1": VDDA voltage below PVM4 threshold (~2.2 V)
+              - name: PVMO3
+                msb: 14
+                lsb: 14
+                width: 1
+                access: r
+                settings:
+                  "0": VDDA voltage above PVM3 threshold (~1.62 V)
+                  "1": VDDA voltage below PVM3 threshold (~1.62 V)
+              - name: RESERVED
+                msb: 13
+                lsb: 13
+                width: 1
+                access: res
+                settings: ~
+              - name: PVMO1
+                msb: 12
+                lsb: 12
+                width: 1
+                access: r
+                note: Available only on STM32U0x3xx devices.
+                settings:
+                  "0": VDDUSB voltage above PVM1 threshold (~1.2 V)
+                  "1": VDDUSB voltage below PVM1 threshold (~1.2 V)
+              - name: PVDO
+                msb: 11
+                lsb: 11
+                width: 1
+                access: r
+                settings:
+                  "0": VDD above selected PVD threshold
+                  "1": VDD below selected PVD threshold
+              - name: VOSF
+                msb: 10
+                lsb: 10
+                width: 1
+                access: r
+                settings:
+                  "0": regulator ready in selected voltage range
+                  "1": regulator output voltage changing to required level
+              - name: REGLPF
+                msb: 9
+                lsb: 9
+                width: 1
+                access: r
+                settings:
+                  "0": regulator ready in main mode (MR)
+                  "1": regulator in low-power mode (LPR)
+              - name: REGLPS
+                msb: 8
+                lsb: 8
+                width: 1
+                access: r
+                settings:
+                  "0": low-power regulator not ready
+                  "1": low-power regulator ready
+              - name: FLASH_RDY
+                msb: 7
+                lsb: 7
+                width: 1
+                access: r
+                settings:
+                  "0": flash memory in power-down
+                  "1": flash memory ready to be accessed
+              - name: RESERVED
+                msb: 6
+                lsb: 0
+                width: 7
+                access: res
+                settings: ~
+        - SCR:
+            reference:
+              section: 4.4.7
+            offset: 0x18
+            reset-value: 0x00000000
+            note: >-
+              3 additional APB cycles are needed to write this register.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 9
+                width: 23
+                access: res
+                settings: ~
+              - name: CSBF
+                msb: 8
+                lsb: 8
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears SBF flag in PWR_SR1
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: res
+                settings: ~
+              - name: CWUF7
+                msb: 6
+                lsb: 6
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears WUF7 flag in PWR_SR1
+              - name: RESERVED
+                msb: 5
+                lsb: 5
+                width: 1
+                access: res
+                settings: ~
+              - name: CWUF5
+                msb: 4
+                lsb: 4
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears WUF5 flag in PWR_SR1
+              - name: CWUF4
+                msb: 3
+                lsb: 3
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears WUF4 flag in PWR_SR1
+              - name: CWUF3
+                msb: 2
+                lsb: 2
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears WUF3 flag in PWR_SR1
+              - name: CWUF2
+                msb: 1
+                lsb: 1
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears WUF2 flag in PWR_SR1
+              - name: CWUF1
+                msb: 0
+                lsb: 0
+                width: 1
+                access: w
+                settings:
+                  "0": no effect
+                  "1": clears WUF1 flag in PWR_SR1
+        - PUCRA:
+            reference:
+              section: 4.4.8
+            offset: 0x20
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Pull-up activated when APC=1 in
+              PWR_CR3; pull-down (PDy) takes priority if both PUy and PDy are set.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PU15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+        - PDCRA:
+            reference:
+              section: 4.4.9
+            offset: 0x24
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Pull-down activated when APC=1
+              in PWR_CR3.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PD15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+        - PUCRB:
+            reference:
+              section: 4.4.10
+            offset: 0x28
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Pull-up activated when APC=1 in
+              PWR_CR3; pull-down (PDy) takes priority if both PUy and PDy are set.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PU15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+        - PDCRB:
+            reference:
+              section: 4.4.11
+            offset: 0x2C
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Pull-down activated when APC=1
+              in PWR_CR3.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PD15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+        - PUCRC:
+            reference:
+              section: 4.4.12
+            offset: 0x30
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Pull-up activated when APC=1 in
+              PWR_CR3; pull-down (PDy) takes priority if both PUy and PDy are set.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PU15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+        - PDCRC:
+            reference:
+              section: 4.4.13
+            offset: 0x34
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Pull-down activated when APC=1
+              in PWR_CR3.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 16
+                width: 16
+                access: res
+                settings: ~
+              - name: PD15
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD14
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+        - PUCRD:
+            reference:
+              section: 4.4.14
+            offset: 0x38
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Port D has no pins at positions
+              14, 15, and 7 on this device; those bits are reserved.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 14
+                width: 18
+                access: res
+                settings: ~
+              - name: PU13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: res
+                settings: ~
+              - name: PU6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+        - PDCRD:
+            reference:
+              section: 4.4.15
+            offset: 0x3C
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Port D has no pins at positions
+              14, 15, and 7 on this device; those bits are reserved.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 14
+                width: 18
+                access: res
+                settings: ~
+              - name: PD13
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD12
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD11
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD10
+                msb: 10
+                lsb: 10
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: RESERVED
+                msb: 7
+                lsb: 7
+                width: 1
+                access: res
+                settings: ~
+              - name: PD6
+                msb: 6
+                lsb: 6
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD5
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD4
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+        - PUCRE:
+            reference:
+              section: 4.4.16
+            offset: 0x40
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Port E exposes only pins 9:7
+              and 3 on this device.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 10
+                width: 22
+                access: res
+                settings: ~
+              - name: PU9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: RESERVED
+                msb: 6
+                lsb: 4
+                width: 3
+                access: res
+                settings: ~
+              - name: PU3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: RESERVED
+                msb: 2
+                lsb: 0
+                width: 3
+                access: res
+                settings: ~
+        - PDCRE:
+            reference:
+              section: 4.4.17
+            offset: 0x44
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Port E exposes only pins 9:7
+              and 3 on this device.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 10
+                width: 22
+                access: res
+                settings: ~
+              - name: PD9
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD8
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD7
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: RESERVED
+                msb: 6
+                lsb: 4
+                width: 3
+                access: res
+                settings: ~
+              - name: PD3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: RESERVED
+                msb: 2
+                lsb: 0
+                width: 3
+                access: res
+                settings: ~
+        - PUCRF:
+            reference:
+              section: 4.4.18
+            offset: 0x48
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Port F exposes only pins 3:0
+              on this device.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 4
+                width: 28
+                access: res
+                settings: ~
+              - name: PU3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+              - name: PU0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pu-bit
+        - PDCRF:
+            reference:
+              section: 4.4.19
+            offset: 0x4C
+            reset-value: 0x00000000
+            note: >-
+              Not reset on Standby/Shutdown exit or by PWRRST. Additional APB
+              cycles needed (3 write, 2 read). Port F exposes only pins 3:0
+              on this device.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 4
+                width: 28
+                access: res
+                settings: ~
+              - name: PD3
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD2
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD1
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
+              - name: PD0
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings: *pwr-pd-bit
 
 nvic:
   reference:
@@ -12818,3 +14593,690 @@ low-power-modes:
       effect-on-clocks: "All clocks OFF except LSE"
       main-regulator: "off"
       lp-regulator: "off"
+
+peripheral-mode-availability:
+  references:
+    section: "4.3"
+    tables: [22]
+  note: >-
+    Table 22 spans pages 116-118. Column headers for Stop 0/1, Stop 2, Standby,
+    and Shutdown each split into two sub-columns: the active capability ('-' header)
+    and the wake-up capability ('Wake-up capability' header); these are captured as
+    the *-active and *-wakeup fields respectively. Values: Y = always enabled,
+    O = optional (disabled by default, can be enabled by software), - = not available.
+    Footnote references appear in parentheses within cell values (e.g. 'O(1)',
+    'O (5)', '5 pins (10)'). The 'Number of RTC Tamper pins' row uses numeric value
+    '5' meaning five tamper pins are available. The GPIOs standby-active and
+    shutdown-active cells use footnote-only values '(9)' and '(11)' respectively.
+  footnotes:
+    - number: 1
+      text: >-
+        The flash memory can be configured in power-down mode. By default, it is
+        not in power-down mode.
+    - number: 2
+      text: The SRAM clock can be gated on or off.
+    - number: 3
+      text: SRAM2 content is preserved when the bit RRS is set in PWR_CR3 register.
+    - number: 4
+      text: >-
+        Some peripherals with wake-up from Stop capability can request HSI16 to be
+        enabled. In this case, HSI16 is woken up by the peripheral, and only feeds
+        the peripheral which requested it. HSI16 is automatically put off when the
+        peripheral does not need it anymore.
+    - number: 5
+      text: >-
+        UART and LPUART reception is functional in Stop mode, and generates a
+        wake-up interrupt on Start, address match or received frame event.
+    - number: 6
+      text: >-
+        I2C address detection is functional in Stop mode, and generates a wake-up
+        interrupt in case of address match.
+    - number: 7
+      text: >-
+        USB bus state monitoring is functional in Stop mode. It generates a wake-up
+        interrupt upon resume from USB suspend.
+    - number: 8
+      text: "Voltage scaling Range 1 only."
+    - number: 9
+      text: >-
+        I/Os can be configured with internal pull-up, pull-down or floating in
+        Standby mode.
+    - number: 10
+      text: >-
+        I/Os with wake-up from Standby/Shutdown capability are the following:
+        PA0, PC13, PE6, PA2, PC5.
+    - number: 11
+      text: >-
+        I/Os can be configured with internal pull-up, pull-down or floating in
+        Shutdown mode but the configuration is lost when exiting the Shutdown mode.
+  entries:
+    - peripheral: CPU
+      run: "Y"
+      sleep: "-"
+      low-power-run: "Y"
+      low-power-sleep: "-"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: Flash memory
+      run: "O(1)"
+      sleep: "O(1)"
+      low-power-run: "O(1)"
+      low-power-sleep: "O(1)"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: SRAM1
+      run: "Y"
+      sleep: "Y(2)"
+      low-power-run: "Y"
+      low-power-sleep: "Y(2)"
+      stop01-active: "Y"
+      stop01-wakeup: "-"
+      stop2-active: "Y"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: SRAM2
+      run: "Y"
+      sleep: "Y(2)"
+      low-power-run: "Y"
+      low-power-sleep: "Y(2)"
+      stop01-active: "Y"
+      stop01-wakeup: "-"
+      stop2-active: "Y"
+      stop2-wakeup: "-"
+      standby-active: "O(3)"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: Backup Registers
+      run: "Y"
+      sleep: "Y"
+      low-power-run: "Y"
+      low-power-sleep: "Y"
+      stop01-active: "Y"
+      stop01-wakeup: "-"
+      stop2-active: "Y"
+      stop2-wakeup: "-"
+      standby-active: "Y"
+      standby-wakeup: "-"
+      shutdown-active: "Y"
+      shutdown-wakeup: "-"
+      vbat: "Y"
+    - peripheral: Brown-out reset (BOR)
+      run: "Y"
+      sleep: "Y"
+      low-power-run: "Y"
+      low-power-sleep: "Y"
+      stop01-active: "Y"
+      stop01-wakeup: "Y"
+      stop2-active: "Y"
+      stop2-wakeup: "Y"
+      standby-active: "Y"
+      standby-wakeup: "Y"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Programmable Voltage Detector (PVD)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Peripheral Voltage Monitor (PVMx; x = 1,3,4)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: DMA and DMAMUX
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: Oscillator HSI16
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "(4)"
+      stop01-wakeup: "-"
+      stop2-active: "(4)"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: Oscillator HSI48
+      run: "O"
+      sleep: "O"
+      low-power-run: "-"
+      low-power-sleep: "-"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "High Speed External (HSE)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Low Speed Internal (LSI)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "-"
+      stop2-active: "O"
+      stop2-wakeup: "-"
+      standby-active: "O"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Low Speed External (LSE)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "-"
+      stop2-active: "O"
+      stop2-wakeup: "-"
+      standby-active: "O"
+      standby-wakeup: "-"
+      shutdown-active: "O"
+      shutdown-wakeup: "-"
+      vbat: "O"
+    - peripheral: "Multi-Speed Internal (MSI)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Clock Security System (CSS)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: Clock Security System on LSE
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "O"
+      standby-wakeup: "O"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "RTC / Auto wake-up"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "O"
+      standby-wakeup: "O"
+      shutdown-active: "O"
+      shutdown-wakeup: "O"
+      vbat: "O"
+    - peripheral: Number of RTC Tamper pins
+      run: "5"
+      sleep: "5"
+      low-power-run: "5"
+      low-power-sleep: "5"
+      stop01-active: "5"
+      stop01-wakeup: "O"
+      stop2-active: "5"
+      stop2-wakeup: "O"
+      standby-active: "5"
+      standby-wakeup: "O"
+      shutdown-active: "5"
+      shutdown-wakeup: "O"
+      vbat: "5"
+    - peripheral: "USARTx (x = 1, 2)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O(5)"
+      stop01-wakeup: "O(5)"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "USARTx (x = 3, 4)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "LPUARTx (x = 1)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O(5)"
+      stop01-wakeup: "O(5)"
+      stop2-active: "O(5)"
+      stop2-wakeup: "O(5)"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "LPUARTx (x = 2, 3)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O(5)"
+      stop01-wakeup: "O(5)"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "I2Cx (x = 1)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O(6)"
+      stop01-wakeup: "O(6)"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "I2Cx (x = 2, 4)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "I2Cx (x = 3)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O(6)"
+      stop01-wakeup: "O(6)"
+      stop2-active: "O(6)"
+      stop2-wakeup: "O(6)"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "SPIx (x = 1, 2, 3)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: ADC1
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: DAC1
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: VREFBUF
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: OPAMP1
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "COMPx (x = 1, 2)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: Temperature sensor
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Timers (TIMx)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "LPTIMx (x = 1, 2, 3)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Independent watchdog (IWDG)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "O"
+      standby-wakeup: "O"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Window watchdog (WWDG)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: SysTick timer
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: LCD
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: USB
+      run: "O"
+      sleep: "O"
+      low-power-run: "-"
+      low-power-sleep: "-"
+      stop01-active: "-"
+      stop01-wakeup: "O(7)"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Touch sensing controller (TSC)"
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: "Random number generator (RNG)"
+      run: "O(8)"
+      sleep: "O(8)"
+      low-power-run: "-"
+      low-power-sleep: "-"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: AES hardware accelerator
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: CRC calculation unit
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "-"
+      stop01-wakeup: "-"
+      stop2-active: "-"
+      stop2-wakeup: "-"
+      standby-active: "-"
+      standby-wakeup: "-"
+      shutdown-active: "-"
+      shutdown-wakeup: "-"
+      vbat: "-"
+    - peripheral: GPIOs
+      run: "O"
+      sleep: "O"
+      low-power-run: "O"
+      low-power-sleep: "O"
+      stop01-active: "O"
+      stop01-wakeup: "O"
+      stop2-active: "O"
+      stop2-wakeup: "O"
+      standby-active: "(9)"
+      standby-wakeup: "5 pins (10)"
+      shutdown-active: "(11)"
+      shutdown-wakeup: "up to 5 pins (10)"
+      vbat: "-"
