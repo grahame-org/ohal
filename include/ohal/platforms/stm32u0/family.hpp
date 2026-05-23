@@ -603,5 +603,6 @@
 #include "ohal/platforms/stm32u0/models/stm32u083/irq.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083/irq_numbers.hpp"
 #include "ohal/platforms/stm32u0/models/stm32u083/nvic.hpp"
+#include "ohal/platforms/stm32u0/models/stm32u083/pwr.hpp"
 
 #endif // OHAL_PLATFORMS_STM32U0_FAMILY_HPP
