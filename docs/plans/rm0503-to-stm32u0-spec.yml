@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P3-S16
+    current: P4-S1
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -122,6 +122,10 @@ meta:
       - id: P3-S14b
         date: "2026-05-23"
       - id: P3-S15
+        date: "2026-05-23"
+      - id: P0-S10
+        date: "2026-05-23"
+      - id: P3-S16
         date: "2026-05-23"
 
 # ============================================================
@@ -299,6 +303,25 @@ phases:
             schema with all access values using canonical abbreviations."
           - All STM32U0 C++ BitField access policies are consistent with
             the updated spec and RM0503 register tables.
+          - lint.sh passes.
+
+      - id: P0-S10
+        title: "Schema: add flash-wait-states to peripheral"
+        description: >
+          P3-S16 requires structured wait-state table data under the flash
+          peripheral. Add an optional `flash-wait-states` property to
+          `$defs/peripheral` backed by new `$defs/flash-wait-states` and
+          `$defs/flash-wait-state-entry` definitions. Each entry records a
+          wait-state count (ws), the corresponding CPU-cycle count
+          (cpu-cycles), and a map of voltage-range name to maximum HCLK
+          frequency in MHz (max-hclk-mhz). The schema is designed to be
+          generic enough for future families with different numbers or names
+          of voltage ranges.
+        filed-by: P3-S16
+        acceptance-criteria:
+          - "$defs/peripheral gains optional flash-wait-states property."
+          - "$defs/flash-wait-states and $defs/flash-wait-state-entry added."
+          - docs/specs/stm32/stm32u0.yml validates against the updated schema.
           - lint.sh passes.
 
   # ============================================================
@@ -2106,6 +2129,13 @@ open-concerns:
 
   - id: OC-2
     step: P3-S16
+    status: resolved
+    resolved-by: P3-S16
+    resolution: >
+      Table 9 (page 67) has three wait-state rows (0 WS, 1 WS, 2 WS) and
+      two HCLK frequency columns: "V Range 1 CORE" and "V Range 2 CORE".
+      Schema extended with flash-wait-states / flash-wait-state-entry
+      definitions (P0-S10). Data added to stm32u0.yml flash peripheral.
     description: >
       FLASH wait-state table (Table 9) column structure: it may
       include voltage-range columns in addition to HCLK frequency
