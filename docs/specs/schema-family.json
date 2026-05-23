@@ -151,6 +151,10 @@
     "boot": {
       "description": "Boot-mode configuration table (e.g. Table 6 in RM0503). Lists the available boot modes and the pin states that select them.",
       "$ref": "#/$defs/boot"
+    },
+    "low-power-modes": {
+      "description": "Low-power mode summary table for the device family (e.g. Table 21 in RM0503 §4.3). Each entry describes one low-power mode with its entry conditions, wake-up sources, clock behaviour, and voltage regulator states.",
+      "$ref": "#/$defs/low-power-mode-table"
     }
   },
   "$defs": {
@@ -1001,6 +1005,67 @@
           "type": "object",
           "minProperties": 1,
           "additionalProperties": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "low-power-mode-table": {
+      "description": "Container for the device-family low-power mode summary table (e.g. Table 21 in RM0503 §4.3).",
+      "type": "object",
+      "required": ["modes"],
+      "additionalProperties": false,
+      "properties": {
+        "references": { "$ref": "#/$defs/references" },
+        "note": {
+          "description": "Optional free-text annotation for the table as a whole.",
+          "type": "string"
+        },
+        "modes": {
+          "description": "List of low-power mode entries, one per mode, in the order given by the reference manual.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/low-power-mode-entry" },
+          "minItems": 1
+        }
+      }
+    },
+    "low-power-mode-entry": {
+      "description": "A single entry in the low-power mode summary table.",
+      "type": "object",
+      "required": ["name", "entry"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Low-power mode name as given in the reference manual, e.g. 'Sleep', 'Stop 0', 'Standby'.",
+          "type": "string"
+        },
+        "entry": {
+          "description": "Instruction(s) or condition(s) used to enter this mode.",
+          "type": "string"
+        },
+        "wakeup-source": {
+          "description": "Events or signals that wake the device from this mode.",
+          "type": "string"
+        },
+        "wakeup-clock": {
+          "description": "System clock active immediately after wake-up from this mode.",
+          "type": "string"
+        },
+        "effect-on-clocks": {
+          "description": "Effect on clock sources while the device is in this mode.",
+          "type": "string"
+        },
+        "main-regulator": {
+          "description": "State of the main voltage regulator (MR) in this mode.",
+          "type": "string",
+          "enum": ["on", "off"]
+        },
+        "lp-regulator": {
+          "description": "State of the low-power voltage regulator (LPR) in this mode.",
+          "type": "string",
+          "enum": ["on", "off"]
+        },
+        "note": {
+          "description": "Optional free-text annotation for this mode entry.",
+          "type": "string"
         }
       }
     }

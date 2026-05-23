@@ -12712,3 +12712,99 @@ gpio-exti:
   supported-ports: [PA, PB, PC, PD, PE, PF]
   pin-modes-allowed: [input, output, alternate_function]
   pin-modes-forbidden: [analog]
+
+low-power-modes:
+  references:
+    section: "4.3"
+    tables: [21]
+  note: >-
+    Table 21 rows for Sleep and Low-power sleep each span two sub-rows in the
+    PDF (WFI/Return-from-ISR and WFE variants); the entry and wakeup-source
+    fields consolidate both sub-rows per mode. Stop 1 and Stop 2 share the
+    same wake-up source, wakeup-clock, and effect-on-clocks as Stop 0 (blank
+    cells in the extracted table indicate inherited values; consolidated here
+    for completeness). Regulator columns left blank in the extracted table are
+    omitted. See Table 22 (P4-S2b) for per-peripheral mode availability.
+  modes:
+    - name: "Sleep (Sleep-now or Sleep-on-exit)"
+      entry: "WFI or Return from ISR, or WFE"
+      wakeup-source: >-
+        Any interrupt (via WFI or Return from ISR); wake-up event (via WFE)
+      wakeup-clock: "Same as before entering Sleep mode"
+      effect-on-clocks: >-
+        CPU clock OFF; no effect on other clocks or analog clock sources
+      main-regulator: "on"
+      lp-regulator: "on"
+    - name: "Low-power run"
+      entry: "Set LPR bit"
+      wakeup-source: "Clear LPR bit"
+      wakeup-clock: "Same as Low-power run clock"
+      effect-on-clocks: "None"
+      main-regulator: "off"
+      lp-regulator: "on"
+    - name: "Low-power sleep"
+      entry: >-
+        Set LPR bit + WFI or Return from ISR, or Set LPR bit + WFE
+      wakeup-source: >-
+        Any interrupt (via WFI or Return from ISR); wake-up event (via WFE)
+      wakeup-clock: "Same as before entering Low-power sleep mode"
+      effect-on-clocks: >-
+        CPU clock OFF; no effect on other clocks or analog clock sources
+      main-regulator: "off"
+      lp-regulator: "on"
+    - name: "Stop 0"
+      entry: >-
+        LPMS="000" + SLEEPDEEP bit + WFI or Return from ISR or WFE
+      wakeup-source: >-
+        Any EXTI line (configured in the EXTI registers); specific peripherals
+        events
+      wakeup-clock: >-
+        HSI16 when STOPWUCK=1 in RCC_CFGR; MSI with the frequency before
+        entering the Stop mode when STOPWUCK=0
+      effect-on-clocks: "All clocks OFF except LSI and LSE"
+      main-regulator: "on"
+      lp-regulator: "on"
+    - name: "Stop 1"
+      entry: >-
+        LPMS="001" + SLEEPDEEP bit + WFI or Return from ISR or WFE
+      wakeup-source: >-
+        Any EXTI line (configured in the EXTI registers); specific peripherals
+        events
+      wakeup-clock: >-
+        HSI16 when STOPWUCK=1 in RCC_CFGR; MSI with the frequency before
+        entering the Stop mode when STOPWUCK=0
+      effect-on-clocks: "All clocks OFF except LSI and LSE"
+      main-regulator: "off"
+    - name: "Stop 2"
+      entry: >-
+        LPMS="010" + SLEEPDEEP bit + WFI or Return from ISR or WFE
+      wakeup-source: >-
+        Any EXTI line (configured in the EXTI registers); specific peripherals
+        events
+      wakeup-clock: >-
+        HSI16 when STOPWUCK=1 in RCC_CFGR; MSI with the frequency before
+        entering the Stop mode when STOPWUCK=0
+      effect-on-clocks: "All clocks OFF except LSI and LSE"
+    - name: "Standby with SRAM2"
+      entry: >-
+        LPMS="011" + Set RRS bit + SLEEPDEEP bit + WFI or Return from ISR or
+        WFE
+      wakeup-source: >-
+        WKUP pin edge, RTC event, external reset on NRST pin, IWDG reset
+      wakeup-clock: "MSI from 1 MHz up to 8 MHz"
+    - name: "Standby"
+      entry: >-
+        LPMS="011" + Clear RRS bit + SLEEPDEEP bit + WFI or Return from ISR or
+        WFE
+      wakeup-source: >-
+        WKUP pin edge, RTC event, external reset on NRST pin, IWDG reset
+      main-regulator: "off"
+      lp-regulator: "off"
+    - name: "Shutdown"
+      entry: >-
+        LPMS="1--" + SLEEPDEEP bit + WFI or Return from ISR or WFE
+      wakeup-source: "WKUP pin edge, RTC event, external reset on NRST pin"
+      wakeup-clock: "MSI 4 MHz"
+      effect-on-clocks: "All clocks OFF except LSE"
+      main-regulator: "off"
+      lp-regulator: "off"
