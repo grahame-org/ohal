@@ -235,7 +235,7 @@ phases:
           configuration. Add optional `dma-requests` array to
           `$defs/peripheral`. Each item: request-name (string),
           channel-id (integer or string), mux-input (integer).
-        source-pages: [49]
+        source-pages: [288]
         acceptance-criteria:
           - $defs/peripheral gains optional dma-requests array.
           - Validation passes on existing specs.
@@ -272,7 +272,7 @@ phases:
           optional `boot` object to the family schema with
           sub-fields: modes (array of boot-mode items each with
           name, boot-pin-state, source).
-        source-pages: [51]
+        source-pages: [62]
         acceptance-criteria:
           - Top-level `boot` property added to schema with
             appropriate definition.
@@ -822,7 +822,7 @@ phases:
         source-pages: [150]
 
       - id: P5-S2
-        title: "Add clock-source frequency table (§5.4 / Table 32)"
+        title: "Add clock-source frequency table (§5.2.9 / Table 32)"
         description: >
           Table 32 lists oscillator frequencies. This is a formal
           specification datum required by ohal for clock
@@ -1130,11 +1130,11 @@ phases:
         source-pages: [327]
 
       - id: P11-S2
-        title: "Add ADC registers (enumeration from register-map table)"
+        title: "Add ADC registers (enumeration from Table 76)"
         description: >
-          Locate the ADC register map table (Table number TBD;
-          check Table of Tables for 'ADC register map') and
-          enumerate child steps.
+          Table 76 (ADC register map and reset values, page 384)
+          is the authoritative source. Enumerate child steps
+          from Table 76.
         source-pages: [384, 385, 386]
         depends-on: [P11-S1]
         acceptance-criteria:
@@ -1256,7 +1256,7 @@ phases:
 
       - id: P15-S2
         title: "Add TSC registers (enumeration and child steps)"
-        source-pages: [478, 479, 480, 481, 482, 483, 484, 485, 486]
+        source-pages: [477, 478, 479, 480, 481, 482, 483, 484, 485, 486]
         depends-on: [P15-S1, P0-S1]
         acceptance-criteria:
           - All TSC registers added.
