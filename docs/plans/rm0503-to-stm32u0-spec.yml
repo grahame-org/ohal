@@ -578,7 +578,7 @@ phases:
       - id: P3-S14b
         title: "Correct OEM key register reset-values (Table 19 discrepancy)"
         description: >
-          P3-S14 cross-check found that OEM1KEYR1-4 and OEM2KEYR2-4
+          P3-S14 cross-check found that OEM1KEYR1-4 and OEM2KEYR1-4
           individual register entries have reset-value 0xFFFFFFFF, but
           the RM states these registers are write-only and always read
           as zero. Table 19 marks all bits as X (factory-programmed
