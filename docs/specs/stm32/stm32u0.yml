@@ -11282,7 +11282,7 @@ peripherals:
             reference:
               section: 3.7.1
             offset: 0x00
-            reset-value: 0x00040600
+            reset-value: 0x00040200
             fields:
               - name: RESERVED
                 msb: 31

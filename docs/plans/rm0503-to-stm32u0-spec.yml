@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P3-S14a
+    current: P3-S14b
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -116,6 +116,8 @@ meta:
       - id: P3-S13
         date: "2026-05-23"
       - id: P3-S14
+        date: "2026-05-23"
+      - id: P3-S14a
         date: "2026-05-23"
 
 # ============================================================
