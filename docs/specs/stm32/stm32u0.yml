@@ -12290,6 +12290,55 @@ peripherals:
                   at page HDP1_PEND[6:0] + 1. Write access depends on
                   HDP1EXT_ACCDIS[7:0] in FLASH_HDPCR.
                 settings: ~
+      interrupt-events:
+        reference:
+          section: 3.6
+          tables: [18]
+        note: >-
+          Entries with enable-bit "N/A" have no dedicated per-flag enable
+          bit. These error flags can still be set by FLASH operation
+          failures; interrupt generation for FLASH error conditions is
+          gated by the shared error interrupt enable (ERRIE), not by a
+          separate enable bit for each listed flag.
+        events:
+          - event: End of operation
+            flag: EOP
+            enable-bit: EOPIE
+            clear-method: Write EOP=1
+            notes: EOP is set only if EOPIE is set
+          - event: Operation error
+            flag: OPERR
+            enable-bit: ERRIE
+            clear-method: Write OPERR=1
+            notes: OPERR is set only if ERRIE is set
+          - event: Write protection error
+            flag: WRPERR
+            enable-bit: "N/A"
+            clear-method: Write WRPERR=1
+          - event: Size error
+            flag: SIZERR
+            enable-bit: "N/A"
+            clear-method: Write SIZERR=1
+          - event: Programming sequential error
+            flag: PROGERR
+            enable-bit: "N/A"
+            clear-method: Write PROGERR=1
+          - event: Programming alignment error
+            flag: PGAERR
+            enable-bit: "N/A"
+            clear-method: Write PGAERR=1
+          - event: Programming sequence error
+            flag: PGSERR
+            enable-bit: "N/A"
+            clear-method: Write PGSERR=1
+          - event: Data miss during fast programming error
+            flag: MISSERR
+            enable-bit: "N/A"
+            clear-method: Write MISSERR=1
+          - event: Fast programming error
+            flag: FASTERR
+            enable-bit: "N/A"
+            clear-method: Write FASTERR=1
 
 nvic:
   reference:
