@@ -1,4 +1,4 @@
-spec-version: "2.1.0"
+spec-version: "2.2.0"
 
 vendor: STMicroelectronics
 
@@ -12339,6 +12339,26 @@ peripherals:
             flag: FASTERR
             enable-bit: "N/A"
             clear-method: Write FASTERR=1
+      flash-wait-states:
+        reference:
+          section: "3.3.3"
+          tables: [9]
+        entries:
+          - ws: 0
+            cpu-cycles: 1
+            max-hclk-mhz:
+              V Range 1 CORE: 24
+              V Range 2 CORE: 8
+          - ws: 1
+            cpu-cycles: 2
+            max-hclk-mhz:
+              V Range 1 CORE: 48
+              V Range 2 CORE: 16
+          - ws: 2
+            cpu-cycles: 3
+            max-hclk-mhz:
+              V Range 1 CORE: 56
+              V Range 2 CORE: 18
 
 nvic:
   reference:

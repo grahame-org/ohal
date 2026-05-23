@@ -490,6 +490,10 @@
           "type": "array",
           "items": { "$ref": "#/$defs/dma-request-item" },
           "minItems": 1
+        },
+        "flash-wait-states": {
+          "description": "Flash wait-state table for this peripheral (applicable only to flash memory controllers). Derived from the reference manual wait-state table (e.g. Table 9 in RM0503 §3.3.3).",
+          "$ref": "#/$defs/flash-wait-states"
         }
       }
     },
@@ -958,6 +962,45 @@
           "description": "Sub-families for which this mapping is valid. Omit if valid on all sub-families.",
           "type": "array",
           "items": { "type": "string" }
+        }
+      }
+    },
+    "flash-wait-states": {
+      "description": "Flash memory wait-state table by voltage range (e.g. Table 9 in RM0503 §3.3.3). Defines the maximum HCLK frequency for each combination of wait-state count and voltage range.",
+      "type": "object",
+      "required": ["entries"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": { "$ref": "#/$defs/references" },
+        "entries": {
+          "description": "List of wait-state rows, one per wait-state count, in ascending order.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/flash-wait-state-entry" },
+          "minItems": 1
+        }
+      }
+    },
+    "flash-wait-state-entry": {
+      "description": "A single row from the flash wait-state table: the wait-state count (LATENCY value) and the maximum HCLK frequency in MHz for each voltage range.",
+      "type": "object",
+      "required": ["ws", "cpu-cycles", "max-hclk-mhz"],
+      "additionalProperties": false,
+      "properties": {
+        "ws": {
+          "description": "Wait-state count, equal to the LATENCY field value written to FLASH_ACR.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "cpu-cycles": {
+          "description": "Number of CPU cycles per flash read access (equal to ws + 1).",
+          "type": "integer",
+          "minimum": 1
+        },
+        "max-hclk-mhz": {
+          "description": "Map from voltage-range name to the maximum HCLK frequency in MHz for that range at this wait-state count. Keys are the exact voltage-range names from the reference manual table (e.g. 'V Range 1 CORE', 'V Range 2 CORE').",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "integer", "minimum": 1 }
         }
       }
     }
