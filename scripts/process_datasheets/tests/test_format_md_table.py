@@ -12,7 +12,11 @@ from __future__ import annotations
 
 from hamcrest import assert_that, contains_string, equal_to
 
-from process_datasheets.pdf_to_markdown import _format_md_table, _normalise_cell
+from process_datasheets.pdf_to_markdown import (
+    _format_md_table,
+    _join_register_cell_lines,
+    _normalise_cell,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -264,4 +268,102 @@ def test_format_md_table_with_escaped_cell_uses_correct_column_width():
 	# Column width should be 10 (len("FOO \_ BAR") = 10), giving "----------"
 	assert_that(result, contains_string("----------"))
 
+
+# ---------------------------------------------------------------------------
+# Register cell line reassembly (_join_register_cell_lines)
+# ---------------------------------------------------------------------------
+
+
+def test_join_register_cell_nrst_shdw():
+	"""Lone-_ separator line between two word fragments produces underscore join."""
+	assert_that(_join_register_cell_lines("NRST\n_\nSHDW"), equal_to("NRST_SHDW"))
+
+
+def test_join_register_cell_nrst_stdby():
+	assert_that(_join_register_cell_lines("NRST\n_\nSTDBY"), equal_to("NRST_STDBY"))
+
+
+def test_join_register_cell_nrst_stop():
+	assert_that(_join_register_cell_lines("NRST\n_\nSTOP"), equal_to("NRST_STOP"))
+
+
+def test_join_register_cell_nrst_mode_with_subscript():
+	"""Space in word segment counts as one underscore; separator _ accounts for
+	the other, giving NRST_MODE[1:0] (no spare underscore to join [1:0])."""
+	assert_that(_join_register_cell_lines("NRST MODE\n_\n[1:0]"), equal_to("NRST_MODE[1:0]"))
+
+
+def test_join_register_cell_nboot0():
+	"""All-caps fragments with no separator are concatenated directly."""
+	assert_that(_join_register_cell_lines("N\nBOOT\n0"), equal_to("NBOOT0"))
+
+
+def test_join_register_cell_nboot1():
+	assert_that(_join_register_cell_lines("N\nBOOT\n1"), equal_to("NBOOT1"))
+
+
+def test_join_register_cell_nboot_sel_trailing_separator():
+	"""Trailing lone-_ separator is used to join the two preceding word segments."""
+	assert_that(_join_register_cell_lines("NBOOT\nSEL\n_"), equal_to("NBOOT_SEL"))
+
+
+def test_join_register_cell_bkpsram_hw_erase_disable():
+	"""'_ _' separator line carries two underscore chars for two join points."""
+	assert_that(
+		_join_register_cell_lines("BKPSRAM\nHW\n_ _\nERASE\n_\nDISABLE"),
+		equal_to("BKPSRAM_HW_ERASE_DISABLE"),
+	)
+
+
+def test_join_register_cell_ram_parity_check():
+	assert_that(
+		_join_register_cell_lines("RAM\n_\nPARITY\n_\nCHECK"),
+		equal_to("RAM_PARITY_CHECK"),
+	)
+
+
+def test_join_register_cell_wwdg_sw():
+	assert_that(_join_register_cell_lines("WWDG\nSW\n_"), equal_to("WWDG_SW"))
+
+
+def test_join_register_cell_iwdg_stdby():
+	assert_that(_join_register_cell_lines("IWDG\nSTDBY\n_"), equal_to("IWDG_STDBY"))
+
+
+def test_join_register_cell_bor_lev():
+	"""Space inside 'BOR LEV[1:0]' converts to _ consuming the only separator."""
+	assert_that(_join_register_cell_lines("BOR LEV[1:0]\n_"), equal_to("BOR_LEV[1:0]"))
+
+
+def test_join_register_cell_bor_en():
+	assert_that(_join_register_cell_lines("BOR\n_\nEN"), equal_to("BOR_EN"))
+
+
+def test_join_register_cell_single_line_unchanged():
+	"""A single-line cell is returned verbatim."""
+	assert_that(_join_register_cell_lines("IRHEN"), equal_to("IRHEN"))
+
+
+def test_join_register_cell_prose_unchanged():
+	"""Multi-line prose cells without lone-_ lines are returned unchanged."""
+	assert_that(
+		_join_register_cell_lines("Some\nlong\ntext"),
+		equal_to("Some\nlong\ntext"),
+	)
+
+
+def test_normalise_cell_reassembles_multiline_register_name():
+	"""_normalise_cell applies the reassembly heuristic before collapsing newlines."""
+	assert_that(_normalise_cell("NRST\n_\nSHDW"), equal_to("NRST_SHDW"))
+	assert_that(_normalise_cell("WWDG\nSW\n_"), equal_to("WWDG_SW"))
+
+
+def test_join_register_cell_vc_harderr():
+	"""One separator with the second part split across two lines (VC_HARDERR, page 1302)."""
+	assert_that(_join_register_cell_lines("VC\n_\nHARDE\nRR"), equal_to("VC_HARDERR"))
+
+
+def test_join_register_cell_vc_corereset():
+	"""Same one-separator / multi-fragment pattern for VC_CORERESET."""
+	assert_that(_join_register_cell_lines("VC\n_\nCORE\nRESET"), equal_to("VC_CORERESET"))
 
