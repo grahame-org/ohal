@@ -11192,6 +11192,91 @@ peripherals:
       instances:
         - name: FLASH
           base: 0x40022000
+      register-map:
+        - name: FLASH_ACR
+          offset: 0x000
+          reset-value: 0x00040200
+          source-table: 19
+        - name: FLASH_KEYR
+          offset: 0x008
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OPTKEYR
+          offset: 0x00C
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_SR
+          offset: 0x010
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_CR
+          offset: 0x014
+          reset-value: 0xC0000000
+          source-table: 19
+        - name: FLASH_ECCR
+          offset: 0x018
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OPTR
+          offset: 0x020
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_WRP1AR
+          offset: 0x02C
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_WRP1BR
+          offset: 0x030
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_SECR
+          offset: 0x080
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM1KEYR1
+          offset: 0x088
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM1KEYR2
+          offset: 0x08C
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM1KEYR3
+          offset: 0x090
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM1KEYR4
+          offset: 0x094
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM2KEYR1
+          offset: 0x098
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM2KEYR2
+          offset: 0x09C
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM2KEYR3
+          offset: 0x0A0
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_OEM2KEYR4
+          offset: 0x0A4
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_KEYSR
+          offset: 0x0A8
+          reset-value: 0x00000000
+          source-table: 19
+        - name: FLASH_HDPCR
+          offset: 0x0AC
+          reset-value: 0x00A300A3
+          source-table: 19
+        - name: FLASH_HDPEXTR
+          offset: 0x0B0
+          reset-value: 0x00000000
+          source-table: 19
       registers:
         - ACR:
             reference:
