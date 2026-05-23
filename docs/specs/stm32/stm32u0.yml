@@ -14143,6 +14143,14 @@ peripherals:
                 access: rw
                 settings: *pwr-pd-bit
 
+  - rcc:
+      reference:
+        section: "5"
+      instances:
+        - name: RCC
+          base: 0x40021000
+      registers: []
+
 nvic:
   reference:
     section: "11"
