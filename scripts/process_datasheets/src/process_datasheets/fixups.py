@@ -89,12 +89,35 @@ def _patch_page_37_insert_table16_toc(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# RM0503 page 93 fixup: protect NBOOT_SEL from Prettier italic-span corruption.
+#
+# The Bit 25 paragraph contains "NBOOT_SEL option bit" immediately before an
+# italic cross-reference "_Section 2.5: Boot configuration_".  Prettier
+# interprets the "_S" in "NBOOT_SEL" as an italic-open delimiter and the
+# "_" in "_Section" as its close, corrupting "NBOOT_SEL" to "NBOOT*SEL" and
+# mangling the cross-reference.  Switching the cross-reference to "*...*"
+# notation pre-empts Prettier's ambiguous parse while preserving the italic
+# rendering.
+# ---------------------------------------------------------------------------
+
+
+def _patch_page_93_protect_nboot_sel_italic(text: str) -> str:
+    """Replace the long-form Section cross-ref that Prettier mis-parses."""
+    old = "_Section 2.5: Boot configuration_"
+    new = "*Section 2.5: Boot configuration*"
+    if new in text or old not in text:
+        return text
+    return text.replace(old, new)
+
+
+# ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
 
 FIXUPS: dict[str, list[tuple[int, Callable[[str], str]]]] = {
     _RM0503_SHA256: [
         (37, _patch_page_37_insert_table16_toc),
+        (93, _patch_page_93_protect_nboot_sel_italic),
     ],
 }
 
