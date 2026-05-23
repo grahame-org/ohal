@@ -392,12 +392,11 @@ def _fix_headings(text: str) -> str:
     return text
 
 
-def _fix_italic_spans(text: str) -> str:
+def _fix_asterisk_artifacts(text: str) -> str:
     """Fix stray asterisk artefacts left by PDF extraction.
 
     Italic formatting is stripped entirely (see ``_format_span``), so this
-    function no longer needs to repair italic markup.  It retains only the
-    passes that correct artefacts unrelated to italic emphasis:
+    function only corrects artefacts unrelated to italic emphasis:
 
     1. Bold-adjacency fix – insert a space before ``**`` / ``*`` markers that
        directly follow a word character (e.g. ``TIMx*BDTR`` → ``TIMx *BDTR``).
@@ -530,13 +529,13 @@ def _apply_regex_postprocessing(text: str) -> str:
     """Apply structural regex fixes to merged page text after line filtering.
 
     Delegates to four focused helpers applied in order:
-    1. ``_fix_headings``    – heading level normalisation and join/demote passes
-    2. ``_fix_italic_spans`` – asterisk artefacts from PDF bold-span extraction
-    3. ``_fix_toc``         – Table of Contents structure
+    1. ``_fix_headings``          – heading level normalisation and join/demote passes
+    2. ``_fix_asterisk_artifacts`` – asterisk artefacts from PDF bold-span extraction
+    3. ``_fix_toc``               – Table of Contents structure
     4. ``_fix_lists``       – list marker joining and continuation indentation
     """
     text = _fix_headings(text)
-    text = _fix_italic_spans(text)
+    text = _fix_asterisk_artifacts(text)
     text = _fix_toc(text)
     text = _fix_lists(text)
     return text
@@ -568,6 +567,27 @@ def _dominant_body_size(blocks: list[dict]) -> float:
     if not size_chars:
         return 10.0
     return size_chars.most_common(1)[0][0]
+
+
+# Module-level helpers used by _join_register_cell_lines.
+_LONE_UNDERSCORE_RE = re.compile(r"^[_ ]+$")
+_IDENT_FRAGMENT_RE = re.compile(r"^[A-Z0-9\[\]:.]+$")
+_OPERATOR_CHAR_RE = re.compile(r"[=<>+\-*/]")
+
+
+def _spaces_to_underscores(s: str) -> tuple[str, int]:
+    """Replace spaces with ``_`` unless either neighbour is an operator character.
+
+    Returns the converted string and the number of replacements made.
+    """
+    result = list(s)
+    count = 0
+    for i, ch in enumerate(s):
+        if ch == " " and i > 0 and i < len(s) - 1:
+            if not _OPERATOR_CHAR_RE.fullmatch(s[i - 1]) and not _OPERATOR_CHAR_RE.fullmatch(s[i + 1]):
+                result[i] = "_"
+                count += 1
+    return "".join(result), count
 
 
 def _join_register_cell_lines(text: str) -> str:
@@ -610,15 +630,12 @@ def _join_register_cell_lines(text: str) -> str:
     if len(lines) <= 1:
         return text
 
-    _LONE_UNDERSCORE = re.compile(r"^[_ ]+$")
-    _IDENT_FRAGMENT = re.compile(r"^[A-Z0-9\[\]:.]+$")
-
-    has_separator = any(_LONE_UNDERSCORE.fullmatch(ln) for ln in lines)
+    has_separator = any(_LONE_UNDERSCORE_RE.fullmatch(ln) for ln in lines)
 
     if not has_separator:
         # No separator lines: concatenate directly only when every fragment
         # looks like part of an all-caps identifier.
-        if all(_IDENT_FRAGMENT.fullmatch(ln) for ln in lines):
+        if all(_IDENT_FRAGMENT_RE.fullmatch(ln) for ln in lines):
             return "".join(lines)
         return text
 
@@ -628,24 +645,12 @@ def _join_register_cell_lines(text: str) -> str:
     # an operator (=, <, >, +, -, *, /) or a space.  This preserves the space
     # around comparison operators in cells like "WRP1x STRT = WRP1x END"
     # (which should become "WRP1x_STRT = WRP1x_END", not "WRP1x_STRT_=_WRP1x_END").
-    _OPERATOR_CHAR = re.compile(r"[=<>+\-*/]")
-
-    def _spaces_to_underscores(s: str) -> tuple[str, int]:
-        """Replace spaces with _ unless either neighbour is an operator character."""
-        result = list(s)
-        count = 0
-        for i, ch in enumerate(s):
-            if ch == " " and i > 0 and i < len(s) - 1:
-                if not _OPERATOR_CHAR.fullmatch(s[i - 1]) and not _OPERATOR_CHAR.fullmatch(s[i + 1]):
-                    result[i] = "_"
-                    count += 1
-        return "".join(result), count
 
     words: list[str] = []
     sep_count = 0   # total underscore separators available
     spaces_used = 0
     for ln in lines:
-        if _LONE_UNDERSCORE.fullmatch(ln):
+        if _LONE_UNDERSCORE_RE.fullmatch(ln):
             # Count the number of "_" characters: a line like "_ _" represents
             # two underscore separators (one between the previous segment and the
             # next, plus one trailing/leading from the adjacent span).
@@ -681,7 +686,7 @@ def _join_register_cell_lines(text: str) -> str:
         prev_was_sep = False
         sep_budget = available
         for ln in lines:
-            if _LONE_UNDERSCORE.fullmatch(ln):
+            if _LONE_UNDERSCORE_RE.fullmatch(ln):
                 prev_was_sep = True
             else:
                 word = next(word_iter, None)

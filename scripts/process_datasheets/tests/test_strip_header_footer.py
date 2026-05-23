@@ -811,15 +811,6 @@ def test_asterisk_between_register_name_parts_replaced_with_underscore():
 
 
 # ---------------------------------------------------------------------------
-# Missing space before italic-open underscore absorbed into preceding word
-# ---------------------------------------------------------------------------
-
-
-
-
-
-
-# ---------------------------------------------------------------------------
 # Spurious escaped-underscore artifacts in table cells
 # ---------------------------------------------------------------------------
 

@@ -17,7 +17,7 @@ from __future__ import annotations
 import pytest
 from hamcrest import assert_that, equal_to
 
-from process_datasheets.pdf_to_markdown import _fix_italic_spans, _format_span
+from process_datasheets.pdf_to_markdown import _fix_asterisk_artifacts, _format_span
 
 # Font flag bit masks (as used by PyMuPDF).
 _ITALIC_FLAG = 2
@@ -147,17 +147,17 @@ class TestWhitespacePreservation:
 		assert_that(_format_span(" 0xFF", 0, "Courier"), equal_to(" `0xFF`"))
 
 
-class TestFixItalicSpans:
-	"""Tests for _fix_italic_spans post-processing of asterisk artefacts."""
+class TestFixAsteriskArtifacts:
+	"""Tests for _fix_asterisk_artifacts post-processing of asterisk artefacts."""
 
 	def test_bold_adjacency_asterisk_fix(self):
 		# "TIMx*BDTR" → "TIMx_BDTR" (space inserted then bare * converted to _)
-		assert_that(_fix_italic_spans("TIMx*BDTR"), equal_to("TIMx_BDTR"))
+		assert_that(_fix_asterisk_artifacts("TIMx*BDTR"), equal_to("TIMx_BDTR"))
 
 	def test_multiplication_asterisk_escaped(self):
 		# "0x004 * x" → "0x004 \* x" (pre-empt Prettier italic interpretation)
-		assert_that(_fix_italic_spans("0x004 * x"), equal_to(r"0x004 \* x"))
+		assert_that(_fix_asterisk_artifacts("0x004 * x"), equal_to(r"0x004 \* x"))
 
 	def test_identifier_underscore_unchanged(self):
 		# Without italic spans in the output, plain identifiers are never escaped.
-		assert_that(_fix_italic_spans("the CRS_ISR register."), equal_to("the CRS_ISR register."))
+		assert_that(_fix_asterisk_artifacts("the CRS_ISR register."), equal_to("the CRS_ISR register."))
