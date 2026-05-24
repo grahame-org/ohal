@@ -14355,6 +14355,47 @@ peripherals:
                 settings:
                   "0": MSI oscillator OFF
                   "1": MSI oscillator ON
+        - ICSCR:
+            reference:
+              section: 5.4.2
+            offset: 0x04
+            reset-value: 0x40000000
+            note: >-
+              Reset value is 0x40XX00XX; factory-programmed calibration bytes
+              HSICAL[7:0] (bits 23:16) and MSICAL[7:0] (bits 7:0) are
+              represented as 0x00 here. The schema does not support unknown
+              factory-trimmed reset bytes.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 31
+                width: 1
+                access: res
+                settings: ~
+              - name: HSITRIM
+                msb: 30
+                lsb: 24
+                width: 7
+                access: rw
+                settings: ~
+              - name: HSICAL
+                msb: 23
+                lsb: 16
+                width: 8
+                access: r
+                settings: ~
+              - name: MSITRIM
+                msb: 15
+                lsb: 8
+                width: 8
+                access: rw
+                settings: ~
+              - name: MSICAL
+                msb: 7
+                lsb: 0
+                width: 8
+                access: r
+                settings: ~
 
 nvic:
   reference:
