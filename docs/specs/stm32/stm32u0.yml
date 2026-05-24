@@ -15027,6 +15027,330 @@ peripherals:
                 settings:
                   "0": No effect
                   "1": Reset DMA1 and DMAMUX
+        - IOPRSTR:
+            reference:
+              section: 5.4.9
+            offset: 0x2C
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 6
+                width: 26
+                access: res
+                settings: ~
+              - name: GPIOFRST
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I/O port F
+              - name: GPIOERST
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I/O port E
+              - name: GPIODRST
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I/O port D
+              - name: GPIOCRST
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I/O port C
+              - name: GPIOBRST
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I/O port B
+              - name: GPIOARST
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I/O port A
+        - APBRSTR1:
+            reference:
+              section: 5.4.10
+            offset: 0x38
+            reset-value: 0x00000000
+            fields:
+              - name: LPTIM1RST
+                msb: 31
+                lsb: 31
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset LPTIM1
+              - name: LPTIM2RST
+                msb: 30
+                lsb: 30
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset LPTIM2
+              - name: DAC1RST
+                msb: 29
+                lsb: 29
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset DAC1 interface
+              - name: PWRRST
+                msb: 28
+                lsb: 28
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset PWR
+              - name: RESERVED
+                msb: 27
+                lsb: 27
+                width: 1
+                access: res
+                settings: ~
+              - name: LPTIM3RST
+                msb: 26
+                lsb: 26
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating LPTIM3 (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset LPTIM3
+              - name: I2C4RST
+                msb: 25
+                lsb: 25
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating I2C4 (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset I2C4
+              - name: OPAMPRST
+                msb: 24
+                lsb: 24
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset OPAMP
+              - name: I2C3RST
+                msb: 23
+                lsb: 23
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I2C3
+              - name: I2C2RST
+                msb: 22
+                lsb: 22
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I2C2
+              - name: I2C1RST
+                msb: 21
+                lsb: 21
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset I2C1
+              - name: LPUART1RST
+                msb: 20
+                lsb: 20
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset LPUART1
+              - name: USART4RST
+                msb: 19
+                lsb: 19
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset USART4
+              - name: USART3RST
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset USART3
+              - name: USART2RST
+                msb: 17
+                lsb: 17
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset USART2
+              - name: CRSRST
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating HSI48/CRS (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset CRS
+              - name: SPI3RST
+                msb: 15
+                lsb: 15
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating SPI3 (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset SPI3
+              - name: SPI2RST
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset SPI2
+              - name: USBRST
+                msb: 13
+                lsb: 13
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating USB (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset USB
+              - name: LPUART3RST
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating LPUART3 (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset LPUART3
+              - name: RESERVED
+                msb: 11
+                lsb: 10
+                width: 2
+                access: res
+                settings: ~
+              - name: LCDRST
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families
+                  integrating LCD (stm32u073, stm32u083). Refer to
+                  Section 1.5: Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset LCD
+              - name: RESERVED
+                msb: 8
+                lsb: 8
+                width: 1
+                access: res
+                settings: ~
+              - name: LPUART2RST
+                msb: 7
+                lsb: 7
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset LPUART2
+              - name: RESERVED
+                msb: 6
+                lsb: 6
+                width: 1
+                access: res
+                settings: ~
+              - name: TIM7RST
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset TIM7
+              - name: TIM6RST
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset TIM6
+              - name: RESERVED
+                msb: 3
+                lsb: 2
+                width: 2
+                access: res
+                settings: ~
+              - name: TIM3RST
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset TIM3
+              - name: TIM2RST
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset TIM2
 
 nvic:
   reference:
