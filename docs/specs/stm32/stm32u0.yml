@@ -14205,7 +14205,10 @@ peripherals:
             reset-value: 0x00000083
             note: >-
               Supports only word and half-word access. HSEBYP keeps its
-              previous value on all resets other than power-on reset.
+              previous value on all resets other than power-on reset. Although
+              MSIRANGE[3:0] reset bits are 1000 in RCC_CR (0x00000083),
+              MSIRGSEL resets to 0 so the effective reset MSI range comes from
+              MSISRANGE in RCC_CSR (range 6 around 4 MHz).
             fields:
               - name: RESERVED
                 msb: 31
