@@ -1215,7 +1215,7 @@ phases:
             P5-S4v,
             P5-S4w,
             P5-S4x,
-            P0-S2
+            P0-S2,
           ]
         acceptance-criteria:
           - RCC register-map section matches Table 33 completely.
