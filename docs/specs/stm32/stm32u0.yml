@@ -14925,6 +14925,108 @@ peripherals:
                 settings:
                   "0": No effect
                   "1": Clear LSIRDYF flag
+        - AHBRSTR:
+            reference:
+              section: 5.4.8
+            offset: 0x28
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 25
+                width: 7
+                access: res
+                settings: ~
+              - name: TSCRST
+                msb: 24
+                lsb: 24
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset TSC
+              - name: RESERVED
+                msb: 23
+                lsb: 19
+                width: 5
+                access: res
+                settings: ~
+              - name: RNGRST
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset RNG
+              - name: RESERVED
+                msb: 17
+                lsb: 17
+                width: 1
+                access: res
+                settings: ~
+              - name: AESRST
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                note: >-
+                  AES hardware accelerator reset. Reserved on devices not
+                  integrating the AES peripheral; refer to Section 1.5:
+                  Availability of peripherals.
+                settings:
+                  "0": No effect
+                  "1": Reset AES
+              - name: RESERVED
+                msb: 15
+                lsb: 13
+                width: 3
+                access: res
+                settings: ~
+              - name: CRCRST
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset CRC
+              - name: RESERVED
+                msb: 11
+                lsb: 9
+                width: 3
+                access: res
+                settings: ~
+              - name: FLASHRST
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset flash memory interface
+              - name: RESERVED
+                msb: 7
+                lsb: 2
+                width: 6
+                access: res
+                settings: ~
+              - name: DMA2RST
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset DMA2 and DMAMUX
+              - name: DMA1RST
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset DMA1 and DMAMUX
 
 nvic:
   reference:
