@@ -14197,7 +14197,164 @@ peripherals:
       instances:
         - name: RCC
           base: 0x40021000
-      registers: []
+      registers:
+        - CR:
+            reference:
+              section: 5.4.1
+            offset: 0x00
+            reset-value: 0x00000083
+            note: >-
+              Supports only word and half-word access. HSEBYP keeps its
+              previous value on all resets other than power-on reset.
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 26
+                width: 6
+                access: res
+                settings: ~
+              - name: PLLRDY
+                msb: 25
+                lsb: 25
+                width: 1
+                access: r
+                settings:
+                  "0": PLL unlocked
+                  "1": PLL locked
+              - name: PLLON
+                msb: 24
+                lsb: 24
+                width: 1
+                access: rw
+                settings:
+                  "0": PLL OFF
+                  "1": PLL ON
+              - name: RESERVED
+                msb: 23
+                lsb: 20
+                width: 4
+                access: res
+                settings: ~
+              - name: CSSON
+                msb: 19
+                lsb: 19
+                width: 1
+                access: rs
+                settings:
+                  "0": Clock security system OFF (clock detector OFF)
+                  "1": Clock security system ON
+              - name: HSEBYP
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings:
+                  "0": HSE crystal oscillator not bypassed
+                  "1": HSE crystal oscillator bypassed with external clock
+              - name: HSERDY
+                msb: 17
+                lsb: 17
+                width: 1
+                access: r
+                settings:
+                  "0": HSE oscillator not ready
+                  "1": HSE oscillator ready
+              - name: HSEON
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                settings:
+                  "0": HSE oscillator OFF
+                  "1": HSE oscillator ON
+              - name: RESERVED
+                msb: 15
+                lsb: 12
+                width: 4
+                access: res
+                settings: ~
+              - name: HSIASFS
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings:
+                  "0": HSI16 not enabled by hardware when exiting Stop mode with MSI as wake-up clock
+                  "1": HSI16 enabled by hardware when exiting Stop mode with MSI as wake-up clock
+              - name: HSIRDY
+                msb: 10
+                lsb: 10
+                width: 1
+                access: r
+                settings:
+                  "0": HSI16 oscillator not ready
+                  "1": HSI16 oscillator ready
+              - name: HSIKERON
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect on HSI16 oscillator
+                  "1": HSI16 oscillator forced ON even in Stop mode
+              - name: HSION
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": HSI16 oscillator OFF
+                  "1": HSI16 oscillator ON
+              - name: MSIRANGE
+                msb: 7
+                lsb: 4
+                width: 4
+                access: rw
+                settings:
+                  "0000": range 0 around 100 kHz
+                  "0001": range 1 around 200 kHz
+                  "0010": range 2 around 400 kHz
+                  "0011": range 3 around 800 kHz
+                  "0100": range 4 around 1 MHz
+                  "0101": range 5 around 2 MHz
+                  "0110": range 6 around 4 MHz
+                  "0111": range 7 around 8 MHz
+                  "1000": range 8 around 16 MHz
+                  "1001": range 9 around 24 MHz
+                  "1010": range 10 around 32 MHz
+                  "1011": range 11 around 48 MHz
+              - name: MSIRGSEL
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rs
+                settings:
+                  "0": MSI range provided by MSISRANGE in RCC_CSR
+                  "1": MSI range provided by MSIRANGE in RCC_CR
+              - name: MSIPLLEN
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings:
+                  "0": MSI PLL OFF
+                  "1": MSI PLL ON
+              - name: MSIRDY
+                msb: 1
+                lsb: 1
+                width: 1
+                access: r
+                settings:
+                  "0": MSI oscillator not ready
+                  "1": MSI oscillator ready
+              - name: MSION
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": MSI oscillator OFF
+                  "1": MSI oscillator ON
 
 nvic:
   reference:
