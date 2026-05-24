@@ -14831,6 +14831,100 @@ peripherals:
                 settings:
                   "0": No clock ready interrupt caused by the LSI oscillator
                   "1": Clock ready interrupt caused by the LSI oscillator
+        - CICR:
+            reference:
+              section: 5.4.7
+            offset: 0x20
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 11
+                width: 21
+                access: res
+                settings: ~
+              - name: HSI48RDYC
+                msb: 10
+                lsb: 10
+                width: 1
+                access: w
+                note: >-
+                  HSI48 oscillator ready interrupt clear. Reserved on stm32u031;
+                  only present on sub-families integrating HSI48 (stm32u073,
+                  stm32u083).
+                settings:
+                  "0": No effect
+                  "1": Clear the HSI48RDYF flag
+              - name: LSECSSC
+                msb: 9
+                lsb: 9
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear LSECSSF flag
+              - name: CSSC
+                msb: 8
+                lsb: 8
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear CSSF flag
+              - name: RESERVED
+                msb: 7
+                lsb: 6
+                width: 2
+                access: res
+                settings: ~
+              - name: PLLRDYC
+                msb: 5
+                lsb: 5
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear PLLRDYF flag
+              - name: HSERDYC
+                msb: 4
+                lsb: 4
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear HSERDYF flag
+              - name: HSIRDYC
+                msb: 3
+                lsb: 3
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear HSIRDYF flag
+              - name: MSIRDYC
+                msb: 2
+                lsb: 2
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear MSIRDYF flag
+              - name: LSERDYC
+                msb: 1
+                lsb: 1
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear LSERDYF flag
+              - name: LSIRDYC
+                msb: 0
+                lsb: 0
+                width: 1
+                access: w
+                settings:
+                  "0": No effect
+                  "1": Clear LSIRDYF flag
 
 nvic:
   reference:
