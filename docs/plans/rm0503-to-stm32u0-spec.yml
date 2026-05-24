@@ -57,7 +57,7 @@ meta:
   # history  – ordered list of accepted steps (oldest first).
   # ------------------------------------------------------------------
   progress:
-    current: P5-S3
+    current: P5-S4a
     history:
       - id: P0-S1
         date: "2026-05-17"
@@ -147,6 +147,8 @@ meta:
         date: "2026-05-23"
       - id: P5-S2
         date: "2026-05-23"
+      - id: P5-S3
+        date: "2026-05-24"
 
 # ============================================================
 # PHASE 0 – Schema extensions
@@ -904,6 +906,321 @@ phases:
           - All RCC registers present with correct fields.
           - Register-map from Table 33 added.
           - lint.sh passes after each child step.
+
+      - id: P5-S4a
+        title: "Add RCC_CR register (§5.4.1)"
+        description: >
+          Add RCC_CR (offset 0x00) with all fields from §5.4.1.
+        source-pages: [169, 170, 171]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_CR at offset 0x00 with correct reset-value and all
+            fields (PLLRDY, PLLON, CSSON, HSEBYP, HSERDY, HSEON,
+            HSIASFS, HSIRDY, HSIKERON, HSION, MSIRANGE[3:0],
+            MSIRGSEL, MSIPLLEN, MSIRDY, MSION) with correct
+            msb/lsb/width/access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4b
+        title: "Add RCC_ICSCR register (§5.4.2)"
+        source-pages: [172]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          HSICAL[7:0] (bits 23:16) and MSICAL[7:0] (bits 7:0) are
+          factory-programmed calibration values (Table 33 shows X).
+          The schema supports only integer reset values; represent
+          the factory-trimmed bytes as 0x00 in the reset-value field
+          and record the limitation in a spec note.
+        acceptance-criteria:
+          - RCC_ICSCR at offset 0x04 with all fields.
+          - Factory-trimmed bytes represented as 0x00 in reset-value.
+          - lint.sh passes.
+
+      - id: P5-S4c
+        title: "Add RCC_CFGR register (§5.4.3)"
+        source-pages: [173, 174, 175]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_CFGR at offset 0x08 with correct reset-value and
+            all fields (MCOPRE, MCOSEL, MCO2PRE, MCO2SEL, STOPWUCK,
+            PPRE, HPRE, SWS, SW) with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4d
+        title: "Add RCC_PLLCFGR register (§5.4.4)"
+        source-pages: [176, 177, 178]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_PLLCFGR at offset 0x0C with correct reset-value and
+            all fields (PLLR, PLLREN, PLLQ, PLLQEN, PLLP, PLLPEN,
+            PLLN, PLLM, PLLSRC) with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4e
+        title: "Add RCC_CIER register (§5.4.5)"
+        source-pages: [178, 179]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          Bit 10 HSI48RDYIE is only present on sub-families with
+          HSI48 (stm32u073, stm32u083); confirm from section 1.5.
+        acceptance-criteria:
+          - RCC_CIER at offset 0x18 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4f
+        title: "Add RCC_CIFR register (§5.4.6)"
+        source-pages: [180, 181]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          Bit 10 HSI48RDYF is only present on sub-families with
+          HSI48 (stm32u073, stm32u083).
+        acceptance-criteria:
+          - RCC_CIFR at offset 0x1C with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4g
+        title: "Add RCC_CICR register (§5.4.7)"
+        source-pages: [181, 182]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          Bit 10 HSI48RDYC is only present on sub-families with
+          HSI48 (stm32u073, stm32u083).
+        acceptance-criteria:
+          - RCC_CICR at offset 0x20 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4h
+        title: "Add RCC_AHBRSTR register (§5.4.8)"
+        source-pages: [182, 183, 184]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_AHBRSTR at offset 0x28 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4i
+        title: "Add RCC_IOPRSTR register (§5.4.9)"
+        source-pages: [184, 185]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_IOPRSTR at offset 0x2C with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4j
+        title: "Add RCC_APBRSTR1 register (§5.4.10)"
+        source-pages: [185, 186, 187, 188]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          Several bits are sub-family restricted: LPTIM3RST (bit 26,
+          stm32u073/stm32u083 only), CRSRST (bit 15,
+          stm32u073/stm32u083 only), USBRST (bit 13,
+          stm32u073/stm32u083 only), LCDRST (bit 9,
+          stm32u073/stm32u083 only). Verify all sub-family
+          restrictions from section 1.5 before committing.
+        acceptance-criteria:
+          - RCC_APBRSTR1 at offset 0x38 with correct reset-value and
+            all fields with correct access/settings.
+          - Sub-family-restricted bits annotated.
+          - lint.sh passes.
+
+      - id: P5-S4k
+        title: "Add RCC_APBRSTR2 register (§5.4.11)"
+        source-pages: [188, 189]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_APBRSTR2 at offset 0x40 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4l
+        title: "Add RCC_AHBENR register (§5.4.12)"
+        source-pages: [189, 190]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_AHBENR at offset 0x48 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4m
+        title: "Add RCC_IOPENR register (§5.4.13)"
+        source-pages: [190, 191]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_IOPENR at offset 0x4C with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4n
+        title: "Add RCC_DBGCFGR register (§5.4.14)"
+        source-pages: [191, 192]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_DBGCFGR at offset 0x50 with correct reset-value and
+            all fields (DBGRST, DBGEN) with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4o
+        title: "Add RCC_APBENR1 register (§5.4.15)"
+        source-pages: [192, 193, 194, 195]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          Several bits are sub-family restricted: LPTIM3EN (bit 26,
+          stm32u073/stm32u083 only), CRSEN (bit 15,
+          stm32u073/stm32u083 only), USBEN (bit 13,
+          stm32u073/stm32u083 only), LCDEN (bit 9,
+          stm32u073/stm32u083 only). Verify all sub-family
+          restrictions from section 1.5 before committing.
+        acceptance-criteria:
+          - RCC_APBENR1 at offset 0x58 with correct reset-value and
+            all fields with correct access/settings.
+          - Sub-family-restricted bits annotated.
+          - lint.sh passes.
+
+      - id: P5-S4p
+        title: "Add RCC_APBENR2 register (§5.4.16)"
+        source-pages: [195, 196]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_APBENR2 at offset 0x60 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4q
+        title: "Add RCC_AHBSMENR register (§5.4.17)"
+        source-pages: [196, 197]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_AHBSMENR at offset 0x68 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4r
+        title: "Add RCC_IOPSMENR register (§5.4.18)"
+        source-pages: [197, 198]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_IOPSMENR at offset 0x6C with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4s
+        title: "Add RCC_APBSMENR1 register (§5.4.19)"
+        source-pages: [198, 199, 200, 201, 202]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          Several bits are sub-family restricted: LPTIM3SMEN (bit 26,
+          stm32u073/stm32u083 only), CRSSMEN (bit 15,
+          stm32u073/stm32u083 only), USBSMEN (bit 13,
+          stm32u073/stm32u083 only), LCDSMEN (bit 9,
+          stm32u073/stm32u083 only). Verify all sub-family
+          restrictions from section 1.5 before committing.
+        acceptance-criteria:
+          - RCC_APBSMENR1 at offset 0x78 with correct reset-value and
+            all fields with correct access/settings.
+          - Sub-family-restricted bits annotated.
+          - lint.sh passes.
+
+      - id: P5-S4t
+        title: "Add RCC_APBSMENR2 register (§5.4.20)"
+        source-pages: [202, 203]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_APBSMENR2 at offset 0x80 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4u
+        title: "Add RCC_CCIPR register (§5.4.21)"
+        source-pages: [203, 204, 205]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          LPTIM3SEL[1:0] (bits 23:22) is only present on
+          stm32u073/stm32u083 (sub-families with LPTIM3).
+        acceptance-criteria:
+          - RCC_CCIPR at offset 0x88 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4v
+        title: "Add RCC_BDCR register (§5.4.22)"
+        source-pages: [205, 206, 207]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_BDCR at offset 0x90 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4w
+        title: "Add RCC_CSR register (§5.4.23)"
+        source-pages: [207, 208, 209]
+        depends-on: [P5-S1, P0-S1]
+        acceptance-criteria:
+          - RCC_CSR at offset 0x94 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4x
+        title: "Add RCC_CRRCR register (§5.4.24)"
+        source-pages: [209, 210]
+        depends-on: [P5-S1, P0-S1]
+        concern: >
+          All bits are HSI48-related; register is only meaningful
+          on sub-families with HSI48 (stm32u073, stm32u083).
+          HSI48CAL[8:0] (bits 15:7) is factory-programmed; Table 33
+          shows a documented reset value (0x8800) but the register
+          description states it is initialised at startup with a
+          factory-programmed value. Represent as the documented
+          integer 0x8800 and add a spec note.
+        acceptance-criteria:
+          - RCC_CRRCR at offset 0x98 with correct reset-value and
+            all fields with correct access/settings.
+          - lint.sh passes.
+
+      - id: P5-S4y
+        title: "Add RCC register-map from Table 33 (§5.4.25)"
+        description: >
+          Using the P0-S2 schema extension, add a register-map
+          array to the rcc peripheral entry citing Table 33
+          (pages 210-213). Cross-check every previously added
+          register offset and reset-value against Table 33.
+        source-pages: [210, 211, 212, 213]
+        depends-on:
+          [
+            P5-S4a,
+            P5-S4b,
+            P5-S4c,
+            P5-S4d,
+            P5-S4e,
+            P5-S4f,
+            P5-S4g,
+            P5-S4h,
+            P5-S4i,
+            P5-S4j,
+            P5-S4k,
+            P5-S4l,
+            P5-S4m,
+            P5-S4n,
+            P5-S4o,
+            P5-S4p,
+            P5-S4q,
+            P5-S4r,
+            P5-S4s,
+            P5-S4t,
+            P5-S4u,
+            P5-S4v,
+            P5-S4w,
+            P5-S4x,
+            P0-S2,
+          ]
+        acceptance-criteria:
+          - RCC register-map section matches Table 33 completely.
+          - Any offset/reset-value discrepancy produces a separate
+            correction step; none resolved silently.
+          - lint.sh passes.
 
       - id: P5-S5
         title: "Add peripheral clock-enable bits to peripheral entries"
