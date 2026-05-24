@@ -14436,7 +14436,7 @@ peripherals:
                   "0111": LSE
                   "1000": HSI48
                   "1001": RTCCLK
-                  "1010": RTC_WAKEUP
+                  "1010": RTC wakeup
               - name: MCO2PRE
                 msb: 23
                 lsb: 20
@@ -14464,7 +14464,7 @@ peripherals:
                   "0111": LSE
                   "1000": HSI48
                   "1001": RTCCLK
-                  "1010": RTC_WAKEUP
+                  "1010": RTC wakeup
               - name: STOPWUCK
                 msb: 15
                 lsb: 15
@@ -14527,8 +14527,11 @@ peripherals:
             reset-value: 0x00001000
             note: >-
               Configures PLL output clocks: fVCO = fPLLIN × (N / M);
-              fPLLP = fVCO / P; fPLLQ = fVCO / Q; fPLLR = fVCO / R. All
+              fPLLP = fVCO / P; fPLLQ = fVCO / Q; fPLLR = fVCO / R. Most
               bitfields can only be written when the PLL is disabled.
+              Exception: PLLPEN, PLLQEN, and PLLREN may be modified while
+              the PLL is enabled (PLLREN cannot be cleared while PLLRCLK
+              is used as the system clock).
             fields:
               - name: PLLR
                 msb: 31
