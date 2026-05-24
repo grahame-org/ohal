@@ -899,8 +899,9 @@ phases:
       - id: P5-S4
         title: "Add RCC registers (child steps)"
         description: >
-          Placeholder. Each child step P5-S4a … P5-S4n adds one
-          RCC register. Child steps depend on P5-S1 and P0-S1.
+          Placeholder. Each child step P5-S4a … P5-S4x adds one
+          RCC register. Child step P5-S4y adds the register-map.
+          Child steps depend on P5-S1 and P0-S1.
         depends-on: [P5-S1, P0-S1, P5-S3]
         acceptance-criteria:
           - All RCC registers present with correct fields.
