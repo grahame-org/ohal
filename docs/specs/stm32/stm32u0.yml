@@ -15461,8 +15461,8 @@ peripherals:
                 width: 1
                 access: rw
                 settings:
-                  "0": TSC clock disable
-                  "1": TSC clock enable
+                  "0": Disable
+                  "1": Enable
               - name: RESERVED
                 msb: 23
                 lsb: 19
