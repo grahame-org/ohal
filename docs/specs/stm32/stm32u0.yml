@@ -15570,6 +15570,9 @@ peripherals:
                 lsb: 4
                 width: 1
                 access: rw
+                note: >-
+                  Present in stm32u073/stm32u083 vendor CMSIS headers; not
+                  defined in stm32u031xx.h, where GPIOE is not implemented.
                 settings:
                   "0": Disable
                   "1": Enable
