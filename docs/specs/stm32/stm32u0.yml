@@ -15907,6 +15907,98 @@ peripherals:
                 settings:
                   "0": Disable
                   "1": Enable
+        - APBENR2:
+            reference:
+              section: 5.4.16
+            offset: 0x60
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 21
+                width: 11
+                access: res
+                settings: ~
+              - name: ADCEN
+                msb: 20
+                lsb: 20
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 19
+                lsb: 18
+                width: 2
+                access: res
+                settings: ~
+              - name: TIM16EN
+                msb: 17
+                lsb: 17
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: TIM15EN
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 15
+                lsb: 15
+                width: 1
+                access: res
+                settings: ~
+              - name: USART1EN
+                msb: 14
+                lsb: 14
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 13
+                lsb: 13
+                width: 1
+                access: res
+                settings: ~
+              - name: SPI1EN
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: TIM1EN
+                msb: 11
+                lsb: 11
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 10
+                lsb: 1
+                width: 10
+                access: res
+                settings: ~
+              - name: SYSCFGEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
 
 nvic:
   reference:
