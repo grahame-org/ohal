@@ -15545,6 +15545,97 @@ peripherals:
                 settings:
                   "0": Disable
                   "1": Enable
+        - IOPENR:
+            reference:
+              section: 5.4.13
+            offset: 0x4C
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 6
+                width: 26
+                access: res
+                settings: ~
+              - name: GPIOFEN
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOEEN
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                note: >-
+                  Present in stm32u073/stm32u083 vendor CMSIS headers; not
+                  defined in stm32u031xx.h, where GPIOE is not implemented.
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIODEN
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOCEN
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOBEN
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOAEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+        - DBGCFGR:
+            reference:
+              section: 5.4.14
+            offset: 0x50
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 2
+                width: 30
+                access: res
+                settings: ~
+              - name: DBGRST
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset DBG
+              - name: DBGEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
 
 nvic:
   reference:
