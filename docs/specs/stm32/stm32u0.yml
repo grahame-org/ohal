@@ -15605,6 +15605,34 @@ peripherals:
                 settings:
                   "0": Disable
                   "1": Enable
+        - DBGCFGR:
+            reference:
+              section: 5.4.14
+            offset: 0x50
+            reset-value: 0x00000000
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 2
+                width: 30
+                access: res
+                settings: ~
+              - name: DBGRST
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": No effect
+                  "1": Reset DBG
+              - name: DBGEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
 
 nvic:
   reference:
