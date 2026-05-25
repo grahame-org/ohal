@@ -15999,6 +15999,180 @@ peripherals:
                 settings:
                   "0": Disable
                   "1": Enable
+        - AHBSMENR:
+            reference:
+              section: 5.4.17
+            offset: 0x68
+            reset-value: 0x01051303
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 25
+                width: 7
+                access: res
+                settings: ~
+              - name: TSCSMEN
+                msb: 24
+                lsb: 24
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 23
+                lsb: 19
+                width: 5
+                access: res
+                settings: ~
+              - name: RNGSMEN
+                msb: 18
+                lsb: 18
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 17
+                lsb: 17
+                width: 1
+                access: res
+                settings: ~
+              - name: AESSMEN
+                msb: 16
+                lsb: 16
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families integrating
+                  AES (stm32u073, stm32u083). Refer to Section 1.5: Availability
+                  of peripherals.
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 15
+                lsb: 13
+                width: 3
+                access: res
+                settings: ~
+              - name: CRCSMEN
+                msb: 12
+                lsb: 12
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 11
+                lsb: 10
+                width: 2
+                access: res
+                settings: ~
+              - name: SRAMSMEN
+                msb: 9
+                lsb: 9
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: FLASHSMEN
+                msb: 8
+                lsb: 8
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: RESERVED
+                msb: 7
+                lsb: 2
+                width: 6
+                access: res
+                settings: ~
+              - name: DMA2SMEN
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: DMA1SMEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+        - IOPSMENR:
+            reference:
+              section: 5.4.18
+            offset: 0x6C
+            reset-value: 0x0000003F
+            fields:
+              - name: RESERVED
+                msb: 31
+                lsb: 6
+                width: 26
+                access: res
+                settings: ~
+              - name: GPIOFSMEN
+                msb: 5
+                lsb: 5
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOESMEN
+                msb: 4
+                lsb: 4
+                width: 1
+                access: rw
+                note: >-
+                  Reserved on stm32u031; only present on sub-families integrating
+                  GPIO port E (stm32u073, stm32u083). Refer to Section 1.5:
+                  Availability of peripherals.
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIODSMEN
+                msb: 3
+                lsb: 3
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOCSMEN
+                msb: 2
+                lsb: 2
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOBSMEN
+                msb: 1
+                lsb: 1
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
+              - name: GPIOASMEN
+                msb: 0
+                lsb: 0
+                width: 1
+                access: rw
+                settings:
+                  "0": Disable
+                  "1": Enable
 
 nvic:
   reference:
