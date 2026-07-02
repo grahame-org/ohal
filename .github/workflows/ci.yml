@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
 
       - name: Cache apt packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/apt-archives/*.deb
           key: ${{ runner.os }}-apt-host-${{ hashFiles('.github/workflows/ci.yml') }}
@@ -60,7 +60,7 @@ jobs:
           persist-credentials: false
 
       - name: Cache apt packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/apt-archives/*.deb
           key: ${{ runner.os }}-apt-arm-${{ hashFiles('.github/workflows/ci.yml') }}
@@ -120,7 +120,7 @@ jobs:
 
       - name: Cache MSP430 GCC toolchain
         id: cache-msp430-gcc
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /opt/msp430-gcc
           # Version-pinned cache key; bump the key suffix when upgrading the toolchain.
@@ -187,7 +187,7 @@ jobs:
           persist-credentials: false
 
       - name: Cache apt packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/apt-archives/*.deb
           key: ${{ runner.os }}-apt-neg-${{ hashFiles('.github/workflows/ci.yml') }}
